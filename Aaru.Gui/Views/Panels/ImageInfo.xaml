@@ -74,7 +74,14 @@
         <TabControl Grid.Row="5">
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="{x:Static localization:UI.Title_General}" />
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <Svg MaxHeight="24"
+                             Path="{Binding $parent[UserControl].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Icons/entypo/InfoWithCircle.svg', Mode=OneWay}"
+                             VerticalAlignment="Center" />
+                        <TextBlock Text="{x:Static localization:UI.Title_General}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </TabItem.Header>
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                               VerticalScrollBarVisibility="Auto">
@@ -224,7 +231,14 @@
             </TabItem>
             <TabItem IsVisible="{Binding !!Sessions.Count, Mode=OneWay}">
                 <TabItem.Header>
-                    <TextBlock Text="{x:Static localization:UI.Title_Sessions}" />
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <Svg MaxHeight="24"
+                             Path="{Binding $parent[UserControl].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Icons/phosphor/VinylRecord.svg', Mode=OneWay}"
+                             VerticalAlignment="Center" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Sessions}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding Sessions, Mode=OneWay}"
                           IsVisible="{Binding !!Sessions.Count, Mode=OneWay}"
@@ -318,7 +332,14 @@
             </TabItem>
             <TabItem IsVisible="{Binding !!Tracks.Count, Mode=OneWay}">
                 <TabItem.Header>
-                    <TextBlock Text="{x:Static localization:UI.Title_Tracks}" />
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <Svg MaxHeight="24"
+                             Path="{Binding $parent[UserControl].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Icons/phosphor/Disc.svg', Mode=OneWay}"
+                             VerticalAlignment="Center" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Tracks}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding Tracks, Mode=OneWay}"
                           IsVisible="{Binding !!Tracks.Count, Mode=OneWay}"
@@ -460,7 +481,14 @@
             </TabItem>
             <TabItem IsVisible="{Binding !!DumpHardwareList.Count, Mode=OneWay}">
                 <TabItem.Header>
-                    <TextBlock Text="{x:Static localization:UI.Title_Dump_hardware}" />
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <Svg MaxHeight="24"
+                             Path="{Binding $parent[UserControl].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Icons/phosphor/Toolbox.svg', Mode=OneWay}"
+                             VerticalAlignment="Center" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Dump_hardware}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding DumpHardwareList, Mode=OneWay}"
                           IsVisible="{Binding !!DumpHardwareList.Count, Mode=OneWay}"
@@ -616,63 +644,114 @@
             </TabItem>
             <TabItem IsVisible="{Binding !!ScsiInfo, Mode=OneWay}">
                 <TabItem.Header>
-                    <TextBlock Text="{x:Static localization:UI.Title_SCSI}" />
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <Svg MaxHeight="24"
+                             Path="{Binding $parent[UserControl].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Logos/Buses/SCSI.svg', Mode=OneWay}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_SCSI}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </TabItem.Header>
                 <ContentControl Content="{Binding ScsiInfo, Mode=OneWay}"
                                 Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!AtaInfo, Mode=OneWay}">
                 <TabItem.Header>
-                    <TextBlock Text="{x:Static localization:UI.Title_ATA_ATAPI}" />
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <Svg MaxHeight="24"
+                             Path="{Binding $parent[UserControl].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Logos/Buses/SATA.svg', Mode=OneWay}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_ATA_ATAPI}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </TabItem.Header>
                 <ContentControl Content="{Binding AtaInfo, Mode=OneWay}"
                                 Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!CompactDiscInfo, Mode=OneWay}">
                 <TabItem.Header>
-                    <TextBlock Text="{x:Static localization:Core.Title_CompactDisc}" />
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <Svg MaxHeight="24"
+                             Path="{Binding $parent[UserControl].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Logos/Media/CD.svg', Mode=OneWay}" />
+                        <TextBlock Text="{x:Static localization:Core.Title_CompactDisc}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </TabItem.Header>
                 <ContentControl Content="{Binding CompactDiscInfo, Mode=OneWay}"
                                 Margin="8" />
             </TabItem>
-            <TabItem IsVisible="{Binding !!DvdInfo, Mode=OneWay}">
-                <TabItem.Header>
-                    <TextBlock Text="{x:Static localization:Core.Title_DVD_HD_DVD}" />
+            <TabItem IsVisible="{Binding !!DvdInfo, Mode=OneWay}">                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <Svg MaxHeight="24"
+                             Path="{Binding $parent[UserControl].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Logos/Media/DVDDownload.svg', Mode=OneWay}" />
+                        <TextBlock Text="{x:Static localization:Core.Title_DVD_HD_DVD}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </TabItem.Header>
                 <ContentControl Content="{Binding DvdInfo, Mode=OneWay}"
                                 Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!DvdWritableInfo, Mode=OneWay}">
                 <TabItem.Header>
-                    <TextBlock Text="{x:Static localization:Core.Title_DVD_Plus_Dash_R_W}" />
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <Svg MaxHeight="24"
+                             Path="{Binding $parent[UserControl].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Logos/Media/DVDRW.svg', Mode=OneWay}" />
+                        <TextBlock Text="{x:Static localization:Core.Title_DVD_Plus_Dash_R_W}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </TabItem.Header>
                 <ContentControl Content="{Binding DvdWritableInfo, Mode=OneWay}"
                                 Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!BlurayInfo, Mode=OneWay}">
                 <TabItem.Header>
-                    <TextBlock Text="{x:Static localization:Core.Title_Blu_ray}" />
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <Svg MaxHeight="24"
+                             Path="{Binding $parent[UserControl].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Logos/Media/BDROM.svg', Mode=OneWay}" />
+                        <TextBlock Text="{x:Static localization:Core.Title_Blu_ray}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </TabItem.Header>
                 <ContentControl Content="{Binding BlurayInfo, Mode=OneWay}"
                                 Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!PcmciaInfo, Mode=OneWay}">
                 <TabItem.Header>
-                    <TextBlock Text="{x:Static localization:UI.Title_PCMCIA}" />
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <TextBlock Text="{x:Static localization:UI.Title_PCMCIA}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </TabItem.Header>
                 <ContentControl Content="{Binding PcmciaInfo, Mode=OneWay}"
                                 Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!SdMmcInfo, Mode=OneWay}">
                 <TabItem.Header>
-                    <TextBlock Text="{x:Static localization:UI.Title_SD_MMC}" />
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <Svg MaxHeight="24"
+                             Path="{Binding $parent[UserControl].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Logos/Media/SecureDigital.svg', Mode=OneWay}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_SD_MMC}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </TabItem.Header>
                 <ContentControl Content="{Binding SdMmcInfo, Mode=OneWay}"
                                 Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!XboxInfo, Mode=OneWay}">
                 <TabItem.Header>
-                    <TextBlock Text="{x:Static localization:Core.Title_Xbox}" />
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <Svg MaxHeight="24"
+                             Path="{Binding $parent[UserControl].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Logos/Media/XGD.svg', Mode=OneWay}" />
+                        <TextBlock Text="{x:Static localization:Core.Title_Xbox}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </TabItem.Header>
                 <ContentControl Content="{Binding XboxInfo, Mode=OneWay}"
                                 Margin="8" />
