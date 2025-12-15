@@ -57,17 +57,17 @@
                 <controls:SpectreTextBlock Text="{Binding VolumeNameText, Mode=OneWay}"
                                            IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
                 <controls:SpectreTextBlock Text="{Binding SerialNumberText, Mode=OneWay}"
-                                           IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
+                                           IsVisible="{Binding !!SerialNumberText, Mode=OneWay}" />
                 <controls:SpectreTextBlock Text="{Binding ApplicationIdentifierText, Mode=OneWay}"
-                                           IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
+                                           IsVisible="{Binding !!ApplicationIdentifierText, Mode=OneWay}" />
                 <controls:SpectreTextBlock Text="{Binding SystemIdentifierText, Mode=OneWay}"
-                                           IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
+                                           IsVisible="{Binding !!SystemIdentifierText, Mode=OneWay}" />
                 <controls:SpectreTextBlock Text="{Binding VolumeSetIdentifierText, Mode=OneWay}"
-                                           IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
+                                           IsVisible="{Binding !!VolumeSetIdentifierText, Mode=OneWay}" />
                 <controls:SpectreTextBlock Text="{Binding DataPreparerIdentifierText, Mode=OneWay}"
-                                           IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
+                                           IsVisible="{Binding !!DataPreparerIdentifierText, Mode=OneWay}" />
                 <controls:SpectreTextBlock Text="{Binding PublisherIdentifierText, Mode=OneWay}"
-                                           IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
+                                           IsVisible="{Binding !!PublisherIdentifierText, Mode=OneWay}" />
                 <controls:SpectreTextBlock Text="{Binding CreationDateText, Mode=OneWay}"
                                            IsVisible="{Binding CreationDateVisible, Mode=OneWay}" />
                 <controls:SpectreTextBlock Text="{Binding EffectiveDateText, Mode=OneWay}"
