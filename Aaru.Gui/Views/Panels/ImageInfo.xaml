@@ -70,9 +70,12 @@
                         VerticalAlignment="Center">
                 <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Image_information}"
                                            FontWeight="Bold" />
-                <controls:SpectreTextBlock Text="{Binding ImagePathText, Mode=OneWay}" />
-                <controls:SpectreTextBlock Text="{Binding FilterText, Mode=OneWay}" />
-                <controls:SpectreTextBlock Text="{Binding ImageIdentifiedText, Mode=OneWay}" />
+                <controls:SpectreTextBlock Text="{Binding ImagePathText, Mode=OneWay}"
+                                           TextWrapping="Wrap" />
+                <controls:SpectreTextBlock Text="{Binding FilterText, Mode=OneWay}"
+                                           TextWrapping="Wrap" />
+                <controls:SpectreTextBlock Text="{Binding ImageIdentifiedText, Mode=OneWay}"
+                                           TextWrapping="Wrap" />
             </StackPanel>
         </Grid>
         <TabControl Grid.Row="1">
@@ -92,28 +95,39 @@
                     <StackPanel Spacing="8"
                                 Margin="8">
                         <controls:SpectreTextBlock Text="{Binding ImageFormatText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!ImageFormatText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!ImageFormatText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding ApplicationText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!ApplicationText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!ApplicationText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding ImageSizeText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!ImageSizeText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!ImageSizeText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding SectorsText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!SectorsText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!SectorsText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding CreatorText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!CreatorText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!CreatorText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding CreationTimeText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!CreationTimeText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!CreationTimeText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding LastModificationTimeText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!LastModificationTimeText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!LastModificationTimeText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding MediaTypeText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!MediaTypeText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!MediaTypeText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding HasPartitionsText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!HasPartitionsText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!HasPartitionsText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding HasSessionsText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!HasSessionsText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!HasSessionsText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Comments}"
                                                    IsVisible="{Binding !!CommentsText, Mode=OneWay}"
-                                                   FontWeight="Bold" />
+                                                   FontWeight="Bold"
+                                                   TextWrapping="Wrap" />
                         <TextBox IsReadOnly="True"
                                  TextWrapping="Wrap"
                                  Text="{Binding CommentsText, Mode=OneWay}"
@@ -124,37 +138,52 @@
                                  Cursor="Arrow" />
                         <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Media_information}"
                                                    FontWeight="Bold"
-                                                   IsVisible="{Binding MediaInformationVisible, Mode=OneWay}" />
+                                                   IsVisible="{Binding MediaInformationVisible, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding MediaSequenceText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!MediaSequenceText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!MediaSequenceText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding MediaTitleText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!MediaTitleText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!MediaTitleText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding MediaManufacturerText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!MediaManufacturerText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!MediaManufacturerText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding MediaModelText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!MediaModelText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!MediaModelText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding MediaSerialNumberText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!MediaSerialNumberText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!MediaSerialNumberText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding MediaBarcodeText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!MediaBarcodeText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!MediaBarcodeText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding MediaPartNumberText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!MediaPartNumberText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!MediaPartNumberText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Drive_information}"
                                                    FontWeight="Bold"
-                                                   IsVisible="{Binding DriveInformationVisible, Mode=OneWay}" />
+                                                   IsVisible="{Binding DriveInformationVisible, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding DriveManufacturerText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!DriveManufacturerText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!DriveManufacturerText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding DriveModelText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!DriveModelText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!DriveModelText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding DriveSerialNumberText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!DriveSerialNumberText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!DriveSerialNumberText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding DriveFirmwareRevisionText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!DriveFirmwareRevisionText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!DriveFirmwareRevisionText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding MediaGeometryText, Mode=OneWay}"
-                                                   IsVisible="{Binding !!MediaGeometryText, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!MediaGeometryText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Readable_media_tags}"
                                                    FontWeight="Bold"
-                                                   IsVisible="{Binding !!MediaTagsList.Count, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!MediaTagsList.Count, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <ListBox ItemsSource="{Binding MediaTagsList, Mode=OneWay}"
                                  IsVisible="{Binding !!MediaTagsList.Count, Mode=OneWay}"
                                  MaxHeight="300"
@@ -193,7 +222,8 @@
                         </ListBox>
                         <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Readable_sector_tags}"
                                                    FontWeight="Bold"
-                                                   IsVisible="{Binding !!SectorTagsList.Count, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!SectorTagsList.Count, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <ListBox ItemsSource="{Binding SectorTagsList, Mode=OneWay}"
                                  IsVisible="{Binding !!SectorTagsList.Count, Mode=OneWay}"
                                  MaxHeight="300"
