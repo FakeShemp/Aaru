@@ -89,7 +89,7 @@
                   RowSpacing="8">
                 <Border Grid.Row="0"
                         BorderThickness="1"
-                        BorderBrush="LightGray"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                         CornerRadius="8">
                     <ScrollViewer Padding="8">
                         <controls:SpectreTextBlock TextWrapping="Wrap"
@@ -113,7 +113,7 @@
                   RowSpacing="8">
                 <Border Grid.Row="0"
                         BorderThickness="1"
-                        BorderBrush="LightGray"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                         CornerRadius="8">
                     <ScrollViewer Padding="8">
                         <controls:SpectreTextBlock TextWrapping="Wrap"
@@ -135,7 +135,7 @@
                   RowSpacing="8">
                 <Border Grid.Row="0"
                         BorderThickness="1"
-                        BorderBrush="LightGray"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                         CornerRadius="8">
                     <ScrollViewer Padding="8">
                         <controls:SpectreTextBlock TextWrapping="Wrap"
@@ -157,7 +157,7 @@
                   RowSpacing="8">
                 <Border Grid.Row="0"
                         BorderThickness="1"
-                        BorderBrush="LightGray"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                         CornerRadius="8">
                     <ScrollViewer Padding="8">
                         <controls:SpectreTextBlock TextWrapping="Wrap"
@@ -179,7 +179,7 @@
                   RowSpacing="8">
                 <Border Grid.Row="0"
                         BorderThickness="1"
-                        BorderBrush="LightGray"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                         CornerRadius="8">
                     <ScrollViewer Padding="8">
                         <controls:SpectreTextBlock TextWrapping="Wrap"
@@ -201,7 +201,7 @@
                   RowSpacing="8">
                 <Border Grid.Row="0"
                         BorderThickness="1"
-                        BorderBrush="LightGray"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                         CornerRadius="8">
                     <ScrollViewer Padding="8">
                         <controls:SpectreTextBlock TextWrapping="Wrap"

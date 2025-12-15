@@ -53,7 +53,7 @@
             </TabItem.Header>
             <Border Margin="8"
                     BorderThickness="1"
-                    BorderBrush="LightGray"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                     CornerRadius="8">
                 <ScrollViewer Padding="8">
                     <controls:SpectreTextBlock Text="{Binding CidText, Mode=OneWay}"
@@ -67,7 +67,7 @@
             </TabItem.Header>
             <Border BorderThickness="1"
                     Margin="8"
-                    BorderBrush="LightGray"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                     CornerRadius="8">
                 <ScrollViewer Padding="8">
                     <controls:SpectreTextBlock Text="{Binding CsdText, Mode=OneWay}"
@@ -81,7 +81,7 @@
             </TabItem.Header>
             <Border BorderThickness="1"
                     Margin="8"
-                    BorderBrush="LightGray"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                     CornerRadius="8">
                 <ScrollViewer Padding="8">
                     <controls:SpectreTextBlock Text="{Binding OcrText, Mode=OneWay}"
@@ -95,7 +95,7 @@
             </TabItem.Header>
             <Border BorderThickness="1"
                     Margin="8"
-                    BorderBrush="LightGray"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                     CornerRadius="8">
                 <ScrollViewer Padding="8">
                     <controls:SpectreTextBlock Text="{Binding ExtendedCsdText, Mode=OneWay}"
@@ -109,7 +109,7 @@
             </TabItem.Header>
             <Border BorderThickness="1"
                     Margin="8"
-                    BorderBrush="LightGray"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                     CornerRadius="8">
                 <ScrollViewer Padding="8">
                     <controls:SpectreTextBlock Text="{Binding ScrText, Mode=OneWay}"
