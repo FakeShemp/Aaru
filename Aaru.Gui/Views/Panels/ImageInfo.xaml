@@ -623,12 +623,11 @@
                                 Margin="8" />
             </TabItem>
         </TabControl>
-        <StackPanel Grid.Row="6"
-                    Orientation="Horizontal"
-                    Spacing="8"
-                    VerticalAlignment="Bottom"
-                    HorizontalAlignment="Right">
-            <Button Command="{Binding EntropyCommand, Mode=OneWay}">
+        <WrapPanel Grid.Row="6"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom">
+            <Button Command="{Binding EntropyCommand, Mode=OneWay}"
+                    Margin="4">
                 <StackPanel Orientation="Horizontal"
                             Spacing="4">
                     <ic:FluentIcon Icon="CalculatorArrowClockwise" />
@@ -636,7 +635,8 @@
                                VerticalAlignment="Center" />
                 </StackPanel>
             </Button>
-            <Button Command="{Binding VerifyCommand, Mode=OneWay}">
+            <Button Command="{Binding VerifyCommand, Mode=OneWay}"
+                    Margin="4">
                 <StackPanel Orientation="Horizontal"
                             Spacing="4">
                     <ic:FluentIcon Icon="Stethoscope" />
@@ -644,7 +644,8 @@
                                VerticalAlignment="Center" />
                 </StackPanel>
             </Button>
-            <Button Command="{Binding ChecksumCommand, Mode=OneWay}">
+            <Button Command="{Binding ChecksumCommand, Mode=OneWay}"
+                    Margin="4">
                 <StackPanel Orientation="Horizontal"
                             Spacing="4">
                     <ic:FluentIcon Icon="ShieldAdd" />
@@ -652,7 +653,8 @@
                                VerticalAlignment="Center" />
                 </StackPanel>
             </Button>
-            <Button Command="{Binding ConvertCommand, Mode=OneWay}">
+            <Button Command="{Binding ConvertCommand, Mode=OneWay}"
+                    Margin="4">
                 <StackPanel Orientation="Horizontal"
                             Spacing="4">
                     <ic:FluentIcon Icon="ArrowSwap" />
@@ -660,7 +662,8 @@
                                VerticalAlignment="Center" />
                 </StackPanel>
             </Button>
-            <Button Command="{Binding CreateSidecarCommand, Mode=OneWay}">
+            <Button Command="{Binding CreateSidecarCommand, Mode=OneWay}"
+                    Margin="4">
                 <StackPanel Orientation="Horizontal"
                             Spacing="4">
                     <ic:FluentIcon Icon="DocumentBulletListMultiple" />
@@ -668,7 +671,8 @@
                                VerticalAlignment="Center" />
                 </StackPanel>
             </Button>
-            <Button Command="{Binding ViewSectorsCommand, Mode=OneWay}">
+            <Button Command="{Binding ViewSectorsCommand, Mode=OneWay}"
+                    Margin="4">
                 <StackPanel Orientation="Horizontal"
                             Spacing="4">
                     <ic:FluentIcon Icon="TableSearch" />
@@ -676,7 +680,8 @@
                                VerticalAlignment="Center" />
                 </StackPanel>
             </Button>
-            <Button Command="{Binding DecodeMediaTagCommand, Mode=OneWay}">
+            <Button Command="{Binding DecodeMediaTagCommand, Mode=OneWay}"
+                    Margin="4">
                 <StackPanel Orientation="Horizontal"
                             Spacing="4">
                     <ic:FluentIcon Icon="SaveSearch" />
@@ -684,6 +689,6 @@
                                VerticalAlignment="Center" />
                 </StackPanel>
             </Button>
-        </StackPanel>
+        </WrapPanel>
     </Grid>
 </UserControl>
