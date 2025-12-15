@@ -72,7 +72,7 @@
         <controls:SpectreTextBlock Grid.Row="4"
                                    Text="{Binding ImageIdentifiedText, Mode=OneWay}" />
         <TabControl Grid.Row="5">
-            <TabItem Margin="8">
+            <TabItem>
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_General}" />
                 </TabItem.Header>
