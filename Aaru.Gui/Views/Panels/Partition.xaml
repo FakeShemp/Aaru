@@ -49,16 +49,21 @@
           Margin="12"
           RowSpacing="8">
         <controls:SpectreTextBlock Grid.Row="0"
-                                   Text="{Binding NameText, Mode=OneWay}" />
+                                   Text="{Binding NameText, Mode=OneWay}"
+                                   TextWrapping="Wrap" />
         <controls:SpectreTextBlock Grid.Row="1"
-                                   Text="{Binding TypeText, Mode=OneWay}" />
+                                   Text="{Binding TypeText, Mode=OneWay}"
+                                   TextWrapping="Wrap" />
         <controls:SpectreTextBlock Grid.Row="2"
-                                   Text="{Binding StartText, Mode=OneWay}" />
+                                   Text="{Binding StartText, Mode=OneWay}"
+                                   TextWrapping="Wrap" />
         <controls:SpectreTextBlock Grid.Row="3"
-                                   Text="{Binding LengthText, Mode=OneWay}" />
+                                   Text="{Binding LengthText, Mode=OneWay}"
+                                   TextWrapping="Wrap" />
         <controls:SpectreTextBlock Grid.Row="4"
                                    Text="{Binding DescriptionLabelText, Mode=OneWay}"
-                                   IsVisible="{Binding !!DescriptionText, Mode=OneWay}" />
+                                   IsVisible="{Binding !!DescriptionText, Mode=OneWay}"
+                                   TextWrapping="Wrap" />
         <Border Grid.Row="5"
                 IsVisible="{Binding !!DescriptionText, Mode=OneWay}"
                 BorderThickness="1"
