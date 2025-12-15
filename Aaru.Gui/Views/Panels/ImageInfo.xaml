@@ -232,13 +232,13 @@
                                     <Setter Property="Background"
                                             Value="{DynamicResource SystemAccentColorLight2}" />
                                     <Setter Property="Foreground"
-                                            Value="{DynamicResource SystemAccentColorDark3}" />
+                                            Value="Black" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
                                     <Setter Property="Background"
                                             Value="{DynamicResource SystemAccentColor}" />
                                     <Setter Property="Foreground"
-                                            Value="{DynamicResource SystemAccentColorDark3}" />
+                                            Value="White" />
                                 </Style>
                             </ListBox.Styles>
                             <ListBox.ItemTemplate>
@@ -272,13 +272,13 @@
                                     <Setter Property="Background"
                                             Value="{DynamicResource SystemAccentColorLight2}" />
                                     <Setter Property="Foreground"
-                                            Value="{DynamicResource SystemAccentColorDark3}" />
+                                            Value="Black" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
                                     <Setter Property="Background"
                                             Value="{DynamicResource SystemAccentColor}" />
                                     <Setter Property="Foreground"
-                                            Value="{DynamicResource SystemAccentColorDark3}" />
+                                            Value="White" />
                                 </Style>
                             </ListBox.Styles>
                             <ListBox.ItemTemplate>
