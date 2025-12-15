@@ -318,9 +318,9 @@
                                       ItemsSource="{Binding Subdirectories, Mode=OneWay}">
                         <StackPanel Orientation="Horizontal"
                                     Spacing="4">
-                            <Image Width="24"
-                                   Height="24"
-                                   Source="{Binding Icon, Mode=OneWay}" />
+                            <Svg Width="24"
+                                 Height="24"
+                                 Path="/Assets/Icons/oxygen/inode-directory.svg" />
                             <TextBlock Text="{Binding Name, Mode=OneWay}"
                                        VerticalAlignment="Center" />
                         </StackPanel>
