@@ -81,18 +81,9 @@
         <Grid Grid.Row="0"
               ColumnDefinitions="Auto,*"
               ColumnSpacing="16">
-            <Border Grid.Column="0"
-                    Width="160"
-                    Height="160"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="LightGray"
-                    CornerRadius="80"
-                    Padding="16">
-                <Image Width="128"
-                       Height="128"
-                       Source="{Binding MediaLogo, Mode=OneWay}" />
-            </Border>
+            <Image Width="128"
+                   Height="128"
+                   Source="{Binding MediaLogo, Mode=OneWay}" />
             <StackPanel Grid.Column="1"
                         Spacing="8"
                         VerticalAlignment="Center">

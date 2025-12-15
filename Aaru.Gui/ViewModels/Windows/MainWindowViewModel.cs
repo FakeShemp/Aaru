@@ -57,6 +57,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using Avalonia.Styling;
 using Avalonia.Svg;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -439,8 +440,20 @@ public partial class MainWindowViewModel : ViewModelBase
                     return;
                 }
 
+                // Check if we're using dark theme
+                bool isDarkTheme = _view.ActualThemeVariant == ThemeVariant.Dark;
+
+                // Build the appropriate SVG path based on theme
+                string svgPath = isDarkTheme
+                                     ? $"avares://Aaru.Gui/Assets/Logos/Media/Dark/{imageFormat.Info.MediaType}.svg"
+                                     : $"avares://Aaru.Gui/Assets/Logos/Media/{imageFormat.Info.MediaType}.svg";
+
                 // Create image model with appropriate icon based on media type
-                var mediaResource = new Uri($"avares://Aaru.Gui/Assets/Logos/Media/{imageFormat.Info.MediaType}.svg");
+                var mediaResource = new Uri(svgPath);
+
+                // Fallback to light theme version if dark version doesn't exist
+                if(isDarkTheme && !AssetLoader.Exists(mediaResource))
+                    mediaResource = new Uri($"avares://Aaru.Gui/Assets/Logos/Media/{imageFormat.Info.MediaType}.svg");
 
                 var imageModel = new ImageModel
                 {

@@ -274,14 +274,9 @@
                                     </MenuItem>
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
-                            <Border Width="32"
-                                    Height="32"
-                                    Background="LightGray"
-                                    CornerRadius="16">
-                                <Image Width="24"
-                                       Height="24"
-                                       Source="{Binding Icon, Mode=OneWay}" />
-                            </Border>
+                            <Image Width="24"
+                                   Height="24"
+                                   Source="{Binding Icon, Mode=OneWay}" />
                             <TextBlock Text="{Binding FileName, Mode=OneWay}"
                                        VerticalAlignment="Center" />
                         </StackPanel>
@@ -290,14 +285,9 @@
                                       ItemsSource="{Binding Partitions, Mode=OneWay}">
                         <StackPanel Orientation="Horizontal"
                                     Spacing="4">
-                            <Border Width="32"
-                                    Height="32"
-                                    Background="LightGray"
-                                    CornerRadius="16">
-                                <Image Width="24"
-                                       Height="24"
-                                       Source="{Binding Icon, Mode=OneWay}" />
-                            </Border>
+                            <Image Width="24"
+                                   Height="24"
+                                   Source="{Binding Icon, Mode=OneWay}" />
                             <TextBlock Text="{Binding Name, Mode=OneWay}"
                                        VerticalAlignment="Center" />
                         </StackPanel>
@@ -306,14 +296,9 @@
                                       ItemsSource="{Binding FileSystems, Mode=OneWay}">
                         <StackPanel Orientation="Horizontal"
                                     Spacing="4">
-                            <Border Width="32"
-                                    Height="32"
-                                    Background="LightGray"
-                                    CornerRadius="16">
-                                <Image Width="24"
-                                       Height="24"
-                                       Source="{Binding Icon, Mode=OneWay}" />
-                            </Border>
+                            <Image Width="24"
+                                   Height="24"
+                                   Source="{Binding Icon, Mode=OneWay}" />
                             <TextBlock Text="{Binding Name, Mode=OneWay}"
                                        VerticalAlignment="Center" />
                         </StackPanel>
@@ -322,14 +307,9 @@
                                       ItemsSource="{Binding Roots, Mode=OneWay}">
                         <StackPanel Orientation="Horizontal"
                                     Spacing="4">
-                            <Border Width="32"
-                                    Height="32"
-                                    Background="LightGray"
-                                    CornerRadius="16">
-                                <Image Width="24"
-                                       Height="24"
-                                       Source="{Binding Icon, Mode=OneWay}" />
-                            </Border>
+                            <Image Width="24"
+                                   Height="24"
+                                   Source="{Binding Icon, Mode=OneWay}" />
                             <TextBlock Text="{Binding VolumeName, Mode=OneWay}"
                                        VerticalAlignment="Center" />
                         </StackPanel>
@@ -338,14 +318,9 @@
                                       ItemsSource="{Binding Subdirectories, Mode=OneWay}">
                         <StackPanel Orientation="Horizontal"
                                     Spacing="4">
-                            <Border Width="32"
-                                    Height="32"
-                                    Background="LightGray"
-                                    CornerRadius="16">
-                                <Image Width="24"
-                                       Height="24"
-                                       Source="{Binding Icon, Mode=OneWay}" />
-                            </Border>
+                            <Image Width="24"
+                                   Height="24"
+                                   Source="{Binding Icon, Mode=OneWay}" />
                             <TextBlock Text="{Binding Name, Mode=OneWay}"
                                        VerticalAlignment="Center" />
                         </StackPanel>

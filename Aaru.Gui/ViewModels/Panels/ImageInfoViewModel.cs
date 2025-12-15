@@ -54,6 +54,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Styling;
 using Avalonia.Svg;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
@@ -105,7 +106,19 @@ public sealed class ImageInfoViewModel : ViewModelBase
         var genericFolderIcon =
             new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/inode-directory.png")));
 
-        var mediaResource = new Uri($"avares://Aaru.Gui/Assets/Logos/Media/{imageFormat.Info.MediaType}.svg");
+        // Check if we're using dark theme
+        bool isDarkTheme = view.ActualThemeVariant == ThemeVariant.Dark;
+
+        // Build the appropriate SVG path based on theme
+        string svgPath = isDarkTheme
+                             ? $"avares://Aaru.Gui/Assets/Logos/Media/Dark/{imageFormat.Info.MediaType}.svg"
+                             : $"avares://Aaru.Gui/Assets/Logos/Media/{imageFormat.Info.MediaType}.svg";
+
+        var mediaResource = new Uri(svgPath);
+
+        // Fallback to light theme version if dark version doesn't exist
+        if(isDarkTheme && !AssetLoader.Exists(mediaResource))
+            mediaResource = new Uri($"avares://Aaru.Gui/Assets/Logos/Media/{imageFormat.Info.MediaType}.svg");
 
         MediaLogo = AssetLoader.Exists(mediaResource)
                         ? new SvgImage
@@ -180,8 +193,10 @@ public sealed class ImageInfoViewModel : ViewModelBase
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaTitle))
+        {
             MediaTitleText =
                 string.Format(Aaru.Localization.Core.Media_title_0_WithMarkup, imageFormat.Info.MediaTitle);
+        }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaManufacturer))
         {
@@ -190,8 +205,10 @@ public sealed class ImageInfoViewModel : ViewModelBase
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaModel))
+        {
             MediaModelText =
                 string.Format(Aaru.Localization.Core.Media_model_0_WithMarkup, imageFormat.Info.MediaModel);
+        }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaSerialNumber))
         {
@@ -218,8 +235,10 @@ public sealed class ImageInfoViewModel : ViewModelBase
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveModel))
+        {
             DriveModelText =
                 string.Format(Aaru.Localization.Core.Drive_model_0_WithMarkup, imageFormat.Info.DriveModel);
+        }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveSerialNumber))
         {
@@ -245,8 +264,9 @@ public sealed class ImageInfoViewModel : ViewModelBase
         }
 
         if(imageFormat.Info.ReadableMediaTags is { Count: > 0 })
-            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order())
-                MediaTagsList.Add(tag.Humanize());
+        {
+            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order()) MediaTagsList.Add(tag.Humanize());
+        }
 
         if(imageFormat.Info.ReadableSectorTags is { Count: > 0 })
         {
@@ -765,9 +785,8 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Sessions is { Count: > 0 })
-                {
-                    foreach(Session session in opticalMediaImage.Sessions) Sessions.Add(session);
-                }
+                    foreach(Session session in opticalMediaImage.Sessions)
+                        Sessions.Add(session);
             }
             catch(Exception ex)
             {
@@ -777,9 +796,8 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Tracks is { Count: > 0 })
-                {
-                    foreach(Track track in opticalMediaImage.Tracks) Tracks.Add(track);
-                }
+                    foreach(Track track in opticalMediaImage.Tracks)
+                        Tracks.Add(track);
             }
             catch(Exception ex)
             {
