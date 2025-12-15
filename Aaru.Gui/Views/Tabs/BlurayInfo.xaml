@@ -223,18 +223,19 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <StackPanel Grid.Row="1"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Spacing="8">
+        <WrapPanel Grid.Row="1"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom">
             <Button Command="{Binding SaveBlurayRawDflCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveBlurayRawDflVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveBlurayRawDflVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_raw_DFL}" />
             </Button>
             <Button Command="{Binding SaveBlurayPacCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveBlurayPacVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveBlurayPacVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_PAC}" />
             </Button>
-        </StackPanel>
+        </WrapPanel>
     </Grid>
 </UserControl>
