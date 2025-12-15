@@ -624,7 +624,7 @@
             </TabItem>
         </TabControl>
         <WrapPanel Grid.Row="6"
-                   HorizontalAlignment="Right"
+                   HorizontalAlignment="Left"
                    VerticalAlignment="Bottom">
             <Button Command="{Binding EntropyCommand, Mode=OneWay}"
                     Margin="4">
