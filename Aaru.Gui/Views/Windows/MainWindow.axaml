@@ -94,8 +94,8 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Command="{Binding VerifyImageCommand, Mode=OneWay}"
-                          InputGesture="Ctrl+V"
-                          HotKey="Ctrl+V"
+                          InputGesture="{OnPlatform 'Ctrl+Shift+V', macOS='Meta+Shift+V'}"
+                          HotKey="{OnPlatform 'Ctrl+Shift+V', macOS='Meta+Shift+V'}"
                           Header="{x:Static localization:UI.ButtonLabel_Verify}">
                     <MenuItem.Icon>
                         <ic:FluentIcon Icon="Stethoscope" />
@@ -110,16 +110,16 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Command="{Binding ConvertImageCommand, Mode=OneWay}"
-                          InputGesture="Ctrl+C"
-                          HotKey="Ctrl+C"
+                          InputGesture="{OnPlatform 'Ctrl+Shift+C', macOS='Meta+Shift+T'}"
+                          HotKey="{OnPlatform 'Ctrl+Shift+C', macOS='Meta+Shift+T'}"
                           Header="{x:Static localization:UI.ButtonLabel_Convert_to}">
                     <MenuItem.Icon>
                         <ic:FluentIcon Icon="ArrowSwap" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Command="{Binding CreateSidecarCommand, Mode=OneWay}"
-                          InputGesture="Ctrl+S"
-                          HotKey="Ctrl+S"
+                          InputGesture="{OnPlatform 'Ctrl+Shift+S', macOS='Meta+Shift+S'}"
+                          HotKey="{OnPlatform 'Ctrl+Shift+S', macOS='Meta+Shift+S'}"
                           Header="{x:Static localization:UI.ButtonLabel_Create_Aaru_Metadata_sidecar}">
                     <MenuItem.Icon>
                         <ic:FluentIcon Icon="DocumentBulletListMultiple" />
