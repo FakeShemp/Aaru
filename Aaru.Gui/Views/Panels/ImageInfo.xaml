@@ -106,7 +106,11 @@
                         <TextBox IsReadOnly="True"
                                  TextWrapping="Wrap"
                                  Text="{Binding CommentsText, Mode=OneWay}"
-                                 IsVisible="{Binding !!CommentsText, Mode=OneWay}" />
+                                 IsVisible="{Binding !!CommentsText, Mode=OneWay}"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Padding="0"
+                                 Cursor="Arrow" />
                         <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Media_information}"
                                                    FontWeight="Bold"
                                                    IsVisible="{Binding MediaInformationVisible, Mode=OneWay}" />
@@ -149,17 +153,24 @@
                                  Padding="4">
                             <ListBox.Styles>
                                 <Style Selector="ListBoxItem">
-                                    <Setter Property="Padding" Value="8,6" />
-                                    <Setter Property="Margin" Value="2" />
-                                    <Setter Property="CornerRadius" Value="3" />
+                                    <Setter Property="Padding"
+                                            Value="8,6" />
+                                    <Setter Property="Margin"
+                                            Value="2" />
+                                    <Setter Property="CornerRadius"
+                                            Value="3" />
                                 </Style>
                                 <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource SystemAccentColorLight2}" />
-                                    <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorDark3}" />
+                                    <Setter Property="Background"
+                                            Value="{DynamicResource SystemAccentColorLight2}" />
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource SystemAccentColorDark3}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
-                                    <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorDark3}" />
+                                    <Setter Property="Background"
+                                            Value="{DynamicResource SystemAccentColor}" />
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource SystemAccentColorDark3}" />
                                 </Style>
                             </ListBox.Styles>
                             <ListBox.ItemTemplate>
@@ -181,17 +192,24 @@
                                  Padding="4">
                             <ListBox.Styles>
                                 <Style Selector="ListBoxItem">
-                                    <Setter Property="Padding" Value="8,6" />
-                                    <Setter Property="Margin" Value="2" />
-                                    <Setter Property="CornerRadius" Value="3" />
+                                    <Setter Property="Padding"
+                                            Value="8,6" />
+                                    <Setter Property="Margin"
+                                            Value="2" />
+                                    <Setter Property="CornerRadius"
+                                            Value="3" />
                                 </Style>
                                 <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource SystemAccentColorLight2}" />
-                                    <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorDark3}" />
+                                    <Setter Property="Background"
+                                            Value="{DynamicResource SystemAccentColorLight2}" />
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource SystemAccentColorDark3}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
-                                    <Setter Property="Foreground" Value="{DynamicResource SystemAccentColorDark3}" />
+                                    <Setter Property="Background"
+                                            Value="{DynamicResource SystemAccentColor}" />
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource SystemAccentColorDark3}" />
                                 </Style>
                             </ListBox.Styles>
                             <ListBox.ItemTemplate>
