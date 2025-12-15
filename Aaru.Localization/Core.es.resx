@@ -1091,10 +1091,10 @@
     <value>Funcionalidad {0:X4}h</value>
   </data>
     <data name="Filesystem_contains_boot_code" xml:space="preserve">
-    <value>El sistema de ficheros contiene código de arranque</value>
+    <value>[slateblue1]El sistema de ficheros contiene código de arranque[/]</value>
   </data>
     <data name="Filesystem_has_not_been_unmounted_correctly_or_contains_errors" xml:space="preserve">
-    <value>El sistema de ficheros no se desmontó correctamente o contiene errores</value>
+    <value>[slateblue1]El sistema de ficheros no se desmontó correctamente o contiene errores[/]</value>
   </data>
     <data name="Filesystem_type_0" xml:space="preserve">
     <value>[bold][slateblue1]Tipo de sistema de ficheros:[/][/] [green]{0}[/]</value>

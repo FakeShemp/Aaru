@@ -2083,7 +2083,7 @@ Testers:
     <value>Binary</value>
   </data>
     <data name="Title_Details" xml:space="preserve">
-    <value>Details</value>
+    <value>[bold][slateblue1]Details[/][/]</value>
   </data>
     <data name="Path_0" xml:space="preserve">
     <value>[slateblue1]Path:[/] [green]{0}[/]</value>

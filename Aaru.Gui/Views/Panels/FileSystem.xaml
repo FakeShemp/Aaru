@@ -85,25 +85,22 @@
                                            IsVisible="{Binding FilesVisible, Mode=OneWay}" />
                 <CheckBox IsEnabled="False"
                           IsChecked="{Binding BootableChecked, Mode=OneWay}">
-                    <TextBlock Foreground="SlateBlue"
-                               Text="{x:Static localization:Core.Filesystem_contains_boot_code}" />
+                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Filesystem_contains_boot_code}" />
                 </CheckBox>
                 <CheckBox IsEnabled="False"
                           IsChecked="{Binding DirtyChecked, Mode=OneWay}">
-                    <TextBlock Foreground="SlateBlue"
-                               Text="{x:Static localization:Core.Filesystem_has_not_been_unmounted_correctly_or_contains_errors}" />
+                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Filesystem_has_not_been_unmounted_correctly_or_contains_errors}" />
                 </CheckBox>
             </StackPanel>
         </ScrollViewer>
         <Border Grid.Row="1"
                 BorderThickness="1"
-                BorderBrush="LightGray"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                 CornerRadius="8"
                 IsVisible="{Binding !!InformationText, Mode=OneWay}">
             <StackPanel Spacing="8"
                         Margin="12">
                 <controls:SpectreTextBlock FontWeight="Bold"
-                                           Foreground="SlateBlue"
                                            Text="{x:Static localization:UI.Title_Details}" />
                 <ScrollViewer>
                     <controls:SpectreTextBlock Text="{Binding InformationText, Mode=OneWay}"

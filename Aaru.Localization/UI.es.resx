@@ -2226,7 +2226,7 @@ Probadores:
     <value>Fichero destino</value>
   </data>
     <data name="Title_Details" xml:space="preserve">
-    <value>Detalles</value>
+    <value>[bold][slateblue1]Detalles[/][/]</value>
   </data>
     <data name="Title_Device" xml:space="preserve">
     <value>[bold][green]Dispositivo[/][/]</value>

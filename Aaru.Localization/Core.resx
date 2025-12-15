@@ -507,10 +507,10 @@
     <value>[slateblue1]Volume contains [violet]{0}[/] files[/]</value>
   </data>
     <data name="Filesystem_contains_boot_code" xml:space="preserve">
-    <value>Filesystem contains boot code</value>
+    <value>[slateblue1]Filesystem contains boot code[/]</value>
   </data>
     <data name="Filesystem_has_not_been_unmounted_correctly_or_contains_errors" xml:space="preserve">
-    <value>Filesystem has not been unmounted correctly or contains errors</value>
+    <value>[slateblue1]Filesystem has not been unmounted correctly or contains errors[/]</value>
   </data>
     <data name="Image_without_headers_is_0_bytes_long" xml:space="preserve">
     <value>[slateblue1]Image without headers is [lime]{0}[/] bytes long[/]</value>
