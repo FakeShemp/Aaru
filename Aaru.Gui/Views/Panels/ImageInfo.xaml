@@ -181,7 +181,7 @@
                           HorizontalAlignment="Stretch"
                           Margin="8">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Session}"
@@ -197,7 +197,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_First_track}"
@@ -213,7 +213,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Last_track}"
@@ -275,7 +275,7 @@
                           HorizontalAlignment="Stretch"
                           Margin="8">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Track}"
@@ -307,7 +307,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Bps}"
@@ -323,7 +323,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Raw_bps}"
@@ -355,7 +355,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Pregap}"
@@ -415,7 +415,7 @@
                           IsReadOnly="True"
                           Margin="8">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="1.5*">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Manufacturer}"
@@ -431,7 +431,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="2*">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Model}"
@@ -447,7 +447,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Revision}"
@@ -463,7 +463,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="1.5*">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Serial}"
@@ -479,7 +479,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="1.5*">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Software}"
@@ -495,7 +495,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Version}"
@@ -511,7 +511,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="2*">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Operating_system}"
@@ -527,7 +527,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="1.5*">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Start}"
@@ -543,7 +543,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn Width="1.5*">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_End}"
