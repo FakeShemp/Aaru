@@ -57,7 +57,7 @@
             </TabItem>
             <TabItem IsVisible="{Binding !!DvdPfiText, Mode=OneWay}">
                 <TabItem.Header>
-                    <controls:SpectreTextBlock Text="Physical Format Information" />
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Physical_Format_Information}" />
                 </TabItem.Header>
                 <Grid RowDefinitions="*, Auto"
                       Margin="8"
@@ -81,7 +81,7 @@
             </TabItem>
             <TabItem IsVisible="{Binding !!DvdCmiText, Mode=OneWay}">
                 <TabItem.Header>
-                    <controls:SpectreTextBlock Text="Copyright Management Information" />
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Copyright_Management_Information}" />
                 </TabItem.Header>
                 <Grid RowDefinitions="*, Auto"
                       Margin="8"

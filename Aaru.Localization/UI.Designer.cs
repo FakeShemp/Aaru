@@ -10491,5 +10491,17 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Menu_Edit_metadata_sidecar", resourceCulture);
             }
         }
+        
+        public static string Copyright_Management_Information {
+            get {
+                return ResourceManager.GetString("Copyright_Management_Information", resourceCulture);
+            }
+        }
+        
+        public static string Physical_Format_Information {
+            get {
+                return ResourceManager.GetString("Physical_Format_Information", resourceCulture);
+            }
+        }
     }
 }
