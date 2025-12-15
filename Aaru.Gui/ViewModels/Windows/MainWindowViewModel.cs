@@ -54,7 +54,6 @@ using Aaru.Logging;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
@@ -78,13 +77,13 @@ namespace Aaru.Gui.ViewModels.Windows;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    const    string MODULE_NAME = "Main Window ViewModel";
-    readonly Bitmap _genericFolderIcon;
-    readonly Bitmap _genericHddIcon;
-    readonly Bitmap _genericOpticalIcon;
-    readonly Bitmap _genericTapeIcon;
-    readonly Window _view;
-    Console         _console;
+    const    string   MODULE_NAME = "Main Window ViewModel";
+    readonly SvgImage _genericFolderIcon;
+    readonly SvgImage _genericHddIcon;
+    readonly SvgImage _genericOpticalIcon;
+    readonly SvgImage _genericTapeIcon;
+    readonly Window   _view;
+    Console           _console;
     [ObservableProperty]
     [CanBeNull]
     object _contentPanel;
@@ -123,18 +122,28 @@ public partial class MainWindowViewModel : ViewModelBase
         CreateMetadataCommand       = new AsyncRelayCommand(CreateMetadataAsync);
         EditMetadataCommand         = new AsyncRelayCommand(EditMetadataAsync);
 
-        _genericHddIcon =
-            new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/drive-harddisk.png")));
+        _genericHddIcon = new SvgImage
+        {
+            Source =
+                SvgSource.Load(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/drive-harddisk.svg")))
+        };
 
-        _genericOpticalIcon =
-            new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/drive-optical.png")));
+        _genericOpticalIcon = new SvgImage
+        {
+            Source = SvgSource.Load(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/media-tape.svg")))
+        };
 
-        _genericTapeIcon =
-            new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/media-tape.png")));
+        _genericTapeIcon = new SvgImage
+        {
+            Source =
+                SvgSource.Load(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/drive-optical.svg")))
+        };
 
-        _genericFolderIcon =
-            new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/inode-directory.png")));
-
+        _genericFolderIcon = new SvgImage
+        {
+            Source =
+                SvgSource.Load(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/inode-directory.svg")))
+        };
 
         switch(DetectOS.GetRealPlatformID())
         {
