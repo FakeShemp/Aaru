@@ -216,7 +216,8 @@
                 <TreeView.DataTemplates>
                     <TreeDataTemplate DataType="models:ImageModel"
                                       ItemsSource="{Binding PartitionSchemesOrFileSystems, Mode=OneWay}">
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="4">
                             <StackPanel.ContextMenu>
                                 <ContextMenu
                                     DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}">
@@ -243,49 +244,78 @@
                                         Header="{x:Static localization:UI.ButtonLabel_Decode_media_tags}" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
-                            <Image Width="24"
-                                   Height="24"
-                                   Source="{Binding Icon, Mode=OneWay}" />
+                            <Border Width="32"
+                                    Height="32"
+                                    Background="LightGray"
+                                    CornerRadius="16">
+                                <Image Width="24"
+                                       Height="24"
+                                       Source="{Binding Icon, Mode=OneWay}" />
+                            </Border>
                             <TextBlock Text="{Binding FileName, Mode=OneWay}"
                                        VerticalAlignment="Center" />
                         </StackPanel>
                     </TreeDataTemplate>
                     <TreeDataTemplate DataType="models:PartitionSchemeModel"
                                       ItemsSource="{Binding Partitions, Mode=OneWay}">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Width="24"
-                                   Height="24"
-                                   Source="{Binding Icon, Mode=OneWay}" />
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="4">
+                            <Border Width="32"
+                                    Height="32"
+                                    Background="LightGray"
+                                    CornerRadius="16">
+                                <Image Width="24"
+                                       Height="24"
+                                       Source="{Binding Icon, Mode=OneWay}" />
+                            </Border>
                             <TextBlock Text="{Binding Name, Mode=OneWay}"
                                        VerticalAlignment="Center" />
                         </StackPanel>
                     </TreeDataTemplate>
                     <TreeDataTemplate DataType="models:PartitionModel"
                                       ItemsSource="{Binding FileSystems, Mode=OneWay}">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Width="24"
-                                   Height="24"
-                                   Source="{Binding Icon, Mode=OneWay}" />
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="4">
+                            <Border Width="32"
+                                    Height="32"
+                                    Background="LightGray"
+                                    CornerRadius="16">
+                                <Image Width="24"
+                                       Height="24"
+                                       Source="{Binding Icon, Mode=OneWay}" />
+                            </Border>
                             <TextBlock Text="{Binding Name, Mode=OneWay}"
                                        VerticalAlignment="Center" />
                         </StackPanel>
                     </TreeDataTemplate>
                     <TreeDataTemplate DataType="models:FileSystemModel"
                                       ItemsSource="{Binding Roots, Mode=OneWay}">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Width="24"
-                                   Height="24"
-                                   Source="{Binding Icon, Mode=OneWay}" />
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="4">
+                            <Border Width="32"
+                                    Height="32"
+                                    Background="LightGray"
+                                    CornerRadius="16">
+                                <Image Width="24"
+                                       Height="24"
+                                       Source="{Binding Icon, Mode=OneWay}" />
+                            </Border>
                             <TextBlock Text="{Binding VolumeName, Mode=OneWay}"
                                        VerticalAlignment="Center" />
                         </StackPanel>
                     </TreeDataTemplate>
                     <TreeDataTemplate DataType="models:SubdirectoryModel"
                                       ItemsSource="{Binding Subdirectories, Mode=OneWay}">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Width="24"
-                                   Height="24"
-                                   Source="{Binding Icon, Mode=OneWay}" />
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="4">
+                            <Border Width="32"
+                                    Height="32"
+                                    Background="LightGray"
+                                    CornerRadius="16">
+                                <Image Width="24"
+                                       Height="24"
+                                       Source="{Binding Icon, Mode=OneWay}" />
+                            </Border>
                             <TextBlock Text="{Binding Name, Mode=OneWay}"
                                        VerticalAlignment="Center" />
                         </StackPanel>
