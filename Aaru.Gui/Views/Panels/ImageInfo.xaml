@@ -47,31 +47,35 @@
     <Design.DataContext>
         <panels:ImageInfoViewModel />
     </Design.DataContext>
-    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto"
+    <Grid RowDefinitions="Auto,*,Auto"
           Margin="12"
           RowSpacing="8">
-        <Border Grid.Row="0"
-                Width="160"
-                Height="160"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Background="LightGray"
-                CornerRadius="80"
-                Padding="16">
-            <Image Width="128"
-                   Height="128"
-                   Source="{Binding MediaLogo, Mode=OneWay}" />
-        </Border>
-        <controls:SpectreTextBlock Grid.Row="1"
-                                   Text="{x:Static localization:UI.Title_Image_information}"
-                                   FontWeight="Bold" />
-        <controls:SpectreTextBlock Grid.Row="2"
-                                   Text="{Binding ImagePathText, Mode=OneWay}" />
-        <controls:SpectreTextBlock Grid.Row="3"
-                                   Text="{Binding FilterText, Mode=OneWay}" />
-        <controls:SpectreTextBlock Grid.Row="4"
-                                   Text="{Binding ImageIdentifiedText, Mode=OneWay}" />
-        <TabControl Grid.Row="5">
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto,*"
+              ColumnSpacing="16">
+            <Border Grid.Column="0"
+                    Width="160"
+                    Height="160"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Background="LightGray"
+                    CornerRadius="80"
+                    Padding="16">
+                <Image Width="128"
+                       Height="128"
+                       Source="{Binding MediaLogo, Mode=OneWay}" />
+            </Border>
+            <StackPanel Grid.Column="1"
+                        Spacing="8"
+                        VerticalAlignment="Center">
+                <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Image_information}"
+                                           FontWeight="Bold" />
+                <controls:SpectreTextBlock Text="{Binding ImagePathText, Mode=OneWay}" />
+                <controls:SpectreTextBlock Text="{Binding FilterText, Mode=OneWay}" />
+                <controls:SpectreTextBlock Text="{Binding ImageIdentifiedText, Mode=OneWay}" />
+            </StackPanel>
+        </Grid>
+        <TabControl Grid.Row="1">
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal"
@@ -681,7 +685,8 @@
                 <ContentControl Content="{Binding CompactDiscInfo, Mode=OneWay}"
                                 Margin="8" />
             </TabItem>
-            <TabItem IsVisible="{Binding !!DvdInfo, Mode=OneWay}">                <TabItem.Header>
+            <TabItem IsVisible="{Binding !!DvdInfo, Mode=OneWay}">
+                <TabItem.Header>
                     <StackPanel Orientation="Horizontal"
                                 Spacing="4">
                         <Svg MaxHeight="24"
@@ -757,7 +762,7 @@
                                 Margin="8" />
             </TabItem>
         </TabControl>
-        <WrapPanel Grid.Row="6"
+        <WrapPanel Grid.Row="2"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Bottom">
             <Button Command="{Binding EntropyCommand, Mode=OneWay}"
