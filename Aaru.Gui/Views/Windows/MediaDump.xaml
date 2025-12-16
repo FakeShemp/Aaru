@@ -60,6 +60,7 @@
                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_General}" />
                 </TabItem.Header>
                 <StackPanel Orientation="Vertical"
+                            Margin="8"
                             Spacing="8">
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8">
@@ -126,6 +127,7 @@
                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Errors}" />
                 </TabItem.Header>
                 <StackPanel Orientation="Vertical"
+                            Margin="8"
                             Spacing="8">
                     <CheckBox IsChecked="{Binding StopOnError, Mode=TwoWay}">
                         <TextBlock Text="{x:Static localization:UI.Stop_media_dump_on_first_error}" />
@@ -174,6 +176,7 @@
                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Subchannels}" />
                 </TabItem.Header>
                 <StackPanel Orientation="Vertical"
+                            Margin="8"
                             Spacing="8">
                     <CheckBox IsChecked="{Binding FixSubchannelPosition, Mode=TwoWay}">
                         <TextBlock Text="{x:Static localization:UI.Fix_subchannel_position_help}"
@@ -202,6 +205,7 @@
                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Encryption}" />
                 </TabItem.Header>
                 <StackPanel Orientation="Vertical"
+                            Margin="8"
                             Spacing="8">
                     <CheckBox IsChecked="{Binding StoreEncryptedAsIs, Mode=TwoWay}">
                         <TextBlock Text="{x:Static localization:UI.Store_encrypted_data_as_is}"
