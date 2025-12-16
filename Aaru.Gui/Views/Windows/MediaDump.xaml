@@ -234,7 +234,7 @@
                     VerticalAlignment="Stretch"
                     HorizontalAlignment="Stretch"
                     BorderThickness="1"
-                    BorderBrush="LightGray"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                     CornerRadius="8">
                 <ScrollViewer Padding="8">
                     <controls:SpectreTextBlock TextWrapping="Wrap"
