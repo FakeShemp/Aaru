@@ -38,6 +38,19 @@
                   SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
                   ColumnHeaderHeight="32">
             <DataGrid.Styles>
+                <Style Selector="DataGridRow:nth-child(2n)">
+                    <Setter Property="Background">
+                        <SolidColorBrush Color="#15FFFFFF" />
+                    </Setter>
+                </Style>
+                <Style Selector="DataGridRow:nth-child(2n):pointerover">
+                    <Setter Property="Background"
+                            Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+                </Style>
+                <Style Selector="DataGridRow:nth-child(2n):selected">
+                    <Setter Property="Background"
+                            Value="{DynamicResource SystemControlHighlightAccentBrush}" />
+                </Style>
                 <Style Selector="DataGridCell">
                     <Setter Property="Margin"
                             Value="4,0" />
