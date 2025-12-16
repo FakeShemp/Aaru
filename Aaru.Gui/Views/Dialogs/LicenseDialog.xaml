@@ -53,8 +53,6 @@
     </Design.DataContext>
     <Grid Margin="12"
           RowSpacing="8"
-          HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch"
           RowDefinitions="*,Auto">
         <Border Grid.Row="0"
                 BorderThickness="1"
