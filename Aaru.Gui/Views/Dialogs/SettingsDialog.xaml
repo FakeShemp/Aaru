@@ -61,87 +61,98 @@
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_GDPR}" />
                 </TabItem.Header>
-                <StackPanel Spacing="18"
-                            Margin="8">
-                    <TextBlock Text="{x:Static localization:UI.GDPR_Compliance}"
-                               TextWrapping="Wrap" />
-                    <TextBlock Text="{x:Static localization:UI.GDPR_Open_Source_Disclaimer}"
-                               TextWrapping="Wrap" />
-                    <TextBlock Text="{x:Static localization:UI.GDPR_Information_sharing}"
-                               TextWrapping="Wrap" />
-                </StackPanel>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="18"
+                                Margin="8">
+                        <TextBlock Text="{x:Static localization:UI.GDPR_Compliance}"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Text="{x:Static localization:UI.GDPR_Open_Source_Disclaimer}"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Text="{x:Static localization:UI.GDPR_Information_sharing}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
             <TabItem>
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Reports}" />
                 </TabItem.Header>
-                <StackPanel Spacing="8"
-                            Margin="8">
-                    <StackPanel Spacing="8">
-                        <TextBlock Text="{x:Static localization:UI.Configure_Device_Report_information_disclaimer}"
-                                   TextWrapping="Wrap" />
-                        <CheckBox IsChecked="{Binding SaveReportsGloballyChecked, Mode=TwoWay}">
-                            <TextBlock
-                                Text="{x:Static localization:UI.Save_device_reports_in_shared_folder_of_your_computer_Q}" />
-                        </CheckBox>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="8"
+                                Margin="8">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="{x:Static localization:UI.Configure_Device_Report_information_disclaimer}"
+                                       TextWrapping="Wrap" />
+                            <CheckBox IsChecked="{Binding SaveReportsGloballyChecked, Mode=TwoWay}">
+                                <TextBlock
+                                    Text="{x:Static localization:UI.Save_device_reports_in_shared_folder_of_your_computer_Q}" />
+                            </CheckBox>
+                        </StackPanel>
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="{x:Static localization:UI.Configure_share_report_disclaimer}"
+                                       TextWrapping="Wrap" />
+                            <CheckBox IsChecked="{Binding ShareReportsChecked, Mode=TwoWay}">
+                                <TextBlock Text="{x:Static localization:UI.Share_your_device_reports_with_us_Q}" />
+                            </CheckBox>
+                        </StackPanel>
                     </StackPanel>
-                    <StackPanel Spacing="8">
-                        <TextBlock Text="{x:Static localization:UI.Configure_share_report_disclaimer}"
-                                   TextWrapping="Wrap" />
-                        <CheckBox IsChecked="{Binding ShareReportsChecked, Mode=TwoWay}">
-                            <TextBlock Text="{x:Static localization:UI.Share_your_device_reports_with_us_Q}" />
-                        </CheckBox>
-                    </StackPanel>
-                </StackPanel>
+                </ScrollViewer>
             </TabItem>
             <TabItem>
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Statistics}" />
                 </TabItem.Header>
-                <StackPanel Spacing="8"
-                            Margin="8">
-                    <TextBlock Text="{x:Static localization:UI.Statistics_disclaimer}"
-                               TextWrapping="Wrap" />
-                    <CheckBox IsChecked="{Binding SaveStatsChecked, Mode=TwoWay}">
-                        <TextBlock Text="{x:Static localization:UI.Save_stats_about_your_Aaru_usage_Q}" />
-                    </CheckBox>
-                    <StackPanel IsVisible="{Binding SaveStatsChecked, Mode=OneWay}"
-                                Spacing="8">
-                        <CheckBox IsChecked="{Binding ShareStatsChecked, Mode=TwoWay}">
-                            <TextBlock Text="{x:Static localization:UI.Share_your_stats_anonymously_Q}" />
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="8"
+                                Margin="8">
+                        <TextBlock Text="{x:Static localization:UI.Statistics_disclaimer}"
+                                   TextWrapping="Wrap" />
+                        <CheckBox IsChecked="{Binding SaveStatsChecked, Mode=TwoWay}">
+                            <TextBlock Text="{x:Static localization:UI.Save_stats_about_your_Aaru_usage_Q}" />
                         </CheckBox>
-                        <CheckBox IsChecked="{Binding CommandStatsChecked, Mode=TwoWay}">
-                            <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_command_usage_Q}" />
-                        </CheckBox>
-                        <CheckBox IsChecked="{Binding DeviceStatsChecked, Mode=TwoWay}">
-                            <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_found_devices_Q}" />
-                        </CheckBox>
-                        <CheckBox IsChecked="{Binding FilesystemStatsChecked, Mode=TwoWay}">
-                            <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_found_filesystems_Q}" />
-                        </CheckBox>
-                        <CheckBox IsChecked="{Binding FilesystemStatsChecked, Mode=TwoWay}">
-                            <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_found_file_filters_Q}" />
-                        </CheckBox>
-                        <CheckBox IsChecked="{Binding MediaImageStatsChecked, Mode=TwoWay}">
-                            <TextBlock
-                                Text="{x:Static localization:UI.Gather_statistics_about_found_media_image_formats_Q}" />
-                        </CheckBox>
-                        <CheckBox IsChecked="{Binding MediaScanStatsChecked, Mode=TwoWay}">
-                            <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_scanned_media_Q}" />
-                        </CheckBox>
-                        <CheckBox IsChecked="{Binding PartitionStatsChecked, Mode=TwoWay}">
-                            <TextBlock
-                                Text="{x:Static localization:UI.Gather_statistics_about_found_partitioning_schemes_Q}" />
-                        </CheckBox>
-                        <CheckBox IsChecked="{Binding MediaStatsChecked, Mode=TwoWay}">
-                            <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_media_types_Q}" />
-                        </CheckBox>
-                        <CheckBox IsChecked="{Binding VerifyStatsChecked, Mode=TwoWay}">
-                            <TextBlock
-                                Text="{x:Static localization:UI.Gather_statistics_about_media_image_verifications_Q}" />
-                        </CheckBox>
+                        <StackPanel IsVisible="{Binding SaveStatsChecked, Mode=OneWay}"
+                                    Spacing="8">
+                            <CheckBox IsChecked="{Binding ShareStatsChecked, Mode=TwoWay}">
+                                <TextBlock Text="{x:Static localization:UI.Share_your_stats_anonymously_Q}" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding CommandStatsChecked, Mode=TwoWay}">
+                                <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_command_usage_Q}" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding DeviceStatsChecked, Mode=TwoWay}">
+                                <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_found_devices_Q}" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding FilesystemStatsChecked, Mode=TwoWay}">
+                                <TextBlock
+                                    Text="{x:Static localization:UI.Gather_statistics_about_found_filesystems_Q}" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding FilesystemStatsChecked, Mode=TwoWay}">
+                                <TextBlock
+                                    Text="{x:Static localization:UI.Gather_statistics_about_found_file_filters_Q}" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding MediaImageStatsChecked, Mode=TwoWay}">
+                                <TextBlock
+                                    Text="{x:Static localization:UI.Gather_statistics_about_found_media_image_formats_Q}" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding MediaScanStatsChecked, Mode=TwoWay}">
+                                <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_scanned_media_Q}" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding PartitionStatsChecked, Mode=TwoWay}">
+                                <TextBlock
+                                    Text="{x:Static localization:UI.Gather_statistics_about_found_partitioning_schemes_Q}" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding MediaStatsChecked, Mode=TwoWay}">
+                                <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_media_types_Q}" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding VerifyStatsChecked, Mode=TwoWay}">
+                                <TextBlock
+                                    Text="{x:Static localization:UI.Gather_statistics_about_media_image_verifications_Q}" />
+                            </CheckBox>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
         <StackPanel Grid.Row="1"
