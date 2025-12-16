@@ -50,6 +50,21 @@
     <Design.DataContext>
         <windows:ImageEntropyViewModel />
     </Design.DataContext>
+    <Window.Styles>
+        <Style Selector="DataGridRow:nth-child(2n)">
+            <Setter Property="Background">
+                <SolidColorBrush Color="#15FFFFFF" />
+            </Setter>
+        </Style>
+        <Style Selector="DataGridRow:nth-child(2n):pointerover">
+            <Setter Property="Background"
+                    Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+        </Style>
+        <Style Selector="DataGridRow:nth-child(2n):selected">
+            <Setter Property="Background"
+                    Value="{DynamicResource SystemControlHighlightAccentBrush}" />
+        </Style>
+    </Window.Styles>
     <Grid RowDefinitions="*, Auto,Auto"
           Margin="12"
           RowSpacing="8">
