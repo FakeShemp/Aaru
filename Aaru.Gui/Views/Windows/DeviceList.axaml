@@ -31,7 +31,6 @@
         </Grid>
         <DataGrid Grid.Row="1"
                   ItemsSource="{Binding Devices, Mode=OneWay}"
-                  Margin="8"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch"
                   HorizontalScrollBarVisibility="Visible"
