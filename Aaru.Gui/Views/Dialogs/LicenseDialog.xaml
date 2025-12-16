@@ -63,12 +63,11 @@
                                            Text="{Binding LicenseText, Mode=OneWay}" />
             </ScrollViewer>
         </Border>
-        <Border Grid.Row="1">
-            <Button HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom"
-                    Command="{Binding CloseCommand, Mode=OneWay}">
-                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
-            </Button>
-        </Border>
+        <Button Grid.Row="1"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Command="{Binding CloseCommand, Mode=OneWay}">
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
+        </Button>
     </Grid>
 </Window>
