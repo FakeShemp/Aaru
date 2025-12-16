@@ -47,7 +47,8 @@
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Device_type}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding DeviceType, Mode=OneWay}" />
+                                                   Text="{Binding DeviceType, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8"
@@ -55,7 +56,8 @@
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Manufacturer}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding Manufacturer, Mode=OneWay}" />
+                                                   Text="{Binding Manufacturer, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8"
@@ -63,7 +65,8 @@
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Model}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding Model, Mode=OneWay}" />
+                                                   Text="{Binding Model, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8"
@@ -71,7 +74,8 @@
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Revision}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding Revision, Mode=OneWay}" />
+                                                   Text="{Binding Revision, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8"
@@ -79,7 +83,8 @@
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Serial_number}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding Serial, Mode=OneWay}" />
+                                                   Text="{Binding Serial, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8"
@@ -87,7 +92,8 @@
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Peripheral_device_type}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding ScsiType, Mode=OneWay}" />
+                                                   Text="{Binding ScsiType, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <CheckBox IsChecked="{Binding RemovableChecked, Mode=OneWay}"
                               IsEnabled="False">
@@ -117,35 +123,40 @@
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Vendor_ID}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding UsbVendorId, Mode=OneWay}" />
+                                                   Text="{Binding UsbVendorId, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8">
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Product_ID}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding UsbProductId, Mode=OneWay}" />
+                                                   Text="{Binding UsbProductId, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8">
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Manufacturer}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding UsbManufacturer, Mode=OneWay}" />
+                                                   Text="{Binding UsbManufacturer, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8">
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Product}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding UsbProduct, Mode=OneWay}" />
+                                                   Text="{Binding UsbProduct, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8">
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Serial_number}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding UsbSerial, Mode=OneWay}" />
+                                                   Text="{Binding UsbSerial, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Button Command="{Binding SaveUsbDescriptorsCommand, Mode=OneWay}"
                             IsVisible="{Binding SaveUsbDescriptorsEnabled, Mode=OneWay}">
@@ -171,35 +182,40 @@
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Vendor_ID}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding FirewireVendorId, Mode=OneWay}" />
+                                                   Text="{Binding FirewireVendorId, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8">
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Model_ID}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding FirewireModelId, Mode=OneWay}" />
+                                                   Text="{Binding FirewireModelId, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8">
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Manufacturer}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding FirewireManufacturer, Mode=OneWay}" />
+                                                   Text="{Binding FirewireManufacturer, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8">
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_Model}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding FirewireModel, Mode=OneWay}" />
+                                                   Text="{Binding FirewireModel, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                     <Grid ColumnDefinitions="Auto, *"
                           ColumnSpacing="8">
                         <controls:SpectreTextBlock Grid.Column="0"
                                                    Text="{x:Static localization:UI.Title_GUID}" />
                         <controls:SpectreTextBlock Grid.Column="1"
-                                                   Text="{Binding FirewireGuid, Mode=OneWay}" />
+                                                   Text="{Binding FirewireGuid, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </Grid>
                 </StackPanel>
             </TabItem>
@@ -491,11 +507,14 @@
                                 Spacing="8"
                                 IsVisible="{Binding BlockLimits, Mode=OneWay}">
                         <controls:SpectreTextBlock Text="{Binding MinBlockSize, Mode=OneWay}"
-                                                   IsVisible="{Binding !!MinBlockSize, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!MinBlockSize, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding MaxBlockSize, Mode=OneWay}"
-                                                   IsVisible="{Binding !!MaxBlockSize, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!MaxBlockSize, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <controls:SpectreTextBlock Text="{Binding BlockSizeGranularity, Mode=OneWay}"
-                                                   IsVisible="{Binding !!BlockSizeGranularity, Mode=OneWay}" />
+                                                   IsVisible="{Binding !!BlockSizeGranularity, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                     </StackPanel>
                     <StackPanel Orientation="Vertical"
                                 Spacing="8"
@@ -597,17 +616,20 @@
                             <controls:SpectreTextBlock Grid.Column="0"
                                                        Text="{x:Static localization:UI.Title_Media_type}" />
                             <controls:SpectreTextBlock Grid.Column="1"
-                                                       Text="{Binding MediaType, Mode=OneWay}" />
+                                                       Text="{Binding MediaType, Mode=OneWay}"
+                                                       TextWrapping="Wrap" />
                         </Grid>
                         <controls:SpectreTextBlock IsVisible="{Binding !!MediaSize, Mode=OneWay}"
-                                                   Text="{Binding MediaSize, Mode=OneWay}" />
+                                                   Text="{Binding MediaSize, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
                         <Grid ColumnDefinitions="Auto, *"
                               ColumnSpacing="8"
                               IsVisible="{Binding !!MediaSerial, Mode=OneWay}">
                             <controls:SpectreTextBlock Grid.Column="0"
                                                        Text="{x:Static localization:UI.Title_Media_serial_number}" />
                             <controls:SpectreTextBlock Grid.Column="1"
-                                                       Text="{Binding MediaSerial, Mode=OneWay}" />
+                                                       Text="{Binding MediaSerial, Mode=OneWay}"
+                                                       TextWrapping="Wrap" />
                         </Grid>
                     </StackPanel>
                     <StackPanel Grid.Row="2"
