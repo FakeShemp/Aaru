@@ -46,9 +46,9 @@ using Aaru.Gui.Views.Windows;
 using Aaru.Localization;
 using Aaru.Logging;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using Avalonia.Styling;
 using Avalonia.Svg;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -741,20 +741,43 @@ public partial class DeviceViewModel : ViewModelBase
 
             MediaIsInserted = true;
 
-            var genericHddIcon =
-                new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/drive-harddisk.png")));
-
-            var genericOpticalIcon =
-                new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/drive-optical.png")));
-
-            var genericFolderIcon =
-                new Bitmap(AssetLoader
-                              .Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/inode-directory.png")));
-
-            var mediaResource = new Uri($"avares://Aaru.Gui/Assets/Logos/Media/{mediaInfo.MediaType}.svg");
-
             Dispatcher.UIThread.Invoke(() =>
             {
+                var genericHddIcon = new SvgImage
+                {
+                    Source =
+                        SvgSource.Load(AssetLoader
+                                          .Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/drive-harddisk.svg")))
+                };
+
+                var genericOpticalIcon = new SvgImage
+                {
+                    Source =
+                        SvgSource.Load(AssetLoader
+                                          .Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/drive-optical.svg")))
+                };
+
+                var genericFolderIcon = new SvgImage
+                {
+                    Source =
+                        SvgSource.Load(AssetLoader
+                                          .Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/inode-directory.svg")))
+                };
+
+                // Check if we're using dark theme
+                bool isDarkTheme = _window.ActualThemeVariant == ThemeVariant.Dark;
+
+                // Build the appropriate SVG path based on theme
+                string svgPath = isDarkTheme
+                                     ? $"avares://Aaru.Gui/Assets/Logos/Media/Dark/{mediaInfo.MediaType}.svg"
+                                     : $"avares://Aaru.Gui/Assets/Logos/Media/{mediaInfo.MediaType}.svg";
+
+                var mediaResource = new Uri(svgPath);
+
+                // Fallback to light theme version if dark version doesn't exist
+                if(isDarkTheme && !AssetLoader.Exists(mediaResource))
+                    mediaResource = new Uri($"avares://Aaru.Gui/Assets/Logos/Media/{mediaInfo.MediaType}.svg");
+
                 MediaLogo = AssetLoader.Exists(mediaResource)
                                 ? new SvgImage
                                 {
