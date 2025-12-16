@@ -111,14 +111,12 @@
                     Orientation="Vertical"
                     IsVisible="{Binding ProgressVisible, Mode=OneWay}"
                     Spacing="8">
-            <StackPanel Orientation="Vertical"
-                        IsVisible="{Binding Progress1Visible, Mode=OneWay}"
-                        Spacing="8">
-                <controls:SpectreTextBlock Text="{Binding ProgressText, Mode=OneWay}" />
-                <ProgressBar Maximum="{Binding ProgressMaxValue, Mode=OneWay}"
-                             IsIndeterminate="{Binding ProgressIndeterminate, Mode=OneWay}"
-                             Value="{Binding ProgressValue, Mode=OneWay}" />
-            </StackPanel>
+            <controls:SpectreTextBlock Text="{Binding ProgressText, Mode=OneWay}"
+                                       IsVisible="{Binding Progress1Visible, Mode=OneWay}" />
+            <ProgressBar Maximum="{Binding ProgressMaxValue, Mode=OneWay}"
+                         IsIndeterminate="{Binding ProgressIndeterminate, Mode=OneWay}"
+                         Value="{Binding ProgressValue, Mode=OneWay}"
+                         IsVisible="{Binding Progress1Visible, Mode=OneWay}" />
         </StackPanel>
         <StackPanel Grid.Row="2"
                     Orientation="Horizontal"
