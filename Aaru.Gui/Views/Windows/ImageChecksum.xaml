@@ -68,68 +68,72 @@
     <Grid RowDefinitions="Auto,*,Auto,Auto"
           RowSpacing="8"
           Margin="12">
-        <StackPanel Grid.Row="0"
-                    Orientation="Vertical"
-                    IsVisible="{Binding OptionsVisible, Mode=OneWay}">
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsVisible="{Binding ChecksumTracksVisible, Mode=OneWay}"
-                      IsChecked="{Binding ChecksumMediaChecked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Checksums_the_whole_disc}" />
-            </CheckBox>
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsVisible="{Binding ChecksumTracksVisible, Mode=OneWay}"
-                      IsChecked="{Binding ChecksumTracksChecked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Checksums_each_track_separately}" />
-            </CheckBox>
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsChecked="{Binding Adler32Checked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Calculates_Adler_32}" />
-            </CheckBox>
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsChecked="{Binding Crc16Checked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Calculates_CRC16}" />
-            </CheckBox>
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsChecked="{Binding Crc32Checked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Calculates_CRC32}" />
-            </CheckBox>
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsChecked="{Binding Crc64Checked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Calculates_CRC64_ECMA}" />
-            </CheckBox>
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsChecked="{Binding Fletcher16Checked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Calculates_Fletcher_16}" />
-            </CheckBox>
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsChecked="{Binding Fletcher32Checked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Calculates_Fletcher_32}" />
-            </CheckBox>
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsChecked="{Binding Md5Checked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Calculates_MD5}" />
-            </CheckBox>
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsChecked="{Binding Sha1Checked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Calculates_SHA1}" />
-            </CheckBox>
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsChecked="{Binding Sha256Checked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Calculates_SHA256}" />
-            </CheckBox>
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsChecked="{Binding Sha384Checked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Calculates_SHA384}" />
-            </CheckBox>
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsChecked="{Binding Sha512Checked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Calculates_SHA512}" />
-            </CheckBox>
-            <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
-                      IsChecked="{Binding SpamsumChecked, Mode=TwoWay}">
-                <TextBlock Text="{x:Static localization:UI.Calculates_SpamSum_fuzzy_hash}" />
-            </CheckBox>
-        </StackPanel>
+        <ScrollViewer Grid.Row="0"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto"
+                      IsVisible="{Binding OptionsVisible, Mode=OneWay}">
+            <StackPanel Orientation="Vertical"
+                        Spacing="8">
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsVisible="{Binding ChecksumTracksVisible, Mode=OneWay}"
+                          IsChecked="{Binding ChecksumMediaChecked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Checksums_the_whole_disc}" />
+                </CheckBox>
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsVisible="{Binding ChecksumTracksVisible, Mode=OneWay}"
+                          IsChecked="{Binding ChecksumTracksChecked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Checksums_each_track_separately}" />
+                </CheckBox>
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsChecked="{Binding Adler32Checked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Calculates_Adler_32}" />
+                </CheckBox>
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsChecked="{Binding Crc16Checked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Calculates_CRC16}" />
+                </CheckBox>
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsChecked="{Binding Crc32Checked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Calculates_CRC32}" />
+                </CheckBox>
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsChecked="{Binding Crc64Checked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Calculates_CRC64_ECMA}" />
+                </CheckBox>
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsChecked="{Binding Fletcher16Checked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Calculates_Fletcher_16}" />
+                </CheckBox>
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsChecked="{Binding Fletcher32Checked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Calculates_Fletcher_32}" />
+                </CheckBox>
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsChecked="{Binding Md5Checked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Calculates_MD5}" />
+                </CheckBox>
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsChecked="{Binding Sha1Checked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Calculates_SHA1}" />
+                </CheckBox>
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsChecked="{Binding Sha256Checked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Calculates_SHA256}" />
+                </CheckBox>
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsChecked="{Binding Sha384Checked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Calculates_SHA384}" />
+                </CheckBox>
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsChecked="{Binding Sha512Checked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Calculates_SHA512}" />
+                </CheckBox>
+                <CheckBox IsEnabled="{Binding OptionsEnabled, Mode=OneWay}"
+                          IsChecked="{Binding SpamsumChecked, Mode=TwoWay}">
+                    <TextBlock Text="{x:Static localization:UI.Calculates_SpamSum_fuzzy_hash}" />
+                </CheckBox>
+            </StackPanel>
+        </ScrollViewer>
         <Grid Grid.Row="1"
               RowDefinitions="*,*"
               RowSpacing="8"
