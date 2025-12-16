@@ -716,11 +716,23 @@
                     HorizontalAlignment="Right">
             <Button Command="{Binding DumpCommand, Mode=OneWay}"
                     IsEnabled="{Binding MediaIsInserted, Mode=OneWay}">
-                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Dump_media_to_image}" />
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <Svg MaxHeight="24"
+                         Path="{Binding $parent[Window].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Icons/dump-disc.svg', Mode=OneWay}" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Dump_media_to_image}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
             </Button>
             <Button Command="{Binding ScanCommand, Mode=OneWay}"
                     IsEnabled="{Binding MediaIsInserted, Mode=OneWay}">
-                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Scan_media_surface}" />
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <Svg MaxHeight="24"
+                         Path="{Binding $parent[Window].ActualThemeVariant, Converter={StaticResource ThemeToSvgPathConverter}, ConverterParameter='/Assets/Icons/scan-disc.svg', Mode=OneWay}" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Scan_media_surface}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
             </Button>
         </StackPanel>
         <controls:SpectreTextBlock Grid.Row="3"
