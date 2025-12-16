@@ -105,8 +105,9 @@
                     <Grid ColumnDefinitions="Auto, *"
                           IsVisible="{Binding EncodingVisible, Mode=OneWay}"
                           ColumnSpacing="8">
-                        <TextBox Grid.Column="0"
-                                 Text="{x:Static localization:UI.Encoding_to_use_on_metadata_sidecar_creation}" />
+                        <TextBlock Grid.Column="0"
+                                   Text="{x:Static localization:UI.Encoding_to_use_on_metadata_sidecar_creation}"
+                                   VerticalAlignment="Center" />
                         <ComboBox Grid.Column="1"
                                   ItemsSource="{Binding Encodings, Mode=OneWay}"
                                   SelectedItem="{Binding SelectedEncoding, Mode=TwoWay}"
