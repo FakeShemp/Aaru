@@ -107,7 +107,8 @@
                               ItemsSource="{Binding ErrorList, Mode=OneWay}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{x:Static localization:UI.Title_LBA}"
-                                                Binding="{Binding Lba, Mode=OneWay}" />
+                                                Binding="{Binding Lba, Mode=OneWay}"
+                                                Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -121,7 +122,8 @@
                               ItemsSource="{Binding UnknownList, Mode=OneWay}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{x:Static localization:UI.Title_LBA}"
-                                                Binding="{Binding Lba, Mode=OneWay}" />
+                                                Binding="{Binding Lba, Mode=OneWay}"
+                                                Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
