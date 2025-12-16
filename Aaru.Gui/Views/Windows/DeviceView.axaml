@@ -503,7 +503,11 @@
                         <controls:SpectreTextBlock Text="{x:Static localization:UI.Densities_supported_by_device}"
                                                    VerticalAlignment="Center" />
                         <TextBox Text="{Binding Densities, Mode=OneWay}"
-                                 IsReadOnly="True" />
+                                 IsReadOnly="True"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Cursor="Arrow"
+                                 Padding="0" />
                     </StackPanel>
                     <StackPanel Orientation="Vertical"
                                 Spacing="8"
@@ -511,10 +515,18 @@
                         <controls:SpectreTextBlock Text="{x:Static localization:UI.Medium_types_supported_by_device}"
                                                    VerticalAlignment="Center" />
                         <TextBox Text="{Binding MediumTypes, Mode=OneWay}"
-                                 IsReadOnly="True" />
+                                 IsReadOnly="True"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Cursor="Arrow"
+                                 Padding="0" />
                     </StackPanel>
                     <TextBox Text="{Binding MediumDensity, Mode=OneWay}"
                              IsReadOnly="True"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Cursor="Arrow"
+                             Padding="0"
                              IsVisible="{Binding !!MediumDensity, Mode=OneWay}" />
                 </StackPanel>
             </TabItem>
