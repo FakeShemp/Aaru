@@ -76,47 +76,53 @@
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Commands}" />
                 </TabItem.Header>
-                <StackPanel VerticalAlignment="Top"
-                            HorizontalAlignment="Stretch">
-                    <TextBlock Text="{Binding FsInfoText, Mode=OneWay}"
-                               IsVisible="{Binding FsInfoVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding ChecksumText, Mode=OneWay}"
-                               IsVisible="{Binding ChecksumVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding CompareText, Mode=OneWay}"
-                               IsVisible="{Binding CompareVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding ConvertImageText, Mode=OneWay}"
-                               IsVisible="{Binding ConvertImageVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding CreateSidecarText, Mode=OneWay}"
-                               IsVisible="{Binding CreateSidecarVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding DecodeText, Mode=OneWay}"
-                               IsVisible="{Binding DecodeVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding DeviceInfoText, Mode=OneWay}"
-                               IsVisible="{Binding DeviceInfoVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding DeviceReportText, Mode=OneWay}"
-                               IsVisible="{Binding DeviceReportVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding DumpMediaText, Mode=OneWay}"
-                               IsVisible="{Binding DumpMediaVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding EntropyText, Mode=OneWay}"
-                               IsVisible="{Binding EntropyVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding FormatsCommandText, Mode=OneWay}"
-                               IsVisible="{Binding FormatsCommandVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding ImageInfoText, Mode=OneWay}"
-                               IsVisible="{Binding ImageInfoVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding MediaInfoText, Mode=OneWay}"
-                               IsVisible="{Binding MediaInfoVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding MediaScanText, Mode=OneWay}"
-                               IsVisible="{Binding MediaScanVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding PrintHexText, Mode=OneWay}"
-                               IsVisible="{Binding PrintHexVisible, Mode=OneWay}" />
-                    <TextBlock Text="{Binding VerifyText, Mode=OneWay}"
-                               IsVisible="{Binding VerifyVisible, Mode=OneWay}" />
-                </StackPanel>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel VerticalAlignment="Top"
+                                HorizontalAlignment="Stretch"
+                                Spacing="8"
+                                Margin="8">
+                        <TextBlock Text="{Binding FsInfoText, Mode=OneWay}"
+                                   IsVisible="{Binding FsInfoVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding ChecksumText, Mode=OneWay}"
+                                   IsVisible="{Binding ChecksumVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding CompareText, Mode=OneWay}"
+                                   IsVisible="{Binding CompareVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding ConvertImageText, Mode=OneWay}"
+                                   IsVisible="{Binding ConvertImageVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding CreateSidecarText, Mode=OneWay}"
+                                   IsVisible="{Binding CreateSidecarVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding DecodeText, Mode=OneWay}"
+                                   IsVisible="{Binding DecodeVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding DeviceInfoText, Mode=OneWay}"
+                                   IsVisible="{Binding DeviceInfoVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding DeviceReportText, Mode=OneWay}"
+                                   IsVisible="{Binding DeviceReportVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding DumpMediaText, Mode=OneWay}"
+                                   IsVisible="{Binding DumpMediaVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding EntropyText, Mode=OneWay}"
+                                   IsVisible="{Binding EntropyVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding FormatsCommandText, Mode=OneWay}"
+                                   IsVisible="{Binding FormatsCommandVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding ImageInfoText, Mode=OneWay}"
+                                   IsVisible="{Binding ImageInfoVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding MediaInfoText, Mode=OneWay}"
+                                   IsVisible="{Binding MediaInfoVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding MediaScanText, Mode=OneWay}"
+                                   IsVisible="{Binding MediaScanVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding PrintHexText, Mode=OneWay}"
+                                   IsVisible="{Binding PrintHexVisible, Mode=OneWay}" />
+                        <TextBlock Text="{Binding VerifyText, Mode=OneWay}"
+                                   IsVisible="{Binding VerifyVisible, Mode=OneWay}" />
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
             <TabItem IsVisible="{Binding FiltersVisible, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Filters}" />
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding Filters, Mode=OneWay}"
+                          Margin="8"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="Auto">
@@ -151,6 +157,7 @@
                     <TextBlock Text="{x:Static localization:UI.Title_Formats}" />
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding Formats, Mode=OneWay}"
+                          Margin="8"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="Auto">
@@ -185,6 +192,7 @@
                     <TextBlock Text="{x:Static localization:UI.Title_Partitions}" />
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding Partitions, Mode=OneWay}"
+                          Margin="8"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="Auto">
@@ -219,6 +227,7 @@
                     <TextBlock Text="{x:Static localization:UI.Title_Filesystems}" />
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding Filesystems, Mode=OneWay}"
+                          Margin="8"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="Auto">
@@ -253,6 +262,7 @@
                     <TextBlock Text="{x:Static localization:UI.Title_Devices}" />
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding Devices, Mode=OneWay}"
+                          Margin="8"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="Auto">
@@ -311,6 +321,7 @@
                     <TextBlock Text="{x:Static localization:UI.Title_Medias}" />
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding Medias, Mode=OneWay}"
+                          Margin="8"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="Auto">
