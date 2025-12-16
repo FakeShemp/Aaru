@@ -140,7 +140,7 @@
                              Watermark="{x:Static localization:UI.Watermark_Media_model}" />
                     <StackPanel Orientation="Horizontal"
                                 Spacing="8">
-                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Manufacturer}"
+                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Serial_number}"
                                                    FontWeight="Bold"
                                                    VerticalAlignment="Center" />
                         <CheckBox Content="{x:Static localization:UI.Title_Not_set}"
