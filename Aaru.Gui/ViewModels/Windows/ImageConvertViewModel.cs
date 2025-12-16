@@ -459,7 +459,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
     internal void Stop()
     {
         _cancel = true;
-        _converter.Abort();
+        _converter?.Abort();
         StopEnabled = false;
     }
 
