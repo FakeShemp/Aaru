@@ -107,7 +107,7 @@
                       IsVisible="{Binding SeparatedTracksChecked, Mode=OneWay}"
                       ItemsSource="{Binding TrackEntropy, Mode=OneWay}">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="Auto">
                         <DataGridTemplateColumn.Header>
                             <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Track}" />
                         </DataGridTemplateColumn.Header>
@@ -117,7 +117,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="Auto">
                         <DataGridTemplateColumn.Header>
                             <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Entropy}" />
                         </DataGridTemplateColumn.Header>
@@ -127,7 +127,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="*">
                         <DataGridTemplateColumn.Header>
                             <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Unique_sectors}" />
                         </DataGridTemplateColumn.Header>
