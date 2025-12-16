@@ -125,7 +125,7 @@
                           Margin="8"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn Width="*">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Filter}" />
@@ -160,7 +160,7 @@
                           Margin="8"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn Width="*">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Format}" />
@@ -195,7 +195,7 @@
                           Margin="8"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn Width="*">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Partition}" />
@@ -230,7 +230,7 @@
                           Margin="8"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn Width="*">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Filesystem}" />
@@ -265,7 +265,7 @@
                           Margin="8"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn Width="*">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Device}" />
@@ -324,7 +324,7 @@
                           Margin="8"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn Width="*">
                             <DataGridTemplateColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Media}" />
