@@ -146,7 +146,7 @@
                 <DataGrid Grid.Row="1"
                           ItemsSource="{Binding TrackChecksums, Mode=OneWay}">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.Header>
                                 <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Track}" />
                             </DataGridTemplateColumn.Header>
@@ -156,7 +156,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.Header>
                                 <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Algorithms}" />
                             </DataGridTemplateColumn.Header>
@@ -166,7 +166,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
                             <DataGridTemplateColumn.Header>
                                 <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Hash}" />
                             </DataGridTemplateColumn.Header>
@@ -188,7 +188,7 @@
                 <DataGrid Grid.Row="1"
                           ItemsSource="{Binding MediaChecksums, Mode=OneWay}">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.Header>
                                 <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Algorithms}" />
                             </DataGridTemplateColumn.Header>
@@ -198,7 +198,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
                             <DataGridTemplateColumn.Header>
                                 <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Hash}" />
                             </DataGridTemplateColumn.Header>
