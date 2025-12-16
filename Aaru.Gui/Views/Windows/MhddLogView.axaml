@@ -25,7 +25,8 @@
             <controls:SpectreTextBlock Grid.Column="0"
                                        Text="{x:Static localization:UI.Title_File_path}" />
             <controls:SpectreTextBlock Grid.Column="1"
-                                       Text="{Binding FilePath, Mode=OneWay}" />
+                                       Text="{Binding FilePath, Mode=OneWay}"
+                                       TextWrapping="Wrap" />
         </Grid>
         <Grid Grid.Row="1"
               ColumnDefinitions="Auto,*"
@@ -33,7 +34,8 @@
             <controls:SpectreTextBlock Grid.Column="0"
                                        Text="{x:Static localization:UI.Title_MHDD_Version}" />
             <controls:SpectreTextBlock Grid.Column="1"
-                                       Text="{Binding MhddVersion, Mode=OneWay}" />
+                                       Text="{Binding MhddVersion, Mode=OneWay}"
+                                       TextWrapping="Wrap" />
         </Grid>
         <Grid Grid.Row="2"
               ColumnDefinitions="Auto,*"
@@ -41,7 +43,8 @@
             <controls:SpectreTextBlock Grid.Column="0"
                                        Text="{x:Static localization:UI.Title_Device}" />
             <controls:SpectreTextBlock Grid.Column="1"
-                                       Text="{Binding Device, Mode=OneWay}" />
+                                       Text="{Binding Device, Mode=OneWay}"
+                                       TextWrapping="Wrap" />
         </Grid>
         <Grid Grid.Row="3"
               ColumnDefinitions="Auto,*"
@@ -49,7 +52,8 @@
             <controls:SpectreTextBlock Grid.Column="0"
                                        Text="{x:Static localization:UI.Title_Firmware}" />
             <controls:SpectreTextBlock Grid.Column="1"
-                                       Text="{Binding Firmware, Mode=OneWay}" />
+                                       Text="{Binding Firmware, Mode=OneWay}"
+                                       TextWrapping="Wrap" />
         </Grid>
         <Grid Grid.Row="4"
               ColumnDefinitions="Auto,*"
@@ -57,7 +61,8 @@
             <controls:SpectreTextBlock Grid.Column="0"
                                        Text="{x:Static localization:UI.Title_Serial_number}" />
             <controls:SpectreTextBlock Grid.Column="1"
-                                       Text="{Binding SerialNumber, Mode=OneWay}" />
+                                       Text="{Binding SerialNumber, Mode=OneWay}"
+                                       TextWrapping="Wrap" />
         </Grid>
         <Grid Grid.Row="5"
               ColumnDefinitions="Auto,*"
@@ -65,7 +70,8 @@
             <controls:SpectreTextBlock Grid.Column="0"
                                        Text="{x:Static localization:UI.Title_Total_sectors}" />
             <controls:SpectreTextBlock Grid.Column="1"
-                                       Text="{Binding TotalSectors, Mode=OneWay}" />
+                                       Text="{Binding TotalSectors, Mode=OneWay}"
+                                       TextWrapping="Wrap" />
         </Grid>
         <Grid Grid.Row="6"
               ColumnDefinitions="Auto,*"
@@ -73,7 +79,8 @@
             <controls:SpectreTextBlock Grid.Column="0"
                                        Text="{x:Static localization:UI.Title_Sector_size}" />
             <controls:SpectreTextBlock Grid.Column="1"
-                                       Text="{Binding SectorSize, Mode=OneWay}" />
+                                       Text="{Binding SectorSize, Mode=OneWay}"
+                                       TextWrapping="Wrap" />
         </Grid>
         <Grid Grid.Row="7"
               ColumnDefinitions="Auto,*"
@@ -81,7 +88,8 @@
             <controls:SpectreTextBlock Grid.Column="0"
                                        Text="{x:Static localization:UI.Title_Scan_block_size}" />
             <controls:SpectreTextBlock Grid.Column="1"
-                                       Text="{Binding ScanBlockSize, Mode=OneWay}" />
+                                       Text="{Binding ScanBlockSize, Mode=OneWay}"
+                                       TextWrapping="Wrap" />
         </Grid>
         <Border Grid.Row="8"
                 BorderThickness="1"
