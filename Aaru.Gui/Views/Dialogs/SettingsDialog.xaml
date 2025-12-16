@@ -61,14 +61,12 @@
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_GDPR}" />
                 </TabItem.Header>
-                <StackPanel Spacing="8"
+                <StackPanel Spacing="18"
                             Margin="8">
                     <TextBlock Text="{x:Static localization:UI.GDPR_Compliance}"
                                TextWrapping="Wrap" />
-                    <Border Padding="10" />
                     <TextBlock Text="{x:Static localization:UI.GDPR_Open_Source_Disclaimer}"
                                TextWrapping="Wrap" />
-                    <Border Padding="10" />
                     <TextBlock Text="{x:Static localization:UI.GDPR_Information_sharing}"
                                TextWrapping="Wrap" />
                 </StackPanel>
