@@ -47,7 +47,7 @@
         Icon="/Assets/aaru-logo.png"
         CanResize="False"
         x:DataType="windows:ImageSidecarViewModel"
-        Title="Image sidecar creation">
+        Title="{x:Static localization:UI.Title_Image_sidecar_creation}">
     <Design.DataContext>
         <windows:ImageSidecarViewModel />
     </Design.DataContext>
