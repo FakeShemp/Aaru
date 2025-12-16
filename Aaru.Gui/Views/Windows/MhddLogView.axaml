@@ -85,7 +85,8 @@
         </Grid>
         <Border Grid.Row="8"
                 BorderThickness="1"
-                BorderBrush="SlateBlue">
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                CornerRadius="8">
             <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                           VerticalScrollBarVisibility="Auto">
                 <controls:BlockMap SectorData="{Binding SectorData, Mode=OneWay}"
