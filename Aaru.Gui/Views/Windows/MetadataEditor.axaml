@@ -27,11 +27,11 @@
             <Setter Property="Margin"
                     Value="0,4" />
             <Setter Property="Background"
-                    Value="#2D2D30" />
+                    Value="{DynamicResource TextControlBackground}" />
             <Setter Property="Foreground"
-                    Value="#F1F1F1" />
+                    Value="{DynamicResource TextControlForeground}" />
             <Setter Property="BorderBrush"
-                    Value="#3F3F46" />
+                    Value="{DynamicResource TextControlBorderBrush}" />
             <Setter Property="BorderThickness"
                     Value="1" />
             <Setter Property="CornerRadius"
@@ -39,17 +39,17 @@
         </Style>
         <Style Selector="TextBox:focus">
             <Setter Property="BorderBrush"
-                    Value="#007ACC" />
+                    Value="{DynamicResource SystemAccentColor}" />
         </Style>
         <Style Selector="ComboBox">
             <Setter Property="Margin"
                     Value="0,4" />
             <Setter Property="Background"
-                    Value="#2D2D30" />
+                    Value="{DynamicResource ComboBoxBackground}" />
             <Setter Property="Foreground"
-                    Value="#F1F1F1" />
+                    Value="{DynamicResource ComboBoxForeground}" />
             <Setter Property="BorderBrush"
-                    Value="#3F3F46" />
+                    Value="{DynamicResource ComboBoxBorderBrush}" />
             <Setter Property="CornerRadius"
                     Value="3" />
         </Style>
@@ -57,19 +57,19 @@
             <Setter Property="Margin"
                     Value="0,4" />
             <Setter Property="Background"
-                    Value="#2D2D30" />
+                    Value="{DynamicResource DatePickerBackground}" />
             <Setter Property="Foreground"
-                    Value="#F1F1F1" />
+                    Value="{DynamicResource DatePickerForeground}" />
             <Setter Property="BorderBrush"
-                    Value="#3F3F46" />
+                    Value="{DynamicResource DatePickerBorderBrush}" />
             <Setter Property="CornerRadius"
                     Value="3" />
         </Style>
         <Style Selector="Button">
             <Setter Property="Background"
-                    Value="#0E639C" />
+                    Value="{DynamicResource AccentButtonBackground}" />
             <Setter Property="Foreground"
-                    Value="#FFFFFF" />
+                    Value="{DynamicResource AccentButtonForeground}" />
             <Setter Property="BorderThickness"
                     Value="0" />
             <Setter Property="CornerRadius"
@@ -81,11 +81,13 @@
         </Style>
         <Style Selector="Button:pointerover">
             <Setter Property="Background"
-                    Value="#1177BB" />
+                    Value="{DynamicResource AccentButtonBackgroundPointerOver}" />
         </Style>
         <Style Selector="Button.danger">
             <Setter Property="Background"
                     Value="#C42B1C" />
+            <Setter Property="Foreground"
+                    Value="White" />
         </Style>
         <Style Selector="Button.danger:pointerover">
             <Setter Property="Background"
@@ -94,6 +96,8 @@
         <Style Selector="Button.success">
             <Setter Property="Background"
                     Value="#107C10" />
+            <Setter Property="Foreground"
+                    Value="White" />
         </Style>
         <Style Selector="Button.success:pointerover">
             <Setter Property="Background"
@@ -101,9 +105,9 @@
         </Style>
         <Style Selector="ListBox">
             <Setter Property="Background"
-                    Value="#252526" />
+                    Value="{DynamicResource ListBoxBackground}" />
             <Setter Property="BorderBrush"
-                    Value="#3F3F46" />
+                    Value="{DynamicResource ListBoxBorderBrush}" />
             <Setter Property="BorderThickness"
                     Value="1" />
             <Setter Property="CornerRadius"
@@ -115,7 +119,7 @@
         </Style>
         <Style Selector="ListBoxItem:selected">
             <Setter Property="Background"
-                    Value="#094771" />
+                    Value="{DynamicResource ListBoxItemBackgroundSelected}" />
         </Style>
         <Style Selector="TextBlock.label">
             <Setter Property="Margin"
@@ -123,7 +127,7 @@
             <Setter Property="FontWeight"
                     Value="SemiBold" />
             <Setter Property="Foreground"
-                    Value="#F1F1F1" />
+                    Value="{DynamicResource TextControlForeground}" />
         </Style>
         <Style Selector="TextBlock.section-header">
             <Setter Property="FontSize"
@@ -133,13 +137,13 @@
             <Setter Property="Margin"
                     Value="0,12,0,8" />
             <Setter Property="Foreground"
-                    Value="#FFFFFF" />
+                    Value="{DynamicResource TextControlForeground}" />
         </Style>
         <Style Selector="Border.section">
             <Setter Property="Background"
-                    Value="#1E1E1E" />
+                    Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
             <Setter Property="BorderBrush"
-                    Value="#3F3F46" />
+                    Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
             <Setter Property="BorderThickness"
                     Value="1" />
             <Setter Property="CornerRadius"
@@ -148,6 +152,18 @@
                     Value="12" />
             <Setter Property="Margin"
                     Value="0,8" />
+        </Style>
+        <Style Selector="Border.item">
+            <Setter Property="BorderBrush"
+                    Value="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+            <Setter Property="BorderThickness"
+                    Value="1" />
+            <Setter Property="CornerRadius"
+                    Value="3" />
+            <Setter Property="Padding"
+                    Value="8" />
+            <Setter Property="Margin"
+                    Value="4" />
         </Style>
     </Window.Styles>
 
@@ -547,11 +563,7 @@
                                          MaxHeight="300">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border BorderBrush="#3F3F46"
-                                                    BorderThickness="1"
-                                                    CornerRadius="3"
-                                                    Padding="8"
-                                                    Margin="4">
+                                            <Border Classes="item">
                                                 <StackPanel>
                                                     <DockPanel>
                                                         <Button DockPanel.Dock="Right"
@@ -587,11 +599,7 @@
                                  MinHeight="200">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="#3F3F46"
-                                            BorderThickness="1"
-                                            CornerRadius="3"
-                                            Padding="8"
-                                            Margin="4">
+                                    <Border Classes="item">
                                         <StackPanel>
                                             <Button Classes="danger"
                                                     Content="{x:Static gui:GUI.Button_Remove_Barcode}"
@@ -636,11 +644,7 @@
                                          MaxHeight="300">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border BorderBrush="#3F3F46"
-                                                    BorderThickness="1"
-                                                    CornerRadius="3"
-                                                    Padding="8"
-                                                    Margin="4">
+                                            <Border Classes="item">
                                                 <StackPanel>
                                                     <Button Classes="danger"
                                                             Content="{x:Static gui:GUI.Button_Remove}"
@@ -691,11 +695,7 @@
                                          MaxHeight="300">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border BorderBrush="#3F3F46"
-                                                    BorderThickness="1"
-                                                    CornerRadius="3"
-                                                    Padding="8"
-                                                    Margin="4">
+                                            <Border Classes="item">
                                                 <StackPanel>
                                                     <Button Classes="danger"
                                                             Content="{x:Static gui:GUI.Button_Remove}"
@@ -740,11 +740,7 @@
                                          MaxHeight="200">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border BorderBrush="#3F3F46"
-                                                    BorderThickness="1"
-                                                    CornerRadius="3"
-                                                    Padding="8"
-                                                    Margin="4">
+                                            <Border Classes="item">
                                                 <StackPanel>
                                                     <Button Classes="danger"
                                                             Content="{x:Static gui:GUI.Button_Remove}"
@@ -794,11 +790,7 @@
                                          MaxHeight="250">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border BorderBrush="#3F3F46"
-                                                    BorderThickness="1"
-                                                    CornerRadius="3"
-                                                    Padding="8"
-                                                    Margin="4">
+                                            <Border Classes="item">
                                                 <StackPanel>
                                                     <Button Classes="danger"
                                                             Content="{x:Static gui:GUI.Button_Remove}"
@@ -847,11 +839,7 @@
                                          MaxHeight="250">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border BorderBrush="#3F3F46"
-                                                    BorderThickness="1"
-                                                    CornerRadius="3"
-                                                    Padding="8"
-                                                    Margin="4">
+                                            <Border Classes="item">
                                                 <StackPanel>
                                                     <Button Classes="danger"
                                                             Content="{x:Static gui:GUI.Button_Remove}"
@@ -900,11 +888,7 @@
                                          MaxHeight="250">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border BorderBrush="#3F3F46"
-                                                    BorderThickness="1"
-                                                    CornerRadius="3"
-                                                    Padding="8"
-                                                    Margin="4">
+                                            <Border Classes="item">
                                                 <StackPanel>
                                                     <Button Classes="danger"
                                                             Content="{x:Static gui:GUI.Button_Remove}"
@@ -953,11 +937,7 @@
                                          MaxHeight="250">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border BorderBrush="#3F3F46"
-                                                    BorderThickness="1"
-                                                    CornerRadius="3"
-                                                    Padding="8"
-                                                    Margin="4">
+                                            <Border Classes="item">
                                                 <StackPanel>
                                                     <Button Classes="danger"
                                                             Content="{x:Static gui:GUI.Button_Remove}"
@@ -1013,11 +993,7 @@
                                          MaxHeight="250">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border BorderBrush="#3F3F46"
-                                                    BorderThickness="1"
-                                                    CornerRadius="3"
-                                                    Padding="8"
-                                                    Margin="4">
+                                            <Border Classes="item">
                                                 <StackPanel>
                                                     <Button Classes="danger"
                                                             Content="{x:Static gui:GUI.Button_Remove}"
@@ -1060,11 +1036,7 @@
                                          MaxHeight="250">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border BorderBrush="#3F3F46"
-                                                    BorderThickness="1"
-                                                    CornerRadius="3"
-                                                    Padding="8"
-                                                    Margin="4">
+                                            <Border Classes="item">
                                                 <StackPanel>
                                                     <Button Classes="danger"
                                                             Content="{x:Static gui:GUI.Button_Remove}"
