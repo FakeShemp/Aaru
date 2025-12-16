@@ -92,7 +92,7 @@
                     </DataGridTextColumn.Header>
                 </DataGridTextColumn>
                 <DataGridTextColumn Binding="{Binding Message, Mode=OneWay}"
-                                    Width="Auto"
+                                    Width="*"
                                     IsReadOnly="True">
                     <DataGridTextColumn.Header>
                         <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Message}" />
