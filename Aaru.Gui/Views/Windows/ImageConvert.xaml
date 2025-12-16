@@ -348,7 +348,7 @@
                             IsVisible="{Binding AaruMetadataFromImageVisible, Mode=OneWay}">
                         <TextBlock Text="{x:Static localization:UI.Title_From_image}" />
                     </Button>
-                    <Button Grid.Column="1"
+                    <Button Grid.Column="2"
                             Command="{Binding AaruMetadataCommand, Mode=OneWay}">
                         <TextBlock Text="{x:Static localization:UI.ButtonLabel_Choose}" />
                     </Button>
