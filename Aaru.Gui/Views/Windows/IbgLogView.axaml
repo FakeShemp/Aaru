@@ -17,113 +17,116 @@
     <Grid RowDefinitions="Auto,*"
           RowSpacing="8"
           Margin="12">
-        <StackPanel Grid.Row="0"
-                    Orientation="Vertical"
-                    Spacing="8">
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="8">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_File_path}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding FilePath, Mode=OneWay}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding Firmware, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Firmware}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding Firmware, Mode=OneWay}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding Bus, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Bus}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding Bus, Mode=OneWay}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding Date, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Date}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding Date, Mode=OneWay}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding MediaSpeeds, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Media_speeds}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding MediaSpeeds, Mode=OneWay}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding Capacity, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Media_capacity}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding Capacity, Mode=OneWay}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding Imagefile, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Image_file}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding Imagefile, Mode=OneWay}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding VolumeIdentifier, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Volume_identifier}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding VolumeIdentifier, Mode=OneWay}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding MediaType, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Media_type}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding MediaType, Mode=OneWay}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding SpeedStart, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Speed_start}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding SpeedStart, Mode=OneWay}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding SpeedEnd, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Speed_end}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding SpeedEnd, Mode=OneWay}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding SpeedAverage, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Speed_average}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding SpeedAverage, Mode=OneWay}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding TimeTaken, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Time_taken}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding TimeTaken, Mode=OneWay}" />
-            </Grid>
-        </StackPanel>
+        <ScrollViewer Grid.Row="0"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Vertical"
+                        Spacing="8">
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8">
+                    <controls:SpectreTextBlock Grid.Column="0"
+                                               Text="{x:Static localization:UI.Title_File_path}" />
+                    <controls:SpectreTextBlock Grid.Column="1"
+                                               Text="{Binding FilePath, Mode=OneWay}" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      IsVisible="{Binding Firmware, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                    <controls:SpectreTextBlock Grid.Column="0"
+                                               Text="{x:Static localization:UI.Title_Firmware}" />
+                    <controls:SpectreTextBlock Grid.Column="1"
+                                               Text="{Binding Firmware, Mode=OneWay}" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      IsVisible="{Binding Bus, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                    <controls:SpectreTextBlock Grid.Column="0"
+                                               Text="{x:Static localization:UI.Title_Bus}" />
+                    <controls:SpectreTextBlock Grid.Column="1"
+                                               Text="{Binding Bus, Mode=OneWay}" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      IsVisible="{Binding Date, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                    <controls:SpectreTextBlock Grid.Column="0"
+                                               Text="{x:Static localization:UI.Title_Date}" />
+                    <controls:SpectreTextBlock Grid.Column="1"
+                                               Text="{Binding Date, Mode=OneWay}" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      IsVisible="{Binding MediaSpeeds, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                    <controls:SpectreTextBlock Grid.Column="0"
+                                               Text="{x:Static localization:UI.Title_Media_speeds}" />
+                    <controls:SpectreTextBlock Grid.Column="1"
+                                               Text="{Binding MediaSpeeds, Mode=OneWay}" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      IsVisible="{Binding Capacity, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                    <controls:SpectreTextBlock Grid.Column="0"
+                                               Text="{x:Static localization:UI.Title_Media_capacity}" />
+                    <controls:SpectreTextBlock Grid.Column="1"
+                                               Text="{Binding Capacity, Mode=OneWay}" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      IsVisible="{Binding Imagefile, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                    <controls:SpectreTextBlock Grid.Column="0"
+                                               Text="{x:Static localization:UI.Title_Image_file}" />
+                    <controls:SpectreTextBlock Grid.Column="1"
+                                               Text="{Binding Imagefile, Mode=OneWay}" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      IsVisible="{Binding VolumeIdentifier, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                    <controls:SpectreTextBlock Grid.Column="0"
+                                               Text="{x:Static localization:UI.Title_Volume_identifier}" />
+                    <controls:SpectreTextBlock Grid.Column="1"
+                                               Text="{Binding VolumeIdentifier, Mode=OneWay}" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      IsVisible="{Binding MediaType, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                    <controls:SpectreTextBlock Grid.Column="0"
+                                               Text="{x:Static localization:UI.Title_Media_type}" />
+                    <controls:SpectreTextBlock Grid.Column="1"
+                                               Text="{Binding MediaType, Mode=OneWay}" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      IsVisible="{Binding SpeedStart, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                    <controls:SpectreTextBlock Grid.Column="0"
+                                               Text="{x:Static localization:UI.Title_Speed_start}" />
+                    <controls:SpectreTextBlock Grid.Column="1"
+                                               Text="{Binding SpeedStart, Mode=OneWay}" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      IsVisible="{Binding SpeedEnd, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                    <controls:SpectreTextBlock Grid.Column="0"
+                                               Text="{x:Static localization:UI.Title_Speed_end}" />
+                    <controls:SpectreTextBlock Grid.Column="1"
+                                               Text="{Binding SpeedEnd, Mode=OneWay}" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      IsVisible="{Binding SpeedAverage, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                    <controls:SpectreTextBlock Grid.Column="0"
+                                               Text="{x:Static localization:UI.Title_Speed_average}" />
+                    <controls:SpectreTextBlock Grid.Column="1"
+                                               Text="{Binding SpeedAverage, Mode=OneWay}" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="8"
+                      IsVisible="{Binding TimeTaken, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                    <controls:SpectreTextBlock Grid.Column="0"
+                                               Text="{x:Static localization:UI.Title_Time_taken}" />
+                    <controls:SpectreTextBlock Grid.Column="1"
+                                               Text="{Binding TimeTaken, Mode=OneWay}" />
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
         <controls:DiscSpeedGraph Grid.Row="1"
                                  SpeedData="{Binding SpeedData, Mode=OneWay}"
                                  MaxSector="{Binding MaxSector, Mode=OneWay}"
