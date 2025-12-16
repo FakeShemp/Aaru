@@ -60,7 +60,8 @@
                     <TextBlock Text="{x:Static localization:UI.Title_Log}" />
                 </TabItem.Header>
                 <StackPanel Orientation="Vertical"
-                            Margin="8">
+                            Margin="8"
+                            Spacing="8">
                     <controls:SpectreTextBlock Text="{Binding A, Mode=OneWay}" />
                     <controls:SpectreTextBlock Text="{Binding B, Mode=OneWay}" />
                     <controls:SpectreTextBlock Text="{Binding C, Mode=OneWay}" />
