@@ -184,8 +184,7 @@
         </StackPanel>
 
         <!-- Main content with tabs -->
-        <TabControl DockPanel.Dock="Top"
-                    Padding="12">
+        <TabControl DockPanel.Dock="Top">
             <!-- Basic Information Tab -->
             <TabItem Header="{x:Static gui:GUI.Header_Basic_Information}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
