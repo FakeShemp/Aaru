@@ -140,6 +140,7 @@
               IsVisible="{Binding ResultsVisible, Mode=OneWay}">
             <Grid Grid.Row="0"
                   RowDefinitions="Auto,*"
+                  RowSpacing="8"
                   IsVisible="{Binding TrackChecksumsVisible, Mode=OneWay}">
                 <controls:SpectreTextBlock Grid.Row="0"
                                            Text="{x:Static localization:UI.Title_Track_checksums}" />
