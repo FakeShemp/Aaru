@@ -117,7 +117,7 @@
                             Command="{Binding WebsiteCommand, Mode=OneWay}">
                         <TextBlock Text="{Binding Website, Mode=OneWay}"
                                    TextDecorations="Underline"
-                                   Foreground="Blue" />
+                                   Foreground="{DynamicResource SystemAccentColor}" />
                     </Button>
                     <Button Grid.Row="5"
                             BorderThickness="0"
@@ -128,7 +128,7 @@
                             Command="{Binding LicenseCommand, Mode=OneWay}">
                         <TextBlock Text="{x:Static localization:UI.Label_License}"
                                    TextDecorations="Underline"
-                                   Foreground="Blue" />
+                                   Foreground="{DynamicResource SystemAccentColor}" />
                     </Button>
                 </Grid>
             </TabItem>
@@ -163,7 +163,7 @@
                 </TabItem.Header>
                 <Border Margin="8"
                         BorderThickness="1"
-                        BorderBrush="LightGray"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                         CornerRadius="8">
                     <ScrollViewer Padding="8">
                         <controls:SpectreTextBlock TextWrapping="Wrap"
