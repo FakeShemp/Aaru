@@ -597,10 +597,9 @@ public static partial class EVPD
                     }
                     else
                     {
-                        sb
-                           .AppendFormat("\t[slateblue1]{                         Localization.Relative_target_port_identifier_0}[/]",
-                                         $"[teal]{(descriptor.Binary[2] << 8) + descriptor.Binary[3]}[/]")
-                           .AppendLine();
+                        sb.AppendFormat($"\t[slateblue1]{Localization.Relative_target_port_identifier_0}[/]",
+                                        $"[teal]{(descriptor.Binary[2] << 8) + descriptor.Binary[3]}[/]")
+                          .AppendLine();
                     }
 
                     break;
