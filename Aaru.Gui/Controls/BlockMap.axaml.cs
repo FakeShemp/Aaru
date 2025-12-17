@@ -174,7 +174,7 @@ public partial class BlockMap : UserControl
 
                 for(var i = 0; i < _sectorData.Count; i++)
                 {
-                    (ulong startSector, double duration) = _sectorData[i];
+                    (ulong _, double duration) = _sectorData[i];
                     Color color = GetColorForDuration(duration);
 
                     int row = i       / _blocksPerRow;
@@ -187,7 +187,7 @@ public partial class BlockMap : UserControl
         _image.InvalidateVisual();
     }
 
-    void DrawBlock(ILockedFramebuffer fb, int x, int y, Color color)
+    static void DrawBlock(ILockedFramebuffer fb, int x, int y, Color color)
     {
         int stride = fb.RowBytes;
 
@@ -252,7 +252,7 @@ public partial class BlockMap : UserControl
                     int dataIndex = startIndex + i;
 
                     if(dataIndex >= _sectorData.Count) break;
-                    (ulong startSector, double duration) = _sectorData[dataIndex];
+                    (ulong _, double duration) = _sectorData[dataIndex];
                     Color color = GetColorForDuration(duration);
                     int   row   = dataIndex / _blocksPerRow;
                     int   col   = dataIndex % _blocksPerRow;
@@ -314,7 +314,7 @@ public partial class BlockMap : UserControl
         ToolTip.SetTip(_image, tooltipText);
     }
 
-    private Color GetColorForDuration(double duration)
+    private static Color GetColorForDuration(double duration)
     {
         // Clamp duration between min and max
         double clampedDuration = Math.Max(MinDuration, Math.Min(MaxDuration, duration));
