@@ -1472,6 +1472,7 @@ dotnet_diagnostic.ph2081.severity = none
 dotnet_diagnostic.ph2082.severity = suggestion
 dotnet_diagnostic.ph2083.severity = warning
 dotnet_diagnostic.ph2086.severity = warning
+dotnet_diagnostic.ph2088.severity = none
 dotnet_diagnostic.ph2089.severity = warning
 dotnet_diagnostic.ph2096.severity = warning
 dotnet_diagnostic.ph2097.severity = warning

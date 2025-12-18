@@ -568,7 +568,7 @@
                                                         <Button DockPanel.Dock="Right"
                                                                 Classes="danger"
                                                                 Content="{x:Static gui:GUI.Button_Remove}"
-                                                                Command="{Binding $parent[Window].DataContext.RemoveRequiredOperatingSystemCommand, Mode=OneWay}"
+                                                                Command="{Binding $parent[Window].DataContext.RemoveRequiredOSCommand, Mode=OneWay}"
                                                                 CommandParameter="{Binding Mode=OneWay}" />
                                                         <TextBlock Classes="label"
                                                                    Text="{x:Static gui:GUI.Label_OS_Name}" />
