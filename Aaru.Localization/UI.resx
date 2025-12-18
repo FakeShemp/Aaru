@@ -5330,4 +5330,7 @@ Do you want to continue?</value>
     <data name="Physical_Format_Information" xml:space="preserve">
         <value>Physical Format Information</value>
     </data>
+    <data name="Use_long_sectors" xml:space="preserve">
+        <value>Use long sectors (with tags).</value>
+    </data>
 </root>

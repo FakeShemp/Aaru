@@ -10503,5 +10503,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Physical_Format_Information", resourceCulture);
             }
         }
+        
+        public static string Use_long_sectors {
+            get {
+                return ResourceManager.GetString("Use_long_sectors", resourceCulture);
+            }
+        }
     }
 }

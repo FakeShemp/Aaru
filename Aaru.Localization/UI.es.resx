@@ -5252,4 +5252,7 @@ Probadores:
     <data name="Physical_Format_Information" xml:space="preserve">
         <value>Información del Formato Físico</value>
     </data>
+    <data name="Use_long_sectors" xml:space="preserve">
+        <value>Usar sectores largos (con etiquetas).</value>
+    </data>
 </root>

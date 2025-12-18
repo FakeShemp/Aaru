@@ -32,6 +32,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -60,10 +61,11 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         Statistics.AddCommand("compare");
 
-        AaruLogging.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruLogging.Debug(MODULE_NAME, "--input1={0}",  Markup.Escape(settings.ImagePath1 ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--input2={0}",  Markup.Escape(settings.ImagePath2 ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",        settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--input1={0}",       Markup.Escape(settings.ImagePath1 ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--input2={0}",       Markup.Escape(settings.ImagePath2 ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--long-sectors={0}", settings.LongSectors);
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}",      settings.Verbose);
 
         IFilter inputFilter1 = null;
         IFilter inputFilter2 = null;
@@ -420,7 +422,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         if(input1MediaImage is not null && input2MediaImage is null) imagesDiffer = true;
 
-        bool differentContents = false;
+        var differentContents = false;
 
         if(input1MediaImage is not null && input2MediaImage is not null)
         {
@@ -440,7 +442,12 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
                                 try
                                 {
-                                    errno = input1MediaImage.ReadSector(sector, false, out byte[] image1Sector, out _);
+                                    errno = settings.LongSectors
+                                                ? input1MediaImage.ReadSectorLong(sector,
+                                                    false,
+                                                    out byte[] image1Sector,
+                                                    out _)
+                                                : input1MediaImage.ReadSector(sector, false, out image1Sector, out _);
 
                                     if(errno != ErrorNumber.NoError)
                                     {
@@ -449,7 +456,12 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
                                                                         sector));
                                     }
 
-                                    errno = input2MediaImage.ReadSector(sector, false, out byte[] image2Sector, out _);
+                                    errno = settings.LongSectors
+                                                ? input2MediaImage.ReadSectorLong(sector,
+                                                    false,
+                                                    out byte[] image2Sector,
+                                                    out _)
+                                                : input2MediaImage.ReadSector(sector, false, out image2Sector, out _);
 
                                     if(errno != ErrorNumber.NoError)
                                     {
@@ -555,6 +567,10 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
         [LocalizedDescription(nameof(UI.Second_media_image_path))]
         [CommandArgument(1, "<image-path1>")]
         public string ImagePath2 { get; init; }
+        [LocalizedDescription(nameof(UI.Use_long_sectors))]
+        [DefaultValue(false)]
+        [CommandOption("-r|--long-sectors")]
+        public bool LongSectors { get; init; }
     }
 
 #endregion
