@@ -148,7 +148,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             inputFormat = baseImage as IMediaImage;
         });
 
-        if(inputFormat == null)
+        if(baseImage == null)
         {
             AaruLogging.WriteLine(UI.Input_image_format_not_identified);
 
@@ -461,7 +461,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         {
             try
             {
-                if(resumeFilePath.EndsWith(".metadata.json", StringComparison.CurrentCultureIgnoreCase))
+                if(resumeFilePath.EndsWith(".resume.json", StringComparison.CurrentCultureIgnoreCase))
                 {
                     var fs = new FileStream(resumeFilePath, FileMode.Open);
 
