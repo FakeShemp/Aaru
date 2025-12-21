@@ -10509,5 +10509,271 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Use_long_sectors", resourceCulture);
             }
         }
+        
+        public static string Image_Merge_Command_Description {
+            get {
+                return ResourceManager.GetString("Image_Merge_Command_Description", resourceCulture);
+            }
+        }
+        
+        public static string Path_to_the_primary_image_file {
+            get {
+                return ResourceManager.GetString("Path_to_the_primary_image_file", resourceCulture);
+            }
+        }
+        
+        public static string Path_to_the_secondary_image_file {
+            get {
+                return ResourceManager.GetString("Path_to_the_secondary_image_file", resourceCulture);
+            }
+        }
+        
+        public static string Path_to_the_output_merged_image_file {
+            get {
+                return ResourceManager.GetString("Path_to_the_output_merged_image_file", resourceCulture);
+            }
+        }
+        
+        public static string Use_media_tags_from_secondary_image {
+            get {
+                return ResourceManager.GetString("Use_media_tags_from_secondary_image", resourceCulture);
+            }
+        }
+        
+        public static string File_containing_list_of_sectors_to_take_from_secondary_image {
+            get {
+                return ResourceManager.GetString("File_containing_list_of_sectors_to_take_from_secondary_image", resourceCulture);
+            }
+        }
+        
+        public static string Ignore_mismatched_image_media_type {
+            get {
+                return ResourceManager.GetString("Ignore_mismatched_image_media_type", resourceCulture);
+            }
+        }
+        
+        public static string Resume_file_for_primary_image {
+            get {
+                return ResourceManager.GetString("Resume_file_for_primary_image", resourceCulture);
+            }
+        }
+        
+        public static string Resume_file_for_secondary_image {
+            get {
+                return ResourceManager.GetString("Resume_file_for_secondary_image", resourceCulture);
+            }
+        }
+        
+        public static string Media_tag_0_present_in_primary_image_will_be_lost_in_output_format {
+            get {
+                return ResourceManager.GetString("Media_tag_0_present_in_primary_image_will_be_lost_in_output_format", resourceCulture);
+            }
+        }
+        
+        public static string Media_tag_0_present_in_secondary_image_will_be_lost_in_output_format {
+            get {
+                return ResourceManager.GetString("Media_tag_0_present_in_secondary_image_will_be_lost_in_output_format", resourceCulture);
+            }
+        }
+        
+        public static string Output_image_does_not_support_sector_tag_0_data_will_be_lost {
+            get {
+                return ResourceManager.GetString("Output_image_does_not_support_sector_tag_0_data_will_be_lost", resourceCulture);
+            }
+        }
+        
+        public static string Copying_negative_sector_0_of_1 {
+            get {
+                return ResourceManager.GetString("Copying_negative_sector_0_of_1", resourceCulture);
+            }
+        }
+        
+        public static string Copying_tag_1_for_negative_sector_0 {
+            get {
+                return ResourceManager.GetString("Copying_tag_1_for_negative_sector_0", resourceCulture);
+            }
+        }
+        
+        public static string Copying_negative_sector_0 {
+            get {
+                return ResourceManager.GetString("Copying_negative_sector_0", resourceCulture);
+            }
+        }
+        
+        public static string Copying_overflow_sector_0_of_1 {
+            get {
+                return ResourceManager.GetString("Copying_overflow_sector_0_of_1", resourceCulture);
+            }
+        }
+        
+        public static string Copying_tag_1_for_overflow_sector_0 {
+            get {
+                return ResourceManager.GetString("Copying_tag_1_for_overflow_sector_0", resourceCulture);
+            }
+        }
+        
+        public static string Copying_overflow_sector_0 {
+            get {
+                return ResourceManager.GetString("Copying_overflow_sector_0", resourceCulture);
+            }
+        }
+        
+        public static string Images_have_different_media_types_cannot_merge {
+            get {
+                return ResourceManager.GetString("Images_have_different_media_types_cannot_merge", resourceCulture);
+            }
+        }
+        
+        public static string Images_have_different_number_of_sectors_cannot_merge {
+            get {
+                return ResourceManager.GetString("Images_have_different_number_of_sectors_cannot_merge", resourceCulture);
+            }
+        }
+        
+        public static string Parsing_sectors_file {
+            get {
+                return ResourceManager.GetString("Parsing_sectors_file", resourceCulture);
+            }
+        }
+        
+        public static string Sectors_file_contains_invalid_sector_number_0_not_continuing {
+            get {
+                return ResourceManager.GetString("Sectors_file_contains_invalid_sector_number_0_not_continuing", resourceCulture);
+            }
+        }
+        
+        public static string Sectors_file_contains_sector_0_which_exceeds_the_maximum_allowed_sector_1_not_continuing {
+            get {
+                return ResourceManager.GetString("Sectors_file_contains_sector_0_which_exceeds_the_maximum_allowed_sector_1_not_con" +
+                        "tinuing", resourceCulture);
+            }
+        }
+        
+        public static string Calculating_sectors_to_merge {
+            get {
+                return ResourceManager.GetString("Calculating_sectors_to_merge", resourceCulture);
+            }
+        }
+        
+        public static string No_sectors_to_merge__output_image_will_be_identical_to_primary_image_not_continuing {
+            get {
+                return ResourceManager.GetString("No_sectors_to_merge__output_image_will_be_identical_to_primary_image_not_continui" +
+                        "ng", resourceCulture);
+            }
+        }
+        
+        public static string Calculating_merged_dump_hardware_list {
+            get {
+                return ResourceManager.GetString("Calculating_merged_dump_hardware_list", resourceCulture);
+            }
+        }
+        
+        public static string Copying_0_sectors_from_primary_image {
+            get {
+                return ResourceManager.GetString("Copying_0_sectors_from_primary_image", resourceCulture);
+            }
+        }
+        
+        public static string Will_copy_0_sectors_from_secondary_image {
+            get {
+                return ResourceManager.GetString("Will_copy_0_sectors_from_secondary_image", resourceCulture);
+            }
+        }
+        
+        public static string Flux_data_will_be_copied_as_is_from_primary_image {
+            get {
+                return ResourceManager.GetString("Flux_data_will_be_copied_as_is_from_primary_image", resourceCulture);
+            }
+        }
+        
+        public static string Copying_file_0_of_partition_1 {
+            get {
+                return ResourceManager.GetString("Copying_file_0_of_partition_1", resourceCulture);
+            }
+        }
+        
+        public static string Copying_tape_partition_0 {
+            get {
+                return ResourceManager.GetString("Copying_tape_partition_0", resourceCulture);
+            }
+        }
+        
+        public static string Merge_completed_successfully {
+            get {
+                return ResourceManager.GetString("Merge_completed_successfully", resourceCulture);
+            }
+        }
+        
+        public static string Decrypting_encrypted_sectors {
+            get {
+                return ResourceManager.GetString("Decrypting_encrypted_sectors", resourceCulture);
+            }
+        }
+        
+        public static string Copying_sectors_in_track_0_of_1 {
+            get {
+                return ResourceManager.GetString("Copying_sectors_in_track_0_of_1", resourceCulture);
+            }
+        }
+        
+        public static string Copying_sectors_0_to_1_in_track_2 {
+            get {
+                return ResourceManager.GetString("Copying_sectors_0_to_1_in_track_2", resourceCulture);
+            }
+        }
+        
+        public static string Input_image_is_not_returning_long_sectors_not_continuing {
+            get {
+                return ResourceManager.GetString("Input_image_is_not_returning_long_sectors_not_continuing", resourceCulture);
+            }
+        }
+        
+        public static string Copying_sector_0 {
+            get {
+                return ResourceManager.GetString("Copying_sector_0", resourceCulture);
+            }
+        }
+        
+        public static string Copying_tags_in_track_0_of_1 {
+            get {
+                return ResourceManager.GetString("Copying_tags_in_track_0_of_1", resourceCulture);
+            }
+        }
+        
+        public static string Copying_tag_3_for_sectors_0_to_1_in_track_2 {
+            get {
+                return ResourceManager.GetString("Copying_tag_3_for_sectors_0_to_1_in_track_2", resourceCulture);
+            }
+        }
+        
+        public static string Copying_tag_0_for_sector_1 {
+            get {
+                return ResourceManager.GetString("Copying_tag_0_for_sector_1", resourceCulture);
+            }
+        }
+        
+        public static string Copying_sectors_0_to_1 {
+            get {
+                return ResourceManager.GetString("Copying_sectors_0_to_1", resourceCulture);
+            }
+        }
+        
+        public static string Copying_tag_2_for_sectors_0_to_1 {
+            get {
+                return ResourceManager.GetString("Copying_tag_2_for_sectors_0_to_1", resourceCulture);
+            }
+        }
+        
+        public static string Copying_media_tag_0_from_primary_image {
+            get {
+                return ResourceManager.GetString("Copying_media_tag_0_from_primary_image", resourceCulture);
+            }
+        }
+        
+        public static string Copying_media_tag_0_from_secondary_image {
+            get {
+                return ResourceManager.GetString("Copying_media_tag_0_from_secondary_image", resourceCulture);
+            }
+        }
     }
 }

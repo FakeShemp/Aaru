@@ -5255,4 +5255,138 @@ Probadores:
     <data name="Use_long_sectors" xml:space="preserve">
         <value>Usar sectores largos (con etiquetas).</value>
     </data>
+    <data name="Image_Merge_Command_Description" xml:space="preserve">
+        <value>Combina dos imágenes en una</value>
+    </data>
+    <data name="Path_to_the_primary_image_file" xml:space="preserve">
+        <value>Ruta al archivo de imagen primario.</value>
+    </data>
+    <data name="Path_to_the_secondary_image_file" xml:space="preserve">
+        <value>Ruta al archivo de imagen secundario.</value>
+    </data>
+    <data name="Path_to_the_output_merged_image_file" xml:space="preserve">
+        <value>Ruta al archivo de imagen combinado.</value>
+    </data>
+    <data name="Use_media_tags_from_secondary_image" xml:space="preserve">
+        <value>Usa las etiquetas del medio de la imagen secundaria (de otra forma cuando estén en ambas imágenes, se usarán las de la primaria).</value>
+    </data>
+    <data name="File_containing_list_of_sectors_to_take_from_secondary_image" xml:space="preserve">
+        <value>Archivo que contiene la lista de sectores a obtener de la imagen secundaria (un sector por línea).</value>
+    </data>
+    <data name="Ignore_mismatched_image_media_type" xml:space="preserve">
+        <value>Ignorar los tipos de medio no coincidentes. La imagen combinada tendrá el tipo de medio de la imagen primaria.</value>
+    </data>
+    <data name="Resume_file_for_primary_image" xml:space="preserve">
+        <value>Fichero de resumen para la imagen primaria</value>
+    </data>
+    <data name="Resume_file_for_secondary_image" xml:space="preserve">
+        <value>Fichero de resumen para la imagen secundaria</value>
+    </data>
+    <data name="Media_tag_0_present_in_primary_image_will_be_lost_in_output_format" xml:space="preserve">
+        <value>[red]La etiqueta del medio [orange3]{0}[/] presente en la imagen primaria se perderá en el formato de salida. No se continuará...[/]</value>
+    </data>
+    <data name="Media_tag_0_present_in_secondary_image_will_be_lost_in_output_format" xml:space="preserve">
+        <value>[red]La etiqueta del medio [orange3]{0}[/] presente en la imagen secundaria se perderá en el formato de salida. No se continuará...[/]</value>
+    </data>
+    <data name="Output_image_does_not_support_sector_tag_0_data_will_be_lost" xml:space="preserve">
+        <value>[red]La imagen de salida no soporta la etiqueta de sector [orange3]{0}[/], se perderán datos. No se continuará...[/]</value>
+    </data>
+    <data name="Copying_negative_sector_0_of_1" xml:space="preserve">
+        <value>[slateblue1]Copiando sector [lime]-{0}[/] de [violet]-{1}[/][/]</value>
+    </data>
+    <data name="Copying_tag_1_for_negative_sector_0" xml:space="preserve">
+        <value>[slateblue1]Copiando etiqueta [orange3]{1}[/] para el sector [lime]-{0}[/][/]</value>
+    </data>
+    <data name="Copying_negative_sector_0" xml:space="preserve">
+        <value>[slateblue1]Copiando sector [lime]-{0}[/][/]</value>
+    </data>
+    <data name="Copying_overflow_sector_0_of_1" xml:space="preserve">
+        <value>[slateblue1]Copiando sector de sobrecarga [lime]{0}[/] de [violet]{1}[/][/]</value>
+    </data>
+    <data name="Copying_tag_1_for_overflow_sector_0" xml:space="preserve">
+        <value>[slateblue1]Copiando etiqueta [orange3]{1}[/] para el sector de sobrecarga [lime]{0}[/][/]</value>
+    </data>
+    <data name="Copying_overflow_sector_0" xml:space="preserve">
+        <value>[slateblue1]Copiando sector de sobrecarga [lime]{0}[/][/]</value>
+    </data>
+    <data name="Images_have_different_media_types_cannot_merge" xml:space="preserve">
+        <value>[red]Las imágenes tienen diferentes tipos de medio, no se pueden combinar.[/]</value>
+    </data>
+    <data name="Images_have_different_number_of_sectors_cannot_merge" xml:space="preserve">
+        <value>[red]Las imágenes tienen diferente número de sectores, no se pueden combinar.[/]</value>
+    </data>
+    <data name="Parsing_sectors_file" xml:space="preserve">
+        <value>[slateblue1]Interpretando el fichero de sectores...[/]</value>
+    </data>
+    <data name="Sectors_file_contains_invalid_sector_number_0_not_continuing" xml:space="preserve">
+        <value>[red]El fichero de sectores contiene el sector inválido 0, no se continuará...[/]</value>
+    </data>
+    <data name="Sectors_file_contains_sector_0_which_exceeds_the_maximum_allowed_sector_1_not_continuing"
+          xml:space="preserve">
+        <value>[red]El fichero de sectores contiene el sector [lime]{0}[/] que excede el sector máximo permitido [violet]{1}[/], no se continuará...[/]</value>
+    </data>
+    <data name="Calculating_sectors_to_merge" xml:space="preserve">
+        <value>[slateblue1]Calculando sectores a combinar...[/]</value>
+    </data>
+    <data name="No_sectors_to_merge__output_image_will_be_identical_to_primary_image_not_continuing"
+          xml:space="preserve">
+        <value>[red]No hay sectores a combinar, la imagen de salida sería idéntica a la primaria, no se continuará...[/]</value>
+    </data>
+    <data name="Calculating_merged_dump_hardware_list" xml:space="preserve">
+        <value>[slateblue1]Calculando list de hardware de volcado combinada...[/]</value>
+    </data>
+    <data name="Copying_0_sectors_from_primary_image" xml:space="preserve">
+        <value>[slateblue1]Copiando [teal]{0}[/] sectores de la imagen primaria[/]</value>
+    </data>
+    <data name="Will_copy_0_sectors_from_secondary_image" xml:space="preserve">
+        <value>[slateblue1]Se copiarán [teal]{0}[/] sectores de la imagen secundaria.[/]</value>
+    </data>
+    <data name="Flux_data_will_be_copied_as_is_from_primary_image" xml:space="preserve">
+        <value>[slateblue1]Los datos de flujo se copiarán tal cual de la imagen primaria...[/]</value>
+    </data>
+    <data name="Copying_file_0_of_partition_1" xml:space="preserve">
+        <value>[slateblue1]Copiando fichero [lime]{0}[/] de partición [teal]{1}[/]...[/]</value>
+    </data>
+    <data name="Copying_tape_partition_0" xml:space="preserve">
+        <value>[slateblue1]Copiando partición de cinta [teal]{0}[/]...[/]</value>
+    </data>
+    <data name="Merge_completed_successfully" xml:space="preserve">
+        <value>[green]¡Combinación completada con éxito![/]</value>
+    </data>
+    <data name="Decrypting_encrypted_sectors" xml:space="preserve">
+        <value>[green]Desencriptando sectores encriptados.[/]</value>
+    </data>
+    <data name="Copying_sectors_in_track_0_of_1" xml:space="preserve">
+        <value>[slateblue1]Copiando sectores en pista [teal]{0}[/] de [teal]{1}[/][/]</value>
+    </data>
+    <data name="Copying_sectors_0_to_1_in_track_2" xml:space="preserve">
+        <value>[slateblue1]Copiando sectores del [lime]{0}[/] al [violet]{1}[/] en la pista [teal]{2}[/][/]</value>
+    </data>
+    <data name="Input_image_is_not_returning_long_sectors_not_continuing" xml:space="preserve">
+        <value>[red]El formato de imagen de entrada no está devolviendo sectores sin procesar, no se continuará...[/]</value>
+    </data>
+    <data name="Copying_sector_0" xml:space="preserve">
+        <value>[slateblue1]Copiando sector [lime]{0}[/][/]</value>
+    </data>
+    <data name="Copying_tags_in_track_0_of_1" xml:space="preserve">
+        <value>[slateblue1]Copiando etiquetas en la pista [teal]{0}[/] de [teal]{1}[/][/]</value>
+    </data>
+    <data name="Copying_tag_3_for_sectors_0_to_1_in_track_2" xml:space="preserve">
+        <value>[slateblue1]Copiando etiqueta [orange3]{3}[/] para los sectores del [lime]{0}[/] al [violet]{1}[/] en la pista [teal]{2}[/][/]</value>
+    </data>
+    <data name="Copying_tag_0_for_sector_1" xml:space="preserve">
+        <value>[slateblue1]Copiando etiqueta [orange3]{0}[/] para el sector [lime]{1}[/][/]</value>
+    </data>
+    <data name="Copying_sectors_0_to_1" xml:space="preserve">
+        <value>[slateblue1]Copiando sectores del [lime]{0}[/] al [violet]{1}[/][/]</value>
+    </data>
+    <data name="Copying_tag_2_for_sectors_0_to_1" xml:space="preserve">
+        <value>[slateblue1]Copiando etiqueta [orange3]{2}[/] para los sectores del [lime]{0}[/] al [violet]{1}[/][/]</value>
+    </data>
+    <data name="Copying_media_tag_0_from_primary_image" xml:space="preserve">
+        <value>[slateblue1]Copiando etiqueta del medio [orange3]{0}[/] de la imagen primaria[/]</value>
+    </data>
+    <data name="Copying_media_tag_0_from_secondary_image" xml:space="preserve">
+        <value>[slateblue1]Copiando etiqueta del medio [orange3]{0}[/] de la imagen secundaria[/]</value>
+    </data>
 </root>

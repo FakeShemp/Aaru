@@ -5333,4 +5333,138 @@ Do you want to continue?</value>
     <data name="Use_long_sectors" xml:space="preserve">
         <value>Use long sectors (with tags).</value>
     </data>
+    <data name="Image_Merge_Command_Description" xml:space="preserve">
+        <value>Merges two images into one</value>
+    </data>
+    <data name="Path_to_the_primary_image_file" xml:space="preserve">
+        <value>Path to the primary image file.</value>
+    </data>
+    <data name="Path_to_the_secondary_image_file" xml:space="preserve">
+        <value>Path to the secondary image file.</value>
+    </data>
+    <data name="Path_to_the_output_merged_image_file" xml:space="preserve">
+        <value>Path to the output merged image file.</value>
+    </data>
+    <data name="Use_media_tags_from_secondary_image" xml:space="preserve">
+        <value>Use media tags from secondary image (otherwise when in both images, primary image tags are used).</value>
+    </data>
+    <data name="File_containing_list_of_sectors_to_take_from_secondary_image" xml:space="preserve">
+        <value>File containing list of sectors to take from secondary image (one sector number per line).</value>
+    </data>
+    <data name="Ignore_mismatched_image_media_type" xml:space="preserve">
+        <value>Ignore mismatched image media type. Merged image will still have primary image media type.</value>
+    </data>
+    <data name="Resume_file_for_primary_image" xml:space="preserve">
+        <value>Resume file for primary image</value>
+    </data>
+    <data name="Resume_file_for_secondary_image" xml:space="preserve">
+        <value>Resume file for secondary image</value>
+    </data>
+    <data name="Media_tag_0_present_in_primary_image_will_be_lost_in_output_format" xml:space="preserve">
+        <value>[red]Media tag [orange3]{0}[/] present in primary image will be lost in output format. Not continuing...[/]</value>
+    </data>
+    <data name="Media_tag_0_present_in_secondary_image_will_be_lost_in_output_format" xml:space="preserve">
+        <value>[red]Media tag [orange3]{0}[/] present in secondary image will be lost in output format. Not continuing...[/]</value>
+    </data>
+    <data name="Output_image_does_not_support_sector_tag_0_data_will_be_lost" xml:space="preserve">
+        <value>[red]Output image does not support sector tag [orange3]{0}[/], data will be lost. Not continuing...[/]</value>
+    </data>
+    <data name="Copying_negative_sector_0_of_1" xml:space="preserve">
+        <value>[slateblue1]Copying sector [lime]-{0}[/] of [violet]-{1}[/][/]</value>
+    </data>
+    <data name="Copying_tag_1_for_negative_sector_0" xml:space="preserve">
+        <value>[slateblue1]Copying tag [orange3]{1}[/] for sector [lime]-{0}[/][/]</value>
+    </data>
+    <data name="Copying_negative_sector_0" xml:space="preserve">
+        <value>[slateblue1]Copying sector [lime]-{0}[/][/]</value>
+    </data>
+    <data name="Copying_overflow_sector_0_of_1" xml:space="preserve">
+        <value>[slateblue1]Copying overflow sector [lime]{0}[/] of [violet]{1}[/][/]</value>
+    </data>
+    <data name="Copying_tag_1_for_overflow_sector_0" xml:space="preserve">
+        <value>[slateblue1]Copying tag [orange3]{1}[/] for overflow sector [lime]{0}[/][/]</value>
+    </data>
+    <data name="Copying_overflow_sector_0" xml:space="preserve">
+        <value>[slateblue1]Copying overflow sector [lime]{0}[/][/]</value>
+    </data>
+    <data name="Images_have_different_media_types_cannot_merge" xml:space="preserve">
+        <value>[red]Images have different media types, cannot merge.[/]</value>
+    </data>
+    <data name="Images_have_different_number_of_sectors_cannot_merge" xml:space="preserve">
+        <value>[red]Images have different number of sectors, cannot merge.[/]</value>
+    </data>
+    <data name="Parsing_sectors_file" xml:space="preserve">
+        <value>[slateblue1]Parsing sectors file...[/]</value>
+    </data>
+    <data name="Sectors_file_contains_invalid_sector_number_0_not_continuing" xml:space="preserve">
+        <value>[red]Sectors file contains invalid sector number 0, not continuing...[/]</value>
+    </data>
+    <data name="Sectors_file_contains_sector_0_which_exceeds_the_maximum_allowed_sector_1_not_continuing"
+          xml:space="preserve">
+        <value>[red]Sectors file contains sector [lime]{0}[/] which exceeds the maximum allowed sector [violet]{1}[/], not continuing...[/]</value>
+    </data>
+    <data name="Calculating_sectors_to_merge" xml:space="preserve">
+        <value>[slateblue1]Calculating sectors to merge...[/]</value>
+    </data>
+    <data name="No_sectors_to_merge__output_image_will_be_identical_to_primary_image_not_continuing"
+          xml:space="preserve">
+        <value>[red]No sectors to merge, output image will be identical to primary image, not continuing...[/]</value>
+    </data>
+    <data name="Calculating_merged_dump_hardware_list" xml:space="preserve">
+        <value>[slateblue1]Calculating merged dump hardware list...[/]</value>
+    </data>
+    <data name="Copying_0_sectors_from_primary_image" xml:space="preserve">
+        <value>[slateblue1]Copying [teal]{0}[/] sectors from primary image[/]</value>
+    </data>
+    <data name="Will_copy_0_sectors_from_secondary_image" xml:space="preserve">
+        <value>[slateblue1]Will copy [teal]{0}[/] sectors from secondary image.[/]</value>
+    </data>
+    <data name="Flux_data_will_be_copied_as_is_from_primary_image" xml:space="preserve">
+        <value>[slateblue1]Flux data will be copied as-is from primary image...[/]</value>
+    </data>
+    <data name="Copying_file_0_of_partition_1" xml:space="preserve">
+        <value>[slateblue1]Copying file [lime]{0}[/] of partition [teal]{1}[/]...[/]</value>
+    </data>
+    <data name="Copying_tape_partition_0" xml:space="preserve">
+        <value>[slateblue1]Copying tape partition [teal]{0}[/]...[/]</value>
+    </data>
+    <data name="Merge_completed_successfully" xml:space="preserve">
+        <value>[green]Merge completed successfully![/]</value>
+    </data>
+    <data name="Decrypting_encrypted_sectors" xml:space="preserve">
+        <value>[green]Decrypting encrypted sectors.[/]</value>
+    </data>
+    <data name="Copying_sectors_in_track_0_of_1" xml:space="preserve">
+        <value>[slateblue1]Copying sectors in track [teal]{0}[/] of [teal]{1}[/][/]</value>
+    </data>
+    <data name="Copying_sectors_0_to_1_in_track_2" xml:space="preserve">
+        <value>[slateblue1]Copying sectors [lime]{0}[/] to [violet]{1}[/] in track [teal]{2}[/][/]</value>
+    </data>
+    <data name="Input_image_is_not_returning_long_sectors_not_continuing" xml:space="preserve">
+        <value>[red]Input image is not returning raw sectors, not continuing...[/]</value>
+    </data>
+    <data name="Copying_sector_0" xml:space="preserve">
+        <value>[slateblue1]Copying sector [lime]{0}[/][/]</value>
+    </data>
+    <data name="Copying_tags_in_track_0_of_1" xml:space="preserve">
+        <value>[slateblue1]Copying tags in track [teal]{0}[/] of [teal]{1}[/][/]</value>
+    </data>
+    <data name="Copying_tag_3_for_sectors_0_to_1_in_track_2" xml:space="preserve">
+        <value>[slateblue1]Copying tag [orange3]{3}[/] for sectors [lime]{0}[/] to [violet]{1}[/] in track [teal]{2}[/][/]</value>
+    </data>
+    <data name="Copying_tag_0_for_sector_1" xml:space="preserve">
+        <value>[slateblue1]Copying tag [orange3]{0}[/] for sector [lime]{1}[/][/]</value>
+    </data>
+    <data name="Copying_sectors_0_to_1" xml:space="preserve">
+        <value>[slateblue1]Copying sectors [lime]{0}[/] to [violet]{1}[/][/]</value>
+    </data>
+    <data name="Copying_tag_2_for_sectors_0_to_1" xml:space="preserve">
+        <value>[slateblue1]Copying tag [orange3]{2}[/] for sectors [lime]{0}[/] to [violet]{1}[/][/]</value>
+    </data>
+    <data name="Copying_media_tag_0_from_primary_image" xml:space="preserve">
+        <value>[slateblue1]Copying media tag [orange3]{0}[/] from primary image[/]</value>
+    </data>
+    <data name="Copying_media_tag_0_from_secondary_image" xml:space="preserve">
+        <value>[slateblue1]Copying media tag [orange3]{0}[/] from secondary image[/]</value>
+    </data>
 </root>

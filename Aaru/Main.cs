@@ -399,6 +399,9 @@ class MainClass
                                                   image.AddCommand<VerifyCommand>("verify")
                                                        .WithAlias("v")
                                                        .WithDescription(UI.Image_Verify_Command_Description);
+
+                                                  image.AddCommand<MergeCommand>("merge")
+                                                       .WithDescription(UI.Image_Merge_Command_Description);
                                               })
                       .WithAlias("i")
                       .WithAlias("img");

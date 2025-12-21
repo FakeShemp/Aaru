@@ -13,11 +13,12 @@ using Aaru.Logging;
 
 namespace Aaru.Core.Image;
 
-public partial class Convert
+public sealed partial class Merger
 {
-    ErrorNumber ConvertOptical(IOpticalMediaImage inputOptical, IWritableOpticalImage outputOptical, bool useLong)
+    ErrorNumber CopyOptical(IOpticalMediaImage    primaryOptical, IOpticalMediaImage secondaryOptical,
+                            IWritableOpticalImage outputOptical, bool useLong, List<ulong> sectorsToCopyFromSecondImage)
     {
-        if(!outputOptical.SetTracks(inputOptical.Tracks))
+        if(!outputOptical.SetTracks(primaryOptical.Tracks))
         {
             StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_sending_tracks_list_to_output_image,
                                                        outputOptical.ErrorMessage));
@@ -25,10 +26,10 @@ public partial class Convert
             return ErrorNumber.WriteError;
         }
 
-        if(_decrypt) UpdateStatus?.Invoke(UI.Decrypting_encrypted_sectors);
+        if(decrypt) UpdateStatus?.Invoke(UI.Decrypting_encrypted_sectors);
 
         // Convert all sectors track by track
-        ErrorNumber errno = ConvertOpticalSectors(inputOptical, outputOptical, useLong);
+        ErrorNumber errno = CopyOpticalSectorsPrimary(primaryOptical, outputOptical, useLong);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -37,37 +38,37 @@ public partial class Convert
         string                   mcn                       = null;
         HashSet<int>             subchannelExtents         = [];
         Dictionary<byte, int>    smallestPregapLbaPerTrack = [];
-        var                      tracks                    = new Track[inputOptical.Tracks.Count];
+        var                      tracks                    = new Track[primaryOptical.Tracks.Count];
 
         for(var i = 0; i < tracks.Length; i++)
         {
             tracks[i] = new Track
             {
                 Indexes           = [],
-                Description       = inputOptical.Tracks[i].Description,
-                EndSector         = inputOptical.Tracks[i].EndSector,
-                StartSector       = inputOptical.Tracks[i].StartSector,
-                Pregap            = inputOptical.Tracks[i].Pregap,
-                Sequence          = inputOptical.Tracks[i].Sequence,
-                Session           = inputOptical.Tracks[i].Session,
-                BytesPerSector    = inputOptical.Tracks[i].BytesPerSector,
-                RawBytesPerSector = inputOptical.Tracks[i].RawBytesPerSector,
-                Type              = inputOptical.Tracks[i].Type,
-                SubchannelType    = inputOptical.Tracks[i].SubchannelType
+                Description       = primaryOptical.Tracks[i].Description,
+                EndSector         = primaryOptical.Tracks[i].EndSector,
+                StartSector       = primaryOptical.Tracks[i].StartSector,
+                Pregap            = primaryOptical.Tracks[i].Pregap,
+                Sequence          = primaryOptical.Tracks[i].Sequence,
+                Session           = primaryOptical.Tracks[i].Session,
+                BytesPerSector    = primaryOptical.Tracks[i].BytesPerSector,
+                RawBytesPerSector = primaryOptical.Tracks[i].RawBytesPerSector,
+                Type              = primaryOptical.Tracks[i].Type,
+                SubchannelType    = primaryOptical.Tracks[i].SubchannelType
             };
 
-            foreach(KeyValuePair<ushort, int> idx in inputOptical.Tracks[i].Indexes)
+            foreach(KeyValuePair<ushort, int> idx in primaryOptical.Tracks[i].Indexes)
                 tracks[i].Indexes[idx.Key] = idx.Value;
         }
 
         // Gets tracks ISRCs
-        foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags
-                                                 .Where(static t => t == SectorTagType.CdTrackIsrc)
-                                                 .Order())
+        foreach(SectorTagType tag in primaryOptical.Info.ReadableSectorTags
+                                                   .Where(static t => t == SectorTagType.CdTrackIsrc)
+                                                   .Order())
         {
             foreach(Track track in tracks)
             {
-                errno = inputOptical.ReadSectorTag(track.Sequence, false, tag, out byte[] isrc);
+                errno = primaryOptical.ReadSectorTag(track.Sequence, false, tag, out byte[] isrc);
 
                 if(errno != ErrorNumber.NoError) continue;
 
@@ -76,13 +77,13 @@ public partial class Convert
         }
 
         // Gets tracks flags
-        foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags
-                                                 .Where(static t => t == SectorTagType.CdTrackFlags)
-                                                 .Order())
+        foreach(SectorTagType tag in primaryOptical.Info.ReadableSectorTags
+                                                   .Where(static t => t == SectorTagType.CdTrackFlags)
+                                                   .Order())
         {
             foreach(Track track in tracks)
             {
-                errno = inputOptical.ReadSectorTag(track.Sequence, false, tag, out byte[] flags);
+                errno = primaryOptical.ReadSectorTag(track.Sequence, false, tag, out byte[] flags);
 
                 if(errno != ErrorNumber.NoError) continue;
 
@@ -91,21 +92,21 @@ public partial class Convert
         }
 
         // Gets subchannel extents
-        for(ulong s = 0; s < inputOptical.Info.Sectors; s++)
+        for(ulong s = 0; s < primaryOptical.Info.Sectors; s++)
         {
             if(s > int.MaxValue) break;
 
             subchannelExtents.Add((int)s);
         }
 
-        errno = ConvertOpticalSectorsTags(inputOptical,
-                                          outputOptical,
-                                          useLong,
-                                          isrcs,
-                                          ref mcn,
-                                          tracks,
-                                          subchannelExtents,
-                                          smallestPregapLbaPerTrack);
+        errno = CopyOpticalSectorsTagsPrimary(primaryOptical,
+                                              outputOptical,
+                                              useLong,
+                                              isrcs,
+                                              ref mcn,
+                                              tracks,
+                                              subchannelExtents,
+                                              smallestPregapLbaPerTrack);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -128,13 +129,34 @@ public partial class Convert
         // Write MCN
         if(mcn != null) outputOptical.WriteMediaTag(Encoding.UTF8.GetBytes(mcn), MediaTagType.CD_MCN);
 
-        if(!IsCompactDiscMedia(inputOptical.Info.MediaType) || !_generateSubchannels) return ErrorNumber.NoError;
+        UpdateStatus?.Invoke(string.Format(UI.Will_copy_0_sectors_from_secondary_image,
+                                           sectorsToCopyFromSecondImage.Count));
+
+        // Copy sectors from secondary image
+        errno = CopyOpticalSectorsSecondary(secondaryOptical, outputOptical, useLong, sectorsToCopyFromSecondImage);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        errno = CopyOpticalSectorsTagsSecondary(secondaryOptical,
+                                                outputOptical,
+                                                useLong,
+                                                isrcs,
+                                                ref mcn,
+                                                tracks,
+                                                subchannelExtents,
+                                                smallestPregapLbaPerTrack,
+                                                sectorsToCopyFromSecondImage);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+
+        if(!IsCompactDiscMedia(primaryOptical.Info.MediaType) || !generateSubchannels) return ErrorNumber.NoError;
 
         // Generate subchannel data
         CompactDisc.GenerateSubchannels(subchannelExtents,
                                         tracks,
                                         trackFlags,
-                                        inputOptical.Info.Sectors,
+                                        primaryOptical.Info.Sectors,
                                         null,
                                         InitProgress,
                                         UpdateProgress,
@@ -144,10 +166,11 @@ public partial class Convert
         return ErrorNumber.NoError;
     }
 
-    ErrorNumber ConvertOpticalSectors(IOpticalMediaImage inputOptical, IWritableOpticalImage outputOptical,
-                                      bool               useLong)
+    ErrorNumber CopyOpticalSectorsPrimary(IOpticalMediaImage inputOptical, IWritableOpticalImage outputOptical,
+                                          bool               useLong)
     {
         if(_aborted) return ErrorNumber.NoError;
+
         InitProgress?.Invoke();
         InitProgress2?.Invoke();
         byte[] generatedTitleKeys = null;
@@ -157,7 +180,7 @@ public partial class Convert
         {
             if(_aborted) break;
 
-            UpdateProgress?.Invoke(string.Format(UI.Converting_sectors_in_track_0_of_1,
+            UpdateProgress?.Invoke(string.Format(UI.Copying_sectors_in_track_0_of_1,
                                                  currentTrack + 1,
                                                  inputOptical.Tracks.Count),
                                    currentTrack,
@@ -169,24 +192,24 @@ public partial class Convert
             while(doneSectors < trackSectors)
             {
                 if(_aborted) break;
+
                 byte[] sector;
 
                 uint sectorsToDo;
 
-                if(trackSectors - doneSectors >= _count)
-                    sectorsToDo = _count;
+                if(trackSectors - doneSectors >= (ulong)count)
+                    sectorsToDo = (uint)count;
                 else
                     sectorsToDo = (uint)(trackSectors - doneSectors);
 
-                UpdateProgress2?.Invoke(string.Format(UI.Converting_sectors_0_to_1_in_track_2,
+                UpdateProgress2?.Invoke(string.Format(UI.Copying_sectors_0_to_1_in_track_2,
                                                       doneSectors + track.StartSector,
                                                       doneSectors + sectorsToDo + track.StartSector,
                                                       track.Sequence),
                                         (long)doneSectors,
                                         (long)trackSectors);
 
-                var          useNotLong        = false;
-                var          result            = false;
+                bool         result;
                 SectorStatus sectorStatus      = SectorStatus.NotDumped;
                 var          sectorStatusArray = new SectorStatus[1];
                 ErrorNumber  errno;
@@ -219,39 +242,21 @@ public partial class Convert
                     }
                     else
                     {
-                        result = true;
+                        StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_sector_1_not_continuing,
+                                                                   errno,
+                                                                   doneSectors + track.StartSector));
 
-                        if(_force)
-                        {
-                            ErrorMessage?.Invoke(string.Format(UI.Error_0_reading_sector_1_continuing,
-                                                               errno,
-                                                               doneSectors + track.StartSector));
-                        }
-                        else
-                        {
-                            StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_sector_1_not_continuing,
-                                                                       errno,
-                                                                       doneSectors + track.StartSector));
-
-                            return ErrorNumber.WriteError;
-                        }
+                        return ErrorNumber.WriteError;
                     }
 
                     if(!result && sector.Length % 2352 != 0)
                     {
-                        if(!_force)
-                        {
-                            StoppingErrorMessage
-                              ?.Invoke(UI.Input_image_is_not_returning_raw_sectors_use_force_if_you_want_to_continue);
+                        StoppingErrorMessage?.Invoke(UI.Input_image_is_not_returning_long_sectors_not_continuing);
 
-                            return ErrorNumber.InOutError;
-                        }
-
-                        useNotLong = true;
+                        return ErrorNumber.InOutError;
                     }
                 }
-
-                if(!useLong || useNotLong)
+                else
                 {
                     errno = sectorsToDo == 1
                                 ? inputOptical.ReadSector(doneSectors + track.StartSector,
@@ -265,7 +270,7 @@ public partial class Convert
                                                            out sectorStatusArray);
 
                     // TODO: Move to generic place when anything but CSS DVDs can be decrypted
-                    if(IsDvdMedia(inputOptical.Info.MediaType) && _decrypt)
+                    if(IsDvdMedia(inputOptical.Info.MediaType) && decrypt)
                     {
                         DecryptDvdSector(ref sector,
                                          inputOptical,
@@ -290,41 +295,21 @@ public partial class Convert
                     }
                     else
                     {
-                        result = true;
+                        StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_sector_1_not_continuing,
+                                                                   errno,
+                                                                   doneSectors + track.StartSector));
 
-                        if(_force)
-                        {
-                            ErrorMessage?.Invoke(string.Format(UI.Error_0_reading_sector_1_continuing,
-                                                               errno,
-                                                               doneSectors + track.StartSector));
-                        }
-                        else
-                        {
-                            StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_sector_1_not_continuing,
-                                                                       errno,
-                                                                       doneSectors + track.StartSector));
-
-                            return ErrorNumber.WriteError;
-                        }
+                        return ErrorNumber.WriteError;
                     }
                 }
 
                 if(!result)
                 {
-                    if(_force)
-                    {
-                        ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_continuing,
-                                                           outputOptical.ErrorMessage,
-                                                           doneSectors + track.StartSector));
-                    }
-                    else
-                    {
-                        StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_not_continuing,
-                                                                   outputOptical.ErrorMessage,
-                                                                   doneSectors + track.StartSector));
+                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_not_continuing,
+                                                               outputOptical.ErrorMessage,
+                                                               doneSectors + track.StartSector));
 
-                        return ErrorNumber.WriteError;
-                    }
+                    return ErrorNumber.WriteError;
                 }
 
                 doneSectors += sectorsToDo;
@@ -339,10 +324,94 @@ public partial class Convert
         return ErrorNumber.NoError;
     }
 
-    ErrorNumber ConvertOpticalSectorsTags(IOpticalMediaImage inputOptical, IWritableOpticalImage outputOptical,
-                                          bool useLong, Dictionary<byte, string> isrcs, ref string mcn, Track[] tracks,
-                                          HashSet<int> subchannelExtents,
-                                          Dictionary<byte, int> smallestPregapLbaPerTrack)
+    ErrorNumber CopyOpticalSectorsSecondary(IOpticalMediaImage inputOptical, IWritableOpticalImage outputOptical,
+                                            bool               useLong,      List<ulong>           sectorsToCopy)
+    {
+        if(_aborted) return ErrorNumber.NoError;
+
+        InitProgress?.Invoke();
+        byte[] generatedTitleKeys   = null;
+        int    howManySectorsToCopy = sectorsToCopy.Count(t => t < inputOptical.Info.Sectors);
+        var    howManySectorsCopied = 0;
+
+        foreach(ulong sectorAddress in sectorsToCopy.Where(t => t < inputOptical.Info.Sectors)
+                                                    .TakeWhile(_ => !_aborted))
+        {
+            UpdateProgress?.Invoke(string.Format(UI.Copying_sector_0, sectorAddress),
+                                   howManySectorsCopied,
+                                   howManySectorsToCopy);
+
+            if(_aborted) break;
+
+            byte[]       sector;
+            bool         result;
+            SectorStatus sectorStatus;
+            ErrorNumber  errno;
+
+            if(useLong)
+            {
+                errno = inputOptical.ReadSectorLong(sectorAddress, false, out sector, out sectorStatus);
+
+                if(errno == ErrorNumber.NoError)
+                    result = outputOptical.WriteSectorLong(sector, sectorAddress, false, sectorStatus);
+                else
+                {
+                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_sector_1_not_continuing,
+                                                               errno,
+                                                               sectorAddress));
+
+                    return ErrorNumber.WriteError;
+                }
+
+                if(!result && sector.Length % 2352 != 0)
+                {
+                    StoppingErrorMessage?.Invoke(UI.Input_image_is_not_returning_long_sectors_not_continuing);
+
+                    return ErrorNumber.InOutError;
+                }
+            }
+
+            else
+            {
+                errno = inputOptical.ReadSector(sectorAddress, false, out sector, out sectorStatus);
+
+                // TODO: Move to generic place when anything but CSS DVDs can be decrypted
+                if(IsDvdMedia(inputOptical.Info.MediaType) && decrypt)
+                    DecryptDvdSector(ref sector, inputOptical, sectorAddress, 1, _plugins, ref generatedTitleKeys);
+
+                if(errno == ErrorNumber.NoError)
+                    result = outputOptical.WriteSector(sector, sectorAddress, false, sectorStatus);
+                else
+                {
+                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_sector_1_not_continuing,
+                                                               errno,
+                                                               sectorAddress));
+
+                    return ErrorNumber.WriteError;
+                }
+            }
+
+            if(!result)
+            {
+                StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_not_continuing,
+                                                           outputOptical.ErrorMessage,
+                                                           sectorAddress));
+
+                return ErrorNumber.WriteError;
+            }
+
+            howManySectorsCopied++;
+        }
+
+        EndProgress?.Invoke();
+
+        return ErrorNumber.NoError;
+    }
+
+    ErrorNumber CopyOpticalSectorsTagsPrimary(IOpticalMediaImage inputOptical, IWritableOpticalImage outputOptical,
+                                              bool useLong, Dictionary<byte, string> isrcs, ref string mcn,
+                                              Track[] tracks, HashSet<int> subchannelExtents,
+                                              Dictionary<byte, int> smallestPregapLbaPerTrack)
     {
         foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags.Order()
                                                  .TakeWhile(_ => useLong)
@@ -370,17 +439,13 @@ public partial class Convert
                     continue;
             }
 
-            if(_force && !outputOptical.SupportedSectorTags.Contains(tag)) continue;
-
-            ErrorNumber errno = ErrorNumber.NoError;
-
             InitProgress?.Invoke();
             InitProgress2?.Invoke();
             var currentTrack = 0;
 
             foreach(Track track in inputOptical.Tracks)
             {
-                UpdateProgress?.Invoke(string.Format(UI.Converting_tags_in_track_0_of_1,
+                UpdateProgress?.Invoke(string.Format(UI.Copying_tags_in_track_0_of_1,
                                                      currentTrack + 1,
                                                      inputOptical.Tracks.Count),
                                        currentTrack,
@@ -391,6 +456,8 @@ public partial class Convert
                 byte[] sector;
                 bool   result;
 
+                ErrorNumber errno;
+
                 switch(tag)
                 {
                     case SectorTagType.CdTrackFlags:
@@ -400,7 +467,6 @@ public partial class Convert
                         switch(errno)
                         {
                             case ErrorNumber.NoData:
-                                errno = ErrorNumber.NoError;
 
                                 continue;
                             case ErrorNumber.NoError:
@@ -409,14 +475,6 @@ public partial class Convert
                                 break;
                             default:
                             {
-                                if(_force)
-                                {
-                                    ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_tag_continuing,
-                                                                       outputOptical.ErrorMessage));
-
-                                    continue;
-                                }
-
                                 StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_tag_not_continuing,
                                                                            outputOptical.ErrorMessage));
 
@@ -426,18 +484,10 @@ public partial class Convert
 
                         if(!result)
                         {
-                            if(_force)
-                            {
-                                ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_tag_continuing,
-                                                                   outputOptical.ErrorMessage));
-                            }
-                            else
-                            {
-                                StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_tag_not_continuing,
-                                                                           outputOptical.ErrorMessage));
+                            StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_tag_not_continuing,
+                                                                       outputOptical.ErrorMessage));
 
-                                return ErrorNumber.WriteError;
-                            }
+                            return ErrorNumber.WriteError;
                         }
 
                         continue;
@@ -446,14 +496,15 @@ public partial class Convert
                 while(doneSectors < trackSectors)
                 {
                     if(_aborted) break;
+
                     uint sectorsToDo;
 
-                    if(trackSectors - doneSectors >= _count)
-                        sectorsToDo = _count;
+                    if(trackSectors - doneSectors >= (ulong)count)
+                        sectorsToDo = (uint)count;
                     else
                         sectorsToDo = (uint)(trackSectors - doneSectors);
 
-                    UpdateProgress2?.Invoke(string.Format(UI.Converting_tag_3_for_sectors_0_to_1_in_track_2,
+                    UpdateProgress2?.Invoke(string.Format(UI.Copying_tag_3_for_sectors_0_to_1_in_track_2,
                                                           doneSectors + track.StartSector,
                                                           doneSectors + sectorsToDo + track.StartSector,
                                                           track.Sequence,
@@ -480,10 +531,10 @@ public partial class Convert
                                     ref mcn,
                                     tracks,
                                     subchannelExtents,
-                                    _fixSubchannelPosition,
+                                    fixSubchannelPosition,
                                     outputOptical,
-                                    _fixSubchannel,
-                                    _fixSubchannelCrc,
+                                    fixSubchannel,
+                                    fixSubchannelCrc,
                                     null,
                                     smallestPregapLbaPerTrack,
                                     false,
@@ -503,23 +554,12 @@ public partial class Convert
                         }
                         else
                         {
-                            result = true;
+                            StoppingErrorMessage
+                              ?.Invoke(string.Format(UI.Error_0_reading_tag_for_sector_1_not_continuing,
+                                                     errno,
+                                                     doneSectors + track.StartSector));
 
-                            if(_force)
-                            {
-                                ErrorMessage?.Invoke(string.Format(UI.Error_0_reading_tag_for_sector_1_continuing,
-                                                                   errno,
-                                                                   doneSectors + track.StartSector));
-                            }
-                            else
-                            {
-                                StoppingErrorMessage
-                                  ?.Invoke(string.Format(UI.Error_0_reading_tag_for_sector_1_not_continuing,
-                                                         errno,
-                                                         doneSectors + track.StartSector));
-
-                                return errno;
-                            }
+                            return errno;
                         }
                     }
                     else
@@ -545,10 +585,10 @@ public partial class Convert
                                     ref mcn,
                                     tracks,
                                     subchannelExtents,
-                                    _fixSubchannelPosition,
+                                    fixSubchannelPosition,
                                     outputOptical,
-                                    _fixSubchannel,
-                                    _fixSubchannelCrc,
+                                    fixSubchannel,
+                                    fixSubchannelCrc,
                                     null,
                                     smallestPregapLbaPerTrack,
                                     false,
@@ -569,43 +609,22 @@ public partial class Convert
                         }
                         else
                         {
-                            result = true;
+                            StoppingErrorMessage
+                              ?.Invoke(string.Format(UI.Error_0_reading_tag_for_sector_1_not_continuing,
+                                                     errno,
+                                                     doneSectors + track.StartSector));
 
-                            if(_force)
-                            {
-                                ErrorMessage?.Invoke(string.Format(UI.Error_0_reading_tag_for_sector_1_continuing,
-                                                                   errno,
-                                                                   doneSectors + track.StartSector));
-                            }
-                            else
-                            {
-                                StoppingErrorMessage
-                                  ?.Invoke(string.Format(UI.Error_0_reading_tag_for_sector_1_not_continuing,
-                                                         errno,
-                                                         doneSectors + track.StartSector));
-
-                                return errno;
-                            }
+                            return errno;
                         }
                     }
 
                     if(!result)
                     {
-                        if(_force)
-                        {
-                            ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_tag_for_sector_1_continuing,
-                                                               outputOptical.ErrorMessage,
-                                                               doneSectors + track.StartSector));
-                        }
-                        else
-                        {
-                            StoppingErrorMessage
-                              ?.Invoke(string.Format(UI.Error_0_writing_tag_for_sector_1_not_continuing,
-                                                     outputOptical.ErrorMessage,
-                                                     doneSectors + track.StartSector));
+                        StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_tag_for_sector_1_not_continuing,
+                                                                   outputOptical.ErrorMessage,
+                                                                   doneSectors + track.StartSector));
 
-                            return ErrorNumber.WriteError;
-                        }
+                        return ErrorNumber.WriteError;
                     }
 
                     doneSectors += sectorsToDo;
@@ -616,8 +635,117 @@ public partial class Convert
 
             EndProgress?.Invoke();
             EndProgress2?.Invoke();
+        }
 
-            if(errno != ErrorNumber.NoError && !_force) return errno;
+        return ErrorNumber.NoError;
+    }
+
+    ErrorNumber CopyOpticalSectorsTagsSecondary(IOpticalMediaImage inputOptical, IWritableOpticalImage outputOptical,
+                                                bool useLong, Dictionary<byte, string> isrcs, ref string mcn,
+                                                Track[] tracks, HashSet<int> subchannelExtents,
+                                                Dictionary<byte, int> smallestPregapLbaPerTrack,
+                                                List<ulong> sectorsToCopy)
+    {
+        foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags.Order()
+                                                 .TakeWhile(_ => useLong)
+                                                 .TakeWhile(_ => !_aborted))
+        {
+            switch(tag)
+            {
+                case SectorTagType.AppleSonyTag:
+                case SectorTagType.AppleProfileTag:
+                case SectorTagType.PriamDataTowerTag:
+                case SectorTagType.CdSectorSync:
+                case SectorTagType.CdSectorHeader:
+                case SectorTagType.CdSectorSubHeader:
+                case SectorTagType.CdSectorEdc:
+                case SectorTagType.CdSectorEccP:
+                case SectorTagType.CdSectorEccQ:
+                case SectorTagType.CdSectorEcc:
+                case SectorTagType.DvdSectorCmi:
+                case SectorTagType.DvdSectorTitleKey:
+                case SectorTagType.DvdSectorEdc:
+                case SectorTagType.DvdSectorIed:
+                case SectorTagType.DvdSectorInformation:
+                case SectorTagType.DvdSectorNumber:
+                    // This tags are inline in long sector
+                    continue;
+            }
+
+            InitProgress?.Invoke();
+
+
+            int numberOfSectorsToCopy = sectorsToCopy.Count(t => t < inputOptical.Info.Sectors);
+            var currentSectorIndex    = 0;
+
+            foreach(ulong sectorAddress in sectorsToCopy.Where(t => t < inputOptical.Info.Sectors))
+            {
+                if(_aborted) break;
+
+                Track track = inputOptical.Tracks.FirstOrDefault(t => t.StartSector <= sectorAddress &&
+                                                                      t.EndSector   >= sectorAddress);
+
+                UpdateProgress?.Invoke(string.Format(UI.Copying_tag_0_for_sector_1, tag, sectorAddress),
+                                       currentSectorIndex,
+                                       numberOfSectorsToCopy);
+
+                ErrorNumber errno = inputOptical.ReadSectorTag(sectorAddress, false, tag, out byte[] sector);
+
+                bool result;
+
+                if(errno == ErrorNumber.NoError)
+                {
+                    if(tag == SectorTagType.CdSectorSubchannel)
+                    {
+                        bool indexesChanged = CompactDisc.WriteSubchannelToImage(MmcSubchannel.Raw,
+                            MmcSubchannel.Raw,
+                            sector,
+                            sectorAddress,
+                            1,
+                            null,
+                            isrcs,
+                            (byte)track.Sequence,
+                            ref mcn,
+                            tracks,
+                            subchannelExtents,
+                            fixSubchannelPosition,
+                            outputOptical,
+                            fixSubchannel,
+                            fixSubchannelCrc,
+                            null,
+                            smallestPregapLbaPerTrack,
+                            false,
+                            out _);
+
+                        if(indexesChanged) outputOptical.SetTracks(tracks.ToList());
+
+                        result = true;
+                    }
+                    else
+                        result = outputOptical.WriteSectorTag(sector, sectorAddress, false, tag);
+                }
+                else
+                {
+                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_tag_for_sector_1_not_continuing,
+                                                               errno,
+                                                               sectorAddress));
+
+                    return errno;
+                }
+
+                if(!result)
+                {
+                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_tag_for_sector_1_not_continuing,
+                                                               outputOptical.ErrorMessage,
+                                                               sectorAddress));
+
+                    return ErrorNumber.WriteError;
+                }
+
+                currentSectorIndex++;
+            }
+
+            EndProgress?.Invoke();
         }
 
         return ErrorNumber.NoError;
@@ -710,13 +838,13 @@ public partial class Convert
         generatedTitleKeys = CSS.GenerateTitleKeys(inputOptical, partitions, inputOptical.Info.Sectors, rofs);
     }
 
-    bool IsDvdMedia(MediaType mediaType) =>
+    static bool IsDvdMedia(MediaType mediaType) =>
 
         // Checks if media type is any variant of DVD (ROM, R, RDL, PR, PRDL)
         // Consolidates media type checking logic used throughout conversion process
         mediaType is MediaType.DVDROM or MediaType.DVDR or MediaType.DVDRDL or MediaType.DVDPR or MediaType.DVDPRDL;
 
-    private bool IsCompactDiscMedia(MediaType mediaType) =>
+    private static bool IsCompactDiscMedia(MediaType mediaType) =>
 
         // Checks if media type is any variant of compact disc (CD, CDDA, CDR, CDRW, etc.)
         // Covers all 45+ CD-based media types including gaming and specialty formats
