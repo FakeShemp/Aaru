@@ -33,6 +33,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -564,7 +565,7 @@ public sealed partial class SuperCardPro
         {
             ulong resolution = (ulong)((Header.resolution + 1) * DEFAULT_RESOLUTION);
 
-            foreach(KeyValuePair<byte, TrackHeader> kvp in ScpTracks)
+            captures = [.. ScpTracks.Select(kvp =>
             {
                 byte scpTrack = kvp.Key;
 
@@ -573,7 +574,7 @@ public sealed partial class SuperCardPro
                 ushort track        = (ushort)(scpTrack / 2);
                 const byte subTrack = 0; // SuperCardPro always has subTrack = 0
 
-                captures.Add(new FluxCapture
+                return new FluxCapture
                 {
                     Head            = head,
                     Track           = track,
@@ -581,8 +582,8 @@ public sealed partial class SuperCardPro
                     CaptureIndex    = 0, // SuperCardPro always has one capture per track
                     IndexResolution = resolution,
                     DataResolution  = resolution
-                });
-            }
+                };
+            })];
         }
 
         return ErrorNumber.NoError;

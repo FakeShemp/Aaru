@@ -261,10 +261,10 @@ public class LinearMemoryInterleave
 
 public class FluxCapture
 {
-        public uint Head;
-        public ushort Track;
-        public byte SubTrack;
-        public uint CaptureIndex;
-        public ulong IndexResolution;
-        public ulong DataResolution;
+    public uint Head { get; set; }
+    public ushort Track { get; set; }
+    public byte SubTrack { get; set; }
+    public uint CaptureIndex { get; set; }
+    public ulong IndexResolution { get; set; }
+    public ulong DataResolution { get; set; }
 }

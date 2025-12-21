@@ -30,7 +30,7 @@ public sealed partial class AaruFormat
             {
                 ErrorMessage = StatusToErrorMessage(res);
 
-                return null;
+                return [];
             }
 
             byte[] buffer = new byte[length];
@@ -41,7 +41,7 @@ public sealed partial class AaruFormat
             {
                 ErrorMessage = StatusToErrorMessage(res);
 
-                return null;
+                return [];
             }
 
             int fluxCaptureSize = Marshal.SizeOf<FluxCaptureEntry>();
