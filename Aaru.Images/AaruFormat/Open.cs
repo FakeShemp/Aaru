@@ -264,6 +264,6 @@ public sealed partial class AaruFormat
                    StringMarshalling = StringMarshalling.Utf8,
                    SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial IntPtr aaruf_open(string filepath, [MarshalAs(UnmanagedType.I4)] bool resume,
+    private static partial IntPtr aaruf_open(string filepath, [MarshalAs(UnmanagedType.I1)] bool resume,
                                              string options);
 }

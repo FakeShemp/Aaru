@@ -21,7 +21,7 @@ public sealed partial class AaruFormat
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_read_sector", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_read_sector(IntPtr                             context,  ulong    sectorAddress,
-                                                    [MarshalAs(UnmanagedType.I4)] bool negative, byte[]   data,
+                                                    [MarshalAs(UnmanagedType.I1)] bool negative, byte[]   data,
                                                     ref                           uint length,   out byte sectorStatus);
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_read_track_sector(void *context, uint8_t *data, const uint64_t sector_address,
@@ -36,7 +36,7 @@ public sealed partial class AaruFormat
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_read_sector_long", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_read_sector_long(IntPtr context, ulong sectorAddress,
-                                                         [MarshalAs(UnmanagedType.I4)] bool negative, byte[] data,
+                                                         [MarshalAs(UnmanagedType.I1)] bool negative, byte[] data,
                                                          ref uint length, out byte sectorStatus);
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_read_sector_tag(const void *context, const uint64_t sector_address,
@@ -45,7 +45,7 @@ public sealed partial class AaruFormat
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_read_sector_tag", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_read_sector_tag(IntPtr                             context, ulong sectorAddress,
-                                                        [MarshalAs(UnmanagedType.I4)] bool negative, byte[] buffer,
+                                                        [MarshalAs(UnmanagedType.I1)] bool negative, byte[] buffer,
                                                         ref                           uint length, SectorTagType tag);
 
 #region IWritableOpticalImage Members

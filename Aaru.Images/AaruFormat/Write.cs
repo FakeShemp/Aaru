@@ -20,7 +20,7 @@ public sealed partial class AaruFormat
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_write_sector", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_write_sector(IntPtr                             context, ulong sectorAddress,
-                                                     [MarshalAs(UnmanagedType.I4)] bool negative, [In] byte[] data,
+                                                     [MarshalAs(UnmanagedType.I1)] bool negative, [In] byte[] data,
                                                      SectorStatus                       sectorStatus, uint length);
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_write_sector_long(void *context, uint64_t sector_address, bool negative,
@@ -28,7 +28,7 @@ public sealed partial class AaruFormat
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_write_sector_long", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_write_sector_long(IntPtr context, ulong sectorAddress,
-                                                          [MarshalAs(UnmanagedType.I4)] bool negative, [In] byte[] data,
+                                                          [MarshalAs(UnmanagedType.I1)] bool negative, [In] byte[] data,
                                                           SectorStatus sectorStatus, uint length);
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_write_media_tag(void *context, const uint8_t *data, const int32_t type,
@@ -43,7 +43,7 @@ public sealed partial class AaruFormat
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_write_sector_tag", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_write_sector_tag(IntPtr context, ulong sectorAddress,
-                                                         [MarshalAs(UnmanagedType.I4)] bool negative, [In] byte[] data,
+                                                         [MarshalAs(UnmanagedType.I1)] bool negative, [In] byte[] data,
                                                          nuint length, SectorTagType tag);
 
     // AARU_EXPORT void AARU_CALL *aaruf_create(const char *filepath, const uint32_t media_type, const uint32_t sector_size,
@@ -61,7 +61,7 @@ public sealed partial class AaruFormat
                                                ulong negativeSectors, ulong overflowSectors, string options,
                                                string applicationName, byte applicationNameLength,
                                                byte applicationMajorVersion, byte applicationMinorVersion,
-                                               [MarshalAs(UnmanagedType.I4)] bool isTape);
+                                               [MarshalAs(UnmanagedType.I1)] bool isTape);
 
 #region IWritableOpticalImage Members
 
