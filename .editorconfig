@@ -261,10 +261,6 @@ resharper_xml_keep_user_linebreaks                                              
 resharper_xml_pi_attribute_style                                                                  = first_attribute_on_single_line
 
 # ReSharper inspection severities
-resharper_annotate_can_be_null_parameter_highlighting                                             = warning
-resharper_annotate_can_be_null_type_member_highlighting                                           = warning
-resharper_annotate_not_null_parameter_highlighting                                                = warning
-resharper_annotate_not_null_type_member_highlighting                                              = warning
 resharper_arguments_style_anonymous_function_highlighting                                         = warning
 resharper_arguments_style_literal_highlighting                                                    = warning
 resharper_arguments_style_named_expression_highlighting                                           = warning
