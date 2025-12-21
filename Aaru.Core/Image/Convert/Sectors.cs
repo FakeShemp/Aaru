@@ -1,7 +1,6 @@
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.Localization;
-using Aaru.Logging;
 
 namespace Aaru.Core.Image;
 
@@ -12,8 +11,7 @@ public partial class Convert
         if(_aborted) return ErrorNumber.NoError;
 
         InitProgress?.Invoke();
-        ErrorNumber errno       = ErrorNumber.NoError;
-        ulong       doneSectors = 0;
+        ulong doneSectors = 0;
 
         while(doneSectors < _inputImage.Info.Sectors)
         {
@@ -35,6 +33,8 @@ public partial class Convert
             bool         result;
             SectorStatus sectorStatus      = SectorStatus.NotDumped;
             var          sectorStatusArray = new SectorStatus[1];
+
+            ErrorNumber errno;
 
             if(useLong)
             {
@@ -195,10 +195,12 @@ public partial class Convert
                     result = true;
 
                     if(_force)
-                        AaruLogging.Error(UI.Error_0_reading_sector_1_continuing, errno, doneSectors);
+                        ErrorMessage?.Invoke(string.Format(UI.Error_0_reading_sector_1_continuing, errno, doneSectors));
                     else
                     {
-                        AaruLogging.Error(UI.Error_0_reading_sector_1_not_continuing, errno, doneSectors);
+                        StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_sector_1_not_continuing,
+                                                                   errno,
+                                                                   doneSectors));
 
                         return errno;
                     }
@@ -208,15 +210,15 @@ public partial class Convert
                 {
                     if(_force)
                     {
-                        AaruLogging.Error(UI.Error_0_writing_sector_1_continuing,
-                                          _outputImage.ErrorMessage,
-                                          doneSectors);
+                        ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_continuing,
+                                                           _outputImage.ErrorMessage,
+                                                           doneSectors));
                     }
                     else
                     {
-                        AaruLogging.Error(UI.Error_0_writing_sector_1_not_continuing,
-                                          _outputImage.ErrorMessage,
-                                          doneSectors);
+                        StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_not_continuing,
+                                                                   _outputImage.ErrorMessage,
+                                                                   doneSectors));
 
                         return ErrorNumber.WriteError;
                     }

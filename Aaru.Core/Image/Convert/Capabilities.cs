@@ -69,11 +69,11 @@ public partial class Convert
                 continue;
             }
 
-            StoppingErrorMessage.Invoke(string.Format(UI.Converting_image_will_lose_sector_tag_0 +
-                                                      Environment.NewLine                        +
-                                                      UI
-                                                         .If_you_dont_care_use_force_option_This_will_skip_all_sector_tags_converting_only_user_data,
-                                                      sectorTag));
+            StoppingErrorMessage?.Invoke(string.Format(UI.Converting_image_will_lose_sector_tag_0 +
+                                                       Environment.NewLine                        +
+                                                       UI
+                                                          .If_you_dont_care_use_force_option_This_will_skip_all_sector_tags_converting_only_user_data,
+                                                       sectorTag));
 
             return ErrorNumber.DataWillBeLost;
         }

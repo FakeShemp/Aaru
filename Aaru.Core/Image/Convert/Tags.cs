@@ -1,7 +1,6 @@
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.Localization;
-using Aaru.Logging;
 using Humanizer;
 
 namespace Aaru.Core.Image;
@@ -33,7 +32,7 @@ public partial class Convert
                     ErrorMessage?.Invoke(string.Format(UI.Error_0_reading_media_tag, errno));
                 else
                 {
-                    AaruLogging.Error(UI.Error_0_reading_media_tag_not_continuing, errno);
+                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_media_tag_not_continuing, errno));
 
                     errorNumber = errno;
 

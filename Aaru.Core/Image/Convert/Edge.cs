@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.Localization;
-using Aaru.Logging;
 
 namespace Aaru.Core.Image;
 
@@ -47,6 +46,7 @@ public partial class Convert
                     if(sectorStatus == SectorStatus.NotDumped)
                     {
                         notDumped.Add(i);
+
                         continue;
                     }
 
@@ -77,6 +77,7 @@ public partial class Convert
                     if(sectorStatus == SectorStatus.NotDumped)
                     {
                         notDumped.Add(i);
+
                         continue;
                     }
 
@@ -168,10 +169,12 @@ public partial class Convert
                     result = true;
 
                     if(_force)
-                        AaruLogging.Error(UI.Error_0_reading_negative_sector_1_continuing, errno, i);
+                        ErrorMessage?.Invoke(string.Format(UI.Error_0_reading_negative_sector_1_continuing, errno, i));
                     else
                     {
-                        AaruLogging.Error(UI.Error_0_reading_negative_sector_1_not_continuing, errno, i);
+                        StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_negative_sector_1_not_continuing,
+                                                                   errno,
+                                                                   i));
 
                         return errno;
                     }
@@ -180,12 +183,16 @@ public partial class Convert
                 if(result) continue;
 
                 if(_force)
-                    AaruLogging.Error(UI.Error_0_writing_negative_sector_1_continuing, _outputImage.ErrorMessage, i);
+                {
+                    ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_negative_sector_1_continuing,
+                                                       _outputImage.ErrorMessage,
+                                                       i));
+                }
                 else
                 {
-                    AaruLogging.Error(UI.Error_0_writing_negative_sector_1_not_continuing,
-                                      _outputImage.ErrorMessage,
-                                      i);
+                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_negative_sector_1_not_continuing,
+                                                               _outputImage.ErrorMessage,
+                                                               i));
 
                     return ErrorNumber.WriteError;
                 }
@@ -233,8 +240,10 @@ public partial class Convert
                     if(sectorStatus == SectorStatus.NotDumped)
                     {
                         notDumped.Add(i);
+
                         continue;
                     }
+
                     result = _outputImage.WriteSectorLong(sector, _inputImage.Info.Sectors + i, false, sectorStatus);
                 }
                 else
@@ -262,8 +271,10 @@ public partial class Convert
                     if(sectorStatus == SectorStatus.NotDumped)
                     {
                         notDumped.Add(i);
+
                         continue;
                     }
+
                     result = _outputImage.WriteSector(sector, _inputImage.Info.Sectors + i, false, sectorStatus);
                 }
                 else
