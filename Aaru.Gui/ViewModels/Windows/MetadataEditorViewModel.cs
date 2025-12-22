@@ -136,7 +136,7 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
     ObservableCollection<StringWrapper> _publishers = [];
 
     [ObservableProperty]
-    DateTime? _releaseDate;
+    DateTimeOffset? _releaseDate;
 
     [ObservableProperty]
     ObservableCollection<RequiredOperatingSystemViewModel> _requiredOperatingSystems = [];
@@ -207,7 +207,7 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
                                       ? new LocalizedEnumValue<ReleaseType>(metadata.Release.Value)
                                       : null;
 
-            ReleaseDate  = metadata.ReleaseDate;
+            ReleaseDate  = metadata.ReleaseDate is not null ? new DateTimeOffset((DateTime)metadata.ReleaseDate) : null;
             PartNumber   = metadata.PartNumber;
             SerialNumber = metadata.SerialNumber;
 
@@ -223,8 +223,9 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
 
             // Enum lists
             if(metadata.Languages != null)
-                foreach(Language lang in metadata.Languages)
-                    Languages.Add(new LocalizedEnumValue<Language>(lang));
+            {
+                foreach(Language lang in metadata.Languages) Languages.Add(new LocalizedEnumValue<Language>(lang));
+            }
 
             if(metadata.Architectures != null)
             {
@@ -234,16 +235,19 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
 
             // Complex objects
             if(metadata.Barcodes != null)
-                foreach(Barcode barcode in metadata.Barcodes)
-                    Barcodes.Add(new BarcodeViewModel(barcode));
+            {
+                foreach(Barcode barcode in metadata.Barcodes) Barcodes.Add(new BarcodeViewModel(barcode));
+            }
 
             if(metadata.Magazines != null)
-                foreach(Magazine magazine in metadata.Magazines)
-                    Magazines.Add(new MagazineViewModel(magazine));
+            {
+                foreach(Magazine magazine in metadata.Magazines) Magazines.Add(new MagazineViewModel(magazine));
+            }
 
             if(metadata.Books != null)
-                foreach(Book book in metadata.Books)
-                    Books.Add(new BookViewModel(book));
+            {
+                foreach(Book book in metadata.Books) Books.Add(new BookViewModel(book));
+            }
 
             if(metadata.RequiredOperatingSystems != null)
             {
@@ -252,32 +256,39 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
             }
 
             if(metadata.UserManuals != null)
-                foreach(UserManual manual in metadata.UserManuals)
-                    UserManuals.Add(new UserManualViewModel(manual));
+            {
+                foreach(UserManual manual in metadata.UserManuals) UserManuals.Add(new UserManualViewModel(manual));
+            }
 
             if(metadata.OpticalDiscs != null)
-                foreach(OpticalDisc disc in metadata.OpticalDiscs)
-                    OpticalDiscs.Add(new OpticalDiscViewModel(disc));
+            {
+                foreach(OpticalDisc disc in metadata.OpticalDiscs) OpticalDiscs.Add(new OpticalDiscViewModel(disc));
+            }
 
             if(metadata.Advertisements != null)
-                foreach(Advertisement ad in metadata.Advertisements)
-                    Advertisements.Add(new AdvertisementViewModel(ad));
+            {
+                foreach(Advertisement ad in metadata.Advertisements) Advertisements.Add(new AdvertisementViewModel(ad));
+            }
 
             if(metadata.LinearMedias != null)
-                foreach(LinearMedia media in metadata.LinearMedias)
-                    LinearMedias.Add(new LinearMediaViewModel(media));
+            {
+                foreach(LinearMedia media in metadata.LinearMedias) LinearMedias.Add(new LinearMediaViewModel(media));
+            }
 
             if(metadata.PciCards != null)
-                foreach(Pci pci in metadata.PciCards)
-                    PciCards.Add(new PciViewModel(pci));
+            {
+                foreach(Pci pci in metadata.PciCards) PciCards.Add(new PciViewModel(pci));
+            }
 
             if(metadata.BlockMedias != null)
-                foreach(BlockMedia media in metadata.BlockMedias)
-                    BlockMedias.Add(new BlockMediaViewModel(media));
+            {
+                foreach(BlockMedia media in metadata.BlockMedias) BlockMedias.Add(new BlockMediaViewModel(media));
+            }
 
             if(metadata.AudioMedias != null)
-                foreach(AudioMedia media in metadata.AudioMedias)
-                    AudioMedias.Add(new AudioMediaViewModel(media));
+            {
+                foreach(AudioMedia media in metadata.AudioMedias) AudioMedias.Add(new AudioMediaViewModel(media));
+            }
         }
         catch(Exception ex)
         {
@@ -315,7 +326,7 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
                 Name          = Name,
                 Version       = Version,
                 Release       = SelectedReleaseType?.Value,
-                ReleaseDate   = ReleaseDate,
+                ReleaseDate   = ReleaseDate?.DateTime,
                 PartNumber    = PartNumber,
                 SerialNumber  = SerialNumber,
                 Developers    = Developers.Any() ? [..Developers.Select(d => d.Value)] : null,
@@ -460,8 +471,9 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
     void AddLanguage(object parameter)
     {
         if(parameter is LocalizedEnumValue<Language> langValue)
-            if(!Languages.Any(l => l.Value == langValue.Value))
-                Languages.Add(langValue);
+        {
+            if(!Languages.Any(l => l.Value == langValue.Value)) Languages.Add(langValue);
+        }
     }
 
     [RelayCommand]
@@ -471,8 +483,9 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
     void AddArchitecture(object parameter)
     {
         if(parameter is LocalizedEnumValue<Architecture> archValue)
-            if(!Architectures.Any(a => a.Value == archValue.Value))
-                Architectures.Add(archValue);
+        {
+            if(!Architectures.Any(a => a.Value == archValue.Value)) Architectures.Add(archValue);
+        }
     }
 
     [RelayCommand]
