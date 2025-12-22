@@ -42,6 +42,7 @@ if [[ ${OS_NAME} == Linux ]]; then
   --exclude="pkg/pacman/*/src" --exclude="pkg/pacman/*/pkg"  --exclude="pkg/pacman/*/*.tar" \
   --exclude="pkg/pacman/*/*.asc" --exclude="*.user" --exclude=".idea" --exclude=".vs" --exclude=".vscode" \
   --exclude="build.iso" --exclude=".DS_Store" -cvf pkg/pacman/stable/aaru-src-${AARU_VERSION}.tar .
+ mv .glogalconfig .globalconfig.bak
  cd pkg/pacman/stable
  xz -v9e aaru-src-${AARU_VERSION}.tar
  gpg --armor --detach-sign aaru-src-${AARU_VERSION}.tar.xz
@@ -52,13 +53,53 @@ if [[ ${OS_NAME} == Linux ]]; then
  mv PKGBUILD.bak PKGBUILD
  mv aaru-src-${AARU_VERSION}.tar.xz aaru-src-${AARU_VERSION}.tar.xz.asc ../../../build
  cd ../../..
+ mv .globalconfig.bak .globalconfig
 
 fi
 
 mv pkg/pacman/stable/*.pkg.tar.zst build/
 
+# Remove stray files from published folders
+rm -R Aaru/bin/*/net10.0/*/publish/BuildHost-net* Aaru/bin/*/net10.0/*/publish/*.xml Aaru/bin/*/net10.0/*/publish/*.pdb
+
+# Package tarballs
+cd Aaru/bin/Debug/net10.0/linux-arm/publish/
+tar cvf ../../../../../../build/aaru-${AARU_VERSION}_linux_armhf-dbg.tar -- *
+cd ../../linux-arm64/publish/
+tar cvf ../../../../../../build/aaru-${AARU_VERSION}_linux_arm64-dbg.tar -- *
+cd ../../linux-x64/publish/
+tar cvf ../../../../../../build/aaru-${AARU_VERSION}_linux_amd64-dbg.tar -- *
+cd ../../osx-arm64/publish/
+7z a ../../../../../../build/aaru-${AARU_VERSION}_macos_aarch64-dbg.zip *
+cd ../../osx-x64/publish/
+7z a ../../../../../../build/aaru-${AARU_VERSION}_macos-dbg.zip *
+cd ../../win-arm64/publish/
+7z a ../../../../../../build/aaru-${AARU_VERSION}_windows_aarch64-dbg.zip *
+cd ../../win-x64/publish/
+7z a ../../../../../../build/aaru-${AARU_VERSION}_windows_x64-dbg.zip *
+cd ../../win-x86/publish/
+7z a ../../../../../../build/aaru-${AARU_VERSION}_windows_x86-dbg.zip *
+cd ../../../../Release/net10.0/linux-arm/publish/
+tar cvf ../../../../../../build/aaru-${AARU_VERSION}_linux_armhf.tar -- *
+cd ../../linux-arm64/publish/
+tar cvf ../../../../../../build/aaru-${AARU_VERSION}_linux_arm64.tar -- *
+cd ../../linux-x64/publish/
+tar cvf ../../../../../../build/aaru-${AARU_VERSION}_linux_amd64.tar -- *
+cd ../../osx-arm64/publish/
+7z a ../../../../../../build/aaru-${AARU_VERSION}_macos_aarch64.zip *
+cd ../../osx-x64/publish/
+7z a ../../../../../../build/aaru-${AARU_VERSION}_macos.zip *
+cd ../../win-arm64/publish/
+7z a ../../../../../../build/aaru-${AARU_VERSION}_windows_aarch64.zip *
+cd ../../win-x64/publish/
+7z a ../../../../../../build/aaru-${AARU_VERSION}_windows_x64.zip *
+cd ../../win-x86/publish/
+7z a ../../../../../../build/aaru-${AARU_VERSION}_windows_x86.zip *
+cd ../../../../../../
+
 cd build
-for i in *.deb *.rpm *.zip *.tar.gz *.pkg.tar.zst;
+xz -9e -- *.tar
+for i in *.deb *.rpm *.zip *.tar.xz *.pkg.tar.zst;
 do
  gpg --armor --detach-sign "$i"
 done
