@@ -1,4 +1,4 @@
-Aaru Data Preservation Suite v6.0.0-alpha.12
+Aaru Data Preservation Suite v6.0.0-alpha.16
 
 Aaru
 

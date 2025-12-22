@@ -23,6 +23,9 @@ body:
         - 6.0.0-alpha.12
         - 6.0.0-alpha.13
         - 6.0.0-alpha.14
+        - 6.0.0-alpha.15
+        - 6.0.0-alpha.15.1
+        - 6.0.0-alpha.16
         - Development commit
     validations:
       required: true
