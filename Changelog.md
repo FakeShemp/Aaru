@@ -1,3 +1,88 @@
+# [6.0.0-alpha.16] - 2025-12-21
+
+## Added
+
+### - AaruFormat
+
+- Enable negative and overflow sectors.
+
+### - Commands
+
+- Command to merge two images into a combined third image.
+- Option to compare command to use long sectors for comparison.
+
+### - Dumping
+
+- Option to fix sectors that didn't pass integrity checks.
+- Paranoia mode to check integrity of sectors before writing them to the image.
+- Support for dumping the 2nd layer PFI of DVDs.
+
+### - GUI
+
+- Aaru metadata editor.
+- Alternating row colors and hover effects to data grids.
+- Dark theme media type icons and logos.
+- Encryption options to media dump window.
+- High resolution versions of folder and generic icons.
+- Icons to menus, buttons, and tabs.
+- Input gestures and hotkeys for menu items.
+- Paranoia options to media dump window.
+- Scroll viewers for improved scrolling behavior.
+- Text wrapping to labels.
+- Window to edit AaruFormat files basic metadata.
+
+### - Image verification
+
+- Allow to verify only data (non-audio) tracks.
+
+### - Media types
+
+- Sony HyperStorage media type.
+
+## Changed
+
+### - Commands
+
+- Show absolute LBA in verify image with tracks.
+- When comparing two images be specific about their contents.
+
+### - GUI
+
+- Many UI layout improvements for better responsiveness and usability.
+- Media dump options moved into tabs.
+- Use dynamic resources for improved theme support.
+- Use new image conversion algorithms.
+
+### - Image conversion
+
+- Do not try to convert flags, ISRC or CD-TEXT in negative or overflow sectors.
+- Implement abortion in image conversion process.
+- Reworked image conversion to separate into parts and moved to Aaru.Core.
+
+### - Refactoring
+
+- General code cleanup and reformatting.
+- Optimize LINQ queries.
+- Replace regex with source generation.
+- Simplify boolean comparisons.
+- Use collection expressions.
+- Use null propagation.
+- Use static lambdas for improved performance.
+
+## Fixed
+
+- Bug in string formatting in EVPD prettyfier.
+- Convert calling the logger instead of the error events.
+- Do not convert undumped overflow and negative sectors.
+- Error by one in overflow sectors conversion.
+- Long file name handling issues.
+- Text wrapping in ImageInfo labels. Fixes #877
+
+### - AaruFormat
+
+- Sector status not propagating properly in ReadSectors[Long].
+- When marshalling booleans treat them as 1-byte signed integers.
+
 # [6.0.0-alpha.15.1] - 2025-11-21
 
 ## Fixed
@@ -2654,6 +2739,8 @@
 - Apple Partition Map (aka APM).
 - Master Boot Record (aka MBR).
 - NeXT disklabels.
+
+[6.0.0-alpha.16]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.16
 
 [6.0.0-alpha.15.1]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.15.1
 
