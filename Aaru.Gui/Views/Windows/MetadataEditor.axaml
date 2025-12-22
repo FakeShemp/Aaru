@@ -56,14 +56,6 @@
         <Style Selector="DatePicker">
             <Setter Property="Margin"
                     Value="0,4" />
-            <Setter Property="Background"
-                    Value="{DynamicResource DatePickerBackground}" />
-            <Setter Property="Foreground"
-                    Value="{DynamicResource DatePickerForeground}" />
-            <Setter Property="BorderBrush"
-                    Value="{DynamicResource DatePickerBorderBrush}" />
-            <Setter Property="CornerRadius"
-                    Value="3" />
         </Style>
         <Style Selector="Button">
             <Setter Property="Background"
