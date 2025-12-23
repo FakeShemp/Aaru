@@ -33,8 +33,8 @@
 //     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // ----------------------------------------------------------------------------
-// Copyright © 2011-2025 Natalia Portillo
-// Copyright © 2020-2025 Rebecca Wallander
+// Copyright © 2011-2026 Natalia Portillo
+// Copyright © 2020-2026 Rebecca Wallander
 // ****************************************************************************/
 
 // ReSharper disable UnusedMember.Global

@@ -27,7 +27,7 @@
 //     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // ----------------------------------------------------------------------------
-// Copyright © 2011-2025 Natalia Portillo
+// Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
 using System;
@@ -98,7 +98,7 @@ public sealed partial class AboutViewModel : ViewModelBase
     public string SuiteName => "Aaru Data Preservation Suite";
 
     [NotNull]
-    public string Copyright => "© 2011-2025 Natalia Portillo";
+    public string Copyright => "© 2011-2026 Natalia Portillo";
 
     [NotNull]
     public string Website => "https://aaru.app";

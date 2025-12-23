@@ -27,7 +27,7 @@
 //     License along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 // ----------------------------------------------------------------------------
-// Copyright © 2011-2025 Rebecca Wallander
+// Copyright © 2011-2026 Rebecca Wallander
 // ****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;

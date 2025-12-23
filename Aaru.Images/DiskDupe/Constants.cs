@@ -27,8 +27,8 @@
 //     License along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 // ----------------------------------------------------------------------------
-// Copyright © 2021-2025 Michael Drüing
-// Copyright © 2011-2025 Natalia Portillo
+// Copyright © 2021-2026 Michael Drüing
+// Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
 namespace Aaru.Images;

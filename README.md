@@ -2,7 +2,7 @@ Aaru Data Preservation Suite v6.0.0-alpha.16
 
 Aaru
 
-Copyright © 2011-2025 Natalia Portillo <claunia@claunia.com>
+Copyright © 2011-2026 Natalia Portillo <claunia@claunia.com>
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fclaunia%2FDiscImageChef.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fclaunia%2FDiscImageChef?ref=badge_shield)
 
