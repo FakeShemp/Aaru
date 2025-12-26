@@ -1,3 +1,11 @@
+# [6.0.0-alpha.17] - 2025-12-26
+
+## Changes
+
+### - AaruFormat
+
+- Changed on-disk layout of overflow and negative sectors. All images made with previous alpha releases are incompatible.
+
 # [6.0.0-alpha.16] - 2025-12-21
 
 ## Added
@@ -2739,6 +2747,8 @@
 - Apple Partition Map (aka APM).
 - Master Boot Record (aka MBR).
 - NeXT disklabels.
+
+[6.0.0-alpha.17]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.17
 
 [6.0.0-alpha.16]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.16
 
