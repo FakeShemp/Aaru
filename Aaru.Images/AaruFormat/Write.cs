@@ -288,8 +288,9 @@ public sealed partial class AaruFormat
 
         // Convert array of booleans to List of enums
         for(nuint i = 0; i < sizet_length; i++)
-            if(sectorTagsBuffer[i] != 0)
-                _imageInfo.ReadableSectorTags.Add((SectorTagType)i);
+        {
+            if(sectorTagsBuffer[i] != 0) _imageInfo.ReadableSectorTags.Add((SectorTagType)i);
+        }
 
         sizet_length = 0;
         ret          = aaruf_get_readable_media_tags(_context, null, ref sizet_length);
@@ -313,8 +314,9 @@ public sealed partial class AaruFormat
 
         // Convert array of booleans to List of enums
         for(nuint i = 0; i < sizet_length; i++)
-            if(mediaTagsBuffer[i] != 0)
-                _imageInfo.ReadableMediaTags.Add((MediaTagType)i);
+        {
+            if(mediaTagsBuffer[i] != 0) _imageInfo.ReadableMediaTags.Add((MediaTagType)i);
+        }
 
         ret = aaruf_get_media_sequence(_context, out int sequence, out int lastSequence);
 
@@ -475,12 +477,12 @@ public sealed partial class AaruFormat
 
         SetMetadataFromTags();
 
-        ushort infoNegativeSectors = 0;
+        uint infoNegativeSectors = 0;
 
         ret = aaruf_get_negative_sectors(_context, ref infoNegativeSectors);
         if(ret == Status.Ok) _imageInfo.NegativeSectors = infoNegativeSectors;
 
-        ushort infoOverflowSectors = 0;
+        uint infoOverflowSectors = 0;
 
         ret = aaruf_get_overflow_sectors(_context, ref infoOverflowSectors);
         if(ret == Status.Ok) _imageInfo.OverflowSectors = infoOverflowSectors;
