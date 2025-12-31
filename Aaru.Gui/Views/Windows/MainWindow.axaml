@@ -12,7 +12,7 @@
         Width="1280"
         Height="720"
         x:Class="Aaru.Gui.Views.Windows.MainWindow"
-        Icon="/Assets/aaru-logo.png"
+        Icon="/Assets/aaru.png"
         x:DataType="windows:MainWindowViewModel"
         Title="{Binding Title, Mode=OneWay}">
     <Design.DataContext>

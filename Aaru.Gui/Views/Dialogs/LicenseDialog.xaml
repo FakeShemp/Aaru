@@ -44,7 +44,7 @@
         Width="480"
         Height="320"
         x:Class="Aaru.Gui.Views.Dialogs.LicenseDialog"
-        Icon="/Assets/aaru-logo.png"
+        Icon="/Assets/aaru.png"
         CanResize="False"
         x:DataType="dialogs:LicenseViewModel"
         Title="{x:Static localization:UI.Title_Aaru_license}">

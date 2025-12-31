@@ -44,7 +44,7 @@
         Width="800"
         Height="600"
         x:Class="Aaru.Gui.Views.Windows.ImageChecksum"
-        Icon="/Assets/aaru-logo.png"
+        Icon="/Assets/aaru.png"
         x:DataType="windows:ImageChecksumViewModel"
         Title="{x:Static localization:UI.Title_Checksum_image_contents}">
     <Design.DataContext>
