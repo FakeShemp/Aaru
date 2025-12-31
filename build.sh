@@ -30,34 +30,107 @@ done
 
 cd ..
 
-# If we are compiling on Linux check if we are on Arch Linux and then create the Arch Linux package as well
+# If we are compiling on Linux, create distro-specific packages
 if [[ ${OS_NAME} == Linux ]]; then
  OS_RELEASE=`pcregrep -o1 -e "^ID=(?<distro_id>\w+)" /etc/os-release`
 
- if [[ ${OS_RELEASE} != arch && ${OS_RELEASE} != cachyos ]]; then
-  exit 0
+ # Build Arch Linux package
+ if [[ ${OS_RELEASE} == arch || ${OS_RELEASE} == cachyos ]]; then
+  echo "Building Arch Linux package..."
+  tar --exclude-vcs --exclude="*/bin" --exclude="*/obj" --exclude="build" --exclude="pkg/pacman/*/*.tar.xz" \
+   --exclude="pkg/pacman/*/src" --exclude="pkg/pacman/*/pkg"  --exclude="pkg/pacman/*/*.tar" \
+   --exclude="pkg/pacman/*/*.asc" --exclude="*.user" --exclude=".idea" --exclude=".vs" --exclude=".vscode" \
+   --exclude="build.iso" --exclude=".DS_Store" -cvf pkg/pacman/stable/aaru-src-${AARU_VERSION}.tar .
+  mv .glogalconfig .globalconfig.bak
+  cd pkg/pacman/stable
+  xz -v9e aaru-src-${AARU_VERSION}.tar
+  gpg --armor --detach-sign aaru-src-${AARU_VERSION}.tar.xz
+  cp PKGBUILD PKGBUILD.bak
+  echo -e \\n >> PKGBUILD
+  makepkg -g >> PKGBUILD
+  makepkg
+  mv PKGBUILD.bak PKGBUILD
+  mv aaru-src-${AARU_VERSION}.tar.xz aaru-src-${AARU_VERSION}.tar.xz.asc ../../../build
+  cd ../../..
+  mv .globalconfig.bak .globalconfig
+  mv pkg/pacman/stable/*.pkg.tar.zst build/ 2>/dev/null || true
  fi
 
- tar --exclude-vcs --exclude="*/bin" --exclude="*/obj" --exclude="build" --exclude="pkg/pacman/*/*.tar.xz" \
-  --exclude="pkg/pacman/*/src" --exclude="pkg/pacman/*/pkg"  --exclude="pkg/pacman/*/*.tar" \
-  --exclude="pkg/pacman/*/*.asc" --exclude="*.user" --exclude=".idea" --exclude=".vs" --exclude=".vscode" \
-  --exclude="build.iso" --exclude=".DS_Store" -cvf pkg/pacman/stable/aaru-src-${AARU_VERSION}.tar .
- mv .glogalconfig .globalconfig.bak
- cd pkg/pacman/stable
- xz -v9e aaru-src-${AARU_VERSION}.tar
- gpg --armor --detach-sign aaru-src-${AARU_VERSION}.tar.xz
- cp PKGBUILD PKGBUILD.bak
- echo -e \\n >> PKGBUILD
- makepkg -g >> PKGBUILD
- makepkg
- mv PKGBUILD.bak PKGBUILD
- mv aaru-src-${AARU_VERSION}.tar.xz aaru-src-${AARU_VERSION}.tar.xz.asc ../../../build
- cd ../../..
- mv .globalconfig.bak .globalconfig
+ # Build Debian packages for all architectures (on any distro if tools are available)
+ if command -v dpkg-buildpackage &> /dev/null; then
+  echo "Building Debian packages for all architectures..."
 
+  # Create a temporary debian directory symlink for building
+  if [ ! -L debian ]; then
+   ln -s pkg/debian debian
+  fi
+
+  # Determine which tool to use
+  if command -v debuild &> /dev/null; then
+   BUILD_CMD="debuild"
+   echo "Using debuild to build Debian packages"
+  else
+   BUILD_CMD="dpkg-buildpackage"
+   echo "Using dpkg-buildpackage to build Debian packages"
+  fi
+
+  # Build for all three architectures
+  for arch in amd64 arm64 armhf; do
+   echo ""
+   echo "========================================"
+   echo "Building Debian package for ${arch}..."
+   echo "========================================"
+
+   # Build the package
+   if [ "$BUILD_CMD" == "debuild" ]; then
+    debuild -a ${arch} -us -uc -b 2>&1 | tee build/debian-build-${arch}.log || {
+     echo "WARNING: Debian package build for ${arch} failed, but continuing..."
+     pkg/debian/rules clean 2>/dev/null || true
+     continue
+    }
+   else
+    dpkg-buildpackage -a ${arch} -us -uc -b 2>&1 | tee build/debian-build-${arch}.log || {
+     echo "WARNING: Debian package build for ${arch} failed, but continuing..."
+     pkg/debian/rules clean 2>/dev/null || true
+     continue
+    }
+   fi
+
+   # Move generated packages to build directory
+   if [ -f ../aaru_*_${arch}.deb ]; then
+    mv ../aaru_*_${arch}.deb build/ 2>/dev/null || true
+    echo "✓ Debian package for ${arch} moved to build directory"
+   fi
+
+   # Clean up build artifacts
+   mv ../*.changes build/ 2>/dev/null || true
+   mv ../*.buildinfo build/ 2>/dev/null || true
+   rm -f ../*.dsc 2>/dev/null || true
+
+   # Clean between builds
+   if [ -f pkg/debian/rules ]; then
+    pkg/debian/rules clean 2>/dev/null || true
+   fi
+  done
+
+  # Remove temporary symlink
+  rm -f debian 2>/dev/null || true
+
+  echo ""
+  echo "========================================"
+  echo "Debian package build summary:"
+  ls -lh build/aaru_*.deb 2>/dev/null || echo "No .deb files found"
+  echo "========================================"
+ else
+  if [[ ${OS_RELEASE} == debian || ${OS_RELEASE} == ubuntu || ${OS_RELEASE} == linuxmint || ${OS_RELEASE} == pop || ${OS_RELEASE} == elementary ]]; then
+   echo "dpkg-buildpackage not found, skipping Debian package build"
+   echo "Install with: sudo apt-get install dpkg-dev debhelper"
+  elif [[ ${OS_RELEASE} == arch || ${OS_RELEASE} == cachyos ]]; then
+   echo "dpkg-buildpackage not found, skipping Debian package build"
+   echo "Install with: sudo pacman -S dpkg debhelper fakeroot"
+  fi
+ fi
 fi
-
-mv pkg/pacman/stable/*.pkg.tar.zst build/
 
 # Remove stray files from published folders
 rm -R Aaru/bin/*/net10.0/*/publish/BuildHost-net* Aaru/bin/*/net10.0/*/publish/*.xml Aaru/bin/*/net10.0/*/publish/*.pdb

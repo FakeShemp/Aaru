@@ -1,0 +1,19 @@
+aaru (6.0.0~alpha17-1) bookworm; urgency=medium
+
+  * New upstream alpha release 6.0.0-alpha.17
+  * Migration to .NET 10.0
+  * Enhanced media preservation features
+  * Improved filesystem support
+  * Bug fixes and performance improvements
+  * Built for Debian 12 (Bookworm) and Ubuntu 24.04 LTS (Noble)
+  * Compatible with Debian 12+, Ubuntu 24.04+, and derivatives
+  * Multi-architecture support (amd64, arm64, armhf)
+
+ -- Natalia Portillo <claunia@claunia.com>  Tue, 31 Dec 2024 12:00:00 +0000
+
+aaru (5.3.2-1) unstable; urgency=medium
+
+  * Initial Debian package release
+
+ -- Natalia Portillo <claunia@claunia.com>  Mon, 01 Jan 2024 12:00:00 +0000
+

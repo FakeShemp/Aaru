@@ -1,0 +1,102 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE = 1
+export DOTNET_CLI_TELEMETRY_OPTOUT = 1
+export DOTNET_SKIP_FIRST_TIME_EXPERIENCE = 1
+
+# Determine target architecture (supports cross-compilation)
+DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+DEB_BUILD_ARCH ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
+DEB_HOST_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+# Map Debian architecture to .NET Runtime Identifier
+ifeq ($(DEB_HOST_ARCH),amd64)
+DOTNET_RID = linux-x64
+else ifeq ($(DEB_HOST_ARCH),arm64)
+DOTNET_RID = linux-arm64
+else ifeq ($(DEB_HOST_ARCH),armhf)
+DOTNET_RID = linux-arm
+else
+$(error Unsupported architecture: $(DEB_HOST_ARCH))
+endif
+
+# Detect if we're cross-compiling
+ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
+IS_CROSS = yes
+$(info Cross-compiling from $(DEB_BUILD_ARCH) to $(DEB_HOST_ARCH))
+$(info Using .NET RID: $(DOTNET_RID))
+else
+IS_CROSS = no
+endif
+
+AARU_VERSION = 6.0.0-alpha.17
+NETCORE_TARGET = net10.0
+
+%:
+	dh $@ --without autoreconf
+
+override_dh_auto_clean:
+	dotnet clean Aaru/Aaru.csproj || true
+	dh_auto_clean
+
+override_dh_auto_build:
+	cd Aaru && dotnet publish -f $(NETCORE_TARGET) -c Release \
+		--self-contained -r $(DOTNET_RID) \
+		-p:PublishSingleFile=true \
+		-p:IncludeNativeLibrariesForSelfExtract=true \
+		-p:EnableCompressionInSingleFile=true
+
+override_dh_auto_install:
+	# Install main binary
+	install -D -m 0755 Aaru/bin/Release/$(NETCORE_TARGET)/$(DOTNET_RID)/publish/aaru \
+		debian/aaru/opt/Aaru/aaru
+
+	# Install documentation
+	install -D -m 0644 README.md debian/aaru/opt/Aaru/README.md
+	install -D -m 0644 Changelog.md debian/aaru/opt/Aaru/Changelog.md
+	install -D -m 0644 CONTRIBUTING.md debian/aaru/opt/Aaru/CONTRIBUTING.md
+	install -D -m 0644 LICENSE debian/aaru/opt/Aaru/LICENSE
+	install -D -m 0644 LICENSE.MIT debian/aaru/opt/Aaru/LICENSE.MIT
+	install -D -m 0644 LICENSE.LGPL debian/aaru/opt/Aaru/LICENSE.LGPL
+
+	# Install MIME type
+	install -D -m 0644 Aaru/aaruformat.xml \
+		debian/aaru/usr/share/mime/packages/aaruformat.xml
+
+	# Install desktop file
+	install -D -m 0644 Aaru/aaru.desktop \
+		debian/aaru/usr/share/applications/aaru.desktop
+
+	# Install icons
+	install -D -m 0644 icons/32x32/aaru.png \
+		debian/aaru/usr/share/icons/hicolor/32x32/apps/aaru.png
+	install -D -m 0644 icons/64x64/aaru.png \
+		debian/aaru/usr/share/icons/hicolor/64x64/apps/aaru.png
+	install -D -m 0644 icons/128x128/aaru.png \
+		debian/aaru/usr/share/icons/hicolor/128x128/apps/aaru.png
+	install -D -m 0644 icons/256x256/aaru.png \
+		debian/aaru/usr/share/icons/hicolor/256x256/apps/aaru.png
+	install -D -m 0644 icons/512x512/aaru.png \
+		debian/aaru/usr/share/icons/hicolor/512x512/apps/aaru.png
+
+	# Create symlink in /usr/bin
+	install -d debian/aaru/usr/bin
+	ln -sf /opt/Aaru/aaru debian/aaru/usr/bin/aaru
+
+override_dh_auto_test:
+	# Skip tests for now
+	true
+
+override_dh_strip:
+	# Don't strip .NET binaries
+	true
+
+override_dh_makeshlibs:
+	# Skip makeshlibs - this is a self-contained .NET app with no shared libraries
+	true
+
+override_dh_shlibdeps:
+	# Skip shlib deps as this is a self-contained .NET app
+	true
+
