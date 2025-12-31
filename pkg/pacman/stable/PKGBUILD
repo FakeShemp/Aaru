@@ -36,7 +36,11 @@ package() {
     # Install MIME database file
     cd "${srcdir}"/"${_aarubase}"
     install -d -m0755 -g 0 "${pkgdir}"/usr/share/mime/packages
-    install -m0755 -g 0 -t "${pkgdir}"/usr/share/mime/packages aaruformat.xml
+    install -m0644 -g 0 -t "${pkgdir}"/usr/share/mime/packages aaruformat.xml
+
+    # Install desktop file
+    install -d -m0755 -g 0 "${pkgdir}"/usr/share/applications
+    install -m0644 -g 0 -t "${pkgdir}"/usr/share/applications aaru.desktop
 
     cd "${srcdir}"/"${_aarubase}"/bin/Release/${_netcoretarget}/${dotnet_rid}/publish
 

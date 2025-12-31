@@ -107,6 +107,9 @@
     <Content Include="aaruformat.xml" CopyToPublishDirectory="PreserveNewest" LinuxFileMode="0644">
       <LinuxPath>/usr/share/mime/packages/aaruformat.xml</LinuxPath>
     </Content>
+    <Content Include="aaru.desktop" CopyToPublishDirectory="PreserveNewest" LinuxFileMode="0644">
+      <LinuxPath>/usr/share/applications/aaru.desktop</LinuxPath>
+    </Content>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'linux-musl-arm64'">
