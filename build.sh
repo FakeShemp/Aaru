@@ -130,6 +130,78 @@ if [[ ${OS_NAME} == Linux ]]; then
    echo "Install with: sudo pacman -S dpkg debhelper fakeroot"
   fi
  fi
+
+ # Build RPM packages for all architectures (on any distro if tools are available)
+ if command -v rpmbuild &> /dev/null; then
+  echo ""
+  echo "Building RPM packages for all architectures..."
+
+  # Set up RPM build environment
+  RPMBUILD_DIR="${HOME}/rpmbuild"
+  mkdir -p "${RPMBUILD_DIR}"/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+
+  # Create source tarball
+  echo "Creating source tarball for RPM..."
+  # RPM uses tilde for pre-release versions, transform dash to tilde
+  RPM_VERSION="${AARU_VERSION//-alpha/~alpha}"
+  tar --exclude-vcs --exclude="*/bin" --exclude="*/obj" --exclude="build" \
+      --exclude="pkg/pacman/*/*.tar*" --exclude="pkg/pacman/*/src" --exclude="pkg/pacman/*/pkg" \
+      --exclude="pkg/pacman/*/*.asc" --exclude="*.user" --exclude=".idea" --exclude=".vs" \
+      --exclude=".vscode" --exclude="build.iso" --exclude=".DS_Store" --exclude="nupkgs" \
+      --exclude="BenchmarkDotNet.Artifacts" --exclude=".fleet" \
+      -czf "${RPMBUILD_DIR}/SOURCES/aaru-${RPM_VERSION}.tar.gz" \
+      --transform="s,^,aaru-${RPM_VERSION}/," .
+
+  # Verify the tarball was created with the correct name
+  if [ ! -f "${RPMBUILD_DIR}/SOURCES/aaru-${RPM_VERSION}.tar.gz" ]; then
+   echo "ERROR: Source tarball was not created with expected name"
+   echo "Expected: ${RPMBUILD_DIR}/SOURCES/aaru-${RPM_VERSION}.tar.gz"
+   echo "Found in SOURCES/:"
+   ls -la "${RPMBUILD_DIR}/SOURCES/" || true
+   exit 1
+  fi
+  echo "✓ Source tarball created: aaru-${RPM_VERSION}.tar.gz"
+
+  # Copy spec file
+  cp pkg/rpm/aaru.spec "${RPMBUILD_DIR}/SPECS/"
+
+  # Build for all three architectures
+  for arch in x86_64 aarch64 armv7hl; do
+   echo ""
+   echo "========================================"
+   echo "Building RPM package for ${arch}..."
+   echo "========================================"
+
+   # Build the RPM
+   rpmbuild -bb --target ${arch} "${RPMBUILD_DIR}/SPECS/aaru.spec" 2>&1 | tee build/rpm-build-${arch}.log || {
+    echo "WARNING: RPM package build for ${arch} failed, but continuing..."
+    continue
+   }
+
+   # Move generated packages to build directory
+   if [ -f "${RPMBUILD_DIR}/RPMS/${arch}/aaru-"*.rpm ]; then
+    cp "${RPMBUILD_DIR}/RPMS/${arch}/aaru-"*.rpm build/ 2>/dev/null || true
+    echo "✓ RPM package for ${arch} moved to build directory"
+   fi
+  done
+
+  echo ""
+  echo "========================================"
+  echo "RPM package build summary:"
+  ls -lh build/aaru-*.rpm 2>/dev/null || echo "No .rpm files found"
+  echo "========================================"
+ else
+  if [[ ${OS_RELEASE} == fedora || ${OS_RELEASE} == rhel || ${OS_RELEASE} == rocky || ${OS_RELEASE} == almalinux || ${OS_RELEASE} == centos ]]; then
+   echo "rpmbuild not found, skipping RPM package build"
+   echo "Install with: sudo dnf install rpm-build rpmdevtools"
+  elif [[ ${OS_RELEASE} == opensuse* || ${OS_RELEASE} == sles ]]; then
+   echo "rpmbuild not found, skipping RPM package build"
+   echo "Install with: sudo zypper install rpm-build"
+  elif [[ ${OS_RELEASE} == arch || ${OS_RELEASE} == cachyos ]]; then
+   echo "rpmbuild not found, skipping RPM package build"
+   echo "Install with: sudo pacman -S rpm-tools"
+  fi
+ fi
 fi
 
 # Remove stray files from published folders
