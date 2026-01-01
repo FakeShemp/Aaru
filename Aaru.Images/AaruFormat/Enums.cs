@@ -217,7 +217,7 @@ public sealed partial class AaruFormat
         ///     Requested flux data not present in image.
         ///     &lt;remarks&gt;AARUF_ERROR_FLUX_DATA_NOT_FOUND&lt;/remarks&gt;
         /// </summary>
-        FluxDataNotFound = -31
+        FluxDataNotFound = -32
     }
 
 #endregion
