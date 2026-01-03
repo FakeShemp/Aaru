@@ -12,7 +12,7 @@
         x:Class="Aaru.Gui.Views.Windows.MetadataEditor"
         x:DataType="windows:MetadataEditorViewModel"
         Title="{Binding Title, Mode=OneWay}"
-        Icon="/Assets/aaru-logo.png">
+        Icon="/Assets/aaru.png">
     <Design.DataContext>
         <windows:MetadataEditorViewModel />
     </Design.DataContext>

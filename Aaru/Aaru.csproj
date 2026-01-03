@@ -14,6 +14,7 @@
     <SelfContained>true</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <ApplicationIcon>aaru.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Content Update="$(NuGetPackageRoot)\microsoft.codeanalysis.workspaces.msbuild\**\**" Visible="false"/>
@@ -106,6 +107,9 @@
   <ItemGroup>
     <Content Include="aaruformat.xml" CopyToPublishDirectory="PreserveNewest" LinuxFileMode="0644">
       <LinuxPath>/usr/share/mime/packages/aaruformat.xml</LinuxPath>
+    </Content>
+    <Content Include="aaru.desktop" CopyToPublishDirectory="PreserveNewest" LinuxFileMode="0644">
+      <LinuxPath>/usr/share/applications/aaru.desktop</LinuxPath>
     </Content>
   </ItemGroup>
 

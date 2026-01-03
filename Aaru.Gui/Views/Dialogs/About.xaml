@@ -44,7 +44,7 @@
         Width="480"
         Height="320"
         x:Class="Aaru.Gui.Views.Dialogs.About"
-        Icon="/Assets/aaru-logo.png"
+        Icon="/Assets/aaru.png"
         CanResize="False"
         x:DataType="dialogs:AboutViewModel"
         Title="{x:Static localization:UI.Title_About_Aaru}">

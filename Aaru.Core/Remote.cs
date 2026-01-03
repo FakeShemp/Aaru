@@ -32,7 +32,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -177,7 +176,11 @@ public static class Remote
 
             DateTime updateStart = DateTime.UtcNow;
 
-            var httpClient = new HttpClient();
+            var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(300)
+            };
+
             httpClient.DefaultRequestHeaders.Add("User-Agent", $"Aaru {typeof(Version).Assembly.GetName().Version}");
             httpClient.BaseAddress = new Uri("https://www.aaru.app");
 

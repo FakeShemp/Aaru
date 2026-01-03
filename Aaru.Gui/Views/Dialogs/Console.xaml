@@ -44,7 +44,7 @@
         Width="600"
         Height="450"
         x:Class="Aaru.Gui.Views.Dialogs.Console"
-        Icon="/Assets/aaru-logo.png"
+        Icon="/Assets/aaru.png"
         x:DataType="dialogs:ConsoleViewModel"
         Title="{x:Static localization:UI.Title_Console}">
     <Design.DataContext>

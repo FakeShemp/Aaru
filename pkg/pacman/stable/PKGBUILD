@@ -36,7 +36,27 @@ package() {
     # Install MIME database file
     cd "${srcdir}"/"${_aarubase}"
     install -d -m0755 -g 0 "${pkgdir}"/usr/share/mime/packages
-    install -m0755 -g 0 -t "${pkgdir}"/usr/share/mime/packages aaruformat.xml
+    install -m0644 -g 0 -t "${pkgdir}"/usr/share/mime/packages aaruformat.xml
+
+    # Install desktop file
+    install -d -m0755 -g 0 "${pkgdir}"/usr/share/applications
+    install -m0644 -g 0 -t "${pkgdir}"/usr/share/applications aaru.desktop
+
+    # Install icons
+    install -d -m0755 -g 0 "${pkgdir}"/usr/share/icons/hicolor/32x32/apps
+    install -m0644 -g 0 -t "${pkgdir}"/usr/share/icons/hicolor/32x32/apps icons/32x32/aaru.png
+
+    install -d -m0755 -g 0 "${pkgdir}"/usr/share/icons/hicolor/64x64/apps
+    install -m0644 -g 0 -t "${pkgdir}"/usr/share/icons/hicolor/64x64/apps icons/64x64/aaru.png
+
+    install -d -m0755 -g 0 "${pkgdir}"/usr/share/icons/hicolor/128x128/apps
+    install -m0644 -g 0 -t "${pkgdir}"/usr/share/icons/hicolor/128x128/apps icons/128x128/aaru.png
+
+    install -d -m0755 -g 0 "${pkgdir}"/usr/share/icons/hicolor/256x256/apps
+    install -m0644 -g 0 -t "${pkgdir}"/usr/share/icons/hicolor/256x256/apps icons/256x256/aaru.png
+
+    install -d -m0755 -g 0 "${pkgdir}"/usr/share/icons/hicolor/512x512/apps
+    install -m0644 -g 0 -t "${pkgdir}"/usr/share/icons/hicolor/512x512/apps icons/512x512/aaru.png
 
     cd "${srcdir}"/"${_aarubase}"/bin/Release/${_netcoretarget}/${dotnet_rid}/publish
 

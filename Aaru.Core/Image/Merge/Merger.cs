@@ -243,15 +243,9 @@ public sealed partial class Merger
            true &&
            (primaryImage as IOpticalMediaImage)?.Sessions?.Count > 1)
         {
-            // TODO: Disabled until 6.0
-            /*if(!_force)
-            {*/
             StoppingErrorMessage?.Invoke(Localization.Core.Output_format_does_not_support_sessions);
 
             return ErrorNumber.UnsupportedMedia;
-            /*}
-
-            StoppingErrorMessage?.Invoke("Output format does not support sessions, this will end in a loss of data, continuing...");*/
         }
 
         // Check for hidden tracks support in optical media
@@ -260,15 +254,9 @@ public sealed partial class Merger
            true &&
            (primaryImage as IOpticalMediaImage)?.Tracks?.Any(static t => t.Sequence == 0) == true)
         {
-            // TODO: Disabled until 6.0
-            /*if(!_force)
-            {*/
             StoppingErrorMessage?.Invoke(Localization.Core.Output_format_does_not_support_hidden_tracks);
 
             return ErrorNumber.UnsupportedMedia;
-            /*}
-
-            StoppingErrorMessage?.Invoke("Output format does not support sessions, this will end in a loss of data, continuing...");*/
         }
 
         // Create the output image file with appropriate settings
@@ -418,9 +406,8 @@ public sealed partial class Merger
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            errno = CopyNegativeSectorsSecondary(useLong, secondaryImage, outputFormat, overrideNegativeSectorsList);
-
-            if(errno != ErrorNumber.NoError) return errno;
+            if(secondaryImage.Info.NegativeSectors > 0)
+                CopyNegativeSectorsSecondary(useLong, secondaryImage, outputFormat, overrideNegativeSectorsList);
         }
 
         if(nominalOverflowSectors > 0)
@@ -437,9 +424,8 @@ public sealed partial class Merger
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            errno = CopyOverflowSectorsSecondary(useLong, secondaryImage, outputFormat, overrideOverflowSectorsList);
-
-            if(errno != ErrorNumber.NoError) return errno;
+            if(secondaryImage.Info.OverflowSectors > 0)
+                CopyOverflowSectorsSecondary(useLong, secondaryImage, outputFormat, overrideOverflowSectorsList);
         }
 
         bool ret;

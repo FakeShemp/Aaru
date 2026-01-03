@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Aaru
+Exec=aaru gui
+Terminal=false
+Type=Application
+Icon=aaru
+Comment=Aaru Data Preservation Suite
+Categories=Utility;FileTools;Filesystem

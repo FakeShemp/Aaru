@@ -44,7 +44,7 @@
         Width="640"
         Height="480"
         x:Class="Aaru.Gui.Views.Windows.DecodeMediaTags"
-        Icon="/Assets/aaru-logo.png"
+        Icon="/Assets/aaru.png"
         x:DataType="windows:DecodeMediaTagsViewModel"
         Title="{x:Static localization:UI.Title_Decode_media_tags}">
     <Design.DataContext>

@@ -4,24 +4,52 @@ Aaru
 
 Copyright © 2011-2026 Natalia Portillo <claunia@claunia.com>
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fclaunia%2FDiscImageChef.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fclaunia%2FDiscImageChef?ref=badge_shield)
-
 You can see user documentation [here](https://www.aaru.app)
 
-Aaru is a fully featured media dump management solution. You usually know media dumps as disc images, disk images, tape
-images, etc.
+What is Aaru?
+=============
+**Aaru** (named after the Egyptian paradise where the righteous dwell eternally) is the ultimate **Data Preservation Suite** — your all-in-one solution for digital media preservation and archival.
 
-With Aaru you can identify a media dump, extract files from it (for supported filesystems), compare two of them, create
-them from real media using the appropriate drive, create a sidecar metadata with information about the media dump, and a
-lot of other features that commonly would require you to use separate applications.
+Aaru is designed to assist you through the entire workflow of digital media preservation — from the initial creation of disk images (commonly called "dumping") all the way through long-term archival storage.
 
-To see last changes, check the [changelog](Changelog.md). To see list of pending things to do, check
-the [list of issues](https://github.com/aaru-dps/Aaru/issues).
+### 🔧 Key Features
 
-If you want to contribute in any way please read the [contributing guide](CONTRIBUTING.md).
+#### Media Dumping
+Aaru can dump media from virtually any drive you have:
+- **Magnetic disks** (floppy disks, hard drives)
+- **Optical discs** (CDs, DVDs, Blu-rays)
+- **Magneto-optical disks** (MO discs)
+- **Flash devices** (USB drives, SSDs)
+- **Memory cards** (SD, CF, and more)
+- **Tapes** (various formats)
 
-Stable releases in [Github](https://github.com/aaru-dps/Aaru/releases).
+It works with drives connected via **ATA, ATAPI, SCSI, USB, FireWire, and SDHCI** interfaces, producing archival-grade images in multiple supported formats.
 
+#### Hardware Flexibility
+You don't need specialized hardware. Aaru will always try to extract the most accurate, archival-quality image from your media using whatever drive you have available. All parameters are fully customizable, with sensible and battle-tested defaults.
+
+#### Image Management
+- **Identify** existing disk images and get detailed information
+- **Compare** two dumps to verify integrity or find differences
+- **Convert** between supported formats without any data loss
+
+#### Filesystem Analysis & Extraction
+Aaru recognizes dozens of filesystems and can display detailed information about them. For many filesystems, you can extract the complete contents — including all files, extended attributes, and alternate data streams.
+
+#### Archive & Game Package Support
+Beyond disk images, Aaru supports compressed archives and game packages, enabling you to view and extract their contents as part of your preservation workflow.
+
+#### Dual Interface
+Not comfortable with command lines? Aaru includes a modern, fully-featured **graphical user interface** that makes preservation accessible to everyone.
+
+#### AaruFormat — The Archival Standard
+We provide our own archival-oriented format, **AaruFormat**, specifically designed for preservation. It stores:
+- All data from your media
+- Comprehensive metadata
+- Full audit information
+
+#### Metadata Sidecar Generation
+Aaru can generate metadata sidecars in an open **JSON format**, perfect for integration with external systems and third-party software. These sidecars contain all extractable information from any supported image format.
 
 System requirements
 ===================
@@ -37,31 +65,8 @@ And read help.
 
 Or read the [documentation](https://www.aaru.app).
 
-Features
-========
-
-* Identifies a disk image getting information about the disk itself and shows information about partitions and
-  filesystems inside them
-* Can checksum the disks (and if optical disc, separate tracks) user-data (tags and metadata coming soon)
-* Can compare two disk images, even different formats, for different sectors and/or metadata
-* Can list and extract contents from supported archives
-* Can list and extract contents from supported filesystems
-* Can read several disk image formats.
-* Can read several known sector by sector formats with variable bytes per sector.
-* Can read standard sector by sector copies for optical and magnetic discs with constant bytes per sector.
-* Can verify sectors or disk images if supported by the underlying format
-* Can dump media from ATA, ATAPI, SCSI, USB, FireWire and SDHCI drives (magnetic disks, optical discs, magnetoptical
-  disks, flash devices, memory cards and tapes) to several supported image formats.
-* Can convert between image formats.
-* Includes an open-source archival image format with compression and deduplication.
-* Can create standard open XML metadata from existing images.
-* Can measure readability and speed of media (same that can be dumped, MHDD style)
-* Has an online database with drive capabilities, and can report the capabilities of any drive.
-* Works on any operating system and architecture where .NET Core is supported (drive access requires Windows or Linux).
-* Has a graphical interface (work in progress)
-
-Supported disk image formats (read-only)
-========================================
+Media image formats we can read
+===============================
 
 * Apple Disk Archival/Retrieval Tool (DART)
 * Apple II nibble images (NIB)
@@ -83,8 +88,8 @@ Supported disk image formats (read-only)
 * TeleDisk
 * X68k DIM disk image files (.DIM)
 
-Supported disk image formats (read and write)
-=============================================
+Media image formats we can write to
+===================================
 
 * Alcohol 120% Media Descriptor Structure (.MDS/.MDF)
 * Anex86 disk images (.FDI for floppies, .HDI for hard disks)
@@ -160,8 +165,8 @@ Supported partitioning schemes
 * Xbox 360 hard coded partitions
 * XENIX partition table
 
-Supported file systems for read-only operations
-===============================================
+Fully supported file-systems (identify and extraction)
+======================================================
 
 * 3DO Opera file system
 * Apple DOS file system
@@ -279,4 +284,4 @@ These disk image formats cannot be read, but their contents can be checksummed o
 
 License
 =======
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fclaunia%2FDiscImageChef.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fclaunia%2FDiscImageChef?ref=badge_large)
+Aaru is licensed under the GNU General Public License v2 license. Some components may be licensed under different licenses; see their respective documentation for details.

@@ -44,7 +44,7 @@
         Width="640"
         Height="320"
         x:Class="Aaru.Gui.Views.Windows.ImageSidecar"
-        Icon="/Assets/aaru-logo.png"
+        Icon="/Assets/aaru.png"
         CanResize="False"
         x:DataType="windows:ImageSidecarViewModel"
         Title="{x:Static localization:UI.Title_Image_sidecar_creation}">

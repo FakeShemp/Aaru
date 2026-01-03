@@ -14,11 +14,11 @@ responsibilities.
 
 ## Technical committee
 
-| TC Member      | GitHub ID                                           | Affiliation               |
-|----------------|-----------------------------------------------------|---------------------------|
-| Robin François | [robin-francois](https://github.com/robin-francois) | Cinémathèque suisse       |
-| Joseph Redon   | X                                                   | Game Preservation Society |
-| Jonas Rosland  | [jonasrosland](https://github.com/jonasrosland)     | Hit Save!                 |
+| TC Member      | GitHub ID                                           | Affiliation                 |
+|----------------|-----------------------------------------------------|-----------------------------|
+| Robin François | [robin-francois](https://github.com/robin-francois) | Swiss Video Game Archivists |
+| Joseph Redon   | X                                                   | Game Preservation Society   |
+| Jonas Rosland  | [jonasrosland](https://github.com/jonasrosland)     | Hit Save!                   |
 
 ## Aaru Contributors & Stakeholders
 

@@ -203,11 +203,11 @@ public sealed partial class Merger
                 }
                 else
                 {
-                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_negative_sector_1_not_continuing,
-                                                               errno,
-                                                               sectorAddress));
+                    ErrorMessage?.Invoke(string.Format(UI.Error_0_reading_negative_sector_1_continuing,
+                                                       errno,
+                                                       sectorAddress));
 
-                    return errno;
+                    continue;
                 }
             }
             else
@@ -227,11 +227,11 @@ public sealed partial class Merger
                 }
                 else
                 {
-                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_negative_sector_1_not_continuing,
-                                                               errno,
-                                                               sectorAddress));
+                    ErrorMessage?.Invoke(string.Format(UI.Error_0_reading_negative_sector_1_continuing,
+                                                       errno,
+                                                       sectorAddress));
 
-                    return errno;
+                    continue;
                 }
             }
 
@@ -239,11 +239,9 @@ public sealed partial class Merger
 
             if(result) continue;
 
-            StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_negative_sector_1_not_continuing,
-                                                       outputImage.ErrorMessage,
-                                                       sectorAddress));
-
-            return ErrorNumber.WriteError;
+            ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_negative_sector_1_continuing,
+                                               outputImage.ErrorMessage,
+                                               sectorAddress));
         }
 
         EndProgress?.Invoke();
@@ -294,22 +292,20 @@ public sealed partial class Merger
                     result = outputImage.WriteSectorTag(sector, sectorAddress, true, tag);
                 else
                 {
-                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_negative_sector_1_not_continuing,
-                                                               errno,
-                                                               sectorAddress));
+                    ErrorMessage?.Invoke(string.Format(UI.Error_0_reading_negative_sector_1_continuing,
+                                                       errno,
+                                                       sectorAddress));
 
-                    return errno;
+                    continue;
                 }
 
                 currentCount++;
 
                 if(result) continue;
 
-                StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_negative_sector_1_not_continuing,
-                                                           outputImage.ErrorMessage,
-                                                           sectorAddress));
-
-                return ErrorNumber.WriteError;
+                ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_negative_sector_1_continuing,
+                                                   outputImage.ErrorMessage,
+                                                   sectorAddress));
             }
         }
 
@@ -515,11 +511,11 @@ public sealed partial class Merger
                 }
                 else
                 {
-                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_overflow_sector_1_not_continuing,
-                                                               errno,
-                                                               sectorAddress));
+                    ErrorMessage?.Invoke(string.Format(UI.Error_0_reading_overflow_sector_1_continuing,
+                                                       errno,
+                                                       sectorAddress));
 
-                    return errno;
+                    continue;
                 }
             }
             else
@@ -539,11 +535,11 @@ public sealed partial class Merger
                 }
                 else
                 {
-                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_overflow_sector_1_not_continuing,
-                                                               errno,
-                                                               sectorAddress));
+                    ErrorMessage?.Invoke(string.Format(UI.Error_0_reading_overflow_sector_1_continuing,
+                                                       errno,
+                                                       sectorAddress));
 
-                    return errno;
+                    continue;
                 }
             }
 
@@ -551,11 +547,9 @@ public sealed partial class Merger
 
             if(result) continue;
 
-            StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_overflow_sector_1_not_continuing,
-                                                       outputImage.ErrorMessage,
-                                                       sectorAddress));
-
-            return ErrorNumber.WriteError;
+            ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_overflow_sector_1_continuing,
+                                               outputImage.ErrorMessage,
+                                               sectorAddress));
         }
 
         EndProgress?.Invoke();
@@ -606,22 +600,20 @@ public sealed partial class Merger
                     result = outputImage.WriteSectorTag(sector, sectorAddress, false, tag);
                 else
                 {
-                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_reading_overflow_sector_1_not_continuing,
-                                                               errno,
-                                                               sectorAddress));
+                    ErrorMessage?.Invoke(string.Format(UI.Error_0_reading_overflow_sector_1_continuing,
+                                                       errno,
+                                                       sectorAddress));
 
-                    return errno;
+                    continue;
                 }
 
                 currentSector++;
 
                 if(result) continue;
 
-                StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_overflow_sector_1_not_continuing,
-                                                           outputImage.ErrorMessage,
-                                                           sectorAddress));
-
-                return ErrorNumber.WriteError;
+                ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_overflow_sector_1_continuing,
+                                                   outputImage.ErrorMessage,
+                                                   sectorAddress));
             }
 
             EndProgress?.Invoke();
