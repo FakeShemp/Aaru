@@ -48,6 +48,7 @@ public sealed partial class AaruFormat
                    Status.TapeFileNotFound       => ErrorNumber.NoData,
                    Status.TapePartitionNotFound  => ErrorNumber.NoData,
                    Status.MetadataNotPresent     => ErrorNumber.NoData,
+                   Status.InvalidSectorLength    => ErrorNumber.InvalidArgument,
                    _                             => ErrorNumber.InvalidArgument
                };
     }
@@ -92,6 +93,7 @@ public sealed partial class AaruFormat
                    Status.TapeFileNotFound       => "Requested tape file number is not present in image.",
                    Status.TapePartitionNotFound  => "Requested tape partition is not present in image.",
                    Status.MetadataNotPresent     => "Requested metadata is not present in image.",
+                   Status.InvalidSectorLength    => "Requested sector length is too big.",
                    _                             => "Unknown error occurred."
                };
     }

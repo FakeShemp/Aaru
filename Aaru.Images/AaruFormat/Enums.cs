@@ -210,7 +210,12 @@ public sealed partial class AaruFormat
         ///     Requested metadata not present in image.
         ///     &lt;remarks&gt;AARUF_ERROR_METADATA_NOT_PRESENT&lt;/remarks&gt;
         /// </summary>
-        MetadataNotPresent = -30
+        MetadataNotPresent = -30,
+        /// <summary>
+        ///     Sector length is too big.
+        ///     &lt;remarks&gt;AARUF_ERROR_INVALID_SECTOR_LENGTH&lt;/remarks&gt;
+        /// </summary>
+        InvalidSectorLength = -31
     }
 
 #endregion
