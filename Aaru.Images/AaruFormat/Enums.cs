@@ -216,7 +216,7 @@ public sealed partial class AaruFormat
         ///     Sector length is too big.
         ///     &lt;remarks&gt;AARUF_ERROR_INVALID_SECTOR_LENGTH&lt;/remarks&gt;
         /// </summary>
-        InvalidSectorLength = -31
+        InvalidSectorLength = -31,
         /// <summary>
         ///     Requested flux data not present in image.
         ///     &lt;remarks&gt;AARUF_ERROR_FLUX_DATA_NOT_FOUND&lt;/remarks&gt;
