@@ -1009,7 +1009,7 @@
     <value>disco óptico de 89 mm de lectura/escritura y doble cara con 12500 pistas</value>
   </data>
     <data name="Data_area_ends_at_PSN_0" xml:space="preserve">
-        <value>[slateblue1]El área de datos comienza en el PSN[/] [lime]{0:X}h[/]</value>
+        <value>[slateblue1]El área de datos termina en el PSN[/] [lime]{0:X}h[/]</value>
     </data>
     <data name="Data_area_starts_at_PSN_0" xml:space="preserve">
         <value>[slateblue1]El área de datos comienza en el PSN[/] [lime]{0:X}h[/]</value>
