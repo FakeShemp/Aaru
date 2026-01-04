@@ -76,6 +76,30 @@ public class TapeImageTestExpected : BlockImageTestExpected
     public new TapePartition[] Partitions;
 }
 
+public class FluxCaptureTestExpected
+{
+    /// <summary>Physical head (0-based)</summary>
+    public uint Head;
+    /// <summary>Physical track (0-based)</summary>
+    public ushort Track;
+    /// <summary>Physical sub-track (0-based, e.g. half-track)</summary>
+    public byte SubTrack;
+    /// <summary>Capture index for this head/track/subTrack combination</summary>
+    public uint CaptureIndex;
+    /// <summary>Expected index resolution in picoseconds</summary>
+    public ulong IndexResolution;
+    /// <summary>Expected data resolution in picoseconds</summary>
+    public ulong DataResolution;
+}
+
+public class FluxImageTestExpected : BlockImageTestExpected
+{
+    /// <summary>Expected number of flux captures in the image</summary>
+    public uint FluxCaptureCount;
+    /// <summary>Expected flux captures to validate</summary>
+    public FluxCaptureTestExpected[] FluxCaptures;
+}
+
 public class PartitionTest
 {
     public Partition[] Partitions;

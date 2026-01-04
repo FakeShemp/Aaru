@@ -239,4 +239,19 @@ public sealed partial class AaruFormat
     }
 
 #endregion
+
+#region Nested type: FluxCaptureEntry
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct FluxCaptureEntry
+    {
+        public uint Head;
+        public ushort Track;
+        public byte SubTrack;
+        public uint CaptureIndex;
+        public ulong IndexResolution;
+        public ulong DataResolution;
+    }
+
+#endregion
 }

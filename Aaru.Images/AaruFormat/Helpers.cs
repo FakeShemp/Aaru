@@ -94,6 +94,7 @@ public sealed partial class AaruFormat
                    Status.TapePartitionNotFound  => "Requested tape partition is not present in image.",
                    Status.MetadataNotPresent     => "Requested metadata is not present in image.",
                    Status.InvalidSectorLength    => "Requested sector length is too big.",
+                   Status.FluxDataNotFound       => "Requested flux data is not present in image.",
                    _                             => "Unknown error occurred."
                };
     }

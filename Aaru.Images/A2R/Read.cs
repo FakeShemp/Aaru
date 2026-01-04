@@ -39,6 +39,7 @@ using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
 
@@ -504,5 +505,38 @@ public sealed partial class A2R
         long index = HeadTrackSubToA2RLocation(head, track, subTrack, _imageInfo.MediaType);
 
         return _a2RCaptures.FindAll(capture => index == capture.location)[(int)captureIndex];
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetAllFluxCaptures(out List<FluxCapture> captures)
+    {
+        captures = [];
+
+        if(_a2RCaptures is { Count: > 0 })
+        {
+            // Group captures by head/track/subtrack to assign capture indices
+            var grouped = _a2RCaptures.GroupBy(c => new { c.head, c.track, c.subTrack })
+                                      .ToList();
+
+            foreach(var group in grouped)
+            {
+                uint captureIndex = 0;
+
+                foreach(StreamCapture streamCapture in group)
+                {
+                    captures.Add(new FluxCapture
+                    {
+                        Head            = streamCapture.head,
+                        Track           = streamCapture.track,
+                        SubTrack        = streamCapture.subTrack,
+                        CaptureIndex    = captureIndex++,
+                        IndexResolution = streamCapture.resolution,
+                        DataResolution  = streamCapture.resolution
+                    });
+                }
+            }
+        }
+
+        return ErrorNumber.NoError;
     }
 }

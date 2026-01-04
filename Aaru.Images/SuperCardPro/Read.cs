@@ -33,9 +33,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
 
@@ -552,6 +554,39 @@ public sealed partial class SuperCardPro
         ErrorNumber indexCapture = ReadFluxIndexCapture(head, track, subTrack, captureIndex, out indexBuffer);
 
         return indexCapture;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetAllFluxCaptures(out List<FluxCapture> captures)
+    {
+        captures = [];
+
+        if(ScpTracks is { Count: > 0 })
+        {
+            ulong resolution = (ulong)((Header.resolution + 1) * DEFAULT_RESOLUTION);
+
+            captures = [.. ScpTracks.Select(kvp =>
+            {
+                byte scpTrack = kvp.Key;
+
+                // Reverse HeadTrackSubToScpTrack: scpTrack = head + track * 2
+                uint   head         = (uint)(scpTrack % 2);
+                ushort track        = (ushort)(scpTrack / 2);
+                const byte subTrack = 0; // SuperCardPro always has subTrack = 0
+
+                return new FluxCapture
+                {
+                    Head            = head,
+                    Track           = track,
+                    SubTrack        = subTrack,
+                    CaptureIndex    = 0, // SuperCardPro always has one capture per track
+                    IndexResolution = resolution,
+                    DataResolution  = resolution
+                };
+            })];
+        }
+
+        return ErrorNumber.NoError;
     }
 
     /// <inheritdoc />

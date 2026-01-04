@@ -40,7 +40,9 @@ public sealed partial class AaruFormat
         /// <summary>Block containing list of indexes for Compact Disc tracks</summary>
         CompactDiscIndexesBlock = 0x58494443,
         /// <summary>Block containing JSON version of Aaru Metadata</summary>
-        AaruMetadataJsonBlock = 0x444D534A
+        AaruMetadataJsonBlock = 0x444D534A,
+        /// <summary>Block containing list of flux captures</summary>
+        FluxCapturesBlock = 0x58554C46
     }
 
 #endregion
@@ -211,11 +213,15 @@ public sealed partial class AaruFormat
         ///     &lt;remarks&gt;AARUF_ERROR_METADATA_NOT_PRESENT&lt;/remarks&gt;
         /// </summary>
         MetadataNotPresent = -30,
-        /// <summary>
         ///     Sector length is too big.
         ///     &lt;remarks&gt;AARUF_ERROR_INVALID_SECTOR_LENGTH&lt;/remarks&gt;
         /// </summary>
-        InvalidSectorLength = -31
+        InvalidSectorLength = -31,
+        /// <summary>
+        ///     Requested flux data not present in image.
+        ///     &lt;remarks&gt;AARUF_ERROR_FLUX_DATA_NOT_FOUND&lt;/remarks&gt;
+        /// </summary>
+        FluxDataNotFound = -32
     }
 
 #endregion

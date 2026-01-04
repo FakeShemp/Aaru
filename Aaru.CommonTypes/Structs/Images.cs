@@ -258,3 +258,13 @@ public class LinearMemoryInterleave
     /// <summary>How many bytes in memory to skip every device byte</summary>
     public uint Value { get; set; }
 }
+
+public class FluxCapture
+{
+    public uint Head { get; set; }
+    public ushort Track { get; set; }
+    public byte SubTrack { get; set; }
+    public uint CaptureIndex { get; set; }
+    public ulong IndexResolution { get; set; }
+    public ulong DataResolution { get; set; }
+}

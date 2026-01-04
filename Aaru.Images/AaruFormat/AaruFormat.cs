@@ -6,7 +6,7 @@ namespace Aaru.Images;
 
 /// <inheritdoc cref="Aaru.CommonTypes.Interfaces.IWritableOpticalImage" />
 /// <summary>Implements reading and writing AaruFormat media images</summary>
-public sealed partial class AaruFormat : IWritableOpticalImage, IVerifiableImage, IWritableTapeImage, IDisposable
+public sealed partial class AaruFormat : IWritableOpticalImage, IVerifiableImage, IWritableTapeImage, IWritableFluxImage, IDisposable
 {
     const string MODULE_NAME = "Aaru Format plugin";
     IntPtr       _context;
