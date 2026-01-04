@@ -421,7 +421,7 @@ partial class Dump
                                       _                => MediaType.DVDROM
                                   };
 
-                        if(nullablePfi.Value.Layers > 1)
+                        if(nullablePfi.Value.Layers > 0)
                         {
                             sense = _dev.ReadDiscStructure(out cmdBuf,
                                                            out _,
