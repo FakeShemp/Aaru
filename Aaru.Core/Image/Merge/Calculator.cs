@@ -121,6 +121,9 @@ public sealed partial class Merger
         // Create a mapping of which hardware each sector belongs to
         var sectorToHardware = new Dictionary<ulong, DumpHardware>();
 
+        // Convert override list to HashSet for O(1) lookups
+        var overrideSectorsSet = new HashSet<ulong>(overrideSectorsList);
+
         // First, build a lookup of which hardware each sector belongs to in primary tries
         var primarySectorToHardware = new Dictionary<ulong, DumpHardware>();
 
@@ -164,7 +167,7 @@ public sealed partial class Merger
             if(_aborted) break;
 
             // If this sector should be overridden, use secondary hardware instead
-            if(overrideSectorsList.Contains(sector))
+            if(overrideSectorsSet.Contains(sector))
             {
                 if(secondarySectorToHardware.TryGetValue(sector, out DumpHardware secondaryHardware))
                     sectorToHardware[sector] = secondaryHardware;
@@ -178,6 +181,7 @@ public sealed partial class Merger
 
         // Also add any sectors from override list that weren't in primary
         foreach(ulong overrideSector in overrideSectorsList)
+        foreach(ulong overrideSector in overrideSectorsSet)
         {
             if(_aborted) break;
 
