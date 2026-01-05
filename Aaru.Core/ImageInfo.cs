@@ -868,7 +868,8 @@ public static class ImageInfo
             }
         }
 
-        if(imageFormat is IFluxImage) AaruLogging.WriteLine(Localization.Core.Image_flux_captures);
+        if(imageFormat is IFluxImage fluxImage && fluxImage.GetAllFluxCaptures(out List<FluxCapture> captures) == ErrorNumber.NoError && captures is { Count: > 0 })
+            AaruLogging.WriteLine(Localization.Core.Image_flux_captures);
 
         if(imageFormat is not IOpticalMediaImage opticalImage) return;
 
