@@ -126,11 +126,16 @@ public sealed partial class Merger
 
         foreach(DumpHardware primaryHardware in primaryTries)
         {
+            if(_aborted) break;
+
             if(primaryHardware?.Extents == null) continue;
 
             foreach(Extent extent in primaryHardware.Extents)
             {
                 for(ulong sector = extent.Start; sector <= extent.End; sector++)
+                {
+                    if(_aborted) break;
+
                     primarySectorToHardware[sector] = primaryHardware;
             }
         }
@@ -140,10 +145,14 @@ public sealed partial class Merger
 
         foreach(DumpHardware secondaryHardware in secondaryTries)
         {
+            if(_aborted) break;
+
             if(secondaryHardware?.Extents == null) continue;
 
             foreach(Extent extent in secondaryHardware.Extents)
             {
+                if(_aborted) break;
+
                 for(ulong sector = extent.Start; sector <= extent.End; sector++)
                     secondarySectorToHardware[sector] = secondaryHardware;
             }
@@ -152,6 +161,8 @@ public sealed partial class Merger
         // Now assign hardware to each sector: use primary hardware, unless sector is in override list
         foreach((ulong sector, DumpHardware primaryHardware) in primarySectorToHardware)
         {
+            if(_aborted) break;
+
             // If this sector should be overridden, use secondary hardware instead
             if(overrideSectorsList.Contains(sector))
             {
@@ -168,6 +179,8 @@ public sealed partial class Merger
         // Also add any sectors from override list that weren't in primary
         foreach(ulong overrideSector in overrideSectorsList)
         {
+            if(_aborted) break;
+
             if(!sectorToHardware.ContainsKey(overrideSector) &&
                secondarySectorToHardware.TryGetValue(overrideSector, out DumpHardware secondaryHardware))
                 sectorToHardware[overrideSector] = secondaryHardware;
@@ -185,6 +198,8 @@ public sealed partial class Merger
 
         for(var i = 1; i < allSectors.Count; i++)
         {
+            if(_aborted) break;
+
             ulong        sector = allSectors[i];
             DumpHardware hw     = sectorToHardware[sector];
 
