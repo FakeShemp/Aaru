@@ -47,7 +47,7 @@ namespace Aaru.CommonTypes.Interfaces;
 /// <summary>Abstract class to implement flux reading plugins.</summary>
 [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global")]
 [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global")]
-public interface IFluxImage : IBaseImage
+public interface IFluxImage : IMediaImage
 {
     /// <summary>
     ///     An image may have more than one capture for a specific head/track/sub-track combination. This returns
