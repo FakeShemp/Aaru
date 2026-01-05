@@ -327,7 +327,8 @@ public sealed partial class Merger
         EndProgress2?.Invoke();
         EndProgress?.Invoke();
 
-        return mergedHardware;
+        // Sort results by the starting LBA of the first extent of each hardware
+        return mergedHardware.OrderBy(static hw => hw.Extents?.FirstOrDefault()?.Start ?? 0).ToList();
     }
 
     static void AddOrUpdateHardware(List<DumpHardware> mergedHardware, DumpHardware originalHardware, ulong start,
