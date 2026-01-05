@@ -40,6 +40,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 
@@ -67,12 +68,13 @@ public sealed partial class A2R : IWritableFluxImage
     InfoChunkV2                _infoChunkV2;
     InfoChunkV3                _infoChunkV3;
     Dictionary<string, string> _meta;
+    Dictionary<MediaTagType, byte[]> _mediaTags;
     FileStream                 _writingStream;
 
     public A2R() => _imageInfo = new ImageInfo
     {
         ReadableSectorTags    = [],
-        ReadableMediaTags     = [],
+        ReadableMediaTags     = [MediaTagType.Floppy_WriteProtection],
         HasPartitions         = false,
         HasSessions           = false,
         Version               = null,

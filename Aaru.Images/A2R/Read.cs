@@ -57,6 +57,7 @@ public sealed partial class A2R
         _a2RStream.Seek(0, SeekOrigin.Begin);
 
         _a2RFilter = imageFilter;
+        _mediaTags = [];
 
         // Per A2R spec: Read 8-byte header
         // Bytes 0-2: Signature ("A2R")
@@ -117,6 +118,11 @@ public sealed partial class A2R
                 AaruLogging.Debug(MODULE_NAME, "infoChunk.synchronized = {0}", _infoChunkV2.synchronized);
 
                 _imageInfo.Creator = Encoding.ASCII.GetString(_infoChunkV2.creator).TrimEnd();
+
+                // Store write protection status as media tag
+                // Boolean value: 1 byte where 0 = false (not write protected), 1 = true (write protected)
+                _mediaTags[MediaTagType.Floppy_WriteProtection] = _infoChunkV2.writeProtected == 1 ? [1] : [0];
+                _imageInfo.ReadableMediaTags.Add(MediaTagType.Floppy_WriteProtection);
 
                 // The disk type actually only denotes the form factor of the media, and not the media type.
                 switch(_infoChunkV2.diskType)
@@ -576,7 +582,16 @@ public sealed partial class A2R
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer) => throw new NotImplementedException();
+    public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer)
+    {
+        buffer = null;
+
+        if(!_mediaTags.TryGetValue(tag, out byte[] data)) return ErrorNumber.NoData;
+
+        buffer = data?.Clone() as byte[];
+
+        return buffer == null ? ErrorNumber.NoData : ErrorNumber.NoError;
+    }
 
     /// <inheritdoc />
     public ErrorNumber

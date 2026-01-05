@@ -80,13 +80,74 @@ public sealed partial class HxCStream
     };
 
     /// <inheritdoc />
-    public IEnumerable<MediaTagType> SupportedMediaTags => null;
+    public IEnumerable<MediaTagType> SupportedMediaTags => new[]
+    {
+        MediaTagType.Floppy_WriteProtection
+    };
 
     /// <inheritdoc />
     public IEnumerable<MediaType> SupportedMediaTypes => new[]
     {
-        // TODO: HxCStream supports a lot more formats, please add more whence tested.
-        MediaType.DOS_35_DS_DD_9, MediaType.DOS_35_HD, MediaType.DOS_525_DS_DD_9, MediaType.DOS_525_HD,
+        // Apple formats
+        MediaType.Apple32SS, MediaType.Apple32DS, MediaType.Apple33SS, MediaType.Apple33DS,
+        MediaType.AppleSonySS, MediaType.AppleSonyDS, MediaType.AppleFileWare,
+        
+        // IBM PC/DOS formats - 5.25"
+        MediaType.DOS_525_SS_DD_8, MediaType.DOS_525_SS_DD_9,
+        MediaType.DOS_525_DS_DD_8, MediaType.DOS_525_DS_DD_9, MediaType.DOS_525_HD,
+        
+        // IBM PC/DOS formats - 3.5"
+        MediaType.DOS_35_SS_DD_8, MediaType.DOS_35_SS_DD_9,
+        MediaType.DOS_35_DS_DD_8, MediaType.DOS_35_DS_DD_9, MediaType.DOS_35_HD, MediaType.DOS_35_ED,
+        
+        // Microsoft formats
+        MediaType.DMF, MediaType.DMF_82, MediaType.XDF_525, MediaType.XDF_35,
+        
+        // Atari formats
+        MediaType.ATARI_525_SD, MediaType.ATARI_525_DD, MediaType.ATARI_525_ED,
+        MediaType.ATARI_35_SS_DD, MediaType.ATARI_35_DS_DD,
+        MediaType.ATARI_35_SS_DD_11, MediaType.ATARI_35_DS_DD_11,
+        
+        // Commodore/Amiga formats
+        MediaType.CBM_35_DD, MediaType.CBM_AMIGA_35_DD, MediaType.CBM_AMIGA_35_HD,
+        MediaType.CBM_1540, MediaType.CBM_1540_Ext, MediaType.CBM_1571,
+        
+        // NEC/Sharp formats
+        MediaType.NEC_525_SS, MediaType.NEC_525_DS, MediaType.NEC_525_HD,
+        MediaType.NEC_35_HD_8, MediaType.NEC_35_HD_15, MediaType.NEC_35_TD,
+        MediaType.SHARP_525, MediaType.SHARP_525_9, MediaType.SHARP_35, MediaType.SHARP_35_9,
+        
+        // 8" formats
+        MediaType.NEC_8_SD, MediaType.NEC_8_DD,
+        MediaType.ECMA_99_8, MediaType.ECMA_69_8,
+        
+        // IBM formats
+        MediaType.IBM23FD, MediaType.IBM33FD_128, MediaType.IBM33FD_256, MediaType.IBM33FD_512,
+        MediaType.IBM43FD_128, MediaType.IBM43FD_256,
+        MediaType.IBM53FD_256, MediaType.IBM53FD_512, MediaType.IBM53FD_1024,
+        
+        // DEC formats
+        MediaType.RX01, MediaType.RX02, MediaType.RX03, MediaType.RX50,
+        
+        // Acorn formats
+        MediaType.ACORN_525_SS_SD_40, MediaType.ACORN_525_SS_SD_80,
+        MediaType.ACORN_525_SS_DD_40, MediaType.ACORN_525_SS_DD_80, MediaType.ACORN_525_DS_DD,
+        MediaType.ACORN_35_DS_DD, MediaType.ACORN_35_DS_HD,
+        
+        // ECMA standard formats
+        MediaType.ECMA_54, MediaType.ECMA_59, MediaType.ECMA_66, MediaType.ECMA_69_8,
+        MediaType.ECMA_69_15, MediaType.ECMA_69_26, MediaType.ECMA_70, MediaType.ECMA_78,
+        MediaType.ECMA_78_2, MediaType.ECMA_99_15, MediaType.ECMA_99_26, MediaType.ECMA_100,
+        MediaType.ECMA_125, MediaType.ECMA_147,
+        
+        // FDFORMAT formats
+        MediaType.FDFORMAT_525_DD, MediaType.FDFORMAT_525_HD,
+        MediaType.FDFORMAT_35_DD, MediaType.FDFORMAT_35_HD,
+        
+        // Other formats
+        MediaType.Apricot_35, MediaType.MetaFloppy_Mod_I, MediaType.MetaFloppy_Mod_II,
+        
+        // Unknown/fallback
         MediaType.Unknown
     };
 

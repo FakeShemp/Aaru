@@ -235,8 +235,20 @@ public sealed partial class A2R
             Encoding.UTF8.GetBytes($"Aaru v{typeof(A2R).Assembly.GetName().Version?.ToString()}".PadRight(32, ' '));
 
         // Per A2R 3.x spec: writeProtected indicates if floppy is write protected (1 = protected)
-        // Default to 1 (write protected) as a safe default for archival images
-        _infoChunkV3.writeProtected = 1;
+        // Check if Floppy_WriteProtection media tag is available, otherwise default to 1 (write protected)
+        // as a safe default for archival images
+        // Initialize _mediaTags if not already initialized
+        _mediaTags ??= [];
+
+        if(_mediaTags.TryGetValue(MediaTagType.Floppy_WriteProtection, out byte[] writeProtectionTag))
+        {
+            // Boolean value: non-zero byte = true (write protected), 0 = false (not write protected)
+            _infoChunkV3.writeProtected = writeProtectionTag is { Length: > 0 } && writeProtectionTag[0] != 0 ? (byte)1 : (byte)0;
+        }
+        else
+        {
+            _infoChunkV3.writeProtected = 1; // Default to write protected
+        }
 
         // Per A2R 3.x spec: synchronized indicates if cross-track sync/index was used during imaging (1 = synchronized)
         // Will be set based on first capture's index signals in WriteFluxCapture
@@ -285,7 +297,30 @@ public sealed partial class A2R
     public bool SetMetadata(Metadata metadata) => false;
 
     /// <inheritdoc />
-    public bool WriteMediaTag(byte[] data, MediaTagType tag) => false;
+    public bool WriteMediaTag(byte[] data, MediaTagType tag)
+    {
+        if(!SupportedMediaTags.Contains(tag))
+        {
+            ErrorMessage = $"Tried to write unsupported media tag {tag}.";
+
+            return false;
+        }
+
+        _mediaTags ??= [];
+
+        if(_mediaTags.ContainsKey(tag)) _mediaTags.Remove(tag);
+
+        _mediaTags.Add(tag, data);
+
+        // If this is the write protection tag, update the INFO chunk value
+        if(tag == MediaTagType.Floppy_WriteProtection)
+        {
+            // Boolean value: non-zero byte = true (write protected), 0 = false (not write protected)
+            _infoChunkV3.writeProtected = data is { Length: > 0 } && data[0] != 0 ? (byte)1 : (byte)0;
+        }
+
+        return true;
+    }
 
     /// <inheritdoc />
     public bool WriteSector(byte[] data, ulong sectorAddress, bool negative, SectorStatus sectorStatus) =>
