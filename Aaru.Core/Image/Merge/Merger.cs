@@ -275,8 +275,6 @@ public sealed partial class Merger
 
         // Prepare metadata and dump hardware information
         Metadata metadata = primaryImage.AaruMetadata;
-        InitProgress?.Invoke();
-        PulseProgress?.Invoke(UI.Calculating_merged_dump_hardware_list);
 
         List<DumpHardware> dumpHardware =
             CalculateMergedDumpHardware(primaryImage,
@@ -284,8 +282,6 @@ public sealed partial class Merger
                                         primaryResume,
                                         secondaryResume,
                                         sectorsToCopyFromSecondImage);
-
-        EndProgress?.Invoke();
 
         // Convert media tags from input to output format
         errno = CopyMediaTags(primaryImage, secondaryImage, outputFormat);
