@@ -5389,4 +5389,37 @@ Probadores:
     <data name="Copying_media_tag_0_from_secondary_image" xml:space="preserve">
         <value>[slateblue1]Copiando etiqueta del medio [orange3]{0}[/] de la imagen secundaria[/]</value>
     </data>
+    <data name="Building_primary_hardware_lookup" xml:space="preserve">
+        <value>[slateblue1]Construyendo tabla de búsqueda de hardware primario[/]</value>
+    </data>
+    <data name="Building_secondary_hardware_lookup" xml:space="preserve">
+        <value>[slateblue1]Construyendo tabla de búsqueda de hardware secundario[/]</value>
+    </data>
+    <data name="Assigning_hardware_to_sectors" xml:space="preserve">
+        <value>[slateblue1]Asignando hardware a sectores[/]</value>
+    </data>
+    <data name="Processing_override_sectors" xml:space="preserve">
+        <value>[slateblue1]Procesando sectores de anulación[/]</value>
+    </data>
+    <data name="Sorting_sectors" xml:space="preserve">
+        <value>[slateblue1]Ordenando sectores[/]</value>
+    </data>
+    <data name="Creating_hardware_extents" xml:space="preserve">
+        <value>[slateblue1]Creando extensiones de hardware[/]</value>
+    </data>
+    <data name="Primary_hardware_0_extent_1_2_to_3" xml:space="preserve">
+        <value>[slateblue1]Hardware primario [lime]{0}[/], extensión [teal]{1}[/]: [violet]{2}[/]-[violet]{3}[/][/]</value>
+    </data>
+    <data name="Secondary_hardware_0_extent_1_2_to_3" xml:space="preserve">
+        <value>[slateblue1]Hardware secundario [lime]{0}[/], extensión [teal]{1}[/]: [violet]{2}[/]-[violet]{3}[/][/]</value>
+    </data>
+    <data name="Processing_sector_0" xml:space="preserve">
+        <value>[slateblue1]Procesando sector [violet]{0}[/][/]</value>
+    </data>
+    <data name="Processing_override_sector_0" xml:space="preserve">
+        <value>[slateblue1]Procesando sector de sustitución [violet]{0}[/][/]</value>
+    </data>
+    <data name="Processing_extent_sector_0" xml:space="preserve">
+        <value>[slateblue1]Procesando sector de extensión [violet]{0}[/][/]</value>
+    </data>
 </root>

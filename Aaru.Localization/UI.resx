@@ -5467,4 +5467,37 @@ Do you want to continue?</value>
     <data name="Copying_media_tag_0_from_secondary_image" xml:space="preserve">
         <value>[slateblue1]Copying media tag [orange3]{0}[/] from secondary image[/]</value>
     </data>
+    <data name="Building_primary_hardware_lookup" xml:space="preserve">
+        <value>[slateblue1]Building primary hardware lookup[/]</value>
+    </data>
+    <data name="Building_secondary_hardware_lookup" xml:space="preserve">
+        <value>[slateblue1]Building secondary hardware lookup[/]</value>
+    </data>
+    <data name="Assigning_hardware_to_sectors" xml:space="preserve">
+        <value>[slateblue1]Assigning hardware to sectors[/]</value>
+    </data>
+    <data name="Processing_override_sectors" xml:space="preserve">
+        <value>[slateblue1]Processing override sectors[/]</value>
+    </data>
+    <data name="Sorting_sectors" xml:space="preserve">
+        <value>[slateblue1]Sorting sectors[/]</value>
+    </data>
+    <data name="Creating_hardware_extents" xml:space="preserve">
+        <value>[slateblue1]Creating hardware extents[/]</value>
+    </data>
+    <data name="Primary_hardware_0_extent_1_2_to_3" xml:space="preserve">
+        <value>[slateblue1]Primary hardware [lime]{0}[/], extent [teal]{1}[/]: [violet]{2}[/]-[violet]{3}[/][/]</value>
+    </data>
+    <data name="Secondary_hardware_0_extent_1_2_to_3" xml:space="preserve">
+        <value>[slateblue1]Secondary hardware [lime]{0}[/], extent [teal]{1}[/]: [violet]{2}[/]-[violet]{3}[/][/]</value>
+    </data>
+    <data name="Processing_sector_0" xml:space="preserve">
+        <value>[slateblue1]Processing sector [violet]{0}[/][/]</value>
+    </data>
+    <data name="Processing_override_sector_0" xml:space="preserve">
+        <value>[slateblue1]Processing override sector [violet]{0}[/][/]</value>
+    </data>
+    <data name="Processing_extent_sector_0" xml:space="preserve">
+        <value>[slateblue1]Processing extent sector [violet]{0}[/][/]</value>
+    </data>
 </root>

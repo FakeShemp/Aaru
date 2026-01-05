@@ -3,6 +3,7 @@ using System.Linq;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Metadata;
+using Aaru.Localization;
 
 namespace Aaru.Core.Image;
 
@@ -85,6 +86,9 @@ public sealed partial class Merger
                                                    Resume      primaryResume, Resume      secondaryResume,
                                                    List<ulong> overrideSectorsList)
     {
+        InitProgress?.Invoke();
+        InitProgress2?.Invoke();
+
         List<DumpHardware> primaryTries = (primaryResume != null ? primaryResume.Tries : primaryImage.DumpHardware) ??
                                           [
                                               new DumpHardware
@@ -127,24 +131,59 @@ public sealed partial class Merger
         // First, build a lookup of which hardware each sector belongs to in primary tries
         var primarySectorToHardware = new Dictionary<ulong, DumpHardware>();
 
+        UpdateProgress?.Invoke(UI.Building_primary_hardware_lookup, 0, 1);
+
+        var primaryHardwareIndex = 0;
+
         foreach(DumpHardware primaryHardware in primaryTries)
         {
             if(_aborted) break;
 
             if(primaryHardware?.Extents == null) continue;
 
+            var extentIndex = 0;
+
             foreach(Extent extent in primaryHardware.Extents)
             {
+                if(_aborted) break;
+
+                ulong extentSize = extent.End - extent.Start + 1;
+
+                UpdateProgress2?.Invoke(string.Format(UI.Primary_hardware_0_extent_1_2_to_3,
+                                                      primaryHardwareIndex,
+                                                      extentIndex,
+                                                      extent.Start,
+                                                      extent.End),
+                                        0,
+                                        (long)extentSize);
+
                 for(ulong sector = extent.Start; sector <= extent.End; sector++)
                 {
                     if(_aborted) break;
 
                     primarySectorToHardware[sector] = primaryHardware;
+
+                    UpdateProgress2?.Invoke(string.Format(UI.Primary_hardware_0_extent_1_2_to_3,
+                                                          primaryHardwareIndex,
+                                                          extentIndex,
+                                                          extent.Start,
+                                                          extent.End),
+                                            (long)(sector - extent.Start + 1),
+                                            (long)extentSize);
+                }
+
+                extentIndex++;
             }
+
+            primaryHardwareIndex++;
         }
 
         // Build a lookup of which hardware each sector belongs to in secondary tries
         var secondarySectorToHardware = new Dictionary<ulong, DumpHardware>();
+
+        UpdateProgress?.Invoke(UI.Building_secondary_hardware_lookup, 1, 3);
+
+        var secondaryHardwareIndex = 0;
 
         foreach(DumpHardware secondaryHardware in secondaryTries)
         {
@@ -152,19 +191,54 @@ public sealed partial class Merger
 
             if(secondaryHardware?.Extents == null) continue;
 
+            var extentIndex = 0;
+
             foreach(Extent extent in secondaryHardware.Extents)
             {
                 if(_aborted) break;
 
+                ulong extentSize = extent.End - extent.Start + 1;
+
+                UpdateProgress2?.Invoke(string.Format(UI.Secondary_hardware_0_extent_1_2_to_3,
+                                                      secondaryHardwareIndex,
+                                                      extentIndex,
+                                                      extent.Start,
+                                                      extent.End),
+                                        0,
+                                        (long)extentSize);
+
                 for(ulong sector = extent.Start; sector <= extent.End; sector++)
+                {
                     secondarySectorToHardware[sector] = secondaryHardware;
+
+                    UpdateProgress2?.Invoke(string.Format(UI.Secondary_hardware_0_extent_1_2_to_3,
+                                                          secondaryHardwareIndex,
+                                                          extentIndex,
+                                                          extent.Start,
+                                                          extent.End),
+                                            (long)(sector - extent.Start + 1),
+                                            (long)extentSize);
+                }
+
+                extentIndex++;
             }
+
+            secondaryHardwareIndex++;
         }
 
         // Now assign hardware to each sector: use primary hardware, unless sector is in override list
+        UpdateProgress?.Invoke(UI.Assigning_hardware_to_sectors, 2, 5);
+
+        var  primarySectorsList = primarySectorToHardware.Keys.Order().ToList();
+        long processedSectors   = 0;
+
         foreach((ulong sector, DumpHardware primaryHardware) in primarySectorToHardware)
         {
             if(_aborted) break;
+
+            UpdateProgress2?.Invoke(string.Format(UI.Processing_sector_0, sector),
+                                    processedSectors,
+                                    primarySectorsList.Count);
 
             // If this sector should be overridden, use secondary hardware instead
             if(overrideSectorsSet.Contains(sector))
@@ -177,25 +251,46 @@ public sealed partial class Merger
                 // Use primary hardware
                 sectorToHardware[sector] = primaryHardware;
             }
+
+            processedSectors++;
         }
 
         // Also add any sectors from override list that weren't in primary
-        foreach(ulong overrideSector in overrideSectorsList)
+        UpdateProgress?.Invoke(UI.Processing_override_sectors, 3, 5);
+
+        long overrideProcessed = 0;
+
         foreach(ulong overrideSector in overrideSectorsSet)
         {
             if(_aborted) break;
 
+            UpdateProgress2?.Invoke(string.Format(UI.Processing_override_sector_0, overrideSector),
+                                    overrideProcessed,
+                                    overrideSectorsSet.Count);
+
             if(!sectorToHardware.ContainsKey(overrideSector) &&
                secondarySectorToHardware.TryGetValue(overrideSector, out DumpHardware secondaryHardware))
                 sectorToHardware[overrideSector] = secondaryHardware;
+
+            overrideProcessed++;
         }
 
         // Create extents preserving sector order, grouping contiguous sectors from same hardware
+        UpdateProgress?.Invoke(UI.Sorting_sectors, 4, 5);
+
         var allSectors = sectorToHardware.Keys.Order().ToList();
 
-        if(allSectors.Count == 0) return mergedHardware;
+        if(allSectors.Count == 0)
+        {
+            EndProgress2?.Invoke();
+            EndProgress?.Invoke();
+
+            return mergedHardware;
+        }
 
         // Start first extent
+        UpdateProgress?.Invoke(UI.Creating_hardware_extents, 5, 5);
+
         DumpHardware currentHardware = sectorToHardware[allSectors[0]];
         ulong        extentStart     = allSectors[0];
         ulong        extentEnd       = allSectors[0];
@@ -206,6 +301,8 @@ public sealed partial class Merger
 
             ulong        sector = allSectors[i];
             DumpHardware hw     = sectorToHardware[sector];
+
+            UpdateProgress2?.Invoke(string.Format(UI.Processing_extent_sector_0, sector), i, allSectors.Count);
 
             // Check if we should continue current extent or start new one
             if(hw == currentHardware && sector == extentEnd + 1)
@@ -226,6 +323,9 @@ public sealed partial class Merger
 
         // Add the last extent
         AddOrUpdateHardware(mergedHardware, currentHardware, extentStart, extentEnd);
+
+        EndProgress2?.Invoke();
+        EndProgress?.Invoke();
 
         return mergedHardware;
     }

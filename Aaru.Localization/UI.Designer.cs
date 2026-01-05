@@ -10775,5 +10775,71 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Copying_media_tag_0_from_secondary_image", resourceCulture);
             }
         }
+        
+        public static string Building_primary_hardware_lookup {
+            get {
+                return ResourceManager.GetString("Building_primary_hardware_lookup", resourceCulture);
+            }
+        }
+        
+        public static string Building_secondary_hardware_lookup {
+            get {
+                return ResourceManager.GetString("Building_secondary_hardware_lookup", resourceCulture);
+            }
+        }
+        
+        public static string Assigning_hardware_to_sectors {
+            get {
+                return ResourceManager.GetString("Assigning_hardware_to_sectors", resourceCulture);
+            }
+        }
+        
+        public static string Processing_override_sectors {
+            get {
+                return ResourceManager.GetString("Processing_override_sectors", resourceCulture);
+            }
+        }
+        
+        public static string Sorting_sectors {
+            get {
+                return ResourceManager.GetString("Sorting_sectors", resourceCulture);
+            }
+        }
+        
+        public static string Creating_hardware_extents {
+            get {
+                return ResourceManager.GetString("Creating_hardware_extents", resourceCulture);
+            }
+        }
+        
+        public static string Primary_hardware_0_extent_1_2_to_3 {
+            get {
+                return ResourceManager.GetString("Primary_hardware_0_extent_1_2_to_3", resourceCulture);
+            }
+        }
+        
+        public static string Secondary_hardware_0_extent_1_2_to_3 {
+            get {
+                return ResourceManager.GetString("Secondary_hardware_0_extent_1_2_to_3", resourceCulture);
+            }
+        }
+        
+        public static string Processing_sector_0 {
+            get {
+                return ResourceManager.GetString("Processing_sector_0", resourceCulture);
+            }
+        }
+        
+        public static string Processing_override_sector_0 {
+            get {
+                return ResourceManager.GetString("Processing_override_sector_0", resourceCulture);
+            }
+        }
+        
+        public static string Processing_extent_sector_0 {
+            get {
+                return ResourceManager.GetString("Processing_extent_sector_0", resourceCulture);
+            }
+        }
     }
 }
