@@ -47,4 +47,12 @@ public sealed partial class KryoFlux
     const string KF_HW_RV   = "hwrv";
     const string KF_SCK     = "sck";
     const string KF_ICK     = "ick";
+
+    // Per KryoFlux spec: Clock frequencies for current hardware
+    // mck = Master Clock Frequency = ((18432000 * 73) / 14) / 2
+    // sck = Sample Frequency = mck / 2
+    // ick = Index Frequency = mck / 16
+    const double MCK = (18432000.0 * 73.0 / 14.0) / 2.0;
+    const double SCK = MCK / 2.0;
+    const double ICK = MCK / 16.0;
 }

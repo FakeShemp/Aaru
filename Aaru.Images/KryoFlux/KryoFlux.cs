@@ -37,15 +37,17 @@ using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Images;
 
-/// <inheritdoc cref="Aaru.CommonTypes.Interfaces.IMediaImage" />
+/// <inheritdoc cref="IFluxImage" />
 /// <summary>Implements reading KryoFlux flux images</summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public sealed partial class KryoFlux : IMediaImage, IVerifiableSectorsImage
+public sealed partial class KryoFlux : IVerifiableSectorsImage, IFluxImage
 {
     const string MODULE_NAME = "KryoFlux plugin";
 
     // TODO: These variables have been made public so create-sidecar can access to this information until I define an API >4.0
     public SortedDictionary<byte, IFilter> tracks;
+
+    List<TrackCapture> _trackCaptures;
 
     public KryoFlux() => _imageInfo = new ImageInfo
     {
