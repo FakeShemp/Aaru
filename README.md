@@ -68,6 +68,7 @@ Or read the [documentation](https://www.aaru.app).
 Media image formats we can read
 ===============================
 
+* A2R Disk Image 2.x and 3.x
 * Apple Disk Archival/Retrieval Tool (DART)
 * Apple II nibble images (NIB)
 * BlindWrite 4 TOC files (.BWT/.BWI/.BWS)
@@ -78,6 +79,7 @@ Media image formats we can read
 * DiscJuggler images
 * Dreamcast GDI
 * HD-Copy disk images
+* HxCStream
 * MAME Compressed Hunks of Data (CHD)
 * Microsoft VHDX
 * Nero Burning ROM (both image formats)
@@ -85,12 +87,14 @@ Media image formats we can read
 * Partimage disk images
 * Quasi88 disk images (.D77/.D88)
 * Spectrum floppy disk image (.FDI)
+* SuperCardPro
 * TeleDisk
 * X68k DIM disk image files (.DIM)
 
 Media image formats we can write to
 ===================================
 
+* A2R Disk Image 3.x
 * Alcohol 120% Media Descriptor Structure (.MDS/.MDF)
 * Anex86 disk images (.FDI for floppies, .HDI for hard disks)
 * Any 512 bytes/sector disk image format (sector by sector copy, aka raw)
@@ -280,7 +284,6 @@ These disk image formats cannot be read, but their contents can be checksummed o
 
 * DiscFerret
 * KryoFlux STREAM
-* SuperCardPro
 
 License
 =======
