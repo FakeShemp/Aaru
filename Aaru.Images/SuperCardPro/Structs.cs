@@ -58,6 +58,21 @@ public sealed partial class SuperCardPro
 
 #endregion
 
+#region Nested type: ExtendedModeHeader
+
+    /// <summary>
+    ///     Per SCP spec: Extended mode header structure (bytes 0x10-0x7F when FLAGS bit 6 is set).
+    ///     Reserved for future use with hard drives and tape drives.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct ExtendedModeHeader
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 112)]
+        public readonly byte[] reserved; // 0x70 bytes reserved for extended mode variables
+    }
+
+#endregion
+
 #region Nested type: ScpHeader
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
