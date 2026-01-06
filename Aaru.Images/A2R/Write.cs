@@ -61,7 +61,9 @@ public sealed partial class A2R
             return ErrorNumber.WriteError;
         }
 
-        // An RWCP chunk can only have one capture resolution. If the resolution changes we need to create a new chunk.
+        // Per A2R 3.x spec: An RWCP chunk can only have one capture resolution per chunk.
+        // If the resolution changes, we need to create a new RWCP chunk.
+
         if(_currentResolution != dataResolution)
         {
             if(IsWritingRwcps)
@@ -83,20 +85,35 @@ public sealed partial class A2R
         _writingStream.Seek(_currentRwcpStart + _currentCaptureOffset + Marshal.SizeOf<ChunkHeader>(),
                             SeekOrigin.Begin);
 
+        // Per A2R 3.x spec: RWCP chunk captures use mark 0x43
         _writingStream.WriteByte(0x43);
 
+        // Per A2R 3.x spec: Capture type 1 = timing (~1.25 revolutions), 3 = xtiming (2.25+ revolutions)
+        // Type 2 = bits (legacy, deprecated)
         _writingStream.WriteByte(IsCaptureTypeTiming(dataResolution, dataBuffer) ? (byte)1 : (byte)3);
 
+        // Per A2R 3.x spec: Location uses formula ((cylinder << 1) + side) for most drive types
+        // For quarter-step drives (SS 5.25 @ 0.25 step), location is in halfphases
         _writingStream.Write(BitConverter.GetBytes((ushort)HeadTrackSubToA2RLocation(head,
-                                                       track,
-                                                       subTrack,
-                                                       _infoChunkV3.driveType)),
-                             0,
-                             2);
+                                                                                     track,
+                                                                                     subTrack,
+                                                                                     _infoChunkV3.driveType)),
+                                                                                     0,
+                                                                                     2);
 
+        // Per A2R 3.x spec: Index signals are absolute timings from start of track
+        // If capture starts at index signal, that signal should not be included in the array
         List<uint> a2RIndices = FluxRepresentationsToUInt32List(indexBuffer);
 
-        if(a2RIndices[0] == 0) a2RIndices.RemoveAt(0);
+        // Per A2R 3.x spec: synchronized indicates if cross-track sync/index was used during imaging
+        // If the first index signal is 0, the capture started at index, so synchronized should be 1
+        if(!_firstCaptureProcessed && a2RIndices.Count > 0)
+        {
+            _infoChunkV3.synchronized = a2RIndices[0] == 0 ? (byte)1 : (byte)0;
+            _firstCaptureProcessed = true;
+        }
+
+        if(a2RIndices.Count > 0 && a2RIndices[0] == 0) a2RIndices.RemoveAt(0);
 
         _writingStream.WriteByte((byte)a2RIndices.Count);
 
@@ -142,9 +159,14 @@ public sealed partial class A2R
 
         IsWriting    = true;
         ErrorMessage = null;
+        _firstCaptureProcessed = false;
 
+        // Per A2R 3.x spec: File header is 8 bytes
+        // Bytes 0-3: "A2R3" (0x33523241 little-endian) - version 3.x
+        // Byte 4: 0xFF (high bit test - ensures no 7-bit data transmission)
+        // Bytes 5-7: 0x0A 0x0D 0x0A (LF CR LF - file translator test)
         _header.signature   = "A2R"u8.ToArray();
-        _header.version     = 0x33;
+        _header.version     = 0x33; // A2R 3.x format
         _header.highBitTest = 0xFF;
         _header.lineTest    = "\n\r\n"u8.ToArray();
 
@@ -156,7 +178,7 @@ public sealed partial class A2R
                                      MediaType.AppleSonyDS     => A2rDriveType.DS_35_80trk_appleCLV,
                                      MediaType.Apple32SS       => A2rDriveType.SS_525_40trk_quarterStep,
                                      MediaType.Unknown         => A2rDriveType.DS_35_80trk,
-                                     _                         => _infoChunkV3.driveType
+                                     _                         => A2rDriveType.DS_35_80trk
                                  };
 
         return true;
@@ -179,7 +201,7 @@ public sealed partial class A2R
         _writingStream.WriteByte(_header.highBitTest);
         _writingStream.Write(_header.lineTest, 0, 3);
 
-        // First chunk needs to be an INFO chunk
+        // Per A2R 3.x spec: First chunk must be an INFO chunk (at byte 8, immediately after header)
         WriteInfoChunk();
 
         _writingStream.Seek(_currentRwcpStart, SeekOrigin.Begin);
@@ -212,12 +234,48 @@ public sealed partial class A2R
         _infoChunkV3.creator =
             Encoding.UTF8.GetBytes($"Aaru v{typeof(A2R).Assembly.GetName().Version?.ToString()}".PadRight(32, ' '));
 
-        _infoChunkV3.writeProtected  = 1;
-        _infoChunkV3.synchronized    = 1;
+        // Per A2R 3.x spec: writeProtected indicates if floppy is write protected (1 = protected)
+        // Check if Floppy_WriteProtection media tag is available, otherwise default to 1 (write protected)
+        // as a safe default for archival images
+        // Initialize _mediaTags if not already initialized
+        _mediaTags ??= [];
+
+        if(_mediaTags.TryGetValue(MediaTagType.Floppy_WriteProtection, out byte[] writeProtectionTag))
+        {
+            // Boolean value: non-zero byte = true (write protected), 0 = false (not write protected)
+            _infoChunkV3.writeProtected = writeProtectionTag is { Length: > 0 } && writeProtectionTag[0] != 0 ? (byte)1 : (byte)0;
+        }
+        else
+        {
+            _infoChunkV3.writeProtected = 1; // Default to write protected
+        }
+
+        // Per A2R 3.x spec: synchronized indicates if cross-track sync/index was used during imaging (1 = synchronized)
+        // Will be set based on first capture's index signals in WriteFluxCapture
+        // Default to 0 (will be updated when first capture is written)
+        _infoChunkV3.synchronized = 0;
+        _firstCaptureProcessed = false;
+
+        // Per A2R 3.x spec: hardSectorCount indicates number of hard sectors (0 = soft sectored)
+        // Default to 0 (soft sectored) as most floppies are soft sectored
         _infoChunkV3.hardSectorCount = 0;
 
+        // Per A2R 3.x spec: META chunk contains tab-delimited UTF-8 key-value pairs
+        // Standard metadata keys: title, subtitle, publisher, developer, copyright, version, language,
+        // requires_platform, requires_machine, requires_ram, notes, side, side_name, contributor, image_date
         _meta.Add("image_date", DateTime.Now.ToString("O"));
-        _meta.Add("title",      imageInfo.MediaTitle);
+
+        if(!string.IsNullOrEmpty(imageInfo.MediaTitle))
+            _meta.Add("title", imageInfo.MediaTitle);
+
+        if(!string.IsNullOrEmpty(imageInfo.Version))
+            _meta.Add("version", imageInfo.Version);
+
+        if(!string.IsNullOrEmpty(imageInfo.Comments))
+            _meta.Add("notes", imageInfo.Comments);
+
+        if(!string.IsNullOrEmpty(imageInfo.Creator))
+            _meta.Add("contributor", imageInfo.Creator);
 
         return true;
     }
@@ -239,7 +297,30 @@ public sealed partial class A2R
     public bool SetMetadata(Metadata metadata) => false;
 
     /// <inheritdoc />
-    public bool WriteMediaTag(byte[] data, MediaTagType tag) => false;
+    public bool WriteMediaTag(byte[] data, MediaTagType tag)
+    {
+        if(!SupportedMediaTags.Contains(tag))
+        {
+            ErrorMessage = $"Tried to write unsupported media tag {tag}.";
+
+            return false;
+        }
+
+        _mediaTags ??= [];
+
+        if(_mediaTags.ContainsKey(tag)) _mediaTags.Remove(tag);
+
+        _mediaTags.Add(tag, data);
+
+        // If this is the write protection tag, update the INFO chunk value
+        if(tag == MediaTagType.Floppy_WriteProtection)
+        {
+            // Boolean value: non-zero byte = true (write protected), 0 = false (not write protected)
+            _infoChunkV3.writeProtected = data is { Length: > 0 } && data[0] != 0 ? (byte)1 : (byte)0;
+        }
+
+        return true;
+    }
 
     /// <inheritdoc />
     public bool WriteSector(byte[] data, ulong sectorAddress, bool negative, SectorStatus sectorStatus) =>
@@ -260,9 +341,11 @@ public sealed partial class A2R
 #endregion
 
     /// <summary>
-    ///     writes the header to an RWCP chunk, up to and including the reserved bytes, to stream.
+    ///     Writes the header to an RWCP chunk, up to and including the reserved bytes, to stream.
+    ///     Per A2R 3.x spec: RWCP (Raw Captures) chunk contains raw flux data streams.
+    ///     Chunk structure: ChunkHeader (8 bytes) + RWCP Version (1 byte) + Resolution (4 bytes) + Reserved (11 bytes)
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Error number</returns>
     ErrorNumber WriteRwcpHeader()
     {
         if(!IsWriting)
@@ -286,8 +369,10 @@ public sealed partial class A2R
 
     /// <summary>
     ///     Writes the entire INFO chunk to stream.
+    ///     Per A2R 3.x spec: INFO chunk must be the first chunk in the file (after the 8-byte header).
+    ///     Contains fundamental information about the image: creator, drive type, write protection, etc.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Error number</returns>
     ErrorNumber WriteInfoChunk()
     {
         if(!IsWriting)
@@ -311,8 +396,11 @@ public sealed partial class A2R
 
     /// <summary>
     ///     Writes the entire META chunk to stream.
+    ///     Per A2R 3.x spec: META chunk contains tab-delimited UTF-8 metadata (key-value pairs).
+    ///     Each row ends with linefeed (\n), columns separated by tab (\t).
+    ///     Standard keys include: title, publisher, developer, copyright, version, language, etc.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Error number</returns>
     ErrorNumber WriteMetaChunk()
     {
         if(!IsWriting)
@@ -324,6 +412,9 @@ public sealed partial class A2R
 
         _writingStream.Write(_metaChunkSignature, 0, 4);
 
+        // Per A2R 3.x spec: Metadata is tab-delimited UTF-8, no BOM
+        // Format: key\tvalue\n for each entry, final \n at end
+        // Values cannot contain tab, linefeed, or pipe characters (except as delimiters)
         byte[] metaString = Encoding.UTF8.GetBytes(_meta.Select(static m => $"{m.Key}\t{m.Value}")
                                                         .Aggregate(static (concat, str) => $"{concat}\n{str}") +
                                                    '\n');
@@ -336,8 +427,9 @@ public sealed partial class A2R
 
     /// <summary>
     ///     Writes the closing byte to an RWCP chunk signaling its end, to stream.
+    ///     Per A2R 3.x spec: RWCP chunk ends with 0x58 byte (mark value for end of tracks).
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Error number</returns>
     ErrorNumber CloseRwcpChunk()
     {
         if(!IsWriting)

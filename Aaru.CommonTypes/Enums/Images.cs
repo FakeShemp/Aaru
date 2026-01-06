@@ -387,7 +387,10 @@ public enum MediaTagType
     DVD_DiscKey_Decrypted = 73,
     /// <summary>Physical Format Information for the 2nd layer of dual-layer DVDs</summary>
     [Description("Physical Format Information (2nd Layer)")]
-    DVD_PFI_2ndLayer = 74
+    DVD_PFI_2ndLayer = 74,
+    /// <summary>Floppy write protection status</summary>
+    [Description("Write protection status")]
+    Floppy_WriteProtection = 75
 }
 
 /// <summary>Enumeration of media types defined in metadata</summary>

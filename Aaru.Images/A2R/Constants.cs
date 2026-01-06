@@ -37,38 +37,33 @@ namespace Aaru.Images;
 [SuppressMessage("ReSharper", "UnusedType.Global")]
 public sealed partial class A2R
 {
-    readonly byte[] _a2Rv2Signature =
-    [
-        0x41, 0x32, 0x52, 0x32 // A2R2
-    ];
+    // Per A2R spec: File signature "A2R2" (version 2.x) - 0x32523241 little-endian
+    readonly byte[] _a2Rv2Signature = "A2R2"u8.ToArray();
 
-    readonly byte[] _a2Rv3Signature =
-    [
-        0x41, 0x32, 0x52, 0x33 // A2R3
-    ];
+    // Per A2R spec: File signature "A2R3" (version 3.x) - 0x33523241 little-endian
+    readonly byte[] _a2Rv3Signature = "A2R3"u8.ToArray();
 
-    readonly byte[] _infoChunkSignature =
-    [
-        0x49, 0x4E, 0x46, 0x4F // INFO
-    ];
+    // Per A2R spec: INFO chunk signature - contains fundamental image information
+    // Must be the first chunk in the file (after 8-byte header)
+    // Used in both 2.x and 3.x formats
+    readonly byte[] _infoChunkSignature = "INFO"u8.ToArray();
 
-    readonly byte[] _metaChunkSignature =
-    [
-        0x4D, 0x45, 0x54, 0x41 // META
-    ];
+    // Per A2R spec: META chunk signature - contains tab-delimited UTF-8 metadata
+    // Optional chunk, can appear anywhere after INFO chunk
+    // Used in both 2.x and 3.x formats
+    readonly byte[] _metaChunkSignature = "META"u8.ToArray();
 
-    readonly byte[] _rwcpChunkSignature =
-    [
-        0x52, 0x57, 0x43, 0x50 // RWCP
-    ];
+    // Per A2R 3.x spec: RWCP (Raw Captures) chunk signature - contains raw flux data streams
+    // Replaces STRM chunk from 2.x format
+    // Supports configurable resolution per chunk
+    readonly byte[] _rwcpChunkSignature = "RWCP"u8.ToArray();
 
-    readonly byte[] _slvdChunkSignature =
-    [
-        0x53, 0x4C, 0x56, 0x44 // SLVD
-    ];
+    // Per A2R 3.x spec: SLVD (Solved) chunk signature
+    // Contains solved flux data (not yet supported in Aaru)
+    readonly byte[] _slvdChunkSignature = "SLVD"u8.ToArray();
 
-    readonly byte[] _strmChunkSignature =
-    [
-        0x53, 0x54, 0x52, 0x4D // STRM
-    ];
+    // Per A2R 2.x spec: STRM (Stream) chunk signature - contains raw flux data streams
+    // Replaced by RWCP chunk in 3.x format
+    // Uses fixed 125ns resolution
+    readonly byte[] _strmChunkSignature = "STRM"u8.ToArray();
 }

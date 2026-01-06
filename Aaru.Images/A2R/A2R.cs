@@ -33,9 +33,14 @@
 // Version 2 documentation: https://web.archive.org/web/20200325131633/https://applesaucefdc.com/a2r/
 // Version 3 documentation: https://web.archive.org/web/20220526215820/https://applesaucefdc.com/a2r/
 
+// TODO: Implement reading SLVD chunks
+// TODO: Properly identify drive type and/or media type
+// TODO: Properly handle hard sectors (need sample image)
+
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 
@@ -54,6 +59,7 @@ public sealed partial class A2R : IWritableFluxImage
     // Offset from the start of the current RWCP to the next capture
     uint _currentCaptureOffset = 16;
     uint _currentResolution;
+    bool _firstCaptureProcessed;
 
     // 53 = A2R header, INFO header, INFO data
     long                       _currentRwcpStart = 53;
@@ -62,12 +68,13 @@ public sealed partial class A2R : IWritableFluxImage
     InfoChunkV2                _infoChunkV2;
     InfoChunkV3                _infoChunkV3;
     Dictionary<string, string> _meta;
+    Dictionary<MediaTagType, byte[]> _mediaTags;
     FileStream                 _writingStream;
 
     public A2R() => _imageInfo = new ImageInfo
     {
         ReadableSectorTags    = [],
-        ReadableMediaTags     = [],
+        ReadableMediaTags     = [MediaTagType.Floppy_WriteProtection],
         HasPartitions         = false,
         HasSessions           = false,
         Version               = null,

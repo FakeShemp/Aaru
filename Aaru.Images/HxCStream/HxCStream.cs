@@ -31,7 +31,7 @@
 // ****************************************************************************/
 
 using System.Collections.Generic;
-using System.IO;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 
@@ -49,10 +49,12 @@ public sealed partial class HxCStream : IFluxImage, IVerifiableImage
 
     List<string> _trackFilePaths;
 
+    Dictionary<MediaTagType, byte[]> _mediaTags;
+
     public HxCStream() => _imageInfo = new ImageInfo
     {
         ReadableSectorTags    = [],
-        ReadableMediaTags     = [],
+        ReadableMediaTags     = [MediaTagType.Floppy_WriteProtection],
         HasPartitions         = false,
         HasSessions           = false,
         Version               = null,

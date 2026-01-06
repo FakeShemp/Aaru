@@ -128,7 +128,7 @@ public sealed partial class A2R
     /// <returns>The <c>uint</c> flux representation</returns>
     static List<uint> FluxRepresentationsToUInt32List(IEnumerable<byte> flux)
     {
-        List<uint> scpData = [];
+        List<uint> data = [];
         uint       tick    = 0;
 
         foreach(byte b in flux)
@@ -138,24 +138,43 @@ public sealed partial class A2R
             else
             {
                 tick += b;
-                scpData.Add(tick);
+                data.Add(tick);
                 tick = 0;
             }
         }
 
-        return scpData;
+        return data;
     }
 
     /// <summary>
-    ///     A2R has two types of flux capture types; "timing" and "xtiming". The only difference is the length of the
-    ///     capture, with "timing" being about 1¼ revolutions. This function returns <c>true</c> if the flux buffer is "timing"
-    ///     and <c>false</c> otherwise.
+    ///     Determines if a flux capture is a "timing" capture (~1.25 revolutions) or "xtiming" capture (2.25+ revolutions).
+    ///     Per A2R 3.x spec: timing captures are quick flux captures (~1.25 revolutions), xtiming captures are extended
+    ///     captures (2.25+ revolutions) used for error correction and analysis.
+    ///     This function calculates total capture duration from flux data and resolution to determine capture type.
+    ///     Note: The calculation uses total flux transition time, which works across different RPMs (300rpm, 360rpm, etc.)
+    ///     as it's based on actual capture duration rather than hardcoded RPM values.
     /// </summary>
-    /// <param name="resolution">The resolution of the flux capture</param>
-    /// <param name="buffer">The flux data</param>
-    /// <returns><c>true</c> if "timing", <c>false</c> if "xtiming"</returns>
-    static bool IsCaptureTypeTiming(ulong resolution, byte[] buffer) =>
+    /// <param name="resolution">The resolution of the flux capture in picoseconds per tick</param>
+    /// <param name="buffer">The flux data buffer (byte array where each byte represents ticks between flux transitions)</param>
+    /// <returns><c>true</c> if "timing" (~1.25 revolutions), <c>false</c> if "xtiming" (2.25+ revolutions)</returns>
+    static bool IsCaptureTypeTiming(ulong resolution, byte[] buffer)
+    {
+        if(buffer is null || buffer.Length == 0) return false;
 
-        // TODO: This is only accurate for 300rpm
-        buffer.Sum(static x => x) * (long)resolution is > 230000000000 and < 270000000000;
+        // Calculate total capture duration in picoseconds
+        // Sum all flux transition intervals (bytes) and multiply by resolution
+        long totalDuration = buffer.Sum(static x => (long)x) * (long)resolution;
+
+        // Per A2R spec: timing captures are ~1.25 revolutions
+        // At 300rpm: 1 revolution = 200ms = 200,000,000,000 picoseconds
+        // 1.25 revolutions = 250ms = 250,000,000,000 picoseconds
+        // At 360rpm: 1 revolution = 166.67ms = 166,670,000,000 picoseconds
+        // 1.25 revolutions = 208.33ms = 208,330,000,000 picoseconds
+        // Using a range that accommodates both 300rpm and 360rpm: ~200-280ms
+        // This is more flexible than hardcoding for a specific RPM
+        const long timingMin = 200000000000; // 200ms minimum for timing
+        const long timingMax = 280000000000; // 280ms maximum for timing
+
+        return totalDuration is > timingMin and < timingMax;
+    }
 }

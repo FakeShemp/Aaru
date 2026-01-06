@@ -57,7 +57,13 @@ public sealed partial class A2R
         _a2RStream.Seek(0, SeekOrigin.Begin);
 
         _a2RFilter = imageFilter;
+        _mediaTags = [];
 
+        // Per A2R spec: Read 8-byte header
+        // Bytes 0-2: Signature ("A2R")
+        // Byte 3: Version (0x32 = 2.x, 0x33 = 3.x)
+        // Byte 4: High bit test (0xFF)
+        // Bytes 5-7: Line test (0x0A 0x0D 0x0A)
         var hdr = new byte[Marshal.SizeOf<A2RHeader>()];
         _a2RStream.EnsureRead(hdr, 0, Marshal.SizeOf<A2RHeader>());
 
@@ -68,6 +74,9 @@ public sealed partial class A2R
         AaruLogging.Debug(MODULE_NAME, "header.version = {0}",        _header.version);
         AaruLogging.Debug(MODULE_NAME, "header.highBitTest = {0:X2}", _header.highBitTest);
 
+        // TODO: ensure high bit test is 0xFF
+        // TODO: ensure line test is 0x0A 0x0D 0x0A
+
         AaruLogging.Debug(MODULE_NAME,
                           "header.lineTest = {0:X2} {1:X2} {2:X2}",
                           _header.lineTest[0],
@@ -77,7 +86,7 @@ public sealed partial class A2R
         var infoMagic = new byte[4];
         _a2RStream.EnsureRead(infoMagic, 0, 4);
 
-        // There must be an INFO chunk after the header (at byte 16)
+        // Per A2R spec: INFO chunk must be the first chunk after the 8-byte header (at byte 8)
         if(!_infoChunkSignature.SequenceEqual(infoMagic)) return ErrorNumber.UnrecognizedFormat;
 
         _a2RStream.Seek(-4, SeekOrigin.Current);
@@ -110,6 +119,12 @@ public sealed partial class A2R
 
                 _imageInfo.Creator = Encoding.ASCII.GetString(_infoChunkV2.creator).TrimEnd();
 
+                // Store write protection status as media tag
+                // Boolean value: 1 byte where 0 = false (not write protected), 1 = true (write protected)
+                _mediaTags[MediaTagType.Floppy_WriteProtection] = _infoChunkV2.writeProtected == 1 ? [1] : [0];
+                _imageInfo.ReadableMediaTags.Add(MediaTagType.Floppy_WriteProtection);
+
+                // The disk type actually only denotes the form factor of the media, and not the media type.
                 switch(_infoChunkV2.diskType)
                 {
                     case A2RDiskType._35:
@@ -128,6 +143,9 @@ public sealed partial class A2R
                     default:
                         return ErrorNumber.OutOfRange;
                 }
+
+                // A2R images always represent block media (floppy disks)
+                _imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
 
                 break;
             }
@@ -159,6 +177,10 @@ public sealed partial class A2R
 
                 _imageInfo.Creator = Encoding.ASCII.GetString(_infoChunkV3.creator).TrimEnd();
 
+                // Drive type is actually only used to denote the drive that was used to create the image, 
+                // and not the media type. I.e if an 80-track drive is being used to image a double-sided 40-track disk, 
+                // but the user is only reading every other cylinder, the Drive Type should still be 3 and the Location 
+                // fields in the capture should be using the actual cylinder number that the head is physically on.
                 switch(_infoChunkV3.driveType)
                 {
                     case A2rDriveType.SS_525_40trk_quarterStep:
@@ -213,12 +235,17 @@ public sealed partial class A2R
                         return ErrorNumber.OutOfRange;
                 }
 
+                // A2R images always represent block media (floppy disks)
+                _imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
+
                 break;
             }
         }
 
         _a2RCaptures = [];
 
+        // Per A2R spec: Process chunks sequentially. Chunk structure: Chunk ID (4 bytes) + Chunk Size (4 bytes) + Chunk Data
+        // Unknown chunks are safely skipped by reading chunk size and seeking past them
         while(_a2RStream.Position < _a2RStream.Length)
         {
             var chunkHdr = new byte[Marshal.SizeOf<ChunkHeader>()];
@@ -226,13 +253,20 @@ public sealed partial class A2R
             ChunkHeader chunkHeader = Marshal.ByteArrayToStructureLittleEndian<ChunkHeader>(chunkHdr);
             _a2RStream.Seek(-Marshal.SizeOf<ChunkHeader>(), SeekOrigin.Current);
 
+            // Per A2R spec: Process known chunks (INFO, RWCP, SLVD, META for 3.x; INFO, STRM, META for 2.x)
+            // Unknown chunks are skipped
             switch(chunkHeader.chunkId)
             {
                 case var rwcp when rwcp.SequenceEqual(_rwcpChunkSignature):
+                    // Per A2R 3.x spec: RWCP (Raw Captures) chunk contains raw flux data streams
+                    // Chunk header: ChunkHeader (8 bytes) + RWCP Version (1 byte) + Resolution (4 bytes) + Reserved (11 bytes)
+                    // Each capture: Mark (0x43) + Capture Type (1 byte) + Location (2 bytes) + Index Signals + Flux Data
                     var rwcpBuffer = new byte[Marshal.SizeOf<RwcpChunkHeader>()];
                     _a2RStream.EnsureRead(rwcpBuffer, 0, Marshal.SizeOf<RwcpChunkHeader>());
                     RwcpChunkHeader rwcpChunk = Marshal.ByteArrayToStructureLittleEndian<RwcpChunkHeader>(rwcpBuffer);
 
+                    // Per A2R 3.x spec: RWCP captures start with mark 0x43
+                    // Chunk ends with mark 0x58
                     while(_a2RStream.ReadByte() == 0x43)
                     {
                         var capture = new StreamCapture
@@ -263,6 +297,24 @@ public sealed partial class A2R
                             var index = new byte[4];
                             _a2RStream.EnsureRead(index, 0, 4);
                             capture.indexSignals[i] = BitConverter.ToUInt32(index);
+                            // TODO: Soft sectored disks are not required to have more than one index signal, 
+                            // even for captures that were multiple rotations. If we encounter a capture with only 
+                            // one index signal but multiple rotations, we should repeat index signals.
+                        }
+
+                        // Per A2R 3.x spec: If synchronized == 1, capture started at index signal
+                        // The internal representation expects a 0 tick index signal if capture starts at index
+                        // (The A2R format excludes this 0 signal per spec, but we add it back for internal use)
+                        if(_infoChunkV3.synchronized == 1)
+                        {
+                            var indexSignalsWithZero = new uint[capture.numberOfIndexSignals + 1];
+                            indexSignalsWithZero[0] = 0;
+
+                            for(var i = 0; i < capture.numberOfIndexSignals; i++)
+                                indexSignalsWithZero[i + 1] = capture.indexSignals[i];
+
+                            capture.indexSignals         = indexSignalsWithZero;
+                            capture.numberOfIndexSignals = (byte)(capture.numberOfIndexSignals + 1);
                         }
 
                         var dataSize = new byte[4];
@@ -280,6 +332,9 @@ public sealed partial class A2R
 
                     break;
                 case var meta when meta.SequenceEqual(_metaChunkSignature):
+                    // Per A2R spec: META chunk contains tab-delimited UTF-8 metadata
+                    // Format: key\tvalue\n for each entry, final \n at end
+                    // Used in both 2.x and 3.x formats
                     _meta = new Dictionary<string, string>();
 
                     _a2RStream.Seek(Marshal.SizeOf<ChunkHeader>(), SeekOrigin.Current);
@@ -302,24 +357,73 @@ public sealed partial class A2R
 
                     break;
                 case var slvd when slvd.SequenceEqual(_slvdChunkSignature):
-                    return ErrorNumber.NotImplemented;
+                    // Per A2R 3.x spec: SLVD (Solved) chunks contain sector-level flux data.
+                    // SLVD chunks are not currently supported in Aaru. Skip the chunk and continue processing.
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "SLVD chunk encountered but not yet supported. Only RWCP chunk data will be processed.");
+
+                    _a2RStream.Seek(Marshal.SizeOf<ChunkHeader>(), SeekOrigin.Current);
+                    _a2RStream.Seek(chunkHeader.chunkSize, SeekOrigin.Current);
+
+                    break;
                 case var strm when strm.SequenceEqual(_strmChunkSignature):
+                    // Per A2R 2.x spec: STRM (Stream) chunk contains raw flux data streams.
+                    // Structure per capture: Location (1 byte) + Capture Type (1 byte) + Data Length (4 bytes) +
+                    // Estimated Loop Point (4 bytes) + Data (variable length)
+                    // Chunk ends when Location byte is 0xFF
+                    // A2R 2.x uses fixed resolution of 125 nanoseconds (125,000 picoseconds) per tick
                     var strmBuffer = new byte[Marshal.SizeOf<ChunkHeader>()];
                     _a2RStream.EnsureRead(strmBuffer, 0, Marshal.SizeOf<ChunkHeader>());
                     ChunkHeader strmChunk = Marshal.ByteArrayToStructureLittleEndian<ChunkHeader>(strmBuffer);
 
-                    long end = strmChunk.chunkSize + _a2RStream.Position - 1;
-
-                    while(_a2RStream.Position < end)
+                    // Per A2R 2.x spec: STRM chunk ends when Location byte is 0xFF (not position-based)
+                    while(true)
                     {
+                        byte locationByte = (byte)_a2RStream.ReadByte();
+
+                        // Check for end marker (0xFF Location value signals end of STRM chunk)
+                        if(locationByte == 0xFF) break;
+
                         var capture = new StreamCapture
                         {
-                            indexSignals         = new uint[1],
-                            location             = (byte)_a2RStream.ReadByte(),
-                            captureType          = (byte)_a2RStream.ReadByte(),
-                            resolution           = 125000,
-                            numberOfIndexSignals = 1
+                            location    = locationByte,
+                            captureType = (byte)_a2RStream.ReadByte(),
+                            resolution  = 125000 // Per A2R 2.x spec: fixed 125 nanoseconds per tick
                         };
+
+                        // Per A2R 2.x spec: Capture Type 1 = timing, 2 = bits (legacy), 3 = xtiming
+                        if(capture.captureType == 2)
+                        {
+                            // Per A2R 2.x spec: bits capture type contains 16384-byte bitstream (not flux transitions)
+                            // TODO: Add bitstream support when Aaru supports bitstream reading/writing
+                            AaruLogging.Debug(MODULE_NAME,
+                                              "Bits capture type (2) encountered at location {0}. Bitstream support not yet available in Aaru. Skipping capture.",
+                                              capture.location);
+
+                            var dataSize = new byte[4];
+                            _a2RStream.EnsureRead(dataSize, 0, 4);
+                            uint dataLength = BitConverter.ToUInt32(dataSize);
+
+                            // Skip Estimated Loop Point (4 bytes)
+                            _a2RStream.Seek(4, SeekOrigin.Current);
+
+                            // Skip bitstream data (16384 bytes for bits type)
+                            _a2RStream.Seek(dataLength, SeekOrigin.Current);
+
+                            continue;
+                        }
+
+                        // Read Data Length (4 bytes)
+                        var dataSizeBytes = new byte[4];
+                        _a2RStream.EnsureRead(dataSizeBytes, 0, 4);
+                        capture.captureDataSize = BitConverter.ToUInt32(dataSizeBytes);
+
+                        // Per A2R 2.x spec: Estimated Loop Point is a hint for track length
+                        // It indicates duration until sync sensor was triggered at loop point
+                        // While not a true index signal, it's good enough to use as an index signal duration
+                        var estimatedLoopPointBytes = new byte[4];
+                        _a2RStream.EnsureRead(estimatedLoopPointBytes, 0, 4);
+                        uint estimatedLoopPoint = BitConverter.ToUInt32(estimatedLoopPointBytes);
 
                         A2RLocationToHeadTrackSub(capture.location,
                                                   _imageInfo.MediaType,
@@ -331,13 +435,20 @@ public sealed partial class A2R
 
                         if(capture.track + 1 > _imageInfo.Cylinders) _imageInfo.Cylinders = (uint)(capture.track + 1);
 
-                        var dataSize = new byte[4];
-                        _a2RStream.EnsureRead(dataSize, 0, 4);
-                        capture.captureDataSize = BitConverter.ToUInt32(dataSize);
-
-                        var index = new byte[4];
-                        _a2RStream.EnsureRead(index, 0, 4);
-                        capture.indexSignals[0] = BitConverter.ToUInt32(index);
+                        // Use Estimated Loop Point as index signal duration (absolute timing from start of track)
+                        // A2R 2.x format doesn't have true index signals, but Estimated Loop Point serves the same purpose
+                        // Per A2R 2.x spec: If synchronized == 1, capture started at index signal
+                        // The internal representation expects a 0 tick index signal if capture starts at index
+                        if(_infoChunkV2.synchronized == 1)
+                        {
+                            capture.numberOfIndexSignals = 2;
+                            capture.indexSignals         = [0, estimatedLoopPoint];
+                        }
+                        else
+                        {
+                            capture.numberOfIndexSignals = 1;
+                            capture.indexSignals         = [estimatedLoopPoint];
+                        }
 
                         capture.dataOffset = _a2RStream.Position;
 
@@ -345,8 +456,6 @@ public sealed partial class A2R
 
                         _a2RStream.Seek(capture.captureDataSize, SeekOrigin.Current);
                     }
-
-                    _a2RStream.ReadByte();
 
                     break;
             }
@@ -445,6 +554,8 @@ public sealed partial class A2R
 
         StreamCapture capture = StreamCaptureAtIndex(head, track, subTrack, captureIndex);
 
+        // Per A2R 2.x spec: Capture type 2 = bits (16384-byte bitstream, not flux transitions)
+        // TODO: Add bitstream support when Aaru supports bitstream reading/writing
         if(capture.captureType == 2) return ErrorNumber.NotImplemented;
 
         Stream stream = _a2RFilter.GetDataForkStream();
@@ -471,7 +582,16 @@ public sealed partial class A2R
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer) => throw new NotImplementedException();
+    public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer)
+    {
+        buffer = null;
+
+        if(!_mediaTags.TryGetValue(tag, out byte[] data)) return ErrorNumber.NoData;
+
+        buffer = data?.Clone() as byte[];
+
+        return buffer == null ? ErrorNumber.NoData : ErrorNumber.NoError;
+    }
 
     /// <inheritdoc />
     public ErrorNumber

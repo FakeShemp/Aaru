@@ -53,6 +53,7 @@ public sealed partial class HxCStream
     {
         _trackCaptures = [];
         _trackFilePaths = [];
+        _mediaTags = [];
         _imageInfo.Heads     = 0;
         _imageInfo.Cylinders = 0;
 
@@ -109,7 +110,7 @@ public sealed partial class HxCStream
         // Process each track file
         int trackIndex = 0;
         int totalTracks = trackFiles.Count;
-        
+
         AaruLogging.Debug(MODULE_NAME, "Processing {0} track files...", totalTracks);
 
         foreach((int cylinder, int head) key in trackFiles.Keys.OrderBy(k => k.cylinder).ThenBy(k => k.head).ToList())
@@ -117,15 +118,15 @@ public sealed partial class HxCStream
             trackIndex++;
             string trackfile = trackFiles[key];
             _trackFilePaths.Add(trackfile);
-            
+
             AaruLogging.Debug(MODULE_NAME, "Processing track {0}/{1}: cylinder {2}, head {3}",
                               trackIndex, totalTracks, key.cylinder, key.head);
-            
+
             ErrorNumber error = ProcessTrackFile(trackfile, (uint)key.head, (ushort)key.cylinder);
 
             if(error != ErrorNumber.NoError) return error;
         }
-        
+
         AaruLogging.Debug(MODULE_NAME, "Successfully processed all {0} track files", totalTracks);
 
         _imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
@@ -173,7 +174,7 @@ public sealed partial class HxCStream
             // Verify CRC32 - calculate CRC of chunk data (excluding the CRC itself)
             byte[] chunkData = new byte[chunkHeader.size - 4];
             Array.Copy(fileData, (int)fileOffset, chunkData, 0, (int)(chunkHeader.size - 4));
-            
+
             uint storedCrc = BitConverter.ToUInt32(fileData, (int)(fileOffset + chunkHeader.size - 4));
 
             if(!VerifyChunkCrc32(chunkData, storedCrc))
@@ -359,6 +360,19 @@ public sealed partial class HxCStream
 
         AaruLogging.Debug(MODULE_NAME, "Finished processing chunks. Total flux pulses: {0}, IO stream values: {1}",
                           fluxPulses.Count, ioStream.Count);
+
+        // Extract write protect status from IO stream
+        // The write protect flag should be constant for a capture, so we only need to check the first value
+        if(ioStream.Count > 0 && !_mediaTags.ContainsKey(MediaTagType.Floppy_WriteProtection))
+        {
+            IoStreamState firstState = DecodeIoStreamValue(ioStream[0]);
+            bool writeProtected = firstState.WriteProtect;
+
+            // Store as boolean: 1 byte where 0 = false (not write protected), 1 = true (write protected)
+            _mediaTags[MediaTagType.Floppy_WriteProtection] = writeProtected ? [1] : [0];
+
+            AaruLogging.Debug(MODULE_NAME, "Write protect status from IO stream: {0}", writeProtected ? "write protected" : "not write protected");
+        }
 
         // Extract index signals from IO stream
         var indexPositions = new List<uint>();
@@ -646,7 +660,21 @@ public sealed partial class HxCStream
 #region IMediaImage Members
 
     /// <inheritdoc />
-    public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer) => throw new NotImplementedException();
+    public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer)
+    {
+        buffer = null;
+
+        if(_mediaTags == null) return ErrorNumber.NotOpened;
+
+        if(_mediaTags.TryGetValue(tag, out byte[] tagData))
+        {
+            buffer = new byte[tagData.Length];
+            Array.Copy(tagData, buffer, tagData.Length);
+            return ErrorNumber.NoError;
+        }
+
+        return ErrorNumber.NoData;
+    }
 
     /// <inheritdoc />
     public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
