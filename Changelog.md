@@ -1,3 +1,53 @@
+# [6.0.0-alpha.18] - 2026-01-06
+
+## Added
+
+### - Formats
+
+- Flux support in AaruFormat.
+- HxCStream image format support.
+
+### - Image merge
+
+- Progress updates and localization for hardware processing.
+
+### - Media tags
+
+- Floppy write protection media tag.
+
+### - Packaging
+
+- Application icon.
+- Debian packaging files.
+- Desktop entry and package installation configuration for Linux.
+- RPM packaging files.
+
+### - Testing
+
+- Test suite for flux.
+
+## Changed
+
+### - A2R format
+
+- Updated A2R functionality.
+
+### - Database
+
+- Increase timeout to 300 seconds when updating the database.
+
+### - Dumping
+
+- Reorder columns in progress display for media dump command.
+
+### - Image merge
+
+- Add abort checks in sector processing loops in dump hardware creation.
+- Do not stop on merge if secondary image fails to copy negative or overflow sectors.
+- Do not try to merge negative or overflow sectors if secondary image lacks them.
+- Optimize sector override checks by using HashSet for O(1) lookups in dump hardware creation.
+- Sort merged hardware by the starting LBA of the first extent.
+
 # [6.0.0-alpha.17] - 2025-12-26
 
 ## Changes
@@ -2747,6 +2797,8 @@
 - Apple Partition Map (aka APM).
 - Master Boot Record (aka MBR).
 - NeXT disklabels.
+
+[6.0.0-alpha.18]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.18
 
 [6.0.0-alpha.17]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.17
 

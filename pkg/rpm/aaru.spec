@@ -177,15 +177,23 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/icons/hicolor/512x512/apps/aaru.png
 
 %changelog
-* Tue Dec 31 2024 Natalia Portillo <claunia@claunia.com> - 6.0.0~alpha17-1
-- New upstream alpha release 6.0.0-alpha.17
-- Migration to .NET 10.0
-- Enhanced media preservation features
-- Improved filesystem support
-- Bug fixes and performance improvements
+* Tue Jan 06 2026 Natalia Portillo <claunia@claunia.com> - 6.0.0~alpha.18-1
+- New upstream alpha release 6.0.0-alpha.18
+- Added HxCStream image format support
+- Added Flux support in AaruFormat
+- Added Floppy_WriteProtection media tag
+- Added RPM and Debian packaging files
+- Added application icon and desktop entry for Linux
+- Added test suite for flux
+- Updated A2R functionality
+- Optimized sector override checks using HashSet for O(1) lookups
+- Reordered progress display columns in media dump command
+- Increased HttpClient timeout to 300 seconds for database updates
+- Fixed progress bar collisions
+- Fixed bug dumping 2nd layer PFI
+- Fixed flux display logic when no captures present
+- Fixed missing comma in Enums.cs
+- Fixed translation typo
+- Enhanced image merge with better hardware processing
 - Built for RHEL 9+, Fedora 38+, openSUSE Leap 15.5+
 - Multi-architecture support (x86_64, aarch64, armv7hl)
-
-* Mon Jan 01 2024 Natalia Portillo <claunia@claunia.com> - 5.3.2-1
-- Initial RPM package release
-
