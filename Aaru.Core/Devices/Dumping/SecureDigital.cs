@@ -914,7 +914,7 @@ public partial class Dump
                 StoppingErrorMessage?.Invoke(string.Format(Localization.Core.Error_0_opening_created_image, opened));
 
             _sidecarStopwatch.Restart();
-            _sidecarClass                      =  new Sidecar(inputPlugin, _outputPath, filter.Id, _encoding);
+            _sidecarClass                      =  new Sidecar(inputPlugin, _outputPath, filter.Id, _encoding, false);
             _sidecarClass.InitProgressEvent    += InitProgress;
             _sidecarClass.UpdateProgressEvent  += UpdateProgress;
             _sidecarClass.EndProgressEvent     += EndProgress;

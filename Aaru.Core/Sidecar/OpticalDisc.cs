@@ -62,8 +62,10 @@ public sealed partial class Sidecar
     /// <param name="imgChecksums">List of image checksums</param>
     /// <param name="sidecar">Metadata sidecar</param>
     /// <param name="encoding">Encoding to be used for filesystem plugins</param>
+    /// <param name="enableSpamsum">Whether to enable spamsum checksum calculation</param>
     void OpticalDisc(IOpticalMediaImage image, Guid filterId, string imagePath, FileInfo fi, PluginRegister plugins,
-                     List<CommonTypes.AaruMetadata.Checksum> imgChecksums, ref Metadata sidecar, Encoding encoding)
+                     List<CommonTypes.AaruMetadata.Checksum> imgChecksums, ref Metadata sidecar, Encoding encoding,
+                     bool enableSpamsum)
     {
         if(_aborted) return;
 
@@ -340,7 +342,9 @@ public sealed partial class Sidecar
                 // For fast debugging, skip checksum
                 //goto skipChecksum;
 
-                var trkChkWorker = new Checksum();
+                Checksum trkChkWorker = enableSpamsum
+                                            ? new Checksum()
+                                            : new Checksum(EnableChecksum.All & ~EnableChecksum.SpamSum);
 
                 InitProgress2();
 
@@ -435,7 +439,9 @@ public sealed partial class Sidecar
 
                 if(trk.FileOffset > 0) xmlTrk.SubChannel.Image.Offset = trk.SubchannelOffset;
 
-                var subChkWorker = new Checksum();
+                Checksum subChkWorker = enableSpamsum
+                                            ? new Checksum()
+                                            : new Checksum(EnableChecksum.All & ~EnableChecksum.SpamSum);
 
                 sectors     = xmlTrk.EndSector - xmlTrk.StartSector + 1;
                 doneSectors = 0;

@@ -377,7 +377,8 @@ public sealed partial class Sidecar
         {
             UpdateStatus(Localization.Core.Hashing_sectors);
 
-            var contentChkWorker = new Checksum();
+            Checksum contentChkWorker =
+                _enableSpamsum ? new Checksum() : new Checksum(EnableChecksum.All & ~EnableChecksum.SpamSum);
 
             // For fast debugging, skip checksum
             //goto skipImageChecksum;
@@ -476,7 +477,9 @@ public sealed partial class Sidecar
 
                     if(_aborted) return;
 
-                    var tapePartitionChk = new Checksum();
+                    Checksum tapePartitionChk = _enableSpamsum
+                                                    ? new Checksum()
+                                                    : new Checksum(EnableChecksum.All & ~EnableChecksum.SpamSum);
 
                     // For fast debugging, skip checksum
                     //goto skipImageChecksum;
@@ -582,7 +585,9 @@ public sealed partial class Sidecar
 
                         if(_aborted) return;
 
-                        var tapeFileChk = new Checksum();
+                        Checksum tapeFileChk = _enableSpamsum
+                                                   ? new Checksum()
+                                                   : new Checksum(EnableChecksum.All & ~EnableChecksum.SpamSum);
 
                         // For fast debugging, skip checksum
                         //goto skipImageChecksum;

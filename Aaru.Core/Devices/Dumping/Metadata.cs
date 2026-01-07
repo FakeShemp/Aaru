@@ -81,7 +81,7 @@ partial class Dump
         _sidecarStopwatch.Restart();
 
         // ReSharper disable once UseObjectOrCollectionInitializer
-        _sidecarClass                      =  new Sidecar(inputPlugin, _outputPath, filter.Id, _encoding);
+        _sidecarClass                      =  new Sidecar(inputPlugin, _outputPath, filter.Id, _encoding, false);
         _sidecarClass.InitProgressEvent    += InitProgress;
         _sidecarClass.UpdateProgressEvent  += UpdateProgress;
         _sidecarClass.EndProgressEvent     += EndProgress;

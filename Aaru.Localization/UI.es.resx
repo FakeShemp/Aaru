@@ -5422,4 +5422,7 @@ Probadores:
     <data name="Processing_extent_sector_0" xml:space="preserve">
         <value>[slateblue1]Procesando sector de extensión [violet]{0}[/][/]</value>
     </data>
+    <data name="Enables_calculation_of_Spamsum_fuzzy_hashes" xml:space="preserve">
+        <value>Activa calcular los hashes Spamsum.</value>
+    </data>
 </root>

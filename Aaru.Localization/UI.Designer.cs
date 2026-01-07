@@ -10841,5 +10841,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Processing_extent_sector_0", resourceCulture);
             }
         }
+        
+        public static string Enables_calculation_of_Spamsum_fuzzy_hashes {
+            get {
+                return ResourceManager.GetString("Enables_calculation_of_Spamsum_fuzzy_hashes", resourceCulture);
+            }
+        }
     }
 }

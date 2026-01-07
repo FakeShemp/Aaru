@@ -283,9 +283,8 @@ partial class Dump
         Modes.DecodedMode? decMode = null;
 
         if(!sense && !_dev.Error)
-        {
-            if(Modes.DecodeMode10(cmdBuf, _dev.ScsiType).HasValue) decMode = Modes.DecodeMode10(cmdBuf, _dev.ScsiType);
-        }
+            if(Modes.DecodeMode10(cmdBuf, _dev.ScsiType).HasValue)
+                decMode = Modes.DecodeMode10(cmdBuf, _dev.ScsiType);
 
         UpdateStatus?.Invoke(Localization.Core.Requesting_MODE_SENSE_6);
 
@@ -313,9 +312,8 @@ partial class Dump
         if(sense || _dev.Error) sense = _dev.ModeSense(out cmdBuf, out senseBuf, 5, out duration);
 
         if(!sense && !_dev.Error)
-        {
-            if(Modes.DecodeMode6(cmdBuf, _dev.ScsiType).HasValue) decMode = Modes.DecodeMode6(cmdBuf, _dev.ScsiType);
-        }
+            if(Modes.DecodeMode6(cmdBuf, _dev.ScsiType).HasValue)
+                decMode = Modes.DecodeMode6(cmdBuf, _dev.ScsiType);
 
         // TODO: Check partitions page
         if(decMode.HasValue)
@@ -1381,7 +1379,7 @@ partial class Dump
             }
 
             _sidecarStopwatch.Restart();
-            _sidecarClass                      =  new Sidecar(inputPlugin, _outputPath, filter.Id, _encoding);
+            _sidecarClass                      =  new Sidecar(inputPlugin, _outputPath, filter.Id, _encoding, false);
             _sidecarClass.InitProgressEvent    += InitProgress;
             _sidecarClass.UpdateProgressEvent  += UpdateProgress;
             _sidecarClass.EndProgressEvent     += EndProgress;

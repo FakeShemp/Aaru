@@ -143,7 +143,7 @@ public sealed partial class ImageSidecarViewModel : ViewModelBase
             StatusVisible      = true;
         });
 
-        _sidecarClass                      =  new Sidecar(_inputFormat, _imageSource, _filterId, _encoding);
+        _sidecarClass                      =  new Sidecar(_inputFormat, _imageSource, _filterId, _encoding, false);
         _sidecarClass.UpdateStatusEvent    += UpdateStatus;
         _sidecarClass.InitProgressEvent    += InitProgress;
         _sidecarClass.UpdateProgressEvent  += UpdateProgress;

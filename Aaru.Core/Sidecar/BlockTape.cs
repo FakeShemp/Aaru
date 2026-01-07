@@ -82,10 +82,13 @@ public sealed partial class Sidecar
 
         if(_aborted) return _sidecar;
 
-        ulong          currentBlock = 0;
-        ulong          totalSize    = 0;
-        var            tapeWorker   = new Checksum();
-        List<TapeFile> tapeFiles    = [];
+        ulong currentBlock = 0;
+        ulong totalSize    = 0;
+
+        Checksum tapeWorker =
+            _enableSpamsum ? new Checksum() : new Checksum(EnableChecksum.All & ~EnableChecksum.SpamSum);
+
+        List<TapeFile> tapeFiles = [];
 
         UpdateStatus(Localization.Core.Hashing_files);
 
@@ -94,7 +97,9 @@ public sealed partial class Sidecar
             if(_aborted) return _sidecar;
 
             _fs = new FileStream(files[i], FileMode.Open, FileAccess.Read);
-            var fileWorker = new Checksum();
+
+            Checksum fileWorker =
+                _enableSpamsum ? new Checksum() : new Checksum(EnableChecksum.All & ~EnableChecksum.SpamSum);
 
             var tapeFile = new TapeFile
             {

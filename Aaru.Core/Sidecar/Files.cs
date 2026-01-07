@@ -142,7 +142,8 @@ public sealed partial class Sidecar
 
     ContentsFile SidecarFile(IReadOnlyFilesystem filesystem, string path, string filename, FileEntryInfo stat)
     {
-        var fileChkWorker = new Checksum();
+        Checksum fileChkWorker =
+            _enableSpamsum ? new Checksum() : new Checksum(EnableChecksum.All & ~EnableChecksum.SpamSum);
 
         var file = new ContentsFile
         {
@@ -218,7 +219,9 @@ public sealed partial class Sidecar
 
             if(ret != ErrorNumber.NoError) continue;
 
-            var xattrChkWorker = new Checksum();
+            Checksum xattrChkWorker =
+                _enableSpamsum ? new Checksum() : new Checksum(EnableChecksum.All & ~EnableChecksum.SpamSum);
+
             xattrChkWorker.Update(data);
 
             xattrTypes.Add(new ExtendedAttribute

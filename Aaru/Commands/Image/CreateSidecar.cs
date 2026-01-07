@@ -63,12 +63,13 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
 
         Statistics.AddCommand("create-sidecar");
 
-        AaruLogging.Debug(MODULE_NAME, "--block-size={0}", settings.BlockSize);
-        AaruLogging.Debug(MODULE_NAME, "--debug={0}",      settings.Debug);
-        AaruLogging.Debug(MODULE_NAME, "--encoding={0}",   settings.Encoding);
-        AaruLogging.Debug(MODULE_NAME, "--input={0}",      settings.ImagePath);
-        AaruLogging.Debug(MODULE_NAME, "--tape={0}",       settings.Tape);
-        AaruLogging.Debug(MODULE_NAME, "--verbose={0}",    settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--block-size={0}",     settings.BlockSize);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",          settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--encoding={0}",       settings.Encoding);
+        AaruLogging.Debug(MODULE_NAME, "--input={0}",          settings.ImagePath);
+        AaruLogging.Debug(MODULE_NAME, "--tape={0}",           settings.Tape);
+        AaruLogging.Debug(MODULE_NAME, "--enable-spamsum={0}", settings.EnableSpamsum);
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}",        settings.Verbose);
 
         Encoding encodingClass = null;
 
@@ -170,8 +171,13 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                 Statistics.AddMediaFormat(imageFormat.Format);
                 Statistics.AddFilter(inputFilter.Name);
 
-                var      sidecarClass = new Sidecar(imageFormat, settings.ImagePath, inputFilter.Id, encodingClass);
-                Metadata sidecar      = new();
+                var sidecarClass = new Sidecar(imageFormat,
+                                               settings.ImagePath,
+                                               inputFilter.Id,
+                                               encodingClass,
+                                               settings.EnableSpamsum);
+
+                Metadata sidecar = new();
 
                 AnsiConsole.Progress()
                            .AutoClear(true)
@@ -366,6 +372,10 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
         [LocalizedDescription(nameof(UI.Media_image_path))]
         [CommandArgument(0, "<image-path>")]
         public string ImagePath { get; init; }
+        [CommandOption("--enable-spamsum")]
+        [LocalizedDescription(nameof(UI.Enables_calculation_of_Spamsum_fuzzy_hashes))]
+        [DefaultValue(false)]
+        public bool EnableSpamsum { get; init; }
     }
 
 #endregion

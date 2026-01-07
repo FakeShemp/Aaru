@@ -5500,4 +5500,7 @@ Do you want to continue?</value>
     <data name="Processing_extent_sector_0" xml:space="preserve">
         <value>[slateblue1]Processing extent sector [violet]{0}[/][/]</value>
     </data>
+    <data name="Enables_calculation_of_Spamsum_fuzzy_hashes" xml:space="preserve">
+        <value>Enables calculation of Spamsum fuzzy hashes.</value>
+    </data>
 </root>

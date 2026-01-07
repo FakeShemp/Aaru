@@ -47,6 +47,7 @@ public sealed partial class Sidecar
 {
     const    string                                  MODULE_NAME = "Sidecar creation";
     readonly List<CommonTypes.AaruMetadata.Checksum> _emptyChecksums;
+    readonly bool                                    _enableSpamsum;
     readonly Encoding                                _encoding;
     readonly FileInfo                                _fi;
     readonly Guid                                    _filterId;
@@ -70,22 +71,27 @@ public sealed partial class Sidecar
         _emptyChecksums = emptyChkWorker.End();
     }
 
+    /// <summary>
+    ///     Initializes a new instance of this class
+    /// </summary>
     /// <param name="image">Image</param>
     /// <param name="imagePath">Path to image</param>
     /// <param name="filterId">Filter uuid</param>
     /// <param name="encoding">Encoding for analysis</param>
-    public Sidecar(IBaseImage image, string imagePath, Guid filterId, Encoding encoding)
+    /// <param name="enableSpamsum">Enables spamsum checksums</param>
+    public Sidecar(IBaseImage image, string imagePath, Guid filterId, Encoding encoding, bool enableSpamsum)
     {
-        _image        = image;
-        _imagePath    = imagePath;
-        _filterId     = filterId;
-        _encoding     = encoding;
-        _sidecar      = image.AaruMetadata ?? new Metadata();
-        _plugins      = PluginRegister.Singleton;
-        _fi           = new FileInfo(imagePath);
-        _fs           = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
-        _imgChkWorker = new Checksum();
-        _aborted      = false;
+        _image         = image;
+        _imagePath     = imagePath;
+        _filterId      = filterId;
+        _encoding      = encoding;
+        _sidecar       = image.AaruMetadata ?? new Metadata();
+        _plugins       = PluginRegister.Singleton;
+        _fi            = new FileInfo(imagePath);
+        _fs            = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
+        _imgChkWorker  = enableSpamsum ? new Checksum() : new Checksum(EnableChecksum.All & ~EnableChecksum.SpamSum);
+        _aborted       = false;
+        _enableSpamsum = enableSpamsum;
     }
 
     /// <summary>Implements creating a metadata sidecar</summary>
@@ -143,7 +149,8 @@ public sealed partial class Sidecar
                                 _plugins,
                                 imgChecksums,
                                 ref _sidecar,
-                                _encoding);
+                                _encoding,
+                                _enableSpamsum);
                 }
                 else
                 {
