@@ -563,7 +563,7 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
 public sealed partial class BarcodeViewModel : ObservableObject
 {
     [ObservableProperty]
-    BarcodeType _type;
+    LocalizedEnumValue<BarcodeType> _type;
 
     [ObservableProperty]
     string _value;
@@ -572,14 +572,14 @@ public sealed partial class BarcodeViewModel : ObservableObject
 
     public BarcodeViewModel([NotNull] Barcode barcode)
     {
-        Type  = barcode.Type;
+        Type  = new LocalizedEnumValue<BarcodeType>(barcode.Type);
         Value = barcode.Value;
     }
 
     [NotNull]
     public Barcode ToModel() => new()
     {
-        Type  = Type,
+        Type  = Type?.Value ?? BarcodeType.EAN13,
         Value = Value
     };
 }
