@@ -55,6 +55,7 @@ public sealed partial class ImageMetadataViewModel : ViewModelBase
     IFilter _inputFilter;
     [ObservableProperty]
     bool _isOpened;
+    string _localPath;
     [ObservableProperty]
     int _mediaLastSequence;
     [ObservableProperty]
@@ -153,7 +154,13 @@ public sealed partial class ImageMetadataViewModel : ViewModelBase
         // We close the read-only context and reopen it in resume mode
         _imageFormat.Close();
 
-        bool ret = _imageFormat.Create(ImagePath, mediaType, [], sectors, negativeSectors, overflowSectors, sectorSize);
+        bool ret = _imageFormat.Create(_localPath,
+                                       mediaType,
+                                       [],
+                                       sectors,
+                                       negativeSectors,
+                                       overflowSectors,
+                                       sectorSize);
 
         IMsBox<ButtonResult> msbox;
 
@@ -317,8 +324,9 @@ public sealed partial class ImageMetadataViewModel : ViewModelBase
                     return;
                 }
 
-                ImagePath = $"[lime]{result[0].Path.LocalPath}[/]";
-                MediaType = $"[orange]{imageFormat.Info.MediaType.Humanize()}[/]";
+                ImagePath  = $"[lime]{result[0].Path.LocalPath}[/]";
+                _localPath = result[0].Path.LocalPath;
+                MediaType  = $"[orange]{imageFormat.Info.MediaType.Humanize()}[/]";
 
                 Size =
                     $"[teal]{ByteSize.FromBytes(imageFormat.Info.Sectors * imageFormat.Info.SectorSize).Humanize()}[/]";
