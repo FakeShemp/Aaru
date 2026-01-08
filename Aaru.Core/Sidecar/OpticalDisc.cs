@@ -419,7 +419,7 @@ public sealed partial class Sidecar
                 {
                     Image = new CommonTypes.AaruMetadata.Image
                     {
-                        Value = trk.SubchannelFile
+                        Value = Path.GetFileName(trk.SubchannelFile)
                     },
 
                     // TODO: Packed subchannel has different size?

@@ -33,6 +33,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
@@ -1023,7 +1024,7 @@ partial class Dump
             case MediaTagType.DVD_PFI:
                 sidecar.OpticalDiscs[0].Pfi = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1032,7 +1033,7 @@ partial class Dump
             case MediaTagType.DVD_DMI:
                 sidecar.OpticalDiscs[0].Dmi = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1042,7 +1043,7 @@ partial class Dump
             case MediaTagType.HDDVD_CPI:
                 sidecar.OpticalDiscs[0].Cmi = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1062,7 +1063,7 @@ partial class Dump
             case MediaTagType.BD_BCA:
                 sidecar.OpticalDiscs[0].Bca = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1072,7 +1073,7 @@ partial class Dump
             case MediaTagType.DVDRAM_DDS:
                 sidecar.OpticalDiscs[0].Dds = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1082,7 +1083,7 @@ partial class Dump
             case MediaTagType.BD_SpareArea:
                 sidecar.OpticalDiscs[0].Sai = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1091,7 +1092,7 @@ partial class Dump
             case MediaTagType.DVDR_PreRecordedInfo:
                 sidecar.OpticalDiscs[0].Pri = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1100,7 +1101,7 @@ partial class Dump
             case MediaTagType.DVD_MediaIdentifier:
                 sidecar.OpticalDiscs[0].MediaID = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1109,7 +1110,7 @@ partial class Dump
             case MediaTagType.DVDR_PFI:
                 sidecar.OpticalDiscs[0].Pfir = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1118,7 +1119,7 @@ partial class Dump
             case MediaTagType.DVD_ADIP:
                 sidecar.OpticalDiscs[0].Adip = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1127,7 +1128,7 @@ partial class Dump
             case MediaTagType.DCB:
                 sidecar.OpticalDiscs[0].Dcb = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1136,7 +1137,7 @@ partial class Dump
             case MediaTagType.BD_DI:
                 sidecar.OpticalDiscs[0].Di = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1153,7 +1154,7 @@ partial class Dump
                         RequestVersion = 1,
                         SecuritySectors = new CommonTypes.AaruMetadata.Dump
                         {
-                            Image     = outputPath,
+                            Image     = Path.GetFileName(outputPath),
                             Size      = (ulong)tag.Length,
                             Checksums = Checksum.GetChecksums(tag)
                         }
@@ -1166,7 +1167,7 @@ partial class Dump
 
                 sidecar.OpticalDiscs[0].Xbox.Pfi = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1177,7 +1178,7 @@ partial class Dump
 
                 sidecar.OpticalDiscs[0].Xbox.Dmi = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1186,7 +1187,7 @@ partial class Dump
             case MediaTagType.CD_FullTOC:
                 sidecar.OpticalDiscs[0].Toc = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1195,7 +1196,7 @@ partial class Dump
             case MediaTagType.CD_ATIP:
                 sidecar.OpticalDiscs[0].Atip = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1204,7 +1205,7 @@ partial class Dump
             case MediaTagType.CD_PMA:
                 sidecar.OpticalDiscs[0].Pma = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1213,7 +1214,7 @@ partial class Dump
             case MediaTagType.CD_TEXT:
                 sidecar.OpticalDiscs[0].LeadInCdText = new CommonTypes.AaruMetadata.Dump
                 {
-                    Image     = outputPath,
+                    Image     = Path.GetFileName(outputPath),
                     Size      = (ulong)tag.Length,
                     Checksums = Checksum.GetChecksums(tag)
                 };
@@ -1224,7 +1225,7 @@ partial class Dump
                 [
                     new Border
                     {
-                        Image     = outputPath,
+                        Image     = Path.GetFileName(outputPath),
                         Size      = (ulong)tag.Length,
                         Checksums = Checksum.GetChecksums(tag)
                     }
@@ -1236,7 +1237,7 @@ partial class Dump
                 [
                     new Border
                     {
-                        Image     = outputPath,
+                        Image     = Path.GetFileName(outputPath),
                         Size      = (ulong)tag.Length,
                         Checksums = Checksum.GetChecksums(tag)
                     }
