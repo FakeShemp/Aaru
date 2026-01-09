@@ -181,9 +181,19 @@ public static class DateHandlers
 
         var difference = (sbyte)vdDateTime[16];
 
-        var decodedDt = new DateTime(year, month, day, hour, minute, second, hundredths * 10, DateTimeKind.Utc);
+        try
+        {
+            var decodedDt = new DateTime(year, month, day, hour, minute, second, hundredths * 10, DateTimeKind.Utc);
 
-        return decodedDt.AddMinutes(difference * -15);
+            return decodedDt.AddMinutes(difference * -15);
+        }
+        catch
+        {
+            // Some ISO9660 dates are invalid, return epoch
+#pragma warning disable ERP022
+            return DateTime.MinValue;
+#pragma warning restore ERP022
+        }
     }
 
     /// <summary>Converts a VMS timestamp to a .NET DateTime</summary>
