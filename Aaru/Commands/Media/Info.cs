@@ -557,7 +557,9 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                                  scsiInfo.BlurayDiscInformation);
 
                 AaruLogging.WriteLine(Localization.Core.Bluray_Disc_Information);
-                AaruLogging.WriteLine(DI.Prettify(scsiInfo.BlurayDiscInformation));
+#pragma warning disable PH2069
+                AaruLogging.WriteLine("{0}", Markup.Escape(DI.Prettify(scsiInfo.BlurayDiscInformation)));
+#pragma warning restore PH2069
             }
 
             if(scsiInfo.BlurayPac != null)
