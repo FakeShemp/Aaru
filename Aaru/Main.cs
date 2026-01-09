@@ -294,6 +294,8 @@ class MainClass
 
             app.Configure(static config =>
             {
+                config.PropagateExceptions();
+
                 config.UseAssemblyInformationalVersion();
 
                 config.AddBranch<ArchiveFamily>("archive",
