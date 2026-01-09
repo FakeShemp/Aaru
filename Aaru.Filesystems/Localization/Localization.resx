@@ -849,7 +849,7 @@
     <value>[slateblue1]Initial entry:[/]</value>
   </data>
     <data name="Developer_ID_0" xml:space="preserve">
-    <value>[slateblue1]Developer ID: [green]{0}[/]</value>
+    <value>[slateblue1]Developer ID:[/] [green]{0}[/]</value>
   </data>
     <data name="Bootable_on_0" xml:space="preserve">
     <value>[slateblue1]Bootable on[/] [rosybrown]{0}[/]</value>
