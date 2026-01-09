@@ -38,6 +38,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Logging;
+using Spectre.Console;
 using Directory = Aaru.CommonTypes.AaruMetadata.Directory;
 using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
@@ -168,7 +169,14 @@ public sealed partial class Sidecar
         if(stat.Length > 0)
         {
             long position = 0;
-            UpdateStatus(string.Format(Localization.Core.Hashing_file_0_1, path, filename));
+
+#pragma warning disable PH2069
+            UpdateStatus("{0}",
+                         string.Format(Localization.Core.Hashing_file_0_1,
+                                       Markup.Escape(path.Replace("{", "{{").Replace("}", "}}")),
+                                       Markup.Escape(filename.Replace("{", "{{").Replace("}", "}}"))));
+#pragma warning restore PH2069
+
             InitProgress2();
 
             ErrorNumber error = filesystem.OpenFile(path + "/" + filename, out IFileNode fileNode);
