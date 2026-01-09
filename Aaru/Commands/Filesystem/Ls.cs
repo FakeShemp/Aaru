@@ -310,7 +310,8 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
         if(path.StartsWith('/')) path = path[1..];
 
-        AaruLogging.WriteLine(string.IsNullOrEmpty(path)
+        AaruLogging.WriteLine("{0}",
+                              string.IsNullOrEmpty(path)
                                   ? UI.Root_directory
                                   : string.Format(UI.Directory_0, Markup.Escape(path)));
 
