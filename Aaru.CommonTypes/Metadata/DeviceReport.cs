@@ -1161,7 +1161,25 @@ public class TestedMedia
     [DisplayName("Data from Lite-On's scrambled DVD reading trick")]
     public byte[] LiteOnReadRawDVDData { get; set; }
 
+    [DisplayName("Lite-On ReadBuffer fallback data")]
+    public virtual List<CompressedBufferRead> LiteOnReadBufferData { get; set; }
+
 #endregion
+}
+
+public class CompressedBufferRead
+{
+    [JsonIgnore]
+    public virtual int Id { get; set; }
+
+    [DisplayName("ReadBuffer command variant")]
+    public virtual string CommandVariant { get; set; }
+
+    [DisplayName("Compressed buffer data")]
+    public virtual byte[] CompressedData { get; set; }
+
+    [DisplayName("Uncompressed size")]
+    public virtual uint UncompressedSize { get; set; }
 }
 
 public class Ssc

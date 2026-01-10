@@ -31,6 +31,9 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using Aaru.CommonTypes.Metadata;
@@ -70,6 +73,19 @@ public sealed partial class DeviceReport
         }
 
         return response;
+    }
+
+    static byte[] CompressBuffer(byte[] data)
+    {
+        using(var output = new MemoryStream())
+        {
+            using(var gzip = new GZipStream(output, CompressionLevel.Optimal))
+            {
+                gzip.Write(data, 0, data.Length);
+            }
+
+            return output.ToArray();
+        }
     }
 
     /// <summary>Creates a report for the GET CONFIGURATION response of an MMC device</summary>
@@ -574,6 +590,7 @@ public sealed partial class DeviceReport
     /// <param name="tryNec">Try NEC vendor commands</param>
     /// <param name="tryHldtst">Try HL-DT-ST vendor commands</param>
     /// <param name="tryMediaTekF106">Try MediaTek vendor commands</param>
+    /// <param name="tryLiteOn">Try Lite-On vendor commands</param>
     /// <returns></returns>
     public TestedMedia ReportMmcMedia(string mediaType, bool tryPlextor, bool tryPioneer, bool tryNec, bool tryHldtst,
                                       bool   tryMediaTekF106, bool tryLiteOn)
@@ -2752,7 +2769,114 @@ public sealed partial class DeviceReport
             if(mediaTest.SupportsLiteOnReadRawDVD == true)
                 mediaTest.SupportsLiteOnReadRawDVD = !ArrayHelpers.ArrayIsNullOrEmpty(buffer);
 
-            if(mediaTest.SupportsLiteOnReadRawDVD == true) mediaTest.LiteOnReadRawDVDData = buffer;
+            if(mediaTest.SupportsLiteOnReadRawDVD == true)
+            {
+                mediaTest.LiteOnReadRawDVDData = buffer;
+            }
+            else
+            {
+                // Fallback: try multiple ReadBuffer variants
+                mediaTest.LiteOnReadBufferData = new List<CompressedBufferRead>();
+
+                // Try variant 3c 00 00
+                // First fill buffer with Read12
+                Spectre.ProgressSingleSpinner(ctx =>
+                {
+                    ctx.AddTask("Trying Lite-On ReadBuffer variant 3c 00 00").IsIndeterminate();
+
+                    _dev.Read12(out _, out _, 0, false, false, false, false, 16, 2048, 0, 16, false,
+                        _dev.Timeout, out _);
+
+                    bool success = !_dev.ScsiReadBuffer(out buffer, out _, 0, 61440,
+                                                         _dev.Timeout, out _, 0x00, 0x00);
+
+                    if(success && !ArrayHelpers.ArrayIsNullOrEmpty(buffer))
+                    {
+                        mediaTest.LiteOnReadBufferData.Add(new CompressedBufferRead
+                        {
+                            CommandVariant    = "3c0000",
+                            CompressedData    = CompressBuffer(buffer),
+                            UncompressedSize = 61440
+                        });
+                    }
+                });
+
+                // Try variant 3c 01 00
+                Spectre.ProgressSingleSpinner(ctx =>
+                {
+                    ctx.AddTask("Trying Lite-On ReadBuffer variant 3c 01 00").IsIndeterminate();
+
+                    bool success = !_dev.ScsiReadBuffer(out buffer, out _, 0, 61440,
+                                                         _dev.Timeout, out _, 0x01, 0x00);
+
+                    if(success && !ArrayHelpers.ArrayIsNullOrEmpty(buffer))
+                    {
+                        mediaTest.LiteOnReadBufferData.Add(new CompressedBufferRead
+                        {
+                            CommandVariant    = "3c0100",
+                            CompressedData    = CompressBuffer(buffer),
+                            UncompressedSize = 61440
+                        });
+                    }
+                });
+
+                // Try variant 3c 01 01
+                Spectre.ProgressSingleSpinner(ctx =>
+                {
+                    ctx.AddTask("Trying Lite-On ReadBuffer variant 3c 01 01").IsIndeterminate();
+
+                    bool success = !_dev.ScsiReadBuffer(out buffer, out _, 0, 61440,
+                                                         _dev.Timeout, out _, 0x01, 0x01);
+
+                    if(success && !ArrayHelpers.ArrayIsNullOrEmpty(buffer))
+                    {
+                        mediaTest.LiteOnReadBufferData.Add(new CompressedBufferRead
+                        {
+                            CommandVariant    = "3c0101",
+                            CompressedData    = CompressBuffer(buffer),
+                            UncompressedSize = 61440
+                        });
+                    }
+                });
+
+                // Try variant 3c 01 02
+                Spectre.ProgressSingleSpinner(ctx =>
+                {
+                    ctx.AddTask("Trying Lite-On ReadBuffer variant 3c 01 02").IsIndeterminate();
+
+                    bool success = !_dev.ScsiReadBuffer(out buffer, out _, 0, 61440,
+                                                         _dev.Timeout, out _, 0x01, 0x02);
+
+                    if(success && !ArrayHelpers.ArrayIsNullOrEmpty(buffer))
+                    {
+                        mediaTest.LiteOnReadBufferData.Add(new CompressedBufferRead
+                        {
+                            CommandVariant    = "3c0102",
+                            CompressedData    = CompressBuffer(buffer),
+                            UncompressedSize = 61440
+                        });
+                    }
+                });
+
+                // Try variant 3c 02 00
+                Spectre.ProgressSingleSpinner(ctx =>
+                {
+                    ctx.AddTask("Trying Lite-On ReadBuffer variant 3c 02 00").IsIndeterminate();
+
+                    bool success = !_dev.ScsiReadBuffer(out buffer, out _, 0, 61440,
+                                                         _dev.Timeout, out _, 0x02, 0x00);
+
+                    if(success && !ArrayHelpers.ArrayIsNullOrEmpty(buffer))
+                    {
+                        mediaTest.LiteOnReadBufferData.Add(new CompressedBufferRead
+                        {
+                            CommandVariant    = "3c0200",
+                            CompressedData    = CompressBuffer(buffer),
+                            UncompressedSize = 61440
+                        });
+                    }
+                });
+            }
         }
 
         if(tryMediaTekF106)

@@ -102,7 +102,7 @@ public partial class Device
     /// <param name="buffer">Buffer where the ReadBuffer (RAW) response will be stored</param>
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="bufferOffset">The offset to read the buffer at</param>
-    /// <param name="transferLength"></param>
+    /// <param name="transferLength">How many blocks to read.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="lba">Start block address.</param>
@@ -114,25 +114,9 @@ public partial class Device
         // because the data can be wrong anyway, so we check the buffer data later instead.
         Read12(out _, out _, 0, false, false, false, false, lba, 2048, 0, 16, false, timeout, out duration);
 
-        senseBuffer = SenseBuffer;
-        Span<byte> cdb = CdbBuffer[..10];
-        cdb.Clear();
-
-        buffer = new byte[transferLength];
-
-        cdb[0] = (byte)ScsiCommands.ReadBuffer;
-        cdb[1] = 0x01;
-        cdb[2] = 0x01;
-        cdb[3] = (byte)((bufferOffset & 0xFF0000) >> 16);
-        cdb[4] = (byte)((bufferOffset & 0xFF00)   >> 8);
-        cdb[5] = (byte)(bufferOffset & 0xFF);
-        cdb[6] = (byte)((buffer.Length & 0xFF0000) >> 16);
-        cdb[7] = (byte)((buffer.Length & 0xFF00)   >> 8);
-        cdb[8] = (byte)(buffer.Length & 0xFF);
-
-        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
-
-        return sense;
+        // Use generic ReadBuffer method with Lite-On specific mode (0x01) and buffer ID (0x01)
+        return ScsiReadBuffer(out buffer, out senseBuffer, bufferOffset, transferLength, timeout, out duration, 0x01,
+                              0x01);
     }
 
     /// <summary>
