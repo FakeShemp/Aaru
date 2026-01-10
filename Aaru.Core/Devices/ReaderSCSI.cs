@@ -582,6 +582,7 @@ sealed partial class Reader
 
                         break;
                     case "LITE-ON":
+                    case "TSSTcorp":
                         LiteOnReadRaw =
                             !_dev.LiteOnReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _, layerbreak, otp);
 

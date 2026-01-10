@@ -649,7 +649,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                  tryPioneer      = false,
                                  tryNec          = false,
                                  tryMediaTekF106 = false,
-                                 tryLiteOn       = false;
+                                 tryReadBuffer3C = false;
 
                             tryPlextor |=
                                 dev.Manufacturer.Equals("plextor", StringComparison.InvariantCultureIgnoreCase);
@@ -661,9 +661,6 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                 dev.Manufacturer.Equals("pioneer", StringComparison.InvariantCultureIgnoreCase);
 
                             tryNec |= dev.Manufacturer.Equals("nec", StringComparison.InvariantCultureIgnoreCase);
-
-                            tryLiteOn |=
-                                dev.Manufacturer.Equals("lite-on", StringComparison.InvariantCultureIgnoreCase);
 
                             if(!iomegaRev)
                             {
@@ -699,13 +696,10 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                     false);
                                 }
 
-                                if(!tryLiteOn)
-                                {
-                                    tryLiteOn |=
-                                        AnsiConsole
-                                           .Confirm($"[italic]{UI.Do_you_want_to_try_LiteOn_commands} [red]{UI.This_is_dangerous}[/][/]",
-                                                    false);
-                                }
+                                tryReadBuffer3C =
+                                    AnsiConsole
+                                       .Confirm($"[italic]{UI.Do_you_want_to_try_ReadBuffer3C_commands} [red]{UI.This_is_dangerous}[/][/]",
+                                                false);
 
                                 tryMediaTekF106 =
                                     AnsiConsole
@@ -809,7 +803,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                         tryNec,
                                                                         tryHldtst,
                                                                         tryMediaTekF106,
-                                                                        tryLiteOn);
+                                                                        tryReadBuffer3C);
 
                                     if(mediaTest is null) continue;
 

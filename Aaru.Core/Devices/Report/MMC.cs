@@ -590,10 +590,10 @@ public sealed partial class DeviceReport
     /// <param name="tryNec">Try NEC vendor commands</param>
     /// <param name="tryHldtst">Try HL-DT-ST vendor commands</param>
     /// <param name="tryMediaTekF106">Try MediaTek vendor commands</param>
-    /// <param name="tryLiteOn">Try Lite-On vendor commands</param>
+    /// <param name="tryReadBuffer3C">Try ReadBuffer 3C vendor commands</param>
     /// <returns></returns>
     public TestedMedia ReportMmcMedia(string mediaType, bool tryPlextor, bool tryPioneer, bool tryNec, bool tryHldtst,
-                                      bool   tryMediaTekF106, bool tryLiteOn)
+                                      bool   tryMediaTekF106, bool tryReadBuffer3C)
     {
         var                sense       = true;
         byte[]             buffer      = [];
@@ -2754,11 +2754,11 @@ public sealed partial class DeviceReport
             if(mediaTest.SupportsHLDTSTReadRawDVD == true) mediaTest.HLDTSTReadRawDVDData = buffer;
         }
 
-        if(tryLiteOn)
+        if(tryReadBuffer3C)
         {
             Spectre.ProgressSingleSpinner(ctx =>
             {
-                ctx.AddTask(Localization.Core.Trying_Lite_On_trick_to_raw_read_DVDs).IsIndeterminate();
+                ctx.AddTask(Localization.Core.Trying_ReadBuffer_3C_trick_to_raw_read_DVDs).IsIndeterminate();
 
                 mediaTest.SupportsLiteOnReadRawDVD =
                     !_dev.LiteOnReadRawDvd(out buffer, out _, 16, 1, _dev.Timeout, out _, 0xffff, false);
@@ -2775,14 +2775,14 @@ public sealed partial class DeviceReport
             }
             else
             {
-                // Fallback: try multiple ReadBuffer variants
+                // Fallback: try multiple ReadBuffer 3C variants
                 mediaTest.LiteOnReadBufferData = new List<CompressedBufferRead>();
 
                 // Try variant 3c 00 00
                 // First fill buffer with Read12
                 Spectre.ProgressSingleSpinner(ctx =>
                 {
-                    ctx.AddTask("Trying Lite-On ReadBuffer variant 3c 00 00").IsIndeterminate();
+                    ctx.AddTask("Trying ReadBuffer 3C variant 3c 00 00").IsIndeterminate();
 
                     _dev.Read12(out _, out _, 0, false, false, false, false, 16, 2048, 0, 16, false,
                         _dev.Timeout, out _);
@@ -2804,7 +2804,7 @@ public sealed partial class DeviceReport
                 // Try variant 3c 01 00
                 Spectre.ProgressSingleSpinner(ctx =>
                 {
-                    ctx.AddTask("Trying Lite-On ReadBuffer variant 3c 01 00").IsIndeterminate();
+                    ctx.AddTask("Trying ReadBuffer 3C variant 3c 01 00").IsIndeterminate();
 
                     bool success = !_dev.ScsiReadBuffer(out buffer, out _, 0, 61440,
                                                          _dev.Timeout, out _, 0x01, 0x00);
@@ -2823,7 +2823,7 @@ public sealed partial class DeviceReport
                 // Try variant 3c 01 01
                 Spectre.ProgressSingleSpinner(ctx =>
                 {
-                    ctx.AddTask("Trying Lite-On ReadBuffer variant 3c 01 01").IsIndeterminate();
+                    ctx.AddTask("Trying ReadBuffer 3C variant 3c 01 01").IsIndeterminate();
 
                     bool success = !_dev.ScsiReadBuffer(out buffer, out _, 0, 61440,
                                                          _dev.Timeout, out _, 0x01, 0x01);
@@ -2842,7 +2842,7 @@ public sealed partial class DeviceReport
                 // Try variant 3c 01 02
                 Spectre.ProgressSingleSpinner(ctx =>
                 {
-                    ctx.AddTask("Trying Lite-On ReadBuffer variant 3c 01 02").IsIndeterminate();
+                    ctx.AddTask("Trying ReadBuffer 3C variant 3c 01 02").IsIndeterminate();
 
                     bool success = !_dev.ScsiReadBuffer(out buffer, out _, 0, 61440,
                                                          _dev.Timeout, out _, 0x01, 0x02);
@@ -2861,7 +2861,7 @@ public sealed partial class DeviceReport
                 // Try variant 3c 02 00
                 Spectre.ProgressSingleSpinner(ctx =>
                 {
-                    ctx.AddTask("Trying Lite-On ReadBuffer variant 3c 02 00").IsIndeterminate();
+                    ctx.AddTask("Trying ReadBuffer 3C variant 3c 02 00").IsIndeterminate();
 
                     bool success = !_dev.ScsiReadBuffer(out buffer, out _, 0, 61440,
                                                          _dev.Timeout, out _, 0x02, 0x00);

@@ -4340,6 +4340,12 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string Trying_ReadBuffer_3C_trick_to_raw_read_DVDs {
+            get {
+                return ResourceManager.GetString("Trying_ReadBuffer_3C_trick_to_raw_read_DVDs", resourceCulture);
+            }
+        }
+        
         public static string Trying_MediaTek_READ_DRAM_command {
             get {
                 return ResourceManager.GetString("Trying_MediaTek_READ_DRAM_command", resourceCulture);

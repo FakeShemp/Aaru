@@ -48,7 +48,6 @@ public partial class Device
     }
 
     private uint _bufferOffset;
-    private uint _bufferStride;
     private uint _bufferCapacityInSectors;
     private LiteOnBufferFormat _bufferFormat;
 
@@ -56,37 +55,57 @@ public partial class Device
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
     /// <param name="buffer">Buffer where the ReadBuffer (RAW) response will be stored</param>
     /// <param name="senseBuffer">Sense buffer.</param>
-    /// <param name="timeout">Timeout in seconds.</param>
-    /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="lba">Start block address.</param>
     /// <param name="transferLength">How many blocks to read.</param>
+    /// <param name="timeout">Timeout in seconds.</param>
+    /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="layerbreak">The address in which the layerbreak occur</param>
     /// <param name="otp">Set to <c>true</c> if disk is Opposite Track Path (OTP)</param>
     public bool LiteOnReadRawDvd(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, uint lba, uint transferLength,
                                  uint       timeout, out double             duration,    uint layerbreak, bool otp)
     {
-        // Detect stride and format on first call
-        if(_bufferStride == 0)
+        // Detect ReadBuffer 3C variant and stride on first call
+        if(!_readBuffer3CDetected)
         {
-            uint detectedStride = DetectBufferStride(lba, timeout, out double detectDuration);
-            
-            if(detectedStride == 0 || detectedStride < 2064 || detectedStride > 10000)
+            bool detected = DetectReadBuffer3C(lba, timeout, out double detectDuration);
+
+            if(!detected || _detectedBufferStride == 0 || _detectedBufferStride < 2064 || _detectedBufferStride > 10000)
             {
-                // Detection failed, use default
-                _bufferStride = 2384;
-                _bufferFormat = LiteOnBufferFormat.FullEccInterleaved;
+                // Detection failed - raw reading is not supported on this drive
+                AaruLogging.Debug(SCSI_MODULE_NAME,
+                                  "ReadBuffer 3C detection failed - raw reading is not supported on this drive");
+
+                buffer      = Array.Empty<byte>();
+                senseBuffer = SenseBuffer;
+                duration    = detectDuration;
+                Error       = true;
+                _readBuffer3CDetected = true;
+
+                return true; // Return failure - raw reading not supported
             }
-            else
+
+            // Detect format based on stride (Lite-On specific)
+            _bufferFormat = _detectedBufferStride switch
             {
-                _bufferStride = detectedStride;
-            }
-            
-            // Calculate buffer capacity in sectors
-            // Buffer size is approximately 1,700,576 bytes
+                2064 => LiteOnBufferFormat.SectorDataOnly,
+                2236 => LiteOnBufferFormat.PoOnly,
+                2384 => LiteOnBufferFormat.FullEccInterleaved,
+                > 2384 => LiteOnBufferFormat.FullEccWithPadding,
+                _ => LiteOnBufferFormat.FullEccInterleaved // Default for backward compatibility
+            };
+
+            AaruLogging.Debug(SCSI_MODULE_NAME,
+                              "LiteOn buffer format detected based on stride: {0}, format: {1}",
+                              _detectedBufferStride, _bufferFormat);
+
+            // TODO: Calculate buffer capacity in sectors
+            // Buffer size is approximately 1,700,576 bytes but need to test on other drives to get the correct value
+            // It might also be the case that the buffer overflow works differently on different drives, so we need to test that as well.
             // const uint BUFFER_SIZE = 1700576;
-            // _bufferCapacityInSectors = BUFFER_SIZE / _bufferStride;
+            // _bufferCapacityInSectors = BUFFER_SIZE / _detectedBufferStride;
             // if(_bufferCapacityInSectors == 0) _bufferCapacityInSectors = 714; // Fallback to known value
             _bufferCapacityInSectors = 714;
+            _readBuffer3CDetected = true;
         }
 
         _bufferOffset %= _bufferCapacityInSectors;
@@ -150,9 +169,9 @@ public partial class Device
         // because the data can be wrong anyway, so we check the buffer data later instead.
         Read12(out _, out _, 0, false, false, false, false, lba, 2048, 0, 16, false, timeout, out duration);
 
-        // Use generic ReadBuffer method with Lite-On specific mode (0x01) and buffer ID (0x01)
-        return ScsiReadBuffer(out buffer, out senseBuffer, bufferOffset, transferLength, timeout, out duration, 0x01,
-                              0x01);
+        // Use generic ReadBuffer method with detected variant
+        return ScsiReadBuffer(out buffer, out senseBuffer, bufferOffset, transferLength, timeout, out duration,
+                              _detectedReadBufferMode, _detectedReadBufferId);
     }
 
     /// <summary>
@@ -173,13 +192,13 @@ public partial class Device
     {
         bool sense = LiteOnReadBuffer(out buffer,
                                       out senseBuffer,
-                                      _bufferOffset  * _bufferStride,
-                                      transferLength * _bufferStride,
+                                      _bufferOffset  * _detectedBufferStride,
+                                      transferLength * _detectedBufferStride,
                                       timeout,
                                       out duration,
                                       lba);
 
-        byte[] deinterleaved = DeinterleaveEccBlock(buffer, transferLength, _bufferStride, _bufferFormat);
+        byte[] deinterleaved = DeinterleaveEccBlock(buffer, transferLength, _detectedBufferStride, _bufferFormat);
 
         if(!CheckSectorNumber(deinterleaved, lba, transferLength, layerbreak, true))
         {
@@ -192,13 +211,13 @@ public partial class Device
 
             sense = LiteOnReadBuffer(out buffer,
                                      out senseBuffer,
-                                     _bufferOffset  * _bufferStride,
-                                     transferLength * _bufferStride,
+                                     _bufferOffset  * _detectedBufferStride,
+                                     transferLength * _detectedBufferStride,
                                      timeout,
                                      out duration,
                                      lba);
 
-            deinterleaved = DeinterleaveEccBlock(buffer, transferLength, _bufferStride, _bufferFormat);
+            deinterleaved = DeinterleaveEccBlock(buffer, transferLength, _detectedBufferStride, _bufferFormat);
 
             if(!CheckSectorNumber(deinterleaved, lba, transferLength, layerbreak, otp)) return true;
         }
@@ -230,12 +249,12 @@ public partial class Device
                                                      uint       layerbreak, bool otp)
     {
         uint newTransferLength1 = _bufferCapacityInSectors - _bufferOffset;
-        uint newTransferLength2 = transferLength            - newTransferLength1;
+        uint newTransferLength2 = transferLength           - newTransferLength1;
 
         bool sense1 = LiteOnReadBuffer(out byte[] buffer1,
                                       out _,
-                                      _bufferOffset      * _bufferStride,
-                                      newTransferLength1 * _bufferStride,
+                                      _bufferOffset      * _detectedBufferStride,
+                                      newTransferLength1 * _detectedBufferStride,
                                       timeout,
                                       out double duration1,
                                       lba);
@@ -243,20 +262,20 @@ public partial class Device
         bool sense2 = LiteOnReadBuffer(out byte[] buffer2,
                                       out _,
                                       0,
-                                      newTransferLength2 * _bufferStride,
+                                      newTransferLength2 * _detectedBufferStride,
                                       timeout,
                                       out double duration2,
                                       lba);
 
         senseBuffer = SenseBuffer; // TODO
 
-        buffer = new byte[_bufferStride * transferLength];
+        buffer = new byte[_detectedBufferStride * transferLength];
         Array.Copy(buffer1, buffer, buffer1.Length);
         Array.Copy(buffer2, 0,      buffer, buffer1.Length, buffer2.Length);
 
         duration = duration1 + duration2;
 
-        byte[] deinterleaved = DeinterleaveEccBlock(buffer, transferLength, _bufferStride, _bufferFormat);
+        byte[] deinterleaved = DeinterleaveEccBlock(buffer, transferLength, _detectedBufferStride, _bufferFormat);
 
         if(!CheckSectorNumber(deinterleaved, lba, transferLength, layerbreak, otp)) return true;
 
@@ -282,109 +301,15 @@ public partial class Device
     {
         for(uint i = 0; i < _bufferCapacityInSectors; i++)
         {
-            LiteOnReadBuffer(out byte[] buffer, out _, i * _bufferStride, _bufferStride, timeout, out double _, lba);
+            LiteOnReadBuffer(out byte[] buffer, out _, i * _detectedBufferStride, _detectedBufferStride, timeout,
+                            out double _, lba);
 
-            byte[] deinterleaved = DeinterleaveEccBlock(buffer, 1, _bufferStride, _bufferFormat);
+            byte[] deinterleaved = DeinterleaveEccBlock(buffer, 1, _detectedBufferStride, _bufferFormat);
 
             if(CheckSectorNumber(deinterleaved, lba, 1, layerbreak, otp)) return (int)i;
         }
 
         return -1;
-    }
-
-    /// <summary>
-    ///     Detects the stride (bytes per sector) in the Lite-On buffer by searching for
-    ///     the 00 03 00 pattern that appears at the start of each sector
-    /// </summary>
-    /// <param name="lba">LBA to use for filling the buffer (sectors 0-16)</param>
-    /// <param name="timeout">Timeout in seconds</param>
-    /// <param name="duration">Duration in milliseconds</param>
-    /// <returns>Detected stride in bytes, or 0 if detection failed</returns>
-    private uint DetectBufferStride(uint lba, uint timeout, out double duration)
-    {
-        // Fill buffer with sectors 0-16
-        Read12(out _, out _, 0, false, false, false, false, lba, 2048, 0, 16, false, timeout, out duration);
-
-        // Read a large buffer chunk (enough for 16+ sectors)
-        uint readSize = 16 * 3000; // Enough for 16 sectors even with large stride
-        bool sense = ScsiReadBuffer(out byte[] buffer, out _, 0, readSize, timeout, out double readDuration, 0x01, 0x01);
-        duration += readDuration;
-
-        if(sense || buffer == null || buffer.Length < 2236 * 3) // Need at least 3 sectors worth
-        {
-            AaruLogging.Debug(SCSI_MODULE_NAME, "LiteOn buffer stride detection failed, sense or buffer too small, using default");
-            _bufferFormat = LiteOnBufferFormat.FullEccInterleaved;
-            return 2384; // Default to known value
-        }
-
-        // Search for pattern 00 03 00 starting from beginning
-        // Find first occurrence
-        int firstOffset = -1;
-        for(int i = 0; i < buffer.Length - 3; i++)
-        {
-            if(buffer[i] == 0x00 && buffer[i + 1] == 0x03 && buffer[i + 2] == 0x00)
-            {
-                firstOffset = i;
-                break;
-            }
-        }
-
-        if(firstOffset != 0)
-        {
-            AaruLogging.Debug(SCSI_MODULE_NAME, "LiteOn buffer stride detection failed, pattern not at start, using default");
-            _bufferFormat = LiteOnBufferFormat.FullEccInterleaved;
-            return 2384; // Pattern not at start, use default
-        }
-
-        // Find second occurrence to calculate stride
-        int secondOffset = -1;
-        for(int i = firstOffset + 2064; i < Math.Min(firstOffset + 2500, buffer.Length - 3); i++)
-        {
-            if(buffer[i] == 0x00 && buffer[i + 1] == 0x03 && buffer[i + 2] == 0x00)
-            {
-                secondOffset = i;
-                break;
-            }
-        }
-
-        if(secondOffset == -1)
-        {
-            AaruLogging.Debug(SCSI_MODULE_NAME, "LiteOn buffer stride detection failed, couldn't find second sector, using default");
-            _bufferFormat = LiteOnBufferFormat.FullEccInterleaved;
-            return 2384; // Couldn't find second sector, use default
-        }
-
-        uint stride = (uint)(secondOffset - firstOffset);
-
-        // Verify stride by checking 3rd and 4th sectors
-        for(int sectorNum = 2; sectorNum <= 3; sectorNum++)
-        {
-            int expectedOffset = (int)(firstOffset + stride * sectorNum);
-            if(expectedOffset + 3 >= buffer.Length) break;
-
-            if(buffer[expectedOffset] != 0x00 ||
-               buffer[expectedOffset + 1] != 0x03 ||
-               buffer[expectedOffset + 2] != 0x00)
-            {
-                _bufferFormat = LiteOnBufferFormat.FullEccInterleaved;
-                return 2384; // Verification failed, use default
-            }
-        }
-
-        // Detect format based on stride
-        _bufferFormat = stride switch
-        {
-            2064 => LiteOnBufferFormat.SectorDataOnly,
-            2236 => LiteOnBufferFormat.PoOnly,
-            2384 => LiteOnBufferFormat.FullEccInterleaved,
-            > 2384 => LiteOnBufferFormat.FullEccWithPadding,
-            _ => LiteOnBufferFormat.FullEccInterleaved // Default for backward compatibility
-        };
-
-        AaruLogging.Debug(SCSI_MODULE_NAME, "LiteOn buffer stride detection succeeded, stride: {0}, format: {1}", stride,
-                          _bufferFormat);
-
-        return stride;
     }
 
     /// <summary>

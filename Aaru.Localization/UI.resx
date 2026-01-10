@@ -292,6 +292,9 @@ In you are unsure, please press N to not continue.</value>
     <data name="Do_you_want_to_try_LiteOn_commands" xml:space="preserve">
     <value>Do you want to try Lite-On vendor commands?</value>
   </data>
+    <data name="Do_you_want_to_try_ReadBuffer3C_commands" xml:space="preserve">
+    <value>Do you want to try ReadBuffer 3C commands?</value>
+  </data>
     <data name="This_is_dangerous" xml:space="preserve">
     <value>THIS IS DANGEROUS AND CAN IRREVERSIBLY DESTROY YOUR DRIVE (IF IN DOUBT PRESS 'N')</value>
   </data>

@@ -33,11 +33,17 @@
 using System;
 using System.Collections.Generic;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Devices;
 
 public partial class Device
 {
+    // ReadBuffer 3C detection fields
+    private byte _detectedReadBufferMode;      // Detected buffer mode (0x00, 0x01, 0x02)
+    private byte _detectedReadBufferId;        // Detected buffer ID (0x00, 0x01, 0x02)
+    private uint _detectedBufferStride;        // Detected stride in bytes per sector
+    private bool _readBuffer3CDetected;        // Flag to track if detection has been performed
     /// <summary>Reads from device buffer using SCSI READ BUFFER command with specified variant</summary>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
     /// <param name="buffer">Buffer where the ReadBuffer response will be stored</param>
@@ -195,6 +201,213 @@ public partial class Device
     {
         // Same as FullEccInterleaved, padding is ignored
         return DeinterleaveFullEccInterleaved(buffer, transferLength, stride);
+    }
+
+    /// <summary>
+    ///     Detects which ReadBuffer 3C command variant works for this drive
+    ///     Tries variants in order: 3c0000, 3c0100, 3c0101, 3c0102, 3c0200
+    /// </summary>
+    /// <param name="lba">LBA to use for filling the buffer</param>
+    /// <param name="timeout">Timeout in seconds</param>
+    /// <param name="duration">Duration in milliseconds</param>
+    /// <returns>Tuple with (mode, bufferId) if a working variant is found, null otherwise</returns>
+    private (byte mode, byte bufferId)? DetectReadBufferVariant(uint lba, uint timeout, out double duration)
+    {
+        duration = 0;
+
+        // Variants to try in order: 3c0000, 3c0100, 3c0101, 3c0102, 3c0200
+        (byte mode, byte bufferId)[] variants =
+        [
+            (0x00, 0x00), // 3c0000
+            (0x01, 0x00), // 3c0100
+            (0x01, 0x01), // 3c0101
+            (0x01, 0x02), // 3c0102
+            (0x02, 0x00)  // 3c0200
+        ];
+
+        // Fill buffer with sectors 0-16
+        Read12(out _, out _, 0, false, false, false, false, lba, 2048, 0, 16, false, timeout, out double readDuration);
+        duration += readDuration;
+
+        foreach((byte mode, byte bufferId) variant in variants)
+        {
+            // Try to read buffer with this variant
+            // Read enough for at least 3 sectors (minimum needed for stride detection)
+            uint readSize = 3 * 3000; // Enough for 3 sectors even with large stride
+            bool sense = ScsiReadBuffer(out byte[] buffer, out _, 0, readSize, timeout, out double readBufferDuration,
+                                        variant.mode, variant.bufferId);
+            duration += readBufferDuration;
+
+            // Check if command succeeded, returned valid data, and has correct sector header (00 03 00)
+            if(!sense && buffer != null && buffer.Length >= 2236 * 3)
+            {
+                // Validate that the data starts with the expected DVD sector header pattern
+                if(buffer.Length >= 3 &&
+                   buffer[0] == 0x00 &&
+                   buffer[1] == 0x03 &&
+                   buffer[2] == 0x00)
+                {
+                    AaruLogging.Debug(SCSI_MODULE_NAME, "ReadBuffer 3C variant {0:x2}{1:x2} detected", variant.mode,
+                                      variant.bufferId);
+
+                    return (variant.mode, variant.bufferId);
+                }
+
+                AaruLogging.Debug(SCSI_MODULE_NAME,
+                                  "ReadBuffer 3C variant {0:x2}{1:x2} returned data but header pattern incorrect",
+                                  variant.mode, variant.bufferId);
+            }
+        }
+
+        AaruLogging.Debug(SCSI_MODULE_NAME, "No working ReadBuffer 3C variant found");
+        return null;
+    }
+
+    /// <summary>
+    ///     Detects the stride (bytes per sector) in the buffer by searching for
+    ///     the 00 03 00 pattern that appears at the start of each sector
+    /// </summary>
+    /// <param name="lba">LBA to use for filling the buffer (sectors 0-16)</param>
+    /// <param name="timeout">Timeout in seconds</param>
+    /// <param name="mode">Buffer mode to use</param>
+    /// <param name="bufferId">Buffer ID to use</param>
+    /// <param name="duration">Duration in milliseconds</param>
+    /// <returns>Detected stride in bytes, or 0 if detection failed</returns>
+    private uint DetectBufferStride(uint lba, uint timeout, byte mode, byte bufferId, out double duration)
+    {
+        // Fill buffer with sectors 0-16
+        Read12(out _, out _, 0, false, false, false, false, lba, 2048, 0, 16, false, timeout, out duration);
+
+        // Read a large buffer chunk (enough for 16+ sectors)
+        uint readSize = 16 * 3000; // Enough for 16 sectors even with large stride
+        bool sense = ScsiReadBuffer(out byte[] buffer, out _, 0, readSize, timeout, out double readDuration, mode,
+                                    bufferId);
+        duration += readDuration;
+
+        if(sense || buffer == null || buffer.Length < 2236 * 3) // Need at least 3 sectors worth
+        {
+            AaruLogging.Debug(SCSI_MODULE_NAME,
+                              "ReadBuffer stride detection failed, sense or buffer too small, using default");
+
+            return 0; // Detection failed
+        }
+
+        // Search for pattern 00 03 00 starting from beginning
+        // Find first occurrence
+        int firstOffset = -1;
+        for(int i = 0; i < buffer.Length - 3; i++)
+        {
+            if(buffer[i] == 0x00 && buffer[i + 1] == 0x03 && buffer[i + 2] == 0x00)
+            {
+                firstOffset = i;
+                break;
+            }
+        }
+
+        if(firstOffset != 0)
+        {
+            AaruLogging.Debug(SCSI_MODULE_NAME,
+                              "ReadBuffer stride detection failed, pattern not at start, using default");
+
+            return 0; // Pattern not at start
+        }
+
+        // Find second occurrence to calculate stride
+        int secondOffset = -1;
+        for(int i = firstOffset + 2064; i < Math.Min(firstOffset + 2500, buffer.Length - 3); i++)
+        {
+            if(buffer[i] == 0x00 && buffer[i + 1] == 0x03 && buffer[i + 2] == 0x00)
+            {
+                secondOffset = i;
+                break;
+            }
+        }
+
+        if(secondOffset == -1)
+        {
+            AaruLogging.Debug(SCSI_MODULE_NAME,
+                              "ReadBuffer stride detection failed, couldn't find second sector, using default");
+
+            return 0; // Couldn't find second sector
+        }
+
+        uint stride = (uint)(secondOffset - firstOffset);
+
+        // Verify stride by checking 3rd and 4th sectors
+        for(int sectorNum = 2; sectorNum <= 3; sectorNum++)
+        {
+            int expectedOffset = (int)(firstOffset + stride * sectorNum);
+            if(expectedOffset + 3 >= buffer.Length) break;
+
+            if(buffer[expectedOffset] != 0x00 ||
+               buffer[expectedOffset + 1] != 0x03 ||
+               buffer[expectedOffset + 2] != 0x00)
+            {
+                return 0; // Verification failed
+            }
+        }
+
+        AaruLogging.Debug(SCSI_MODULE_NAME, "ReadBuffer stride detection succeeded, stride: {0}", stride);
+
+        return stride;
+    }
+
+    /// <summary>
+    ///     Detects ReadBuffer 3C support: finds working variant and stride
+    /// </summary>
+    /// <param name="lba">LBA to use for detection</param>
+    /// <param name="timeout">Timeout in seconds</param>
+    /// <param name="duration">Duration in milliseconds</param>
+    /// <returns><c>true</c> if detection succeeded, <c>false</c> otherwise</returns>
+    private bool DetectReadBuffer3C(uint lba, uint timeout, out double duration)
+    {
+        duration = 0;
+
+        // If already detected, return success
+        if(_readBuffer3CDetected)
+        {
+            if(_detectedBufferStride == 0) return false;
+
+            return true;
+        }
+
+        // Try to detect variant
+        (byte mode, byte bufferId)? variant = DetectReadBufferVariant(lba, timeout, out double variantDuration);
+        duration += variantDuration;
+
+        if(!variant.HasValue)
+        {
+            _readBuffer3CDetected = true; // Mark as attempted even if failed
+            return false;
+        }
+
+        _detectedReadBufferMode = variant.Value.mode;
+        _detectedReadBufferId   = variant.Value.bufferId;
+
+        // Detect stride using the found variant
+        uint stride = DetectBufferStride(lba, timeout, _detectedReadBufferMode, _detectedReadBufferId,
+                                         out double strideDuration);
+        duration += strideDuration;
+
+        if(stride == 0 || stride < 2064 || stride > 10000)
+        {
+            AaruLogging.Debug(SCSI_MODULE_NAME,
+                              "ReadBuffer 3C stride detection failed or invalid stride: {0}, using default", stride);
+
+            _detectedBufferStride = 2384; // Default to known value
+            _readBuffer3CDetected = true;
+
+            return false; // Detection partially succeeded but stride failed
+        }
+
+        _detectedBufferStride  = stride;
+        _readBuffer3CDetected  = true;
+
+        AaruLogging.Debug(SCSI_MODULE_NAME,
+                          "ReadBuffer 3C detection succeeded, variant: {0:x2}{1:x2}, stride: {2}",
+                          _detectedReadBufferMode, _detectedReadBufferId, _detectedBufferStride);
+
+        return true;
     }
 }
 
