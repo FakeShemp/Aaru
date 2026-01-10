@@ -31,7 +31,8 @@
 // ****************************************************************************/
 
 using System;
-using Aaru.CommonTypes.Enums;
+using System.Collections.Generic;
+using Aaru.Helpers;
 
 namespace Aaru.Devices;
 
@@ -69,6 +70,131 @@ public partial class Device
         LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         return sense;
+    }
+
+    /// <summary>
+    ///     Makes sure the data's sector number is the one expected.
+    /// </summary>
+    /// <param name="buffer">Data buffer</param>
+    /// <param name="firstLba">First consecutive LBA of the buffer</param>
+    /// <param name="transferLength">How many blocks in buffer</param>
+    /// <param name="layerbreak">The address in which the layerbreak occur</param>
+    /// <param name="otp">Set to <c>true</c> if disk is Opposite Track Path (OTP)</param>
+    /// <returns><c>false</c> if any sector is not matching expected value, else <c>true</c></returns>
+    static bool CheckSectorNumber(IReadOnlyList<byte> buffer, uint firstLba, uint transferLength, uint layerbreak,
+                                  bool                otp)
+    {
+        for(var i = 0; i < transferLength; i++)
+        {
+            var    layer        = (byte)(buffer[0 + 2064 * i] & 0x1);
+            byte[] sectorBuffer = [0x0, buffer[1 + 2064 * i], buffer[2 + 2064 * i], buffer[3 + 2064 * i]];
+
+            uint sectorNumber = BigEndianBitConverter.ToUInt32(sectorBuffer, 0);
+
+            if(otp)
+            {
+                if(!IsCorrectDlOtpPsn(sectorNumber, (ulong)(firstLba + i), layer, layerbreak)) return false;
+            }
+            else
+            {
+                if(!IsCorrectSlPsn(sectorNumber, (ulong)(firstLba + i))) return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    ///     Checks if the PSN for a raw sector matches the expected LBA for a single layer DVD
+    /// </summary>
+    /// <param name="sectorNumber">The Sector Number from Identification Data (ID)</param>
+    /// <param name="lba">The expected LBA</param>
+    /// <returns><c>false</c> if the sector is not matching expected value, else <c>true</c></returns>
+    static bool IsCorrectSlPsn(uint sectorNumber, ulong lba) => sectorNumber == lba + 0x30000;
+
+    /// <summary>
+    ///     Checks if the PSN for a raw sector matches the expected LBA for a dual layer DVD with parallel track path
+    /// </summary>
+    /// <param name="sectorNumber">The Sector Number from Identification Data (ID)</param>
+    /// <param name="lba">The expected LBA</param>
+    /// <param name="layer">Layer number</param>
+    /// <param name="layerbreak">The address in which the layerbreak occur</param>
+    /// <returns><c>false</c> if the sector is not matching expected value, else <c>true</c></returns>
+    static bool IsCorrectDlPtpPsn(uint sectorNumber, ulong lba, byte layer, uint layerbreak)
+    {
+        if(layer != 1) return IsCorrectSlPsn(sectorNumber, lba);
+
+        return sectorNumber == lba - layerbreak + 0x30000;
+    }
+
+    /// <summary>
+    ///     Checks if the PSN for a raw sector matches the expected LBA for a dual layer DVD with opposite track path
+    /// </summary>
+    /// <param name="sectorNumber">The Sector Number from Identification Data (ID)</param>
+    /// <param name="lba">The expected LBA</param>
+    /// <param name="layer">Layer number</param>
+    /// <param name="layerbreak">The address in which the layerbreak occur</param>
+    /// <returns><c>false</c> if the sector is not matching expected value, else <c>true</c></returns>
+    static bool IsCorrectDlOtpPsn(uint sectorNumber, ulong lba, byte layer, uint layerbreak)
+    {
+        if(layer != 1) return IsCorrectSlPsn(sectorNumber, lba);
+
+        ulong n = ~(layerbreak + 1 + (layerbreak - (lba + 0x30000))) & 0x00ffffff;
+
+        return sectorNumber == n;
+    }
+
+    /// <summary>
+    ///     Deinterleave full ECC block with interleaved PI (e.g., 2384 bytes)
+    /// </summary>
+    /// <param name="buffer">Data buffer</param>
+    /// <param name="transferLength">How many blocks in buffer</param>
+    /// <param name="stride">Bytes per sector in buffer</param>
+    /// <returns>The deinterleaved sectors</returns>
+    static byte[] DeinterleaveFullEccInterleaved(byte[] buffer, uint transferLength, uint stride)
+    {
+        // TODO: Save ECC instead of just throwing it away
+
+        var deinterleaved = new byte[2064 * transferLength];
+
+        for(var j = 0; j < transferLength; j++)
+        {
+            for(var i = 0; i < 12; i++) Array.Copy(buffer, j * stride + i * 182, deinterleaved, j * 2064 + i * 172, 172);
+        }
+
+        return deinterleaved;
+    }
+
+    /// <summary>
+    ///     Extract sector data from PO-only format (e.g., 2236 bytes)
+    /// </summary>
+    /// <param name="buffer">Data buffer</param>
+    /// <param name="transferLength">How many blocks in buffer</param>
+    /// <param name="stride">Bytes per sector in buffer</param>
+    /// <returns>The extracted sector data</returns>
+    static byte[] DeinterleavePoOnly(byte[] buffer, uint transferLength, uint stride)
+    {
+        var deinterleaved = new byte[2064 * transferLength];
+
+        for(var j = 0; j < transferLength; j++)
+        {
+            Array.Copy(buffer, j * stride, deinterleaved, j * 2064, 2064);
+        }
+
+        return deinterleaved;
+    }
+
+    /// <summary>
+    ///     Deinterleave full ECC block with padding (e.g., 2816 bytes)
+    /// </summary>
+    /// <param name="buffer">Data buffer</param>
+    /// <param name="transferLength">How many blocks in buffer</param>
+    /// <param name="stride">Bytes per sector in buffer</param>
+    /// <returns>The deinterleaved sectors</returns>
+    static byte[] DeinterleaveFullEccWithPadding(byte[] buffer, uint transferLength, uint stride)
+    {
+        // Same as FullEccInterleaved, padding is ignored
+        return DeinterleaveFullEccInterleaved(buffer, transferLength, stride);
     }
 }
 

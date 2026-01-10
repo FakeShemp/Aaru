@@ -31,10 +31,8 @@
 // ****************************************************************************/
 
 using System;
-using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.Decoders.DVD;
-using Aaru.Helpers;
 using Aaru.Logging;
 
 namespace Aaru.Devices;
@@ -92,74 +90,5 @@ public partial class Device
         buffer = scrambledBuffer;
 
         return sense;
-    }
-
-    /// <summary>
-    ///     Makes sure the data's sector number is the one expected.
-    /// </summary>
-    /// <param name="buffer">Data buffer</param>
-    /// <param name="firstLba">First consecutive LBA of the buffer</param>
-    /// <param name="transferLength">How many blocks in buffer</param>
-    /// <param name="layerbreak">The address in which the layerbreak occur</param>
-    /// <param name="otp">Set to <c>true</c> if disk is Opposite Track Path (OTP)</param>
-    /// <returns><c>false</c> if any sector is not matching expected value, else <c>true</c></returns>
-    static bool CheckSectorNumber(IReadOnlyList<byte> buffer, uint firstLba, uint transferLength, uint layerbreak,
-                                  bool                otp)
-    {
-        for(var i = 0; i < transferLength; i++)
-        {
-            var    layer        = (byte)(buffer[0 + 2064 * i] & 0x1);
-            byte[] sectorBuffer = [0x0, buffer[1 + 2064 * i], buffer[2 + 2064 * i], buffer[3 + 2064 * i]];
-
-            var sectorNumber = BigEndianBitConverter.ToUInt32(sectorBuffer, 0);
-
-
-            if(otp)
-            {
-                if(!IsCorrectDlOtpPsn(sectorNumber, (ulong)(firstLba + i), layer, layerbreak)) return false;
-            }
-            else
-            {
-                if(!IsCorrectSlPsn(sectorNumber, (ulong)(firstLba + i))) return false;
-            }
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    ///     Checks if the PSN for a raw sector matches the expected LBA for a single layer DVD
-    /// </summary>
-    /// <param name="sectorNumber">The Sector Number from Identification Data (ID) </param>
-    /// <param name="lba">The expected LBA</param>
-    /// <returns><c>false</c> if the sector is not matching expected value, else <c>true</c></returns>
-    private static bool IsCorrectSlPsn(uint sectorNumber, ulong lba) => sectorNumber == lba + 0x30000;
-
-    /// <summary>
-    ///     Checks if the PSN for a raw sector matches the expected LBA for a dual layer DVD with parallel track path
-    /// </summary>
-    /// <param name="sectorNumber">The Sector Number from Identification Data (ID) </param>
-    /// <param name="lba">The expected LBA</param>
-    /// <returns><c>false</c> if the sector is not matching expected value, else <c>true</c></returns>
-    private static bool IsCorrectDlPtpPsn(uint sectorNumber, ulong lba, byte layer, uint layerbreak)
-    {
-        if(layer != 1) return IsCorrectSlPsn(sectorNumber, lba);
-
-        return sectorNumber == lba - layerbreak + 0x30000;
-    }
-
-    /// <summary>
-    ///     Checks if the PSN for a raw sector matches the expected LBA for a dual layer DVD with opposite track path
-    /// </summary>
-    /// <param name="sectorNumber">The Sector Number from Identification Data (ID) </param>
-    /// <param name="lba">The expected LBA</param>
-    /// <returns><c>false</c> if the sector is not matching expected value, else <c>true</c></returns>
-    private static bool IsCorrectDlOtpPsn(uint sectorNumber, ulong lba, byte layer, uint layerbreak)
-    {
-        if(layer != 1) return IsCorrectSlPsn(sectorNumber, lba);
-
-        ulong n = ~(layerbreak + 1 + (layerbreak - (lba + 0x30000))) & 0x00ffffff;
-
-        return sectorNumber == n;
     }
 }
