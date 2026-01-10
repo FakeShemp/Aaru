@@ -6658,6 +6658,12 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string Raw_dumping_experimental_help {
+            get {
+                return ResourceManager.GetString("Raw_dumping_experimental_help", resourceCulture);
+            }
+        }
+        
         public static string Fixed_ECC_Q_for_sector_0 {
             get {
                 return ResourceManager.GetString("Fixed_ECC_Q_for_sector_0", resourceCulture);

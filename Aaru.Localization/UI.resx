@@ -3404,6 +3404,9 @@ Do you want to continue?</value>
     <data name="Cure_paranoia_help" xml:space="preserve">
         <value>Try to fix sectors that do not pass the integrity checks.</value>
     </data>
+    <data name="Raw_dumping_experimental_help" xml:space="preserve">
+        <value>[olive][bold]EXPERIMENTAL:[/] Enable raw dumping mode. This feature is experimental and may not work correctly with all devices or media types. Use at your own risk.[/]</value>
+    </data>
     <data name="Fixed_ECC_Q_for_sector_0" xml:space="preserve">
         <value>[yellow]Fixed ECC Q for sector [violet]{0}[/][/]</value>
     </data>
