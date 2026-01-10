@@ -50,6 +50,7 @@ public partial class Device
     private uint _bufferOffset;
     private uint _bufferCapacityInSectors;
     private LiteOnBufferFormat _bufferFormat;
+    private uint _totalSectorsRead; // Tracks cumulative sectors read successfully since last buffer reset
 
     /// <summary>Reads a "raw" sector from DVD on Lite-On drives.</summary>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
@@ -98,13 +99,14 @@ public partial class Device
                               "LiteOn buffer format detected based on stride: {0}, format: {1}",
                               _detectedBufferStride, _bufferFormat);
 
-            // TODO: Calculate buffer capacity in sectors
+            // Initialize buffer capacity with default value (will be refined dynamically when offset is lost)
             // Buffer size is approximately 1,700,576 bytes but need to test on other drives to get the correct value
             // It might also be the case that the buffer overflow works differently on different drives, so we need to test that as well.
             // const uint BUFFER_SIZE = 1700576;
             // _bufferCapacityInSectors = BUFFER_SIZE / _detectedBufferStride;
             // if(_bufferCapacityInSectors == 0) _bufferCapacityInSectors = 714; // Fallback to known value
             _bufferCapacityInSectors = 714;
+            _totalSectorsRead = 0; // Initialize tracking for dynamic capacity detection
             _readBuffer3CDetected = true;
         }
 
@@ -202,6 +204,28 @@ public partial class Device
 
         if(!CheckSectorNumber(deinterleaved, lba, transferLength, layerbreak, true))
         {
+            // Buffer offset lost - this means we've wrapped around
+            // Use the number of sectors read to detect buffer capacity
+            if(_totalSectorsRead > 0 && _totalSectorsRead >= 16 && _totalSectorsRead <= 2000)
+            {
+                uint detectedCapacity = _totalSectorsRead;
+                uint oldCapacity      = _bufferCapacityInSectors;
+
+                // If we already have a capacity, verify new detection is consistent
+                if(_bufferCapacityInSectors == 714 || // Update if using default
+                   (detectedCapacity >= _bufferCapacityInSectors * 9 / 10 &&
+                    detectedCapacity <= _bufferCapacityInSectors * 11 / 10)) // Or within 10%
+                {
+                    _bufferCapacityInSectors = detectedCapacity;
+                    AaruLogging.Debug(SCSI_MODULE_NAME,
+                                      "Buffer capacity dynamically detected: {0} sectors (was {1})",
+                                      detectedCapacity, oldCapacity);
+                }
+            }
+
+            // Reset tracking for next cycle
+            _totalSectorsRead = 0;
+
             // Buffer offset lost, try to find it again
             int offset = FindBufferOffset(lba, timeout, layerbreak, otp);
 
@@ -228,6 +252,7 @@ public partial class Device
         buffer = scrambledBuffer;
 
         _bufferOffset += transferLength;
+        _totalSectorsRead += transferLength; // Track successful read for capacity detection
 
         return sense;
     }
@@ -285,6 +310,7 @@ public partial class Device
         buffer = scrambledBuffer;
 
         _bufferOffset = newTransferLength2;
+        _totalSectorsRead += transferLength; // Track successful read for capacity detection
 
         return sense1 && sense2;
     }
