@@ -3490,6 +3490,9 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="Using_Lite-On_raw_DVD_reading" xml:space="preserve">
         <value>[slateblue1]Using [fuchsia]Lite-On raw DVD[/] reading[/]</value>
     </data>
+    <data name="Using_ReadBuffer_3C_raw_DVD_reading" xml:space="preserve">
+        <value>[slateblue1]Using [fuchsia]ReadBuffer 3C raw DVD[/] reading[/]</value>
+    </data>
     <data name="Filesystems_Identify_Error" xml:space="preserve">
         <value>Error identifying filesystem {0}. Please open a report with the following line in a Github issue.</value>
     </data>

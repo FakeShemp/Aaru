@@ -32,6 +32,7 @@
 
 using System;
 using System.Collections.Generic;
+using Aaru.CommonTypes.Enums;
 using Aaru.Helpers;
 using Aaru.Logging;
 
@@ -44,6 +45,21 @@ public partial class Device
     private byte _detectedReadBufferId;        // Detected buffer ID (0x00, 0x01, 0x02)
     private uint _detectedBufferStride;        // Detected stride in bytes per sector
     private bool _readBuffer3CDetected;        // Flag to track if detection has been performed
+
+    // Buffer format and management fields
+    private enum BufferFormat
+    {
+        Unknown = 0,
+        FullEccInterleaved,
+        PoOnly,
+        SectorDataOnly,
+        FullEccWithPadding
+    }
+
+    private uint _bufferOffset;
+    private uint _bufferCapacityInSectors;
+    private BufferFormat _bufferFormat;
+    private uint _totalSectorsRead; // Tracks cumulative sectors read successfully since last buffer reset
     /// <summary>Reads from device buffer using SCSI READ BUFFER command with specified variant</summary>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
     /// <param name="buffer">Buffer where the ReadBuffer response will be stored</param>
@@ -408,6 +424,307 @@ public partial class Device
                           _detectedReadBufferMode, _detectedReadBufferId, _detectedBufferStride);
 
         return true;
+    }
+
+    /// <summary>Reads a "raw" sector from DVD using ReadBuffer 3C command.</summary>
+    /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
+    /// <param name="buffer">Buffer where the ReadBuffer (RAW) response will be stored</param>
+    /// <param name="senseBuffer">Sense buffer.</param>
+    /// <param name="lba">Start block address.</param>
+    /// <param name="transferLength">How many blocks to read.</param>
+    /// <param name="timeout">Timeout in seconds.</param>
+    /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
+    /// <param name="layerbreak">The address in which the layerbreak occur</param>
+    /// <param name="otp">Set to <c>true</c> if disk is Opposite Track Path (OTP)</param>
+    public bool ReadBuffer3CRawDvd(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, uint lba, uint transferLength,
+                                   uint       timeout, out double             duration,    uint layerbreak, bool otp)
+    {
+        // Detect ReadBuffer 3C variant and stride on first call
+        if(!_readBuffer3CDetected)
+        {
+            bool detected = DetectReadBuffer3C(lba, timeout, out double detectDuration);
+
+            if(!detected || _detectedBufferStride == 0 || _detectedBufferStride < 2064 || _detectedBufferStride > 10000)
+            {
+                // Detection failed - raw reading is not supported on this drive
+                AaruLogging.Debug(SCSI_MODULE_NAME,
+                                  "ReadBuffer 3C detection failed - raw reading is not supported on this drive");
+
+                buffer      = Array.Empty<byte>();
+                senseBuffer = SenseBuffer;
+                duration    = detectDuration;
+                Error       = true;
+                _readBuffer3CDetected = true;
+
+                return true; // Return failure - raw reading not supported
+            }
+
+            // Detect format based on stride
+            _bufferFormat = _detectedBufferStride switch
+            {
+                2064 => BufferFormat.SectorDataOnly,
+                2236 => BufferFormat.PoOnly,
+                2384 => BufferFormat.FullEccInterleaved,
+                > 2384 => BufferFormat.FullEccWithPadding,
+                _ => BufferFormat.FullEccInterleaved // Default for backward compatibility
+            };
+
+            AaruLogging.Debug(SCSI_MODULE_NAME,
+                              "ReadBuffer 3C buffer format detected based on stride: {0}, format: {1}",
+                              _detectedBufferStride, _bufferFormat);
+
+            // Initialize buffer capacity with default value (will be refined dynamically when offset is lost)
+            _bufferCapacityInSectors = 714;
+            _totalSectorsRead = 0; // Initialize tracking for dynamic capacity detection
+            _readBuffer3CDetected = true;
+        }
+
+        _bufferOffset %= _bufferCapacityInSectors;
+
+        bool sense;
+
+        if(layerbreak > 0 && transferLength > 1 && lba + 0x30000 > layerbreak - 256 && lba + 0x30000 < layerbreak + 256)
+        {
+            buffer      = new byte[transferLength * 2064];
+            duration    = 0;
+            senseBuffer = SenseBuffer;
+
+            return true;
+        }
+
+        if(_bufferCapacityInSectors - _bufferOffset < transferLength)
+        {
+            sense = ReadSectorsAcrossBufferBorder(out buffer,
+                                                  out senseBuffer,
+                                                  lba,
+                                                  transferLength,
+                                                  timeout,
+                                                  out duration,
+                                                  layerbreak,
+                                                  otp);
+        }
+        else
+        {
+            sense = ReadSectorsFromBuffer(out buffer,
+                                          out senseBuffer,
+                                          lba,
+                                          transferLength,
+                                          timeout,
+                                          out duration,
+                                          layerbreak,
+                                          otp);
+        }
+
+        Error = LastError != 0;
+
+        AaruLogging.Debug(SCSI_MODULE_NAME, "ReadBuffer 3C READ DVD RAW took {0} ms", duration);
+
+        return sense;
+    }
+
+    /// <summary>
+    ///     Reads the device's memory buffer and returns raw sector data
+    /// </summary>
+    /// <param name="buffer">Buffer where the ReadBuffer (RAW) response will be stored</param>
+    /// <param name="senseBuffer">Sense buffer.</param>
+    /// <param name="bufferOffset">The offset to read the buffer at</param>
+    /// <param name="transferLength">How many blocks to read.</param>
+    /// <param name="timeout">Timeout in seconds.</param>
+    /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
+    /// <param name="lba">Start block address.</param>
+    /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
+    private bool ReadBuffer3CInternal(out byte[] buffer,         out ReadOnlySpan<byte> senseBuffer, uint bufferOffset,
+                                      uint       transferLength, uint timeout, out double duration, uint lba)
+    {
+        // We need to fill the buffer before reading it with the ReadBuffer command. We don't care about sense,
+        // because the data can be wrong anyway, so we check the buffer data later instead.
+        Read12(out _, out _, 0, false, false, false, false, lba, 2048, 0, 16, false, timeout, out duration);
+
+        // Use generic ReadBuffer method with detected variant
+        return ScsiReadBuffer(out buffer, out senseBuffer, bufferOffset, transferLength, timeout, out duration,
+                              _detectedReadBufferMode, _detectedReadBufferId);
+    }
+
+    /// <summary>
+    ///     Reads raw sectors from the device's memory
+    /// </summary>
+    /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
+    /// <param name="buffer">Buffer where the ReadBuffer (RAW) response will be stored</param>
+    /// <param name="senseBuffer">Sense buffer.</param>
+    /// <param name="timeout">Timeout in seconds.</param>
+    /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
+    /// <param name="lba">Start block address.</param>
+    /// <param name="transferLength">How many blocks to read.</param>
+    /// <param name="layerbreak">The address in which the layerbreak occur</param>
+    /// <param name="otp">Set to <c>true</c> if disk is Opposite Track Path (OTP)</param>
+    private bool ReadSectorsFromBuffer(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba,
+                                       uint transferLength, uint timeout, out double duration, uint layerbreak,
+                                       bool otp)
+    {
+        bool sense = ReadBuffer3CInternal(out buffer,
+                                          out senseBuffer,
+                                          _bufferOffset  * _detectedBufferStride,
+                                          transferLength * _detectedBufferStride,
+                                          timeout,
+                                          out duration,
+                                          lba);
+
+        byte[] deinterleaved = DeinterleaveEccBlock(buffer, transferLength, _detectedBufferStride, _bufferFormat);
+
+        if(!CheckSectorNumber(deinterleaved, lba, transferLength, layerbreak, true))
+        {
+            // Buffer offset lost - this means we've wrapped around
+            // Use the number of sectors read to detect buffer capacity
+            if(_totalSectorsRead > 0 && _totalSectorsRead >= 16 && _totalSectorsRead <= 2000)
+            {
+                uint detectedCapacity = _totalSectorsRead;
+                uint oldCapacity      = _bufferCapacityInSectors;
+
+                // If we already have a capacity, verify new detection is consistent
+                if(_bufferCapacityInSectors == 714 || // Update if using default
+                   (detectedCapacity >= _bufferCapacityInSectors * 9 / 10 &&
+                    detectedCapacity <= _bufferCapacityInSectors * 11 / 10)) // Or within 10%
+                {
+                    _bufferCapacityInSectors = detectedCapacity;
+                    AaruLogging.Debug(SCSI_MODULE_NAME,
+                                      "Buffer capacity dynamically detected: {0} sectors (was {1})",
+                                      detectedCapacity, oldCapacity);
+                }
+            }
+
+            // Reset tracking for next cycle
+            _totalSectorsRead = 0;
+
+            // Buffer offset lost, try to find it again
+            int offset = FindBufferOffset(lba, timeout, layerbreak, otp);
+
+            if(offset == -1) return true;
+
+            _bufferOffset = (uint)offset;
+
+            sense = ReadBuffer3CInternal(out buffer,
+                                         out senseBuffer,
+                                         _bufferOffset  * _detectedBufferStride,
+                                         transferLength * _detectedBufferStride,
+                                         timeout,
+                                         out duration,
+                                         lba);
+
+            deinterleaved = DeinterleaveEccBlock(buffer, transferLength, _detectedBufferStride, _bufferFormat);
+
+            if(!CheckSectorNumber(deinterleaved, lba, transferLength, layerbreak, otp)) return true;
+        }
+
+        if(_decoding.Scramble(deinterleaved, transferLength, out byte[] scrambledBuffer) != ErrorNumber.NoError)
+            return true;
+
+        buffer = scrambledBuffer;
+
+        _bufferOffset += transferLength;
+        _totalSectorsRead += transferLength; // Track successful read for capacity detection
+
+        return sense;
+    }
+
+    /// <summary>
+    ///     Reads raw sectors when they cross the device's memory border
+    /// </summary>
+    /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
+    /// <param name="buffer">Buffer where the ReadBuffer (RAW) response will be stored</param>
+    /// <param name="senseBuffer">Sense buffer.</param>
+    /// <param name="timeout">Timeout in seconds.</param>
+    /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
+    /// <param name="lba">Start block address.</param>
+    /// <param name="transferLength">How many blocks to read.</param>
+    /// <param name="layerbreak">The address in which the layerbreak occur</param>
+    /// <param name="otp">Set to <c>true</c> if disk is Opposite Track Path (OTP)</param>
+    private bool ReadSectorsAcrossBufferBorder(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba,
+                                               uint       transferLength, uint timeout, out double duration,
+                                               uint       layerbreak, bool otp)
+    {
+        uint newTransferLength1 = _bufferCapacityInSectors - _bufferOffset;
+        uint newTransferLength2 = transferLength           - newTransferLength1;
+
+        bool sense1 = ReadBuffer3CInternal(out byte[] buffer1,
+                                          out _,
+                                          _bufferOffset      * _detectedBufferStride,
+                                          newTransferLength1 * _detectedBufferStride,
+                                          timeout,
+                                          out double duration1,
+                                          lba);
+
+        bool sense2 = ReadBuffer3CInternal(out byte[] buffer2,
+                                          out _,
+                                          0,
+                                          newTransferLength2 * _detectedBufferStride,
+                                          timeout,
+                                          out double duration2,
+                                          lba);
+
+        senseBuffer = SenseBuffer; // TODO
+
+        buffer = new byte[_detectedBufferStride * transferLength];
+        Array.Copy(buffer1, buffer, buffer1.Length);
+        Array.Copy(buffer2, 0,      buffer, buffer1.Length, buffer2.Length);
+
+        duration = duration1 + duration2;
+
+        byte[] deinterleaved = DeinterleaveEccBlock(buffer, transferLength, _detectedBufferStride, _bufferFormat);
+
+        if(!CheckSectorNumber(deinterleaved, lba, transferLength, layerbreak, otp)) return true;
+
+        if(_decoding.Scramble(deinterleaved, transferLength, out byte[] scrambledBuffer) != ErrorNumber.NoError)
+            return true;
+
+        buffer = scrambledBuffer;
+
+        _bufferOffset = newTransferLength2;
+        _totalSectorsRead += transferLength; // Track successful read for capacity detection
+
+        return sense1 && sense2;
+    }
+
+    /// <summary>
+    ///     Sometimes the offset on the drive memory can get lost. This tries to find it again.
+    /// </summary>
+    /// <param name="lba">The expected LBA</param>
+    /// <param name="timeout">Timeout in seconds.</param>
+    /// <param name="layerbreak">The address in which the layerbreak occur</param>
+    /// <param name="otp">Set to <c>true</c> if disk is Opposite Track Path (OTP)</param>
+    /// <returns>The offset on the device memory, or -1 if not found</returns>
+    private int FindBufferOffset(uint lba, uint timeout, uint layerbreak, bool otp)
+    {
+        for(uint i = 0; i < _bufferCapacityInSectors; i++)
+        {
+            ReadBuffer3CInternal(out byte[] buffer, out _, i * _detectedBufferStride, _detectedBufferStride, timeout,
+                                out double _, lba);
+
+            byte[] deinterleaved = DeinterleaveEccBlock(buffer, 1, _detectedBufferStride, _bufferFormat);
+
+            if(CheckSectorNumber(deinterleaved, lba, 1, layerbreak, otp)) return (int)i;
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    ///     Deinterleave the ECC block based on detected format
+    /// </summary>
+    /// <param name="buffer">Data buffer</param>
+    /// <param name="transferLength">How many blocks in buffer</param>
+    /// <param name="stride">Bytes per sector in buffer</param>
+    /// <param name="format">Buffer format type</param>
+    /// <returns>The deinterleaved sectors</returns>
+    private byte[] DeinterleaveEccBlock(byte[] buffer, uint transferLength, uint stride, BufferFormat format)
+    {
+        return format switch
+        {
+            BufferFormat.FullEccInterleaved => DeinterleaveFullEccInterleaved(buffer, transferLength, stride),
+            BufferFormat.PoOnly => DeinterleavePoOnly(buffer, transferLength, stride),
+            BufferFormat.SectorDataOnly => buffer, // No deinterleaving needed for sector-data-only format
+            BufferFormat.FullEccWithPadding => DeinterleaveFullEccWithPadding(buffer, transferLength, stride),
+            _ => DeinterleaveFullEccInterleaved(buffer, transferLength, stride) // Default fallback
+        };
     }
 }
 

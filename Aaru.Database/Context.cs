@@ -245,7 +245,7 @@ public sealed class AaruContext : DbContext
 
         modelBuilder.Entity("Aaru.CommonTypes.Metadata.CompressedBufferRead",
                             static b => b.HasOne("Aaru.CommonTypes.Metadata.TestedMedia", null)
-                                         .WithMany("LiteOnReadBufferData")
+                                         .WithMany("ReadBuffer3CReadBufferData")
                                          .HasForeignKey("TestedMediaId")
                                          .OnDelete(DeleteBehavior.Cascade));
 

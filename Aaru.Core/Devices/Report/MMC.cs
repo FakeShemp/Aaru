@@ -2760,23 +2760,23 @@ public sealed partial class DeviceReport
             {
                 ctx.AddTask(Localization.Core.Trying_ReadBuffer_3C_trick_to_raw_read_DVDs).IsIndeterminate();
 
-                mediaTest.SupportsLiteOnReadRawDVD =
-                    !_dev.LiteOnReadRawDvd(out buffer, out _, 16, 1, _dev.Timeout, out _, 0xffff, false);
+                mediaTest.SupportsReadBuffer3CRawDVD =
+                    !_dev.ReadBuffer3CRawDvd(out buffer, out _, 16, 1, _dev.Timeout, out _, 0xffff, false);
             });
 
-            AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.SupportsLiteOnReadRawDVD);
+            AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.SupportsReadBuffer3CRawDVD);
 
-            if(mediaTest.SupportsLiteOnReadRawDVD == true)
-                mediaTest.SupportsLiteOnReadRawDVD = !ArrayHelpers.ArrayIsNullOrEmpty(buffer);
+            if(mediaTest.SupportsReadBuffer3CRawDVD == true)
+                mediaTest.SupportsReadBuffer3CRawDVD = !ArrayHelpers.ArrayIsNullOrEmpty(buffer);
 
-            if(mediaTest.SupportsLiteOnReadRawDVD == true)
+            if(mediaTest.SupportsReadBuffer3CRawDVD == true)
             {
-                mediaTest.LiteOnReadRawDVDData = buffer;
+                mediaTest.ReadBuffer3CRawDVDData = buffer;
             }
             else
             {
                 // Fallback: try multiple ReadBuffer 3C variants
-                mediaTest.LiteOnReadBufferData = new List<CompressedBufferRead>();
+                mediaTest.ReadBuffer3CReadBufferData = new List<CompressedBufferRead>();
 
                 // Try variant 3c 00 00
                 // First fill buffer with Read12
@@ -2792,7 +2792,7 @@ public sealed partial class DeviceReport
 
                     if(success && !ArrayHelpers.ArrayIsNullOrEmpty(buffer))
                     {
-                        mediaTest.LiteOnReadBufferData.Add(new CompressedBufferRead
+                        mediaTest.ReadBuffer3CReadBufferData.Add(new CompressedBufferRead
                         {
                             CommandVariant    = "3c0000",
                             CompressedData    = CompressBuffer(buffer),
@@ -2811,7 +2811,7 @@ public sealed partial class DeviceReport
 
                     if(success && !ArrayHelpers.ArrayIsNullOrEmpty(buffer))
                     {
-                        mediaTest.LiteOnReadBufferData.Add(new CompressedBufferRead
+                        mediaTest.ReadBuffer3CReadBufferData.Add(new CompressedBufferRead
                         {
                             CommandVariant    = "3c0100",
                             CompressedData    = CompressBuffer(buffer),
@@ -2830,7 +2830,7 @@ public sealed partial class DeviceReport
 
                     if(success && !ArrayHelpers.ArrayIsNullOrEmpty(buffer))
                     {
-                        mediaTest.LiteOnReadBufferData.Add(new CompressedBufferRead
+                        mediaTest.ReadBuffer3CReadBufferData.Add(new CompressedBufferRead
                         {
                             CommandVariant    = "3c0101",
                             CompressedData    = CompressBuffer(buffer),
@@ -2849,7 +2849,7 @@ public sealed partial class DeviceReport
 
                     if(success && !ArrayHelpers.ArrayIsNullOrEmpty(buffer))
                     {
-                        mediaTest.LiteOnReadBufferData.Add(new CompressedBufferRead
+                        mediaTest.ReadBuffer3CReadBufferData.Add(new CompressedBufferRead
                         {
                             CommandVariant    = "3c0102",
                             CompressedData    = CompressBuffer(buffer),
@@ -2868,7 +2868,7 @@ public sealed partial class DeviceReport
 
                     if(success && !ArrayHelpers.ArrayIsNullOrEmpty(buffer))
                     {
-                        mediaTest.LiteOnReadBufferData.Add(new CompressedBufferRead
+                        mediaTest.ReadBuffer3CReadBufferData.Add(new CompressedBufferRead
                         {
                             CommandVariant    = "3c0200",
                             CompressedData    = CompressBuffer(buffer),

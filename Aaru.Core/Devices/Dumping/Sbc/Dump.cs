@@ -804,7 +804,7 @@ partial class Dump
         {
             mediaTags.TryGetValue(MediaTagType.DVD_DiscKey_Decrypted, out byte[] discKey);
 
-            if(scsiReader.HldtstReadRaw || scsiReader.LiteOnReadRaw)
+            if(scsiReader.HldtstReadRaw || scsiReader.ReadBuffer3CReadRaw)
             {
                 ReadCacheData(blocks,
                               blocksToRead,
@@ -904,7 +904,7 @@ partial class Dump
            _titleKeys                                 &&
 
            // Unnecessary since keys are already in raw data
-           !scsiReader.LiteOnReadRaw &&
+           !scsiReader.ReadBuffer3CReadRaw &&
            !scsiReader.HldtstReadRaw &&
            mediaTag is not null)
             RetryTitleKeys(dvdDecrypt, mediaTag, ref totalDuration);
