@@ -4340,6 +4340,12 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string Trying_ReadBuffer_3C_trick_to_raw_read_DVDs {
+            get {
+                return ResourceManager.GetString("Trying_ReadBuffer_3C_trick_to_raw_read_DVDs", resourceCulture);
+            }
+        }
+        
         public static string Trying_MediaTek_READ_DRAM_command {
             get {
                 return ResourceManager.GetString("Trying_MediaTek_READ_DRAM_command", resourceCulture);
@@ -6830,6 +6836,12 @@ namespace Aaru.Localization {
         public static string Using_Lite_On_raw_DVD_reading {
             get {
                 return ResourceManager.GetString("Using_Lite-On_raw_DVD_reading", resourceCulture);
+            }
+        }
+        
+        public static string Using_ReadBuffer_3C_raw_DVD_reading {
+            get {
+                return ResourceManager.GetString("Using_ReadBuffer_3C_raw_DVD_reading", resourceCulture);
             }
         }
         

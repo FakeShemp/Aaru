@@ -3,6 +3,7 @@ using System;
 using Aaru.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Aaru.Database.Migrations
 {
     [DbContext(typeof(AaruContext))]
-    partial class AaruContextModelSnapshot : ModelSnapshot
+    [Migration("20260110151445_AddCompressedBufferReadToTestedMedia")]
+    partial class AddCompressedBufferReadToTestedMedia
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1672,6 +1675,9 @@ namespace Aaru.Database.Migrations
                     b.Property<byte[]>("LeadOutData")
                         .HasColumnType("BLOB");
 
+                    b.Property<byte[]>("LiteOnReadRawDVDData")
+                        .HasColumnType("BLOB");
+
                     b.Property<ushort?>("LogicalAlignment")
                         .HasColumnType("INTEGER");
 
@@ -1756,9 +1762,6 @@ namespace Aaru.Database.Migrations
                     b.Property<byte[]>("Read6Data")
                         .HasColumnType("BLOB");
 
-                    b.Property<byte[]>("ReadBuffer3CRawDVDData")
-                        .HasColumnType("BLOB");
-
                     b.Property<byte[]>("ReadCdData")
                         .HasColumnType("BLOB");
 
@@ -1837,6 +1840,9 @@ namespace Aaru.Database.Migrations
                     b.Property<bool?>("SupportsHLDTSTReadRawDVD")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool?>("SupportsLiteOnReadRawDVD")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool?>("SupportsNECReadCDDA")
                         .HasColumnType("INTEGER");
 
@@ -1862,9 +1868,6 @@ namespace Aaru.Database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<bool?>("SupportsRead6")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool?>("SupportsReadBuffer3CRawDVD")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool?>("SupportsReadCapacity")
@@ -2638,7 +2641,7 @@ namespace Aaru.Database.Migrations
             modelBuilder.Entity("Aaru.CommonTypes.Metadata.CompressedBufferRead", b =>
                 {
                     b.HasOne("Aaru.CommonTypes.Metadata.TestedMedia", null)
-                        .WithMany("ReadBuffer3CReadBufferData")
+                        .WithMany("LiteOnReadBufferData")
                         .HasForeignKey("TestedMediaId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -2952,7 +2955,7 @@ namespace Aaru.Database.Migrations
 
             modelBuilder.Entity("Aaru.CommonTypes.Metadata.TestedMedia", b =>
                 {
-                    b.Navigation("ReadBuffer3CReadBufferData");
+                    b.Navigation("LiteOnReadBufferData");
                 });
 
             modelBuilder.Entity("Aaru.CommonTypes.Metadata.TestedSequentialMedia", b =>

@@ -2191,6 +2191,9 @@ Do you want to proceed? (Y/N): </value>
     <data name="Trying_Lite_On_trick_to_raw_read_DVDs" xml:space="preserve">
     <value>Trying Lite-On trick to raw read DVDs...</value>
   </data>
+    <data name="Trying_ReadBuffer_3C_trick_to_raw_read_DVDs" xml:space="preserve">
+    <value>Trying ReadBuffer 3C trick to raw read DVDs...</value>
+  </data>
     <data name="Trying_MediaTek_READ_DRAM_command" xml:space="preserve">
     <value>Trying MediaTek READ DRAM command...</value>
   </data>
@@ -3486,6 +3489,9 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     </data>
     <data name="Using_Lite-On_raw_DVD_reading" xml:space="preserve">
         <value>[slateblue1]Using [fuchsia]Lite-On raw DVD[/] reading[/]</value>
+    </data>
+    <data name="Using_ReadBuffer_3C_raw_DVD_reading" xml:space="preserve">
+        <value>[slateblue1]Using [fuchsia]ReadBuffer 3C raw DVD[/] reading[/]</value>
     </data>
     <data name="Filesystems_Identify_Error" xml:space="preserve">
         <value>Error identifying filesystem {0}. Please open a report with the following line in a Github issue.</value>

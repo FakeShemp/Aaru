@@ -243,6 +243,12 @@ public sealed class AaruContext : DbContext
                                  .OnDelete(DeleteBehavior.SetNull);
                             });
 
+        modelBuilder.Entity("Aaru.CommonTypes.Metadata.CompressedBufferRead",
+                            static b => b.HasOne("Aaru.CommonTypes.Metadata.TestedMedia", null)
+                                         .WithMany("ReadBuffer3CReadBufferData")
+                                         .HasForeignKey("TestedMediaId")
+                                         .OnDelete(DeleteBehavior.Cascade));
+
         modelBuilder.Entity("Aaru.CommonTypes.Metadata.TestedSequentialMedia",
                             static b => b.HasOne("Aaru.CommonTypes.Metadata.Ssc", null)
                                          .WithMany("TestedMedia")

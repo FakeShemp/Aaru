@@ -55,7 +55,7 @@ sealed partial class Reader
     // TODO: Raw reading
     public bool HldtstReadRaw;
     public uint layerbreak;
-    public bool LiteOnReadRaw;
+    public bool ReadBuffer3CReadRaw;
     public bool otp;
 
     ulong ScsiGetBlocks() => ScsiGetBlockSize() ? 0 : Blocks;
@@ -581,14 +581,13 @@ sealed partial class Reader
                         _plextorReadRaw = !_dev.PlextorReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _);
 
                         break;
-                    case "LITE-ON":
-                        LiteOnReadRaw =
-                            !_dev.LiteOnReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _, layerbreak, otp);
-
-                        break;
                 }
 
-                if(HldtstReadRaw || _plextorReadRaw || LiteOnReadRaw)
+                // Try ReadBuffer 3C on all devices
+                ReadBuffer3CReadRaw =
+                    !_dev.ReadBuffer3CRawDvd(out _, out senseBuf, 0, 1, _timeout, out _, layerbreak, otp);
+
+                if(HldtstReadRaw || _plextorReadRaw || ReadBuffer3CReadRaw)
                 {
                     CanReadRaw    = true;
                     LongBlockSize = 2064;
@@ -623,8 +622,8 @@ sealed partial class Reader
                 AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_HL_DT_ST_raw_DVD_reading}[/]");
             else if(_plextorReadRaw)
                 AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_Plextor_raw_DVD_reading}[/]");
-            else if(LiteOnReadRaw)
-                AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_Lite_On_raw_DVD_reading}[/]");
+            else if(ReadBuffer3CReadRaw)
+                AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_ReadBuffer_3C_raw_DVD_reading}[/]");
         }
         else if(_read6)
             AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_SCSI_READ_6_command}[/]");
@@ -686,7 +685,7 @@ sealed partial class Reader
 
         while(true)
         {
-            if(HldtstReadRaw || LiteOnReadRaw)
+            if(HldtstReadRaw || ReadBuffer3CReadRaw)
                 BlocksToRead = 1;
             else if(_read6)
             {
@@ -834,16 +833,16 @@ sealed partial class Reader
                                                _timeout,
                                                out duration);
             }
-            else if(LiteOnReadRaw)
+            else if(ReadBuffer3CReadRaw)
             {
-                sense = _dev.LiteOnReadRawDvd(out buffer,
-                                              out senseBuf,
-                                              (uint)block,
-                                              count,
-                                              _timeout,
-                                              out duration,
-                                              layerbreak,
-                                              otp);
+                sense = _dev.ReadBuffer3CRawDvd(out buffer,
+                                                out senseBuf,
+                                                (uint)block,
+                                                count,
+                                                _timeout,
+                                                out duration,
+                                                layerbreak,
+                                                otp);
             }
             else
                 return true;

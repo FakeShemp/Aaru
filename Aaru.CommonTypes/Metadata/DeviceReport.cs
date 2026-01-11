@@ -779,8 +779,8 @@ public class TestedMedia
     [DisplayName("Can read scrambled DVD sectors using HL-DT-ST cache trick")]
     public bool? SupportsHLDTSTReadRawDVD { get; set; }
 
-    [DisplayName("Can read scrambled DVD sectors using Lite-On cache trick")]
-    public bool? SupportsLiteOnReadRawDVD { get; set; }
+    [DisplayName("Can read scrambled DVD sectors using SCSI ReadBuffer 3C")]
+    public bool? SupportsReadBuffer3CRawDVD { get; set; }
 
     [DisplayName("Supports NEC READ CD-DA command")]
     public bool? SupportsNECReadCDDA { get; set; }
@@ -1158,10 +1158,28 @@ public class TestedMedia
     [DisplayName("Data from HL-DT-ST's scrambled DVD reading trick")]
     public byte[] HLDTSTReadRawDVDData { get; set; }
 
-    [DisplayName("Data from Lite-On's scrambled DVD reading trick")]
-    public byte[] LiteOnReadRawDVDData { get; set; }
+    [DisplayName("Data from ReadBuffer 3C scrambled DVD reading")]
+    public byte[] ReadBuffer3CRawDVDData { get; set; }
+
+    [DisplayName("ReadBuffer 3C fallback data")]
+    public virtual List<CompressedBufferRead> ReadBuffer3CReadBufferData { get; set; }
 
 #endregion
+}
+
+public class CompressedBufferRead
+{
+    [JsonIgnore]
+    public virtual int Id { get; set; }
+
+    [DisplayName("ReadBuffer command variant")]
+    public virtual string CommandVariant { get; set; }
+
+    [DisplayName("Compressed buffer data")]
+    public virtual byte[] CompressedData { get; set; }
+
+    [DisplayName("Uncompressed size")]
+    public virtual uint UncompressedSize { get; set; }
 }
 
 public class Ssc

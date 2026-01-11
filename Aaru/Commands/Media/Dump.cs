@@ -123,9 +123,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--aaru-metadata={0}",           Markup.Escape(settings.AaruMetadata ?? ""));
         AaruLogging.Debug(MODULE_NAME, "--paranoia={0}",                settings.Paranoia);
         AaruLogging.Debug(MODULE_NAME, "--cure-paranoia={0}",           settings.CureParanoia);
-
-        // TODO: Disabled temporarily
-        //AaruLogging.DebugWriteLine(MODULE_NAME, "--raw={0}", Markup.Escape(raw ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--raw={0}",                     settings.Raw);
 
         Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
         AaruLogging.Debug(MODULE_NAME, UI.Parsed_options);
@@ -495,7 +493,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   outputFormat,
                                   (ushort)settings.RetryPasses,
                                   settings.Force,
-                                  false,
+                                  settings.Raw,
                                   settings.Persistent,
                                   settings.StopOnError,
                                   resumeClass,
@@ -784,6 +782,10 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [CommandOption("--cure-paranoia")]
         [DefaultValue(false)]
         public bool CureParanoia { get; init; }
+        [LocalizedDescription(nameof(UI.Raw_dumping_experimental_help))]
+        [CommandOption("--raw")]
+        [DefaultValue(false)]
+        public bool Raw { get; init; }
         [LocalizedDescription(nameof(UI.Device_path))]
         [CommandArgument(0, "<device-path>")]
         public string DevicePath { get; init; }

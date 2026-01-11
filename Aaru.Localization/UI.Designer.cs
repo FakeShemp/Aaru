@@ -579,6 +579,12 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string Do_you_want_to_try_ReadBuffer3C_commands {
+            get {
+                return ResourceManager.GetString("Do_you_want_to_try_ReadBuffer3C_commands", resourceCulture);
+            }
+        }
+        
         public static string This_is_dangerous {
             get {
                 return ResourceManager.GetString("This_is_dangerous", resourceCulture);
@@ -6655,6 +6661,12 @@ namespace Aaru.Localization {
         public static string Cure_paranoia_help {
             get {
                 return ResourceManager.GetString("Cure_paranoia_help", resourceCulture);
+            }
+        }
+        
+        public static string Raw_dumping_experimental_help {
+            get {
+                return ResourceManager.GetString("Raw_dumping_experimental_help", resourceCulture);
             }
         }
         
