@@ -49,7 +49,6 @@ using Aaru.Decoders.SCSI;
 using Aaru.Devices;
 using Aaru.Localization;
 using Aaru.Logging;
-using Humanizer;
 using Track = Aaru.CommonTypes.Structs.Track;
 using TrackType = Aaru.CommonTypes.Enums.TrackType;
 
@@ -844,7 +843,23 @@ partial class Dump
                             {
                                 (outputFormat as IWritableOpticalImage).SetTracks(tracks.ToList());
 
-                                _resume.BadBlocks.AddRange(newPregapSectors);
+                                foreach(ulong newPregapSector in newPregapSectors)
+                                {
+                                    if(newPregapSector == 0) continue;
+
+                                    Track sectorTrack =
+                                        tracks.FirstOrDefault(t => t.StartSector <= newPregapSector &&
+                                                                   t.EndSector   >= newPregapSector);
+
+                                    if(sectorTrack.Sequence == 1) continue;
+
+                                    Track prevTrack =
+                                        tracks.FirstOrDefault(t => t.Sequence == sectorTrack.Sequence - 1);
+
+                                    if(sectorTrack.Session != prevTrack.Session) continue;
+
+                                    if(sectorTrack.Type != prevTrack.Type) _resume.BadBlocks.Add(newPregapSector);
+                                }
 
                                 if(i >= blocksToRead)
                                     i -= blocksToRead;
@@ -1106,7 +1121,22 @@ partial class Dump
                     {
                         (outputFormat as IWritableOpticalImage).SetTracks(tracks.ToList());
 
-                        _resume.BadBlocks.AddRange(newPregapSectors);
+                        foreach(ulong newPregapSector in newPregapSectors)
+                        {
+                            if(newPregapSector == 0) continue;
+
+                            Track sectorTrack =
+                                tracks.FirstOrDefault(t => t.StartSector <= newPregapSector &&
+                                                           t.EndSector   >= newPregapSector);
+
+                            if(sectorTrack.Sequence == 1) continue;
+
+                            Track prevTrack = tracks.FirstOrDefault(t => t.Sequence == sectorTrack.Sequence - 1);
+
+                            if(sectorTrack.Session != prevTrack.Session) continue;
+
+                            if(sectorTrack.Type != prevTrack.Type) _resume.BadBlocks.Add(newPregapSector);
+                        }
 
                         if(i >= blocksToRead)
                             i -= blocksToRead;
