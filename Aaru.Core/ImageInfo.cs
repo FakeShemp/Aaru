@@ -509,16 +509,14 @@ public static class ImageInfo
 
             if(errno == ErrorNumber.NoError)
             {
-                uint dataLen = Swapping.Swap(BitConverter.ToUInt32(cdtext, 0));
+                ushort dataLen = Swapping.Swap(BitConverter.ToUInt16(cdtext, 0));
 
-                if(dataLen + 4 != cdtext.Length)
+                if(dataLen + 2 != cdtext.Length)
                 {
                     var tmp = new byte[cdtext.Length + 4];
                     Array.Copy(cdtext, 0, tmp, 4, cdtext.Length);
-                    tmp[0] = (byte)((cdtext.Length & 0xFF000000) >> 24);
-                    tmp[1] = (byte)((cdtext.Length & 0xFF0000)   >> 16);
-                    tmp[2] = (byte)((cdtext.Length & 0xFF00)     >> 8);
-                    tmp[3] = (byte)(cdtext.Length & 0xFF);
+                    tmp[0] = (byte)((cdtext.Length + 2 & 0xFF00) >> 8);
+                    tmp[1] = (byte)(cdtext.Length + 2 & 0xFF);
                     cdtext = tmp;
                 }
 
@@ -868,7 +866,9 @@ public static class ImageInfo
             }
         }
 
-        if(imageFormat is IFluxImage fluxImage && fluxImage.GetAllFluxCaptures(out List<FluxCapture> captures) == ErrorNumber.NoError && captures is { Count: > 0 })
+        if(imageFormat is IFluxImage fluxImage                                                 &&
+           fluxImage.GetAllFluxCaptures(out List<FluxCapture> captures) == ErrorNumber.NoError &&
+           captures is { Count: > 0 })
             AaruLogging.WriteLine(Localization.Core.Image_flux_captures);
 
         if(imageFormat is not IOpticalMediaImage opticalImage) return;

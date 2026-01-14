@@ -189,14 +189,12 @@ public sealed partial class DecodeMediaTagsViewModel : ViewModelBase
                 case MediaTagType.CD_TEXT:
                     dataLen = Swapping.Swap(BitConverter.ToUInt32(value.Data, 0));
 
-                    if(dataLen + 4 != value.Data.Length)
+                    if(dataLen + 2 != value.Data.Length)
                     {
                         var tmp = new byte[value.Data.Length + 4];
                         Array.Copy(value.Data, 0, tmp, 4, value.Data.Length);
-                        tmp[0]     = (byte)((value.Data.Length & 0xFF000000) >> 24);
-                        tmp[1]     = (byte)((value.Data.Length & 0xFF0000)   >> 16);
-                        tmp[2]     = (byte)((value.Data.Length & 0xFF00)     >> 8);
-                        tmp[3]     = (byte)(value.Data.Length & 0xFF);
+                        tmp[0]     = (byte)((value.Data.Length + 2 & 0xFF00) >> 8);
+                        tmp[1]     = (byte)(value.Data.Length + 2 & 0xFF);
                         value.Data = tmp;
                     }
 

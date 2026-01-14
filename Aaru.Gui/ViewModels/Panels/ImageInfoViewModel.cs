@@ -274,8 +274,9 @@ public sealed class ImageInfoViewModel : ViewModelBase
         }
 
         if(imageFormat.Info.ReadableMediaTags is { Count: > 0 })
-            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order())
-                MediaTagsList.Add(tag.Humanize());
+        {
+            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order()) MediaTagsList.Add(tag.Humanize());
+        }
 
         if(imageFormat.Info.ReadableSectorTags is { Count: > 0 })
         {
@@ -456,16 +457,14 @@ public sealed class ImageInfoViewModel : ViewModelBase
 
             if(errno == ErrorNumber.NoError)
             {
-                uint dataLen = Swapping.Swap(BitConverter.ToUInt32(cdtext, 0));
+                ushort dataLen = Swapping.Swap(BitConverter.ToUInt16(cdtext, 0));
 
-                if(dataLen + 4 != cdtext.Length)
+                if(dataLen + 2 != cdtext.Length)
                 {
                     var tmp = new byte[cdtext.Length + 4];
                     Array.Copy(cdtext, 0, tmp, 4, cdtext.Length);
-                    tmp[0] = (byte)((cdtext.Length & 0xFF000000) >> 24);
-                    tmp[1] = (byte)((cdtext.Length & 0xFF0000)   >> 16);
-                    tmp[2] = (byte)((cdtext.Length & 0xFF00)     >> 8);
-                    tmp[3] = (byte)(cdtext.Length & 0xFF);
+                    tmp[0] = (byte)((cdtext.Length + 2 & 0xFF00) >> 8);
+                    tmp[1] = (byte)(cdtext.Length + 2 & 0xFF);
                     cdtext = tmp;
                 }
 
@@ -794,9 +793,8 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Sessions is { Count: > 0 })
-                {
-                    foreach(Session session in opticalMediaImage.Sessions) Sessions.Add(session);
-                }
+                    foreach(Session session in opticalMediaImage.Sessions)
+                        Sessions.Add(session);
             }
             catch(Exception ex)
             {
@@ -806,9 +804,8 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Tracks is { Count: > 0 })
-                {
-                    foreach(Track track in opticalMediaImage.Tracks) Tracks.Add(track);
-                }
+                    foreach(Track track in opticalMediaImage.Tracks)
+                        Tracks.Add(track);
             }
             catch(Exception ex)
             {
@@ -820,7 +817,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
         if(imageFormat is IFluxImage fluxImage)
         {
             ErrorNumber fluxError = fluxImage.GetAllFluxCaptures(out List<FluxCapture> fluxCaptures);
-            
+
             if(fluxError == ErrorNumber.NoError && fluxCaptures is { Count: > 0 })
             {
                 FluxInfo = new FluxInfo
