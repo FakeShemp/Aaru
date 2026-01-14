@@ -521,7 +521,7 @@ public static class ImageInfo
                 }
 
                 AaruLogging.WriteLine(Localization.Core.CompactDisc_Lead_in_CD_Text_contained_in_image_WithMarkup);
-                AaruLogging.Write(CDTextOnLeadIn.Prettify(cdtext));
+                AaruLogging.Write(Markup.Escape(CDTextOnLeadIn.Prettify(cdtext)));
                 AaruLogging.WriteLine();
             }
         }
