@@ -460,6 +460,9 @@ class MainClass
                       .WithAlias("rem")
                       .WithDescription(UI.Remote_Command_Description);
 
+                config.AddCommand<MetadataSchemaCommand>("metadata-schema")
+                      .WithDescription(UI.Generates_the_JSON_schema_for_Aaru_metadata_files);
+
                 config.SetInterceptor(new LoggingInterceptor());
                 config.SetInterceptor(new PausingInterceptor());
             });

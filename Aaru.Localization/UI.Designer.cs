@@ -10859,5 +10859,35 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Enables_calculation_of_Spamsum_fuzzy_hashes", resourceCulture);
             }
         }
+        
+        public static string Output_is_required {
+            get {
+                return ResourceManager.GetString("Output_is_required", resourceCulture);
+            }
+        }
+        
+        public static string Generating_JSON_schema_for_metadata {
+            get {
+                return ResourceManager.GetString("Generating_JSON_schema_for_metadata", resourceCulture);
+            }
+        }
+        
+        public static string Schema_successfully_written_to_0 {
+            get {
+                return ResourceManager.GetString("Schema_successfully_written_to_0", resourceCulture);
+            }
+        }
+        
+        public static string Output_file_for_the_JSON_schema {
+            get {
+                return ResourceManager.GetString("Output_file_for_the_JSON_schema", resourceCulture);
+            }
+        }
+        
+        public static string Generates_the_JSON_schema_for_Aaru_metadata_files {
+            get {
+                return ResourceManager.GetString("Generates_the_JSON_schema_for_Aaru_metadata_files", resourceCulture);
+            }
+        }
     }
 }

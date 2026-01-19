@@ -5425,4 +5425,19 @@ Probadores:
     <data name="Enables_calculation_of_Spamsum_fuzzy_hashes" xml:space="preserve">
         <value>Activa calcular los hashes Spamsum.</value>
     </data>
+    <data name="Output_is_required" xml:space="preserve">
+        <value>[red]Se requiere una salida[/]</value>
+    </data>
+    <data name="Generating_JSON_schema_for_metadata" xml:space="preserve">
+        <value>[slateblue1]Generadon esquema JSON para los metadatados…[/]</value>
+    </data>
+    <data name="Schema_successfully_written_to_0" xml:space="preserve">
+        <value>[slateblue1]Esquema escrito con éxito en {0}[/]</value>
+    </data>
+    <data name="Output_file_for_the_JSON_schema" xml:space="preserve">
+        <value>Fichero de salida para el esquema JSON</value>
+    </data>
+    <data name="Generates_the_JSON_schema_for_Aaru_metadata_files" xml:space="preserve">
+        <value>Genera el esquema JSON para los ficheros de metadatos Aaru</value>
+    </data>
 </root>
