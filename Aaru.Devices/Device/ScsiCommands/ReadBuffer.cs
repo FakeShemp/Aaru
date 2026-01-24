@@ -57,7 +57,7 @@ public partial class Device
     }
 
     private uint _bufferOffset;
-    private uint _bufferCapacityInSectors;
+    private uint _bufferCapacityInSectors = 714; // Default capacity, will be refined dynamically when offset is lost
     private BufferFormat _bufferFormat;
     private uint _totalSectorsRead; // Tracks cumulative sectors read successfully since last buffer reset
     /// <summary>Reads from device buffer using SCSI READ BUFFER command with specified variant</summary>
