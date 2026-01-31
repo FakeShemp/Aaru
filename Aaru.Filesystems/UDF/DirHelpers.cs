@@ -47,7 +47,9 @@ public sealed partial class UDF
         entries = [];
 
         // Read the File Entry for this directory
-        ulong fileEntrySector = _partitionStartingLocation + icb.extentLocation.logicalBlockNumber;
+        ulong fileEntrySector = TranslateLogicalBlock(icb.extentLocation.logicalBlockNumber,
+                                                      icb.extentLocation.partitionReferenceNumber,
+                                                      _partitionStartingLocation);
 
         if(_imagePlugin.ReadSector(fileEntrySector, false, out byte[] feBuffer, out _) != ErrorNumber.NoError)
             return ErrorNumber.InvalidArgument;
@@ -200,7 +202,8 @@ public sealed partial class UDF
 
             if(extentLength == 0) break;
 
-            ulong extentSector  = _partitionStartingLocation + sad.extentLocation;
+            // Short ADs don't have partition reference, use partition 0
+            ulong extentSector  = TranslateLogicalBlock(sad.extentLocation, 0, _partitionStartingLocation);
             uint  sectorsToRead = (extentLength + _sectorSize - 1) / _sectorSize;
 
             if(_imagePlugin.ReadSectors(extentSector, false, sectorsToRead, out byte[] extentData, out _) !=
@@ -245,8 +248,11 @@ public sealed partial class UDF
 
             if(extentLength == 0) break;
 
-            ulong extentSector  = _partitionStartingLocation + lad.extentLocation.logicalBlockNumber;
-            uint  sectorsToRead = (extentLength + _sectorSize - 1) / _sectorSize;
+            ulong extentSector = TranslateLogicalBlock(lad.extentLocation.logicalBlockNumber,
+                                                       lad.extentLocation.partitionReferenceNumber,
+                                                       _partitionStartingLocation);
+
+            uint sectorsToRead = (extentLength + _sectorSize - 1) / _sectorSize;
 
             if(_imagePlugin.ReadSectors(extentSector, false, sectorsToRead, out byte[] extentData, out _) !=
                ErrorNumber.NoError)

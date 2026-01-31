@@ -727,4 +727,124 @@ public sealed partial class UDF
         public readonly uint uniqueId;
         public readonly uint parentUniqueId;
     }
+
+#region UDF 1.50 Structures
+
+    /// <summary>Type 1 Partition Map per ECMA-167 3/10.7.2</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Type1PartitionMap
+    {
+        public readonly byte   partitionMapType;   // 1
+        public readonly byte   partitionMapLength; // 6
+        public readonly ushort volumeSequenceNumber;
+        public readonly ushort partitionNumber;
+    }
+
+    /// <summary>Type 2 Partition Map header per ECMA-167 3/10.7.3</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Type2PartitionMapHeader
+    {
+        public readonly byte partitionMapType;   // 2
+        public readonly byte partitionMapLength; // 64
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public readonly byte[] reserved1;
+        public readonly EntityIdentifier partitionTypeIdentifier;
+        public readonly ushort           volumeSequenceNumber;
+        public readonly ushort           partitionNumber;
+
+        // Followed by partition-type-specific data
+    }
+
+    /// <summary>Virtual Partition Map per UDF 1.50 2.2.8</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct VirtualPartitionMap
+    {
+        public readonly byte partitionMapType;   // 2
+        public readonly byte partitionMapLength; // 64
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public readonly byte[] reserved1;
+        public readonly EntityIdentifier partitionTypeIdentifier; // "*UDF Virtual Partition"
+        public readonly ushort           volumeSequenceNumber;
+        public readonly ushort           partitionNumber;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 24)]
+        public readonly byte[] reserved2;
+    }
+
+    /// <summary>Sparable Partition Map per UDF 1.50 2.2.9</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct SparablePartitionMap
+    {
+        public readonly byte partitionMapType;   // 2
+        public readonly byte partitionMapLength; // 64
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public readonly byte[] reserved1;
+        public readonly EntityIdentifier partitionTypeIdentifier; // "*UDF Sparable Partition"
+        public readonly ushort           volumeSequenceNumber;
+        public readonly ushort           partitionNumber;
+        public readonly ushort           packetLength;          // In sectors, typically 32
+        public readonly byte             numberOfSparingTables; // Usually 2
+        public readonly byte             reserved2;
+        public readonly uint             sizeOfEachSparingTable;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public readonly uint[] locationsOfSparingTables; // Up to 4 locations, typically 2 used
+    }
+
+    /// <summary>Sparing Table per UDF 1.50 2.2.11</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct SparingTable
+    {
+        public readonly DescriptorTag    tag;
+        public readonly EntityIdentifier sparingIdentifier; // "*UDF Sparing Table"
+        public readonly ushort           reallocationTableLength;
+        public readonly ushort           reserved;
+        public readonly uint             sequenceNumber;
+
+        // Followed by SparingTableEntry[reallocationTableLength]
+    }
+
+    /// <summary>Sparing Table Entry per UDF 1.50 2.2.11</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct SparingTableEntry
+    {
+        public readonly uint originalLocation;
+        public readonly uint mappedLocation;
+    }
+
+    /// <summary>Virtual Allocation Table (VAT) ICB Entry for UDF 1.50 2.2.10</summary>
+    /// <remarks>
+    ///     In UDF 1.50, the VAT is stored as a file. The VAT file contains:
+    ///     - An array of uint32 entries mapping virtual to physical block numbers
+    ///     - The last entry points to the previous VAT ICB (for multi-session)
+    ///     The VAT file entry is located at the last recorded block of the track/session
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct VirtualAllocationTable150
+    {
+        // The VAT is simply an array of uint32 values
+        // vatEntry[n] contains the logical block number of virtual block n
+        // Special value 0xFFFFFFFF means the block is not allocated
+        // The length of the VAT is determined by the file size / 4
+    }
+
+    /// <summary>Virtual Allocation Table header for UDF 2.00+ (2.2.10)</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct VirtualAllocationTable200Header
+    {
+        public readonly ushort lengthOfHeader;
+        public readonly ushort lengthOfImplementationUse;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public readonly byte[] logicalVolumeIdentifier;
+        public readonly uint   previousVatIcbLocation;
+        public readonly uint   numberOfFiles;
+        public readonly uint   numberOfDirectories;
+        public readonly ushort minimumReadUdf;
+        public readonly ushort minimumWriteUdf;
+        public readonly ushort maximumWriteUdf;
+        public readonly ushort reserved;
+
+        // Followed by implementationUse[lengthOfImplementationUse]
+        // Followed by VAT entries (uint32 array)
+    }
+
+#endregion
 }

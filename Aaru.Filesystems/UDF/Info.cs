@@ -87,7 +87,7 @@ public sealed partial class UDF
 
         if(!beaFound) return false;
 
-        // Now search within the extended area (after BEA) for NSR02 before TEA
+        // Now search within the extended area (after BEA) for NSR02/NSR03 before TEA
         var foundNsr = false;
 
         for(ulong i = 1; i < 16; i++)
@@ -99,8 +99,8 @@ public sealed partial class UDF
             // Check identifier at offset 1-5
             if(buffer.Length < 6) continue;
 
-            // Found NSR02 - this media is recorded according to ECMA-167 version 2
-            if(buffer[1..6].SequenceEqual(_nsr))
+            // Found NSR02 or NSR03 - this media is recorded according to ECMA-167
+            if(buffer[1..6].SequenceEqual(_nsr) || buffer[1..6].SequenceEqual(_nsr3))
             {
                 foundNsr = true;
 
@@ -227,7 +227,7 @@ public sealed partial class UDF
 
         if(!beaFound) return;
 
-        // Now search within the extended area (after BEA) for NSR02 before TEA
+        // Now search within the extended area (after BEA) for NSR02/NSR03 before TEA
         var foundNsr = false;
 
         for(ulong i = 1; i < 16; i++)
@@ -239,8 +239,8 @@ public sealed partial class UDF
             // Check identifier at offset 1-5
             if(buffer.Length < 6) continue;
 
-            // Found NSR02 - this media is recorded according to ECMA-167 version 2
-            if(buffer[1..6].SequenceEqual(_nsr))
+            // Found NSR02 or NSR03 - this media is recorded according to ECMA-167
+            if(buffer[1..6].SequenceEqual(_nsr) || buffer[1..6].SequenceEqual(_nsr3))
             {
                 foundNsr = true;
 

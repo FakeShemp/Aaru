@@ -49,7 +49,21 @@ public sealed partial class UDF
     static readonly byte[] _mac_ResourceFork = "*UDF Mac ResourceFork"u8.ToArray();
     static readonly byte[] _bea              = "BEA01"u8.ToArray();
     static readonly byte[] _nsr              = "NSR02"u8.ToArray();
+    static readonly byte[] _nsr3             = "NSR03"u8.ToArray();
     static readonly byte[] _nsr_Partition    = "+NSR02"u8.ToArray();
     static readonly byte[] _tea              = "TEA01"u8.ToArray();
     static readonly byte[] _boot2            = "BOOT2"u8.ToArray();
+
+    // UDF 1.50 partition type identifiers
+    static readonly byte[] _udf_VirtualPartition  = "*UDF Virtual Partition"u8.ToArray();
+    static readonly byte[] _udf_SparablePartition = "*UDF Sparable Partition"u8.ToArray();
+    static readonly byte[] _udf_SparingTable      = "*UDF Sparing Table"u8.ToArray();
+
+    // UDF version constants
+    const ushort UDF_VERSION_102 = 0x0102;
+    const ushort UDF_VERSION_150 = 0x0150;
+    const ushort UDF_VERSION_200 = 0x0200;
+    const ushort UDF_VERSION_201 = 0x0201;
+    const ushort UDF_VERSION_250 = 0x0250;
+    const ushort UDF_VERSION_260 = 0x0260;
 }

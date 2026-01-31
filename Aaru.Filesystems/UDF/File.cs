@@ -419,7 +419,9 @@ public sealed partial class UDF
         // Root directory
         if(string.IsNullOrWhiteSpace(path) || path == "/")
         {
-            ulong rootSector = _partitionStartingLocation + _rootDirectoryIcb.extentLocation.logicalBlockNumber;
+            ulong rootSector = TranslateLogicalBlock(_rootDirectoryIcb.extentLocation.logicalBlockNumber,
+                                                     _rootDirectoryIcb.extentLocation.partitionReferenceNumber,
+                                                     _partitionStartingLocation);
 
             if(_imagePlugin.ReadSector(rootSector, false, out byte[] buffer, out _) != ErrorNumber.NoError)
                 return ErrorNumber.InvalidArgument;
@@ -451,7 +453,9 @@ public sealed partial class UDF
         if(entry == null) return ErrorNumber.NoSuchFile;
 
         // Read the FileEntry
-        ulong fileEntrySector = _partitionStartingLocation + entry.Icb.extentLocation.logicalBlockNumber;
+        ulong fileEntrySector = TranslateLogicalBlock(entry.Icb.extentLocation.logicalBlockNumber,
+                                                      entry.Icb.extentLocation.partitionReferenceNumber,
+                                                      _partitionStartingLocation);
 
         if(_imagePlugin.ReadSector(fileEntrySector, false, out byte[] feBuffer, out _) != ErrorNumber.NoError)
             return ErrorNumber.InvalidArgument;

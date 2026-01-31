@@ -51,6 +51,17 @@ public sealed partial class UDF : IReadOnlyFilesystem
     uint                                                      _sectorSize;
     FileSystemInfo                                            _statfs;
 
+    // UDF 1.50+ fields
+    ushort                     _udfVersion;
+    uint[]                     _vat;          // Virtual Allocation Table for virtual partitions
+    Dictionary<uint, uint>     _sparingTable; // Sparing table for sparable partitions (original -> mapped)
+    Dictionary<ushort, ushort> _partitionMap; // Maps logical partition numbers to physical partition numbers
+    bool                       _hasVirtualPartition;
+    bool                       _hasSparablePartition;
+    ushort                     _virtualPartitionNumber;
+    ushort                     _sparablePartitionNumber;
+    uint                       _sparablePacketLength;
+
 #region IFilesystem Members
 
     /// <inheritdoc />
