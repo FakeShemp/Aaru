@@ -54,18 +54,19 @@ public sealed partial class UDF
         if(_imagePlugin.ReadSector(fileEntrySector, false, out byte[] feBuffer, out _) != ErrorNumber.NoError)
             return ErrorNumber.InvalidArgument;
 
-        FileEntry fileEntry = Marshal.ByteArrayToStructureLittleEndian<FileEntry>(feBuffer);
+        // Parse as unified file entry info (handles both FileEntry and ExtendedFileEntry)
+        ErrorNumber errno = ParseFileEntryInfo(feBuffer, out UdfFileEntryInfo fileEntryInfo);
 
-        if(fileEntry.tag.tagIdentifier != TagIdentifier.FileEntry) return ErrorNumber.InvalidArgument;
+        if(errno != ErrorNumber.NoError) return errno;
 
         // Check this is a directory
-        if(fileEntry.icbTag.fileType != FileType.Directory) return ErrorNumber.NotDirectory;
+        if(fileEntryInfo.IcbTag.fileType != FileType.Directory) return ErrorNumber.NotDirectory;
 
         // Read directory data based on allocation descriptor type
         // The allocation descriptor type is in bits 0-2 of the flags
-        var adType = (byte)((ushort)fileEntry.icbTag.flags & 0x07);
+        var adType = (byte)((ushort)fileEntryInfo.IcbTag.flags & 0x07);
 
-        ErrorNumber errno = ReadFileData(fileEntry, feBuffer, adType, out byte[] directoryData);
+        errno = ReadFileDataFromInfo(fileEntryInfo, feBuffer, adType, out byte[] directoryData);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -96,9 +97,8 @@ public sealed partial class UDF
                 offset += fidLength;
 
                 continue;
-            }
+            } // Skip deleted entries
 
-            // Skip deleted entries
             if(fid.fileCharacteristics.HasFlag(FileCharacteristics.Deleted))
             {
                 offset += fidLength;
@@ -332,4 +332,234 @@ public sealed partial class UDF
 
         return ErrorNumber.NoError;
     }
+
+    /// <summary>
+    ///     Parses a buffer containing either a FileEntry or ExtendedFileEntry into a unified UdfFileEntryInfo
+    /// </summary>
+    /// <param name="feBuffer">The buffer containing the file entry</param>
+    /// <param name="info">The parsed file entry info</param>
+    /// <returns>Error number</returns>
+    ErrorNumber ParseFileEntryInfo(byte[] feBuffer, out UdfFileEntryInfo info)
+    {
+        info = null;
+
+        if(feBuffer == null || feBuffer.Length < 16) return ErrorNumber.InvalidArgument;
+
+        var tagId = (TagIdentifier)BitConverter.ToUInt16(feBuffer, 0);
+
+        switch(tagId)
+        {
+            case TagIdentifier.FileEntry:
+            {
+                FileEntry fe = Marshal.ByteArrayToStructureLittleEndian<FileEntry>(feBuffer);
+
+                info = new UdfFileEntryInfo
+                {
+                    IsExtended                    = false,
+                    IcbTag                        = fe.icbTag,
+                    Uid                           = fe.uid,
+                    Gid                           = fe.gid,
+                    Permissions                   = fe.permissions,
+                    FileLinkCount                 = fe.fileLinkCount,
+                    InformationLength             = fe.informationLength,
+                    LogicalBlocksRecorded         = fe.logicalBlocksRecorded,
+                    AccessTime                    = fe.accessTime,
+                    ModificationTime              = fe.modificationTime,
+                    CreationTime                  = default(Timestamp), // Not available in FileEntry
+                    AttributeTime                 = fe.attributeTime,
+                    ExtendedAttributeICB          = fe.extendedAttributeICB,
+                    StreamDirectoryICB            = default(LongAllocationDescriptor), // Not available in FileEntry
+                    UniqueId                      = fe.uniqueId,
+                    LengthOfExtendedAttributes    = fe.lengthOfExtendedAttributes,
+                    LengthOfAllocationDescriptors = fe.lengthOfAllocationDescriptors
+                };
+
+                return ErrorNumber.NoError;
+            }
+
+            case TagIdentifier.ExtendedFileEntry:
+            {
+                ExtendedFileEntry efe = Marshal.ByteArrayToStructureLittleEndian<ExtendedFileEntry>(feBuffer);
+
+                info = new UdfFileEntryInfo
+                {
+                    IsExtended                    = true,
+                    IcbTag                        = efe.icbTag,
+                    Uid                           = efe.uid,
+                    Gid                           = efe.gid,
+                    Permissions                   = efe.permissions,
+                    FileLinkCount                 = efe.fileLinkCount,
+                    InformationLength             = efe.informationLength,
+                    LogicalBlocksRecorded         = efe.logicalBlocksRecorded,
+                    AccessTime                    = efe.accessTime,
+                    ModificationTime              = efe.modificationTime,
+                    CreationTime                  = efe.creationTime,
+                    AttributeTime                 = efe.attributeTime,
+                    ExtendedAttributeICB          = efe.extendedAttributeICB,
+                    StreamDirectoryICB            = efe.streamDirectoryICB,
+                    UniqueId                      = efe.uniqueId,
+                    LengthOfExtendedAttributes    = efe.lengthOfExtendedAttributes,
+                    LengthOfAllocationDescriptors = efe.lengthOfAllocationDescriptors
+                };
+
+                return ErrorNumber.NoError;
+            }
+
+            default:
+                return ErrorNumber.InvalidArgument;
+        }
+    }
+
+    /// <summary>
+    ///     Reads file data from a UdfFileEntryInfo based on allocation descriptor type
+    /// </summary>
+    /// <param name="info">The file entry info</param>
+    /// <param name="feBuffer">The buffer containing the file entry sector</param>
+    /// <param name="adType">Allocation descriptor type (0-3)</param>
+    /// <param name="data">The file data</param>
+    /// <returns>Error number</returns>
+    ErrorNumber ReadFileDataFromInfo(UdfFileEntryInfo info, byte[] feBuffer, byte adType, out byte[] data)
+    {
+        data = null;
+
+        // The allocation descriptors follow the extended attributes in the file entry
+        // FileEntry fixed size is 176 bytes, ExtendedFileEntry fixed size is 216 bytes
+        int fixedSize = info.IsExtended ? 216 : 176;
+        int adOffset  = fixedSize + (int)info.LengthOfExtendedAttributes;
+        var adLength  = (int)info.LengthOfAllocationDescriptors;
+
+        switch(adType)
+        {
+            case 0: // Short Allocation Descriptors
+                return ReadDataFromShortAd(feBuffer, adOffset, adLength, (long)info.InformationLength, out data);
+
+            case 1: // Long Allocation Descriptors
+                return ReadDataFromLongAd(feBuffer, adOffset, adLength, (long)info.InformationLength, out data);
+
+            case 2: // Extended Allocation Descriptors - not fully supported
+                return ErrorNumber.NotSupported;
+
+            case 3: // Data is embedded in the allocation descriptor area
+                data = new byte[info.InformationLength];
+                Array.Copy(feBuffer, adOffset, data, 0, (int)info.InformationLength);
+
+                return ErrorNumber.NoError;
+
+            default:
+                return ErrorNumber.InvalidArgument;
+        }
+    }
+
+    /// <summary>
+    ///     Reads the named streams (UDF 2.00+) for a file from its stream directory ICB
+    /// </summary>
+    /// <param name="streamDirIcb">The stream directory ICB</param>
+    /// <param name="streams">List of named streams</param>
+    /// <returns>Error number</returns>
+    ErrorNumber ReadNamedStreams(LongAllocationDescriptor streamDirIcb, out List<UdfNamedStream> streams)
+    {
+        streams = [];
+
+        // Stream directory ICB with all zeros means no streams
+        if(streamDirIcb.extentLength == 0) return ErrorNumber.NoError;
+
+        // Read the stream directory file entry
+        ulong streamDirSector = TranslateLogicalBlock(streamDirIcb.extentLocation.logicalBlockNumber,
+                                                      streamDirIcb.extentLocation.partitionReferenceNumber,
+                                                      _partitionStartingLocation);
+
+        if(_imagePlugin.ReadSector(streamDirSector, false, out byte[] sdBuffer, out _) != ErrorNumber.NoError)
+            return ErrorNumber.InvalidArgument;
+
+        ErrorNumber errno = ParseFileEntryInfo(sdBuffer, out UdfFileEntryInfo streamDirInfo);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read the stream directory data
+        var adType = (byte)((ushort)streamDirInfo.IcbTag.flags & 0x07);
+
+        errno = ReadFileDataFromInfo(streamDirInfo, sdBuffer, adType, out byte[] streamDirData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Parse File Identifier Descriptors for each named stream
+        var offset  = 0;
+        int fidSize = System.Runtime.InteropServices.Marshal.SizeOf<FileIdentifierDescriptor>();
+
+        while(offset < streamDirData.Length)
+        {
+            if(offset + fidSize > streamDirData.Length) break;
+
+            FileIdentifierDescriptor fid =
+                Marshal.ByteArrayToStructureLittleEndian<FileIdentifierDescriptor>(streamDirData, offset, fidSize);
+
+            if(fid.tag.tagIdentifier != TagIdentifier.FileIdentifierDescriptor) break;
+
+            int fidLength = fidSize + fid.lengthOfImplementationUse + fid.lengthOfFileIdentifier;
+            fidLength = fidLength + 3 & ~3;
+
+            // Skip parent entry
+            if(fid.fileCharacteristics.HasFlag(FileCharacteristics.Parent))
+            {
+                offset += fidLength;
+
+                continue;
+            }
+
+            // Extract stream name
+            int filenameOffset = offset + fidSize + fid.lengthOfImplementationUse;
+
+            if(filenameOffset + fid.lengthOfFileIdentifier > streamDirData.Length) break;
+
+            var filenameBytes = new byte[fid.lengthOfFileIdentifier];
+            Array.Copy(streamDirData, filenameOffset, filenameBytes, 0, fid.lengthOfFileIdentifier);
+
+            string streamName = StringHandlers.DecompressUnicode(filenameBytes);
+
+            if(!string.IsNullOrEmpty(streamName))
+            {
+                // Read the stream file entry to get its length
+                ulong streamEntrySector = TranslateLogicalBlock(fid.icb.extentLocation.logicalBlockNumber,
+                                                                fid.icb.extentLocation.partitionReferenceNumber,
+                                                                _partitionStartingLocation);
+
+                if(_imagePlugin.ReadSector(streamEntrySector, false, out byte[] streamBuffer, out _) ==
+                   ErrorNumber.NoError)
+                {
+                    if(ParseFileEntryInfo(streamBuffer, out UdfFileEntryInfo streamInfo) == ErrorNumber.NoError)
+                    {
+                        streams.Add(new UdfNamedStream
+                        {
+                            Name      = streamName,
+                            XattrName = MapStreamNameToXattr(streamName),
+                            Icb       = fid.icb,
+                            Length    = streamInfo.InformationLength
+                        });
+                    }
+                }
+            }
+
+            offset += fidLength;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Maps a UDF named stream name to the appropriate xattr name
+    /// </summary>
+    /// <param name="streamName">The UDF stream name</param>
+    /// <returns>The mapped xattr name</returns>
+    static string MapStreamNameToXattr(string streamName) => streamName switch
+                                                             {
+                                                                 STREAM_MAC_RESOURCE_FORK => "com.apple.ResourceFork",
+                                                                 STREAM_OS2_EA =>
+                                                                     null, // OS/2 EAs are decoded separately
+                                                                 STREAM_NT_ACL => "com.microsoft.ntacl",
+                                                                 STREAM_UNIX_ACL => "org.posix.acl",
+                                                                 STREAM_BACKUP =>
+                                                                     null, // Backup time is handled separately
+                                                                 STREAM_POWER_CAL => "org.osta.udf.powercalibration",
+                                                                 _ => streamName // Return as-is for other streams
+                                                             };
 }

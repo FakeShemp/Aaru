@@ -48,18 +48,18 @@ public sealed partial class UDF
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        ErrorNumber errno = GetFileEntry(path, out FileEntry fileEntry);
+        // Get the file entry buffer for reading data
+        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        errno = ParseFileEntryInfo(feBuffer, out UdfFileEntryInfo fileEntryInfo);
 
         if(errno != ErrorNumber.NoError) return errno;
 
         // Check if this is a regular file
-        if(fileEntry.icbTag.fileType != FileType.File && fileEntry.icbTag.fileType != FileType.Unspecified)
+        if(fileEntryInfo.IcbTag.fileType != FileType.File && fileEntryInfo.IcbTag.fileType != FileType.Unspecified)
             return ErrorNumber.IsDirectory;
-
-        // Get the file entry buffer for reading data
-        errno = GetFileEntryBuffer(path, out byte[] feBuffer);
-
-        if(errno != ErrorNumber.NoError) return errno;
 
         // Get the ICB for this file
         errno = GetFileIcb(path, out LongAllocationDescriptor icb);
@@ -69,9 +69,9 @@ public sealed partial class UDF
         node = new UdfFileNode
         {
             Path            = path,
-            Length          = (long)fileEntry.informationLength,
+            Length          = (long)fileEntryInfo.InformationLength,
             Offset          = 0,
-            FileEntry       = fileEntry,
+            FileEntryInfo   = fileEntryInfo,
             FileEntryBuffer = feBuffer,
             Icb             = icb
         };
@@ -111,9 +111,10 @@ public sealed partial class UDF
         if(length == 0) return ErrorNumber.NoError;
 
         // Read the file data based on allocation descriptor type
-        var adType = (byte)((ushort)myNode.FileEntry.icbTag.flags & 0x07);
+        var adType = (byte)((ushort)myNode.FileEntryInfo.IcbTag.flags & 0x07);
 
-        ErrorNumber errno = ReadFileData(myNode.FileEntry, myNode.FileEntryBuffer, adType, out byte[] fileData);
+        ErrorNumber errno =
+            ReadFileDataFromInfo(myNode.FileEntryInfo, myNode.FileEntryBuffer, adType, out byte[] fileData);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -137,46 +138,59 @@ public sealed partial class UDF
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        ErrorNumber errno = GetFileEntry(path, out FileEntry fileEntry);
+        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        errno = ParseFileEntryInfo(feBuffer, out UdfFileEntryInfo fileEntryInfo);
 
         if(errno != ErrorNumber.NoError) return errno;
 
         stat = new FileEntryInfo
         {
             Attributes          = new FileAttributes(),
-            Blocks              = (long)fileEntry.logicalBlocksRecorded,
+            Blocks              = (long)fileEntryInfo.LogicalBlocksRecorded,
             BlockSize           = _sectorSize,
-            Length              = (long)fileEntry.informationLength,
-            Links               = fileEntry.fileLinkCount,
-            Inode               = fileEntry.uniqueId,
-            UID                 = fileEntry.uid,
-            GID                 = fileEntry.gid,
-            Mode                = ConvertPermissionsToMode(fileEntry.permissions),
-            AccessTimeUtc       = EcmaToDateTime(fileEntry.accessTime),
-            LastWriteTimeUtc    = EcmaToDateTime(fileEntry.modificationTime),
-            StatusChangeTimeUtc = EcmaToDateTime(fileEntry.attributeTime)
+            Length              = (long)fileEntryInfo.InformationLength,
+            Links               = fileEntryInfo.FileLinkCount,
+            Inode               = fileEntryInfo.UniqueId,
+            UID                 = fileEntryInfo.Uid,
+            GID                 = fileEntryInfo.Gid,
+            Mode                = ConvertPermissionsToMode(fileEntryInfo.Permissions),
+            AccessTimeUtc       = EcmaToDateTime(fileEntryInfo.AccessTime),
+            LastWriteTimeUtc    = EcmaToDateTime(fileEntryInfo.ModificationTime),
+            StatusChangeTimeUtc = EcmaToDateTime(fileEntryInfo.AttributeTime)
         };
 
+        // ExtendedFileEntry (UDF 2.00+) has creation time
+        if(fileEntryInfo.IsExtended) stat.CreationTimeUtc = EcmaToDateTime(fileEntryInfo.CreationTime);
+
         // Set file attributes based on file type and flags
-        if(fileEntry.icbTag.fileType == FileType.Directory) stat.Attributes |= FileAttributes.Directory;
+        if(fileEntryInfo.IcbTag.fileType == FileType.Directory) stat.Attributes |= FileAttributes.Directory;
 
-        if(fileEntry.icbTag.flags.HasFlag(FileFlags.System)) stat.Attributes |= FileAttributes.System;
+        if(fileEntryInfo.IcbTag.flags.HasFlag(FileFlags.System)) stat.Attributes |= FileAttributes.System;
 
-        if(fileEntry.icbTag.flags.HasFlag(FileFlags.Archive)) stat.Attributes |= FileAttributes.Archive;
+        if(fileEntryInfo.IcbTag.flags.HasFlag(FileFlags.Archive)) stat.Attributes |= FileAttributes.Archive;
 
         // Check for MacVolumeInfo extended attribute to get additional timestamps
-        if(fileEntry.lengthOfExtendedAttributes <= 0) return ErrorNumber.NoError;
+        if(fileEntryInfo.LengthOfExtendedAttributes > 0)
+        {
+            MacVolumeInfo? macVolumeInfo = GetMacVolumeInfoFromBuffer(feBuffer, fileEntryInfo);
 
-        errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+            if(macVolumeInfo.HasValue)
+            {
+                stat.LastWriteTimeUtc = EcmaToDateTime(macVolumeInfo.Value.lastModificationDate);
+                stat.BackupTimeUtc    = EcmaToDateTime(macVolumeInfo.Value.lastBackupDate);
+            }
+        }
 
-        if(errno != ErrorNumber.NoError) return ErrorNumber.NoError;
+        // Check for *UDF Backup named stream (UDF 2.00+)
+        if(fileEntryInfo.IsExtended && fileEntryInfo.StreamDirectoryICB.extentLength > 0)
+        {
+            DateTime? backupTime = GetBackupTimeFromStreams(fileEntryInfo.StreamDirectoryICB);
 
-        MacVolumeInfo? macVolumeInfo = GetMacVolumeInfo(feBuffer, fileEntry);
-
-        if(!macVolumeInfo.HasValue) return ErrorNumber.NoError;
-
-        stat.LastWriteTimeUtc = EcmaToDateTime(macVolumeInfo.Value.lastModificationDate);
-        stat.BackupTimeUtc    = EcmaToDateTime(macVolumeInfo.Value.lastBackupDate);
+            if(backupTime.HasValue) stat.BackupTimeUtc = backupTime.Value;
+        }
 
         return ErrorNumber.NoError;
     }
@@ -188,12 +202,16 @@ public sealed partial class UDF
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        ErrorNumber errno = GetFileEntry(path, out FileEntry fileEntry);
+        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        errno = ParseFileEntryInfo(feBuffer, out UdfFileEntryInfo fileEntryInfo);
 
         if(errno != ErrorNumber.NoError) return errno;
 
         // Set file attributes based on file type
-        switch(fileEntry.icbTag.fileType)
+        switch(fileEntryInfo.IcbTag.fileType)
         {
             case FileType.Directory:
                 attributes |= FileAttributes.Directory;
@@ -222,9 +240,9 @@ public sealed partial class UDF
         }
 
         // Set attributes based on flags
-        if(fileEntry.icbTag.flags.HasFlag(FileFlags.System)) attributes |= FileAttributes.System;
+        if(fileEntryInfo.IcbTag.flags.HasFlag(FileFlags.System)) attributes |= FileAttributes.System;
 
-        if(fileEntry.icbTag.flags.HasFlag(FileFlags.Archive)) attributes |= FileAttributes.Archive;
+        if(fileEntryInfo.IcbTag.flags.HasFlag(FileFlags.Archive)) attributes |= FileAttributes.Archive;
 
         // Check for hidden flag in file characteristics (from directory entry)
         // We need to check if the file was marked as hidden in its directory entry
@@ -243,30 +261,67 @@ public sealed partial class UDF
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        ErrorNumber errno = GetFileEntry(path, out FileEntry fileEntry);
+        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        errno = ParseFileEntryInfo(feBuffer, out UdfFileEntryInfo fileEntryInfo);
 
         if(errno != ErrorNumber.NoError) return errno;
 
         // Check if this is a symbolic link
-        if(fileEntry.icbTag.fileType != FileType.SymbolicLink) return ErrorNumber.InvalidArgument;
-
-        // Read the file entry buffer to get the symlink data
-        errno = GetFileEntryBuffer(path, out byte[] feBuffer);
-
-        if(errno != ErrorNumber.NoError) return errno;
+        if(fileEntryInfo.IcbTag.fileType != FileType.SymbolicLink) return ErrorNumber.InvalidArgument;
 
         // Read the symlink data based on allocation descriptor type
-        var adType = (byte)((ushort)fileEntry.icbTag.flags & 0x07);
+        var adType = (byte)((ushort)fileEntryInfo.IcbTag.flags & 0x07);
 
-        errno = ReadFileData(fileEntry, feBuffer, adType, out byte[] linkData);
+        errno = ReadFileDataFromInfo(fileEntryInfo, feBuffer, adType, out byte[] linkData);
 
         if(errno != ErrorNumber.NoError) return errno;
 
         // Parse the symbolic link path components per ECMA-167 4/14.16
-        // The symlink data contains path components
         dest = ParseSymbolicLinkData(linkData);
 
         return string.IsNullOrEmpty(dest) ? ErrorNumber.InvalidArgument : ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Gets backup time from the *UDF Backup named stream
+    /// </summary>
+    DateTime? GetBackupTimeFromStreams(LongAllocationDescriptor streamDirIcb)
+    {
+        ErrorNumber errno = ReadNamedStreams(streamDirIcb, out List<UdfNamedStream> streams);
+
+        if(errno != ErrorNumber.NoError) return null;
+
+        UdfNamedStream backupStream = streams.Find(s => s.Name == STREAM_BACKUP);
+
+        if(backupStream == null) return null;
+
+        // Read the backup stream data (should contain a timestamp)
+        ulong streamSector = TranslateLogicalBlock(backupStream.Icb.extentLocation.logicalBlockNumber,
+                                                   backupStream.Icb.extentLocation.partitionReferenceNumber,
+                                                   _partitionStartingLocation);
+
+        if(_imagePlugin.ReadSector(streamSector, false, out byte[] streamBuffer, out _) != ErrorNumber.NoError)
+            return null;
+
+        if(ParseFileEntryInfo(streamBuffer, out UdfFileEntryInfo streamInfo) != ErrorNumber.NoError) return null;
+
+        var adType = (byte)((ushort)streamInfo.IcbTag.flags & 0x07);
+
+        if(ReadFileDataFromInfo(streamInfo, streamBuffer, adType, out byte[] streamData) != ErrorNumber.NoError)
+            return null;
+
+        // The backup stream should contain a timestamp structure
+        if(streamData.Length >= System.Runtime.InteropServices.Marshal.SizeOf<Timestamp>())
+        {
+            Timestamp ts = Marshal.ByteArrayToStructureLittleEndian<Timestamp>(streamData);
+
+            return EcmaToDateTime(ts);
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -347,17 +402,17 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Searches for and parses a MacVolumeInfo extended attribute from the FileEntry's extended attributes.
+    ///     Searches for and parses a MacVolumeInfo extended attribute from the file entry buffer.
     ///     This attribute contains Macintosh-specific volume information including modification and backup dates.
     /// </summary>
-    /// <param name="feBuffer">The buffer containing the FileEntry sector</param>
-    /// <param name="fileEntry">The FileEntry structure</param>
+    /// <param name="feBuffer">The buffer containing the file entry sector</param>
+    /// <param name="fileEntryInfo">The file entry info</param>
     /// <returns>The MacVolumeInfo if found, null otherwise</returns>
-    static MacVolumeInfo? GetMacVolumeInfo(byte[] feBuffer, in FileEntry fileEntry)
+    static MacVolumeInfo? GetMacVolumeInfoFromBuffer(byte[] feBuffer, UdfFileEntryInfo fileEntryInfo)
     {
-        const int fileEntryFixedSize = 176;
-        int       eaOffset           = fileEntryFixedSize;
-        int       eaEnd              = fileEntryFixedSize + (int)fileEntry.lengthOfExtendedAttributes;
+        int fixedSize = fileEntryInfo.IsExtended ? 216 : 176;
+        int eaOffset  = fixedSize;
+        int eaEnd     = fixedSize + (int)fileEntryInfo.LengthOfExtendedAttributes;
 
         // First, check for Extended Attribute Header Descriptor
         if(eaEnd - eaOffset >= 24)

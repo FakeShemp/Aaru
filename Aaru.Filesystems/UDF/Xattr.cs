@@ -53,23 +53,93 @@ public sealed partial class UDF
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        ErrorNumber errno = GetFileEntry(path, out FileEntry fileEntry);
+        // Get file entry buffer and parse it
+        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        errno = ParseFileEntryInfo(feBuffer, out UdfFileEntryInfo fileEntryInfo);
 
         if(errno != ErrorNumber.NoError) return errno;
 
         xattrs = [];
 
-        if(fileEntry.lengthOfExtendedAttributes == 0) return ErrorNumber.NoError;
+        // Handle extended attributes
+        if(fileEntryInfo.LengthOfExtendedAttributes > 0) ListExtendedAttributes(feBuffer, fileEntryInfo, xattrs);
 
-        // Read the FileEntry sector to get extended attributes
-        errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+        // Handle named streams (UDF 2.00+)
+        if(fileEntryInfo.IsExtended && fileEntryInfo.StreamDirectoryICB.extentLength > 0)
+        {
+            errno = ReadNamedStreams(fileEntryInfo.StreamDirectoryICB, out List<UdfNamedStream> streams);
+
+            if(errno == ErrorNumber.NoError)
+            {
+                foreach(UdfNamedStream stream in streams)
+                {
+                    // Skip streams that are decoded separately or represent metadata
+                    if(stream.Name == STREAM_BACKUP) continue;
+
+                    if(stream.Name == STREAM_OS2_EA)
+                    {
+                        // OS/2 EA stream - enumerate individual EAs
+                        ListOs2EaFromStream(stream, xattrs);
+
+                        continue;
+                    }
+
+                    if(!string.IsNullOrEmpty(stream.XattrName) && !xattrs.Contains(stream.XattrName))
+                        xattrs.Add(stream.XattrName);
+                }
+            }
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf)
+    {
+        buf = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Get file entry buffer and parse it
+        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer);
 
         if(errno != ErrorNumber.NoError) return errno;
 
+        errno = ParseFileEntryInfo(feBuffer, out UdfFileEntryInfo fileEntryInfo);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // First try extended attributes
+        if(fileEntryInfo.LengthOfExtendedAttributes > 0)
+        {
+            ErrorNumber eaResult = GetXattrFromExtendedAttributes(feBuffer, fileEntryInfo, xattr, ref buf);
+
+            if(eaResult == ErrorNumber.NoError) return ErrorNumber.NoError;
+        }
+
+        // Then try named streams (UDF 2.00+)
+        if(fileEntryInfo.IsExtended && fileEntryInfo.StreamDirectoryICB.extentLength > 0)
+        {
+            ErrorNumber streamResult = GetXattrFromNamedStreams(fileEntryInfo, xattr, ref buf);
+
+            if(streamResult == ErrorNumber.NoError) return ErrorNumber.NoError;
+        }
+
+        return ErrorNumber.NoSuchExtendedAttribute;
+    }
+
+    /// <summary>
+    ///     Lists extended attributes from the file entry buffer
+    /// </summary>
+    void ListExtendedAttributes(byte[] feBuffer, UdfFileEntryInfo fileEntryInfo, List<string> xattrs)
+    {
         // Parse extended attributes
-        const int fileEntryFixedSize = 176;
-        int       eaOffset           = fileEntryFixedSize;
-        int       eaEnd              = fileEntryFixedSize + (int)fileEntry.lengthOfExtendedAttributes;
+        int fixedSize = fileEntryInfo.IsExtended ? 216 : 176;
+        int eaOffset  = fixedSize;
+        int eaEnd     = fixedSize + (int)fileEntryInfo.LengthOfExtendedAttributes;
 
         // First, check for Extended Attribute Header Descriptor
         if(eaEnd - eaOffset >= 24)
@@ -104,9 +174,8 @@ public sealed partial class UDF
                         List<string> os2Xattrs = GetOs2EaNames(feBuffer, eaOffset, iuea);
 
                         foreach(string os2Xattr in os2Xattrs)
-                        {
-                            if(!xattrs.Contains(os2Xattr)) xattrs.Add(os2Xattr);
-                        }
+                            if(!xattrs.Contains(os2Xattr))
+                                xattrs.Add(os2Xattr);
 
                         eaOffset += (int)eaHeader.attributeLength;
 
@@ -121,38 +190,67 @@ public sealed partial class UDF
 
             eaOffset += (int)eaHeader.attributeLength;
         }
-
-        return ErrorNumber.NoError;
     }
 
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf)
+    /// <summary>
+    ///     Enumerates OS/2 EAs from a named stream
+    /// </summary>
+    void ListOs2EaFromStream(UdfNamedStream stream, List<string> xattrs)
     {
-        buf = null;
+        // Read the stream data
+        ulong streamSector = TranslateLogicalBlock(stream.Icb.extentLocation.logicalBlockNumber,
+                                                   stream.Icb.extentLocation.partitionReferenceNumber,
+                                                   _partitionStartingLocation);
 
-        if(!_mounted) return ErrorNumber.AccessDenied;
+        if(_imagePlugin.ReadSector(streamSector, false, out byte[] streamBuffer, out _) != ErrorNumber.NoError) return;
 
-        ErrorNumber errno = GetFileEntry(path, out FileEntry fileEntry);
+        if(ParseFileEntryInfo(streamBuffer, out UdfFileEntryInfo streamInfo) != ErrorNumber.NoError) return;
 
-        if(errno != ErrorNumber.NoError) return errno;
+        var adType = (byte)((ushort)streamInfo.IcbTag.flags & 0x07);
 
-        if(fileEntry.lengthOfExtendedAttributes == 0) return ErrorNumber.NoSuchExtendedAttribute;
+        if(ReadFileDataFromInfo(streamInfo, streamBuffer, adType, out byte[] streamData) != ErrorNumber.NoError) return;
 
-        errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+        // Parse FEA entries
+        var offset  = 0;
+        int feaSize = System.Runtime.InteropServices.Marshal.SizeOf<Fea>();
 
-        if(errno != ErrorNumber.NoError) return errno;
+        while(offset + feaSize <= streamData.Length)
+        {
+            Fea fea = Marshal.ByteArrayToStructureLittleEndian<Fea>(streamData, offset, feaSize);
 
-        // Parse extended attributes
-        const int fileEntryFixedSize = 176;
-        int       eaOffset           = fileEntryFixedSize;
-        int       eaEnd              = fileEntryFixedSize + (int)fileEntry.lengthOfExtendedAttributes;
+            if(fea.lengthOfName == 0) break;
+
+            if(offset + feaSize + fea.lengthOfName > streamData.Length) break;
+
+            string eaName = Encoding.ASCII.GetString(streamData, offset + feaSize, fea.lengthOfName);
+
+            if(!string.IsNullOrEmpty(eaName))
+            {
+                var xattrName = $"com.ibm.os2.{eaName}";
+
+                if(!xattrs.Contains(xattrName)) xattrs.Add(xattrName);
+            }
+
+            offset += feaSize + fea.lengthOfName + fea.lengthOfValue;
+        }
+    }
+
+    /// <summary>
+    ///     Gets xattr data from extended attributes
+    /// </summary>
+    ErrorNumber GetXattrFromExtendedAttributes(byte[]     feBuffer, UdfFileEntryInfo fileEntryInfo, string xattr,
+                                               ref byte[] buf)
+    {
+        int fixedSize = fileEntryInfo.IsExtended ? 216 : 176;
+        int eaOffset  = fixedSize;
+        int eaEnd     = fixedSize + (int)fileEntryInfo.LengthOfExtendedAttributes;
 
         // First, check for Extended Attribute Header Descriptor
         if(eaEnd - eaOffset >= 24)
         {
             var tagId = (TagIdentifier)BitConverter.ToUInt16(feBuffer, eaOffset);
 
-            if(tagId == TagIdentifier.ExtendedAttributeHeaderDescriptor) eaOffset += 24; // Skip the header descriptor
+            if(tagId == TagIdentifier.ExtendedAttributeHeaderDescriptor) eaOffset += 24;
         }
 
         while(eaOffset + 12 <= eaEnd)
@@ -198,6 +296,102 @@ public sealed partial class UDF
         }
 
         return ErrorNumber.NoSuchExtendedAttribute;
+    }
+
+    /// <summary>
+    ///     Gets xattr data from named streams
+    /// </summary>
+    ErrorNumber GetXattrFromNamedStreams(UdfFileEntryInfo fileEntryInfo, string xattr, ref byte[] buf)
+    {
+        ErrorNumber errno = ReadNamedStreams(fileEntryInfo.StreamDirectoryICB, out List<UdfNamedStream> streams);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        foreach(UdfNamedStream stream in streams)
+        {
+            // Check if this stream matches the requested xattr
+            bool matches = stream.XattrName == xattr || stream.Name == xattr;
+
+            // Special handling for OS/2 EA stream
+            if(stream.Name == STREAM_OS2_EA && xattr.StartsWith("com.ibm.os2.", StringComparison.Ordinal))
+            {
+                string os2EaName = xattr["com.ibm.os2.".Length..];
+                buf = GetOs2EaDataFromStream(stream, os2EaName);
+
+                return buf != null ? ErrorNumber.NoError : ErrorNumber.NoSuchExtendedAttribute;
+            }
+
+            if(!matches) continue;
+
+            // Read the stream data
+            ulong streamSector = TranslateLogicalBlock(stream.Icb.extentLocation.logicalBlockNumber,
+                                                       stream.Icb.extentLocation.partitionReferenceNumber,
+                                                       _partitionStartingLocation);
+
+            if(_imagePlugin.ReadSector(streamSector, false, out byte[] streamBuffer, out _) != ErrorNumber.NoError)
+                continue;
+
+            if(ParseFileEntryInfo(streamBuffer, out UdfFileEntryInfo streamInfo) != ErrorNumber.NoError) continue;
+
+            var adType = (byte)((ushort)streamInfo.IcbTag.flags & 0x07);
+
+            if(ReadFileDataFromInfo(streamInfo, streamBuffer, adType, out buf) == ErrorNumber.NoError)
+                return ErrorNumber.NoError;
+        }
+
+        return ErrorNumber.NoSuchExtendedAttribute;
+    }
+
+    /// <summary>
+    ///     Gets OS/2 EA data from a named stream
+    /// </summary>
+    byte[] GetOs2EaDataFromStream(UdfNamedStream stream, string eaName)
+    {
+        // Read the stream data
+        ulong streamSector = TranslateLogicalBlock(stream.Icb.extentLocation.logicalBlockNumber,
+                                                   stream.Icb.extentLocation.partitionReferenceNumber,
+                                                   _partitionStartingLocation);
+
+        if(_imagePlugin.ReadSector(streamSector, false, out byte[] streamBuffer, out _) != ErrorNumber.NoError)
+            return null;
+
+        if(ParseFileEntryInfo(streamBuffer, out UdfFileEntryInfo streamInfo) != ErrorNumber.NoError) return null;
+
+        var adType = (byte)((ushort)streamInfo.IcbTag.flags & 0x07);
+
+        if(ReadFileDataFromInfo(streamInfo, streamBuffer, adType, out byte[] streamData) != ErrorNumber.NoError)
+            return null;
+
+        // Parse FEA entries to find the requested EA
+        var offset  = 0;
+        int feaSize = System.Runtime.InteropServices.Marshal.SizeOf<Fea>();
+
+        while(offset + feaSize <= streamData.Length)
+        {
+            Fea fea = Marshal.ByteArrayToStructureLittleEndian<Fea>(streamData, offset, feaSize);
+
+            if(fea.lengthOfName == 0) break;
+
+            if(offset + feaSize + fea.lengthOfName > streamData.Length) break;
+
+            string currentEaName = Encoding.ASCII.GetString(streamData, offset + feaSize, fea.lengthOfName);
+
+            if(currentEaName.Equals(eaName, StringComparison.OrdinalIgnoreCase))
+            {
+                int valueOffset = offset + feaSize + fea.lengthOfName;
+
+                if(valueOffset + fea.lengthOfValue > streamData.Length) return null;
+
+                var value = new byte[fea.lengthOfValue];
+                Array.Copy(streamData, valueOffset, value, 0, fea.lengthOfValue);
+
+                return value;
+            }
+
+            offset += feaSize + fea.lengthOfName + fea.lengthOfValue;
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -646,9 +840,8 @@ public sealed partial class UDF
         int compareLength = Math.Min(identifier.Length, pattern.Length);
 
         for(var i = 0; i < compareLength; i++)
-        {
-            if(identifier[i] != pattern[i]) return false;
-        }
+            if(identifier[i] != pattern[i])
+                return false;
 
         return true;
     }

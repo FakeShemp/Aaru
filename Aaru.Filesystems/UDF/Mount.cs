@@ -203,16 +203,16 @@ public sealed partial class UDF
         // Store UDF version
         _udfVersion = lvidiu.minimumReadUDF;
 
-        // Support UDF versions up to 1.50
-        // UDF 1.02 = 0x0102, UDF 1.50 = 0x0150
-        if(lvidiu.minimumReadUDF > UDF_VERSION_150) return ErrorNumber.InvalidArgument;
+        // Support UDF versions up to 2.00
+        // UDF 1.02 = 0x0102, UDF 1.50 = 0x0150, UDF 2.00 = 0x0200
+        if(lvidiu.minimumReadUDF > UDF_VERSION_200) return ErrorNumber.InvalidArgument;
 
         // Parse partition maps from LVD to handle Type 1, Virtual, and Sparable partitions
         ErrorNumber errno = ParsePartitionMaps(lvd, partitionDescriptors);
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        // For UDF 1.50 with virtual partition, we need to load the VAT
+        // For UDF 1.50+ with virtual partition, we need to load the VAT
         if(_hasVirtualPartition)
         {
             errno = LoadVirtualAllocationTable(imagePlugin, partitionDescriptors);
@@ -280,9 +280,11 @@ public sealed partial class UDF
         if(imagePlugin.ReadSector(rootIcbAbsoluteSector, false, out buffer, out _) != ErrorNumber.NoError)
             return ErrorNumber.InvalidArgument;
 
-        FileEntry rootEntry = Marshal.ByteArrayToStructureLittleEndian<FileEntry>(buffer);
+        // Check for FileEntry or ExtendedFileEntry (UDF 2.00+)
+        var rootTagId = (TagIdentifier)BitConverter.ToUInt16(buffer, 0);
 
-        if(rootEntry.tag.tagIdentifier != TagIdentifier.FileEntry) return ErrorNumber.InvalidArgument;
+        if(rootTagId != TagIdentifier.FileEntry && rootTagId != TagIdentifier.ExtendedFileEntry)
+            return ErrorNumber.InvalidArgument;
 
         // Fill filesystem info from the descriptors
         // Free space table is at offset 80 in LVID, each entry is 4 bytes per partition
@@ -294,7 +296,7 @@ public sealed partial class UDF
         _statfs = new FileSystemInfo
         {
             Blocks         = firstPartition.partitionLength,
-            FilenameLength = 254, // UDF 1.02 max filename length
+            FilenameLength = 254, // UDF max filename length
             Files          = lvidiu.files + lvidiu.directories,
             FreeBlocks     = freeBlocks,
             FreeFiles      = 0, // UDF doesn't have a fixed inode table
@@ -605,8 +607,9 @@ public sealed partial class UDF
 
         // If this is a virtual partition, translate through the VAT
         if(_hasVirtualPartition && partitionNumber == _virtualPartitionNumber && _vat != null)
-            if(logicalBlock < _vat.Length)
-                physicalBlock = _vat[logicalBlock];
+        {
+            if(logicalBlock < _vat.Length) physicalBlock = _vat[logicalBlock];
+        }
 
         // If this is a sparable partition, check the sparing table
         if(_hasSparablePartition && partitionNumber == _sparablePartitionNumber && _sparingTable != null)

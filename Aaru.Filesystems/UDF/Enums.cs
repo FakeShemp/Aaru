@@ -69,7 +69,8 @@ public sealed partial class UDF
         ExtendedAttributeHeaderDescriptor = 262,
         UnallocatedSpaceEntry             = 263,
         SpaceBitmapDescriptor             = 264,
-        PartitionIntegrityEntry           = 265
+        PartitionIntegrityEntry           = 265,
+        ExtendedFileEntry                 = 266
     }
 
 #endregion

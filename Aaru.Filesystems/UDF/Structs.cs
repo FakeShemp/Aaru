@@ -488,6 +488,38 @@ public sealed partial class UDF
         // Followed by Extended Attributes and Allocation Descriptors
     }
 
+    /// <summary>Extended File Entry for UDF 2.00+ per ECMA-167 4/14.17</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct ExtendedFileEntry
+    {
+        public readonly DescriptorTag            tag;
+        public readonly IcbTag                   icbTag;
+        public readonly uint                     uid;
+        public readonly uint                     gid;
+        public readonly Permissions              permissions;
+        public readonly ushort                   fileLinkCount;
+        public readonly byte                     recordFormat;
+        public readonly byte                     recordDisplayAttributes;
+        public readonly uint                     recordLength;
+        public readonly ulong                    informationLength;
+        public readonly ulong                    objectSize;
+        public readonly ulong                    logicalBlocksRecorded;
+        public readonly Timestamp                accessTime;
+        public readonly Timestamp                modificationTime;
+        public readonly Timestamp                creationTime;
+        public readonly Timestamp                attributeTime;
+        public readonly uint                     checkpoint;
+        public readonly uint                     reserved;
+        public readonly LongAllocationDescriptor extendedAttributeICB;
+        public readonly LongAllocationDescriptor streamDirectoryICB;
+        public readonly EntityIdentifier         implementationIdentifier;
+        public readonly ulong                    uniqueId;
+        public readonly uint                     lengthOfExtendedAttributes;
+        public readonly uint                     lengthOfAllocationDescriptors;
+
+        // Followed by Extended Attributes and Allocation Descriptors
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     readonly struct ExtendedAttributeHeaderDescriptor
     {

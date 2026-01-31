@@ -59,6 +59,14 @@ public sealed partial class UDF
     static readonly byte[] _udf_SparablePartition = "*UDF Sparable Partition"u8.ToArray();
     static readonly byte[] _udf_SparingTable      = "*UDF Sparing Table"u8.ToArray();
 
+    // UDF 2.00+ named stream identifiers
+    const string STREAM_MAC_RESOURCE_FORK = "*UDF Macintosh Resource Fork";
+    const string STREAM_OS2_EA            = "*UDF OS/2 EA";
+    const string STREAM_NT_ACL            = "*UDF NT ACL";
+    const string STREAM_UNIX_ACL          = "*UDF UNIX ACL";
+    const string STREAM_BACKUP            = "*UDF Backup";
+    const string STREAM_POWER_CAL         = "*UDF Power Cal Table";
+
     // UDF version constants
     const ushort UDF_VERSION_102 = 0x0102;
     const ushort UDF_VERSION_150 = 0x0150;

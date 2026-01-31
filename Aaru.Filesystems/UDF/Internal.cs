@@ -60,8 +60,8 @@ public sealed partial class UDF
 
     sealed class UdfFileNode : IFileNode
     {
-        internal FileEntry                FileEntry;
         internal byte[]                   FileEntryBuffer;
+        internal UdfFileEntryInfo         FileEntryInfo;
         internal LongAllocationDescriptor Icb;
 
         /// <inheritdoc />
@@ -72,6 +72,49 @@ public sealed partial class UDF
 
         /// <inheritdoc />
         public long Offset { get; set; }
+    }
+
+#endregion
+
+#region Nested type: UdfFileEntryInfo
+
+    /// <summary>
+    ///     Unified structure for holding information from both FileEntry and ExtendedFileEntry
+    /// </summary>
+    sealed class UdfFileEntryInfo
+    {
+        public Timestamp                AccessTime;
+        public Timestamp                AttributeTime;
+        public Timestamp                CreationTime; // Only in ExtendedFileEntry
+        public LongAllocationDescriptor ExtendedAttributeICB;
+        public ushort                   FileLinkCount;
+        public uint                     Gid;
+        public IcbTag                   IcbTag;
+        public ulong                    InformationLength;
+        public bool                     IsExtended;
+        public uint                     LengthOfAllocationDescriptors;
+        public uint                     LengthOfExtendedAttributes;
+        public ulong                    LogicalBlocksRecorded;
+        public Timestamp                ModificationTime;
+        public Permissions              Permissions;
+        public LongAllocationDescriptor StreamDirectoryICB; // Only in ExtendedFileEntry
+        public uint                     Uid;
+        public ulong                    UniqueId;
+    }
+
+#endregion
+
+#region Nested type: UdfNamedStream
+
+    /// <summary>
+    ///     Represents a named stream in UDF 2.00+
+    /// </summary>
+    sealed class UdfNamedStream
+    {
+        public LongAllocationDescriptor Icb;
+        public ulong                    Length;
+        public string                   Name;
+        public string                   XattrName; // Mapped xattr name
     }
 
 #endregion
