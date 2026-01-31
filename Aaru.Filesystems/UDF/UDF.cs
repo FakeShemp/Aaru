@@ -36,7 +36,7 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 /// <summary>Implements detection of the Universal Disk Format filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
-public sealed partial class UDF : IFilesystem
+public sealed partial class UDF : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "UDF Plugin";
 
