@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Marshal = Aaru.Helpers.Marshal;
@@ -40,6 +41,95 @@ namespace Aaru.Filesystems;
 
 public sealed partial class UDF
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber errno = GetFileEntry(path, out FileEntry fileEntry);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Check if this is a regular file
+        if(fileEntry.icbTag.fileType != FileType.File && fileEntry.icbTag.fileType != FileType.Unspecified)
+            return ErrorNumber.IsDirectory;
+
+        // Get the file entry buffer for reading data
+        errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Get the ICB for this file
+        errno = GetFileIcb(path, out LongAllocationDescriptor icb);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        node = new UdfFileNode
+        {
+            Path            = path,
+            Length          = (long)fileEntry.informationLength,
+            Offset          = 0,
+            FileEntry       = fileEntry,
+            FileEntryBuffer = feBuffer,
+            Icb             = icb
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not UdfFileNode myNode) return ErrorNumber.InvalidArgument;
+
+        myNode.FileEntryBuffer = null;
+        myNode.Offset          = -1;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not UdfFileNode myNode) return ErrorNumber.InvalidArgument;
+
+        if(myNode.Offset < 0) return ErrorNumber.InvalidArgument;
+
+        if(length < 0) return ErrorNumber.InvalidArgument;
+
+        if(myNode.Offset >= myNode.Length) return ErrorNumber.NoError;
+
+        // Adjust length if it would read past end of file
+        if(myNode.Offset + length > myNode.Length) length = myNode.Length - myNode.Offset;
+
+        if(length == 0) return ErrorNumber.NoError;
+
+        // Read the file data based on allocation descriptor type
+        var adType = (byte)((ushort)myNode.FileEntry.icbTag.flags & 0x07);
+
+        ErrorNumber errno = ReadFileData(myNode.FileEntry, myNode.FileEntryBuffer, adType, out byte[] fileData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Copy the requested portion to the buffer
+        long bytesToCopy = Math.Min(length, buffer.Length);
+        bytesToCopy = Math.Min(bytesToCopy, fileData.Length - myNode.Offset);
+
+        if(bytesToCopy <= 0) return ErrorNumber.NoError;
+
+        Array.Copy(fileData, myNode.Offset, buffer, 0, bytesToCopy);
+        read          =  bytesToCopy;
+        myNode.Offset += bytesToCopy;
+
+        return ErrorNumber.NoError;
+    }
+
     /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {
@@ -177,6 +267,43 @@ public sealed partial class UDF
         dest = ParseSymbolicLinkData(linkData);
 
         return string.IsNullOrEmpty(dest) ? ErrorNumber.InvalidArgument : ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Gets the ICB for a file at the given path
+    /// </summary>
+    ErrorNumber GetFileIcb(string path, out LongAllocationDescriptor icb)
+    {
+        icb = default(LongAllocationDescriptor);
+
+        // Root directory
+        if(string.IsNullOrWhiteSpace(path) || path == "/")
+        {
+            icb = _rootDirectoryIcb;
+
+            return ErrorNumber.NoError;
+        }
+
+        string   cutPath = path.StartsWith("/", StringComparison.Ordinal) ? path[1..] : path;
+        string[] pieces  = cutPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        string parentPath = pieces.Length > 1 ? string.Join("/", pieces[..^1]) : "";
+        string fileName   = pieces[^1];
+
+        ErrorNumber errno = GetDirectoryEntries(parentPath, out Dictionary<string, UdfDirectoryEntry> parentEntries);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        UdfDirectoryEntry entry =
+            (from kvp in parentEntries
+             where kvp.Key.Equals(fileName, StringComparison.OrdinalIgnoreCase)
+             select kvp.Value).FirstOrDefault();
+
+        if(entry == null) return ErrorNumber.NoSuchFile;
+
+        icb = entry.Icb;
+
+        return ErrorNumber.NoError;
     }
 
     /// <summary>

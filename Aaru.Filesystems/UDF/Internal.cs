@@ -55,4 +55,24 @@ public sealed partial class UDF
     }
 
 #endregion
+
+#region Nested type: UdfFileNode
+
+    sealed class UdfFileNode : IFileNode
+    {
+        internal FileEntry                FileEntry;
+        internal byte[]                   FileEntryBuffer;
+        internal LongAllocationDescriptor Icb;
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+    }
+
+#endregion
 }
