@@ -28,12 +28,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -45,11 +43,6 @@ public sealed partial class UDF
     public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; }
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces { get; }
-
-    /// <inheritdoc />
-    public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
-                             Dictionary<string, string> options,     string    @namespace) =>
-        throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber Unmount() => throw new NotImplementedException();

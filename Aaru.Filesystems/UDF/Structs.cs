@@ -134,19 +134,26 @@ public sealed partial class UDF
 
 #endregion
 
+    /* ISO 13346 4/14.15 */
+    readonly struct LogicalVolumeHeaderDesc
+    {
+        readonly ulong uniqueID;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 24)]
+        readonly byte[] reserved;
+    }
+
 #region Nested type: LogicalVolumeIntegrityDescriptor
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     readonly struct LogicalVolumeIntegrityDescriptor
     {
-        public readonly DescriptorTag    tag;
-        public readonly Timestamp        recordingDateTime;
-        public readonly IntegrityType    integrityType;
-        public readonly ExtentDescriptor nextIntegrityExtent;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] logicalVolumeContentsUse;
-        public readonly uint numberOfPartitions;
-        public readonly uint lengthOfImplementationUse;
+        public readonly DescriptorTag           tag;
+        public readonly Timestamp               recordingDateTime;
+        public readonly IntegrityType           integrityType;
+        public readonly ExtentDescriptor        nextIntegrityExtent;
+        public readonly LogicalVolumeHeaderDesc logicalVolumeContentsUse;
+        public readonly uint                    numberOfPartitions;
+        public readonly uint                    lengthOfImplementationUse;
 
         // Follows uint[numberOfPartitions] freeSpaceTable;
         // Follows uint[numberOfPartitions] sizeTable;
@@ -237,7 +244,7 @@ public sealed partial class UDF
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct TerminatingExtendedAreaDescriptor
+    readonly struct VolumeStructureDescriptor
     {
         public readonly byte type;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
@@ -381,7 +388,7 @@ public sealed partial class UDF
         public readonly ushort                 interchangeLevel;
         public readonly ushort                 maximumInterchangeLevel;
         public readonly uint                   characterSetList;
-        public readonly ushort                 maximumCharacterSetList;
+        public readonly uint                   maximumCharacterSetList;
         public readonly uint                   fileSetNumber;
         public readonly uint                   fileSetDescriptorNumber;
         public readonly CharacterSpecification logicalVolumeIdentifierCharacterSet;

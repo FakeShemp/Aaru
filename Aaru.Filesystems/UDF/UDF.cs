@@ -40,6 +40,9 @@ public sealed partial class UDF : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "UDF Plugin";
 
+    uint                     _partitionStartingLocation;
+    LongAllocationDescriptor _rootDirectoryIcb;
+
 #region IFilesystem Members
 
     /// <inheritdoc />
