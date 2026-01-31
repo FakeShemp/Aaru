@@ -141,7 +141,7 @@ public sealed partial class UDF
     {
         public readonly DescriptorTag    tag;
         public readonly Timestamp        recordingDateTime;
-        public readonly uint             integrityType;
+        public readonly IntegrityType    integrityType;
         public readonly ExtentDescriptor nextIntegrityExtent;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
         public readonly byte[] logicalVolumeContentsUse;
@@ -197,40 +197,14 @@ public sealed partial class UDF
         public readonly EntityIdentifier       implementationIdentifier;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
         public readonly byte[] implementationUse;
-        public readonly uint   predecessorVolumeDescriptorSequenceLocation;
-        public readonly ushort flags;
+        public readonly uint                  predecessorVolumeDescriptorSequenceLocation;
+        public readonly VolumeDescriptorFlags flags;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 22)]
         public readonly byte[] reserved;
     }
 
 #endregion
 
-#region Nested type: TagIdentifier
-
-    enum TagIdentifier : ushort
-    {
-        PrimaryVolumeDescriptor           = 1,
-        AnchorVolumeDescriptorPointer     = 2,
-        VolumeDescriptorPointer           = 3,
-        ImplementationUseVolumeDescriptor = 4,
-        PartitionDescriptor               = 5,
-        LogicalVolumeDescriptor           = 6,
-        UnallocatedSpaceDescriptor        = 7,
-        TerminatingDescriptor             = 8,
-        LogicalVolumeIntegrityDescriptor  = 9,
-        FileSetDescriptor                 = 256,
-        FileIdentifierDescriptor          = 257,
-        AllocationExtentDescriptor        = 258,
-        IndirectEntry                     = 259,
-        TerminalEntry                     = 260,
-        FileEntry                         = 261,
-        ExtendedAttributeHeaderDescriptor = 262,
-        UnallocatedSpaceEntry             = 263,
-        SpaceBitmapDescriptor             = 264,
-        PartitionIntegrityEntry           = 265
-    }
-
-#endregion
 
 #region Nested type: Timestamp
 
@@ -288,7 +262,7 @@ public sealed partial class UDF
         public readonly ulong            loadAddress;
         public readonly ulong            startAddress;
         public readonly Timestamp        creationDateAndTime;
-        public readonly ushort           flags;
+        public readonly BootFlags        flags;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
         public readonly byte[] reserved2;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1906)]
@@ -332,12 +306,12 @@ public sealed partial class UDF
     {
         public readonly DescriptorTag    tag;
         public readonly uint             volumeDescriptorSequenceNumber;
-        public readonly ushort           partitionFlags;
+        public readonly PartitionFlags   flags;
         public readonly ushort           partitionNumber;
         public readonly EntityIdentifier partitionContents;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
         public readonly byte[] partitionContentsUse;
-        public readonly uint             accessType;
+        public readonly PartitionAccess  accessType;
         public readonly uint             partitionStartingLocation;
         public readonly uint             partitionLength;
         public readonly EntityIdentifier implementationIdentifier;
@@ -444,7 +418,7 @@ public sealed partial class UDF
     {
         public readonly DescriptorTag            tag;
         public readonly ushort                   fileVersionNumber;
-        public readonly byte                     fileCharacteristics;
+        public readonly FileCharacteristics      fileCharacteristics;
         public readonly byte                     lengthOfFileIdentifier;
         public readonly LongAllocationDescriptor icb;
         public readonly uint                     lengthOfImplementationUse;
@@ -461,9 +435,9 @@ public sealed partial class UDF
         public readonly byte[] strategyParameter;
         public readonly ushort              maximumNumberOfEntries;
         public readonly byte                reserved;
-        public readonly byte                fileType;
+        public readonly FileType            fileType;
         public readonly LogicalBlockAddress parentIcbLocation;
-        public readonly ushort              flags;
+        public readonly FileFlags           flags;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -488,7 +462,7 @@ public sealed partial class UDF
         public readonly IcbTag                   icbTag;
         public readonly uint                     uid;
         public readonly uint                     gid;
-        public readonly uint                     permissions;
+        public readonly Permissions              permissions;
         public readonly ushort                   fileLinkCount;
         public readonly byte                     recordFormat;
         public readonly byte                     recordDisplayAttributes;
