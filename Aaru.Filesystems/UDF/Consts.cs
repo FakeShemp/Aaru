@@ -36,11 +36,21 @@ namespace Aaru.Filesystems;
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public sealed partial class UDF
 {
-    const           string FS_TYPE        = "udf";
-    static readonly byte[] _magic         = "*OSTA UDF Compliant\0\0\0\0"u8.ToArray();
-    static readonly byte[] _bea           = "BEA01"u8.ToArray();
-    static readonly byte[] _nsr           = "NSR02"u8.ToArray();
-    static readonly byte[] _nsr_Partition = "+NSR02"u8.ToArray();
-    static readonly byte[] _tea           = "TEA01"u8.ToArray();
-    static readonly byte[] _boot2         = "BOOT2"u8.ToArray();
+    const           string FS_TYPE           = "udf";
+    static readonly byte[] _magic            = "*OSTA UDF Compliant\0\0\0\0"u8.ToArray();
+    static readonly byte[] _udf_Lv           = "*UDF LV Info"u8.ToArray();
+    static readonly byte[] _udf_Free_Ea      = "*UDF FreeEASpace"u8.ToArray();
+    static readonly byte[] _udf_Free_App_Ea  = "*UDF FreeAppEASpace"u8.ToArray();
+    static readonly byte[] _dvd_Cgms         = "*UDF DVD CGMS Info"u8.ToArray();
+    static readonly byte[] _os2_Ea           = "*UDF OS/2 EA"u8.ToArray();
+    static readonly byte[] _os2_Ea_Len       = "*UDF OS/2 EALength"u8.ToArray();
+    static readonly byte[] _mac_VolumeInfo   = "*UDF Mac VolumeInfo"u8.ToArray();
+    static readonly byte[] _mac_FinderInfo   = "*UDF Mac FinderInfo"u8.ToArray();
+    static readonly byte[] _mac_UniqueId     = "*UDF Mac UniqueID Table"u8.ToArray();
+    static readonly byte[] _mac_ResourceFork = "*UDF Mac ResourceFork"u8.ToArray();
+    static readonly byte[] _bea              = "BEA01"u8.ToArray();
+    static readonly byte[] _nsr              = "NSR02"u8.ToArray();
+    static readonly byte[] _nsr_Partition    = "+NSR02"u8.ToArray();
+    static readonly byte[] _tea              = "TEA01"u8.ToArray();
+    static readonly byte[] _boot2            = "BOOT2"u8.ToArray();
 }
