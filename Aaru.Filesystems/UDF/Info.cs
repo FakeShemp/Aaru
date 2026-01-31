@@ -39,7 +39,6 @@ using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
-// TODO: Detect bootable
 /// <inheritdoc />
 /// <summary>Implements detection of the Universal Disk Format filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
@@ -335,12 +334,49 @@ public sealed partial class UDF
             VolumeName            = StringHandlers.DecompressUnicode(lvd.logicalVolumeIdentifier),
             VolumeSetIdentifier   = StringHandlers.DecompressUnicode(pvd.volumeSetIdentifier),
             VolumeSerial          = StringHandlers.DecompressUnicode(pvd.volumeSetIdentifier),
-            SystemIdentifier      = encoding.GetString(pvd.implementationIdentifier.identifier).TrimEnd('\u0000')
+            SystemIdentifier      = encoding.GetString(pvd.implementationIdentifier.identifier).TrimEnd('\u0000'),
+            Bootable              = IsBootable(imagePlugin, partition)
         };
 
         metadata.Clusters = (partition.End - partition.Start + 1) * imagePlugin.Info.SectorSize / metadata.ClusterSize;
 
         information = sbInformation.ToString();
+    }
+
+    /// <summary>
+    ///     Checks if the UDF volume is bootable by scanning the Volume Recognition Sequence
+    ///     for Boot Descriptors with the "BOOT2" identifier per ECMA-167.
+    /// </summary>
+    /// <param name="imagePlugin">The media image</param>
+    /// <param name="partition">The partition containing the UDF volume</param>
+    /// <returns>True if the volume contains a valid Boot Descriptor</returns>
+    static bool IsBootable(IMediaImage imagePlugin, Partition partition)
+    {
+        // Volume Recognition Sequence starts at sector 16 for 2048-byte sectors
+        // For other sector sizes, we need to calculate the equivalent position (32768 bytes from start)
+        ulong vrsStart = 32768 / imagePlugin.Info.SectorSize + partition.Start;
+
+        // Scan the Volume Recognition Sequence for Boot Descriptors
+        // The VRS typically spans sectors 16-31 (for 2048-byte sectors)
+        for(ulong i = 0; i < 16; i++)
+        {
+            ulong sector = vrsStart + i;
+
+            if(sector > partition.End) break;
+
+            ErrorNumber errno = imagePlugin.ReadSector(sector, false, out byte[] buffer, out _);
+
+            if(errno != ErrorNumber.NoError || buffer.Length < 6) continue;
+
+            // Check for Boot Descriptor (type 0, identifier "BOOT2")
+            // Boot Descriptor structure: type (1 byte), identifier (5 bytes), version (1 byte), ...
+            if(buffer[0] != 0) continue;
+
+            // Check identifier "BOOT2"
+            if(buffer[1..6].SequenceEqual(_boot2)) return true;
+        }
+
+        return false;
     }
 
 #endregion

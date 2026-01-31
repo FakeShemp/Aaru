@@ -31,7 +31,6 @@ using System.Runtime.InteropServices;
 
 namespace Aaru.Filesystems;
 
-// TODO: Detect bootable
 /// <inheritdoc />
 /// <summary>Implements detection of the Universal Disk Format filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]

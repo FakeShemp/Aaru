@@ -268,7 +268,8 @@ public sealed partial class UDF
             VolumeSerial          = StringHandlers.DecompressUnicode(pvd.volumeSetIdentifier),
             ModificationDate      = EcmaToDateTime(lvid.recordingDateTime),
             ApplicationIdentifier = Encoding.ASCII.GetString(pvd.implementationIdentifier.identifier).TrimEnd('\u0000'),
-            SystemIdentifier      = Encoding.ASCII.GetString(pvd.implementationIdentifier.identifier).TrimEnd('\u0000')
+            SystemIdentifier      = Encoding.ASCII.GetString(pvd.implementationIdentifier.identifier).TrimEnd('\u0000'),
+            Bootable              = IsBootable(imagePlugin, partition)
         };
 
         // Save instance fields for later use
