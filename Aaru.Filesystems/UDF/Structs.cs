@@ -128,6 +128,8 @@ public sealed partial class UDF
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
         public readonly byte[] implementationUse;
         public readonly ExtentDescriptor integritySequenceExtent;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 440)]
+        public readonly byte[] partitionMaps;
     }
 
 #endregion
@@ -215,7 +217,17 @@ public sealed partial class UDF
         LogicalVolumeDescriptor           = 6,
         UnallocatedSpaceDescriptor        = 7,
         TerminatingDescriptor             = 8,
-        LogicalVolumeIntegrityDescriptor  = 9
+        LogicalVolumeIntegrityDescriptor  = 9,
+        FileSetDescriptor                 = 256,
+        FileIdentifierDescriptor          = 257,
+        AllocationExtentDescriptor        = 258,
+        IndirectEntry                     = 259,
+        TerminalEntry                     = 260,
+        FileEntry                         = 261,
+        ExtendedAttributeHeaderDescriptor = 262,
+        UnallocatedSpaceEntry             = 263,
+        SpaceBitmapDescriptor             = 264,
+        PartitionIntegrityEntry           = 265
     }
 
 #endregion
@@ -238,4 +250,303 @@ public sealed partial class UDF
     }
 
 #endregion
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct BeginningExtendedAreaDescriptor
+    {
+        public readonly byte type;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+        public readonly byte[] identifier;
+        public readonly byte version;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2041)]
+        public readonly byte[] data;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct TerminatingExtendedAreaDescriptor
+    {
+        public readonly byte type;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+        public readonly byte[] identifier;
+        public readonly byte version;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2041)]
+        public readonly byte[] data;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct BootDescriptor
+    {
+        public readonly byte type;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+        public readonly byte[] identifier;
+        public readonly byte             version;
+        public readonly byte             reserved;
+        public readonly EntityIdentifier architectureType;
+        public readonly EntityIdentifier bootIdentifier;
+        public readonly uint             bootExtentLocation;
+        public readonly uint             bootExtentLength;
+        public readonly ulong            loadAddress;
+        public readonly ulong            startAddress;
+        public readonly Timestamp        creationDateAndTime;
+        public readonly ushort           flags;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public readonly byte[] reserved2;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1906)]
+        public readonly byte[] bootUse;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct NsrDescriptor
+    {
+        public readonly byte type;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+        public readonly byte[] identifier;
+        public readonly byte version;
+        public readonly byte reserved;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2040)]
+        public readonly byte[] data;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct VolumeDescriptorPointer
+    {
+        public readonly DescriptorTag    tag;
+        public readonly uint             volumeDescriptorSequenceNumber;
+        public readonly ExtentDescriptor volumeDescriptorPointer;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 484)]
+        public readonly byte[] reserved;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct ImplementationUseVolumeDescriptor
+    {
+        public readonly DescriptorTag    tag;
+        public readonly uint             volumeDescriptorSequenceNumber;
+        public readonly EntityIdentifier implementationIdentifier;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 460)]
+        public readonly byte[] implementationUse;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct PartitionDescriptor
+    {
+        public readonly DescriptorTag    tag;
+        public readonly uint             volumeDescriptorSequenceNumber;
+        public readonly ushort           partitionFlags;
+        public readonly ushort           partitionNumber;
+        public readonly EntityIdentifier partitionContents;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public readonly byte[] partitionContentsUse;
+        public readonly uint             accessType;
+        public readonly uint             partitionStartingLocation;
+        public readonly uint             partitionLength;
+        public readonly EntityIdentifier implementationIdentifier;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public readonly byte[] implementationUse;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 156)]
+        public readonly byte[] reserved;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct UnallocatedSpaceDescriptor
+    {
+        public readonly DescriptorTag tag;
+        public readonly uint          volumeDescriptorSequenceNumber;
+        public readonly uint          numberOfAllocationDescriptors;
+
+        // Followed by Allocation Descriptors
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct TerminatingDescriptor
+    {
+        public readonly DescriptorTag tag;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 496)]
+        public readonly byte[] reserved;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct LogicalBlockAddress
+    {
+        public readonly uint   logicalBlockNumber;
+        public readonly ushort partitionReferenceNumber;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct ShortAllocationDescriptor
+    {
+        public readonly uint extentLength;
+        public readonly uint extentLocation;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct LongAllocationDescriptor
+    {
+        public readonly uint                extentLength;
+        public readonly LogicalBlockAddress extentLocation;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+        public readonly byte[] implementationUse;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct ExtendedAllocationDescriptor
+    {
+        public readonly uint                extentLength;
+        public readonly uint                recordedLength;
+        public readonly uint                informationLength;
+        public readonly LogicalBlockAddress extentLocation;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public readonly byte[] implementationUse;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct FileSetDescriptor
+    {
+        public readonly DescriptorTag          tag;
+        public readonly Timestamp              recordingDateAndTime;
+        public readonly ushort                 interchangeLevel;
+        public readonly ushort                 maximumInterchangeLevel;
+        public readonly uint                   characterSetList;
+        public readonly ushort                 maximumCharacterSetList;
+        public readonly uint                   fileSetNumber;
+        public readonly uint                   fileSetDescriptorNumber;
+        public readonly CharacterSpecification logicalVolumeIdentifierCharacterSet;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public readonly byte[] logicalVolumeIdentifier;
+        public readonly CharacterSpecification fileSetIdentifierCharacterSet;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public readonly byte[] fileSetIdentifier;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public readonly byte[] copyrightFileIdentifier;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public readonly byte[] abstractFileIdentifier;
+        public readonly LongAllocationDescriptor rootDirectoryICB;
+        public readonly EntityIdentifier         domainIdentifier;
+        public readonly LongAllocationDescriptor nextExtent;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)]
+        public readonly byte[] reserved;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct PartitionHeaderDescriptor
+    {
+        public readonly ShortAllocationDescriptor unallocatedSpaceTable;
+        public readonly ShortAllocationDescriptor unallocatedSpaceBitmap;
+        public readonly ShortAllocationDescriptor partitionIntegrityTable;
+        public readonly ShortAllocationDescriptor freedSpaceTable;
+        public readonly ShortAllocationDescriptor freedSpaceBitmap;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 88)]
+        public readonly byte[] reserved;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct FileIdentifierDescriptor
+    {
+        public readonly DescriptorTag            tag;
+        public readonly ushort                   fileVersionNumber;
+        public readonly byte                     fileCharacteristics;
+        public readonly byte                     lengthOfFileIdentifier;
+        public readonly LongAllocationDescriptor icb;
+        public readonly uint                     lengthOfImplementationUse;
+
+        // Followed by Implementation Use, and File Identifier
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct IcbTag
+    {
+        public readonly uint   priorRecordedNumberOfDirectEntries;
+        public readonly ushort strategyType;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public readonly byte[] strategyParameter;
+        public readonly ushort              maximumNumberOfEntries;
+        public readonly byte                reserved;
+        public readonly byte                fileType;
+        public readonly LogicalBlockAddress parentIcbLocation;
+        public readonly ushort              flags;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct IndirectEntry
+    {
+        public readonly DescriptorTag            tag;
+        public readonly IcbTag                   icbTag;
+        public readonly LongAllocationDescriptor indirectIcb;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct TerminalEntry
+    {
+        public readonly DescriptorTag tag;
+        public readonly IcbTag        icbTag;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct FileEntry
+    {
+        public readonly DescriptorTag            tag;
+        public readonly IcbTag                   icbTag;
+        public readonly uint                     uid;
+        public readonly uint                     gid;
+        public readonly uint                     permissions;
+        public readonly ushort                   fileLinkCount;
+        public readonly byte                     recordFormat;
+        public readonly byte                     recordDisplayAttributes;
+        public readonly uint                     recordLength;
+        public readonly ulong                    informationLength;
+        public readonly ulong                    logicalBlocksRecorded;
+        public readonly Timestamp                accessTime;
+        public readonly Timestamp                modificationTime;
+        public readonly Timestamp                attributeTime;
+        public readonly uint                     checkpoint;
+        public readonly LongAllocationDescriptor extendedAttributeICB;
+        public readonly EntityIdentifier         implementationIdentifier;
+        public readonly ulong                    uniqueId;
+        public readonly uint                     lengthOfExtendedAttributes;
+        public readonly uint                     lengthOfAllocationDescriptors;
+
+        // Followed by Extended Attributes and Allocation Descriptors
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct ExtendedAttributeHeaderDescriptor
+    {
+        public readonly DescriptorTag tag;
+        public readonly uint          implementationAttributesLocation;
+        public readonly uint          applicationAttributesLocation;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct UnallocatedSpaceEntry
+    {
+        public readonly DescriptorTag tag;
+        public readonly IcbTag        icbTag;
+        public readonly uint          lengthOfUnallocatedSpaceDescriptors;
+
+        // Followed by Unallocated Space Descriptors
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct SpaceBitmapEntry
+    {
+        public readonly DescriptorTag tag;
+        public readonly uint          numberOfBits;
+        public readonly uint          numberOfBytes;
+
+        // Followed by Bitmap Data (bytes)
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct PartitionIntegrityEntry
+    {
+        public readonly DescriptorTag tag;
+        public readonly IcbTag        icbTag;
+        public readonly Timestamp     recordingTime;
+        public readonly byte          integrityType;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 175)]
+        public readonly byte[] reserved;
+        public readonly EntityIdentifier ImplementationIdentifier;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+        public readonly byte[] implementationUse;
+    }
 }
