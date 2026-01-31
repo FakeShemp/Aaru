@@ -50,12 +50,6 @@ public sealed partial class UDF
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
-
 
     /// <inheritdoc />
     public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();

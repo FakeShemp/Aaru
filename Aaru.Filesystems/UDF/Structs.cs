@@ -530,4 +530,202 @@ public sealed partial class UDF
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
         public readonly byte[] implementationUse;
     }
+
+    /// <summary>Generic Extended Attribute header per ECMA-167 4/14.10.1</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct GenericExtendedAttributeHeader
+    {
+        public readonly uint attributeType;
+        public readonly byte attributeSubtype;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public readonly byte[] reserved;
+        public readonly uint attributeLength;
+
+        // Followed by attribute data
+    }
+
+    /// <summary>Implementation Use Extended Attribute per ECMA-167 4/14.10.8</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct ImplementationUseExtendedAttribute
+    {
+        public readonly uint attributeType;    // 2048
+        public readonly byte attributeSubtype; // 1
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public readonly byte[] reserved;
+        public readonly uint             attributeLength;
+        public readonly uint             implementationUseLength;
+        public readonly EntityIdentifier implementationIdentifier;
+
+        // Followed by implementation use data
+    }
+
+    /// <summary>Application Use Extended Attribute per ECMA-167 4/14.10.9</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct ApplicationUseExtendedAttribute
+    {
+        public readonly uint attributeType;    // 65536
+        public readonly byte attributeSubtype; // 1
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public readonly byte[] reserved;
+        public readonly uint             attributeLength;
+        public readonly uint             applicationUseLength;
+        public readonly EntityIdentifier applicationIdentifier;
+
+        // Followed by application use data
+    }
+
+    /// <summary>Character Set Information Extended Attribute per ECMA-167 4/14.10.2</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct CharacterSetInformationExtendedAttribute
+    {
+        public readonly uint attributeType;    // 1
+        public readonly byte attributeSubtype; // 1
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public readonly byte[] reserved;
+        public readonly uint attributeLength;
+        public readonly uint escapeSequencesLength;
+        public readonly byte characterSetType;
+
+        // Followed by escape sequences
+    }
+
+    /// <summary>Alternate Permissions Extended Attribute per ECMA-167 4/14.10.3</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct AlternatePermissionsExtendedAttribute
+    {
+        public readonly uint attributeType;    // 3
+        public readonly byte attributeSubtype; // 1
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public readonly byte[] reserved;
+        public readonly uint   attributeLength;
+        public readonly ushort ownerIdentification;
+        public readonly ushort groupIdentification;
+        public readonly ushort permission;
+    }
+
+    /// <summary>File Times Extended Attribute per ECMA-167 4/14.10.5</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct FileTimesExtendedAttribute
+    {
+        public readonly uint attributeType;    // 5
+        public readonly byte attributeSubtype; // 1
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public readonly byte[] reserved;
+        public readonly uint attributeLength;
+        public readonly uint dataLength;
+        public readonly uint fileTimeExistence;
+
+        // Followed by timestamps
+    }
+
+    /// <summary>Information Times Extended Attribute per ECMA-167 4/14.10.6</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct InformationTimesExtendedAttribute
+    {
+        public readonly uint attributeType;    // 6
+        public readonly byte attributeSubtype; // 1
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public readonly byte[] reserved;
+        public readonly uint attributeLength;
+        public readonly uint dataLength;
+        public readonly uint infoTimeExistence;
+
+        // Followed by timestamps
+    }
+
+    /// <summary>Device Specification Extended Attribute per ECMA-167 4/14.10.7</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct DeviceSpecificationExtendedAttribute
+    {
+        public readonly uint attributeType;    // 12
+        public readonly byte attributeSubtype; // 1
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public readonly byte[] reserved;
+        public readonly uint attributeLength;
+        public readonly uint implementationUseLength;
+        public readonly uint majorDeviceIdentification;
+        public readonly uint minorDeviceIdentification;
+
+        // Followed by implementation use
+    }
+
+    /// <summary>Free EA Space per UDF 2.01 3.3.4.5.1.1</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct FreeEaSpace
+    {
+        public readonly ushort headerChecksum;
+
+        // Followed by Free EA Space bytes (IU_L - 2 bytes)
+    }
+
+    /// <summary>DVD CGMS Info per UDF 2.01 3.3.4.5.1.2</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct DvdCgmsInfo
+    {
+        public readonly ushort headerChecksum;
+        public readonly byte   cgmsInformation;
+        public readonly byte   dataStructureType;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public readonly byte[] protectionSystemInformation;
+    }
+
+    /// <summary>OS/2 EA header per UDF 1.02 3.3.4.5.3.1</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Os2EaHeader
+    {
+        public readonly ushort headerChecksum;
+
+        // Followed by FEA entries (IU_L - 2 bytes)
+    }
+
+    /// <summary>OS/2 Full EA (FEA) per UDF 1.02 3.3.4.5.3.1</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Fea
+    {
+        public readonly byte   flags;
+        public readonly byte   lengthOfName;
+        public readonly ushort lengthOfValue;
+
+        // Followed by Name (L_N bytes) and Value (L_V bytes)
+    }
+
+    /// <summary>Mac Volume Info per UDF 1.02 3.3.4.5.4</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct MacVolumeInfo
+    {
+        public readonly ushort    headerChecksum;
+        public readonly Timestamp lastModificationDate;
+        public readonly Timestamp lastBackupDate;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public readonly byte[] volumeFinderInformation;
+    }
+
+    /// <summary>Mac Finder Info header per UDF 1.02 3.3.4.5.5</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct MacFinderInfoHeader
+    {
+        public readonly ushort headerChecksum;
+        public readonly ushort padding;
+
+        // Followed by FinderInfo data (typically 16 or 32 bytes)
+    }
+
+    /// <summary>Mac Unique ID Table per UDF 1.02 3.3.4.5.6</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct MacUniqueIdTable
+    {
+        public readonly ushort headerChecksum;
+        public readonly ushort reserved;
+        public readonly uint   numberOfUniqueIdMaps;
+
+        // Followed by UniqueIdMap entries (N_DID × 8 bytes)
+    }
+
+    /// <summary>Unique ID Map entry per UDF 1.02 3.3.4.5.6</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct UniqueIdMap
+    {
+        public readonly uint uniqueId;
+        public readonly uint parentUniqueId;
+    }
 }

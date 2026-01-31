@@ -71,7 +71,80 @@ public sealed partial class UDF
 
         if(fileEntry.icbTag.flags.HasFlag(FileFlags.Archive)) stat.Attributes |= FileAttributes.Archive;
 
+        // Check for MacVolumeInfo extended attribute to get additional timestamps
+        if(fileEntry.lengthOfExtendedAttributes > 0)
+        {
+            errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+
+            if(errno == ErrorNumber.NoError)
+            {
+                MacVolumeInfo? macVolumeInfo = GetMacVolumeInfo(feBuffer, fileEntry);
+
+                if(macVolumeInfo.HasValue)
+                {
+                    stat.LastWriteTimeUtc = EcmaToDateTime(macVolumeInfo.Value.lastModificationDate);
+                    stat.BackupTimeUtc    = EcmaToDateTime(macVolumeInfo.Value.lastBackupDate);
+                }
+            }
+        }
+
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Gets MacVolumeInfo from the extended attributes if present
+    /// </summary>
+    MacVolumeInfo? GetMacVolumeInfo(byte[] feBuffer, FileEntry fileEntry)
+    {
+        const int fileEntryFixedSize = 176;
+        int       eaOffset           = fileEntryFixedSize;
+        int       eaEnd              = fileEntryFixedSize + (int)fileEntry.lengthOfExtendedAttributes;
+
+        // First, check for Extended Attribute Header Descriptor
+        if(eaEnd - eaOffset >= 24)
+        {
+            var tagId = (TagIdentifier)BitConverter.ToUInt16(feBuffer, eaOffset);
+
+            if(tagId == TagIdentifier.ExtendedAttributeHeaderDescriptor) eaOffset += 24; // Skip the header descriptor
+        }
+
+        while(eaOffset + 12 <= eaEnd)
+        {
+            GenericExtendedAttributeHeader eaHeader =
+                Marshal.ByteArrayToStructureLittleEndian<GenericExtendedAttributeHeader>(feBuffer, eaOffset, 12);
+
+            if(eaHeader.attributeLength == 0) break;
+
+            if(eaHeader.attributeType == 2048) // EA_TYPE_IMPLEMENTATION
+            {
+                int headerSize = System.Runtime.InteropServices.Marshal.SizeOf<ImplementationUseExtendedAttribute>();
+
+                if(eaOffset + headerSize <= feBuffer.Length)
+                {
+                    ImplementationUseExtendedAttribute iuea =
+                        Marshal.ByteArrayToStructureLittleEndian<ImplementationUseExtendedAttribute>(feBuffer,
+                            eaOffset,
+                            headerSize);
+
+                    if(CompareIdentifier(iuea.implementationIdentifier.identifier, _mac_VolumeInfo))
+                    {
+                        int macVolumeInfoSize = System.Runtime.InteropServices.Marshal.SizeOf<MacVolumeInfo>();
+                        int dataOffset        = eaOffset + headerSize;
+
+                        if(dataOffset + macVolumeInfoSize <= feBuffer.Length)
+                        {
+                            return Marshal.ByteArrayToStructureLittleEndian<MacVolumeInfo>(feBuffer,
+                                dataOffset,
+                                macVolumeInfoSize);
+                        }
+                    }
+                }
+            }
+
+            eaOffset += (int)eaHeader.attributeLength;
+        }
+
+        return null;
     }
 
     /// <summary>

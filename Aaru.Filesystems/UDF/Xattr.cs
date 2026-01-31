@@ -1,0 +1,596 @@
+// /***************************************************************************
+// Aaru Data Preservation Suite
+// ----------------------------------------------------------------------------
+//
+// Filename       : Xattr.cs
+// Author(s)      : Natalia Portillo <claunia@claunia.com>
+//
+// Component      : Universal Disk Format plugin.
+//
+// --[ License ] --------------------------------------------------------------
+//
+//     This library is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU Lesser General Public License as
+//     published by the Free Software Foundation; either version 2.1 of the
+//     License, or (at your option) any later version.
+//
+//     This library is distributed in the hope that it will be useful, but
+//     WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//     Lesser General Public License for more details.
+//
+//     You should have received a copy of the GNU Lesser General Public
+//     License along with this library; if not, see <http://www.gnu.org/licenses/>.
+//
+// ----------------------------------------------------------------------------
+// Copyright © 2011-2026 Natalia Portillo
+// ****************************************************************************/
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Aaru.CommonTypes.Enums;
+using Aaru.Helpers;
+using Marshal = Aaru.Helpers.Marshal;
+
+namespace Aaru.Filesystems;
+
+public sealed partial class UDF
+{
+    // Extended Attribute Type constants per ECMA-167
+    const uint EA_TYPE_CHARSET_INFO    = 1;
+    const uint EA_TYPE_ALTERNATE_PERMS = 3;
+    const uint EA_TYPE_FILE_TIMES      = 5;
+    const uint EA_TYPE_INFO_TIMES      = 6;
+    const uint EA_TYPE_DEVICE_SPEC     = 12;
+    const uint EA_TYPE_IMPLEMENTATION  = 2048;
+    const uint EA_TYPE_APPLICATION     = 65536;
+
+    /// <inheritdoc />
+    public ErrorNumber ListXAttr(string path, out List<string> xattrs)
+    {
+        xattrs = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber errno = GetFileEntry(path, out FileEntry fileEntry);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        xattrs = [];
+
+        if(fileEntry.lengthOfExtendedAttributes == 0) return ErrorNumber.NoError;
+
+        // Read the FileEntry sector to get extended attributes
+        errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Parse extended attributes
+        const int fileEntryFixedSize = 176;
+        int       eaOffset           = fileEntryFixedSize;
+        int       eaEnd              = fileEntryFixedSize + (int)fileEntry.lengthOfExtendedAttributes;
+
+        // First, check for Extended Attribute Header Descriptor
+        if(eaEnd - eaOffset >= 24)
+        {
+            var tagId = (TagIdentifier)BitConverter.ToUInt16(feBuffer, eaOffset);
+
+            if(tagId == TagIdentifier.ExtendedAttributeHeaderDescriptor) eaOffset += 24; // Skip the header descriptor
+        }
+
+        while(eaOffset + 12 <= eaEnd) // Minimum EA header is 12 bytes
+        {
+            GenericExtendedAttributeHeader eaHeader =
+                Marshal.ByteArrayToStructureLittleEndian<GenericExtendedAttributeHeader>(feBuffer, eaOffset, 12);
+
+            if(eaHeader.attributeLength == 0) break;
+
+            // Special handling for OS/2 EAs - they contain multiple FEA entries
+            if(eaHeader.attributeType == EA_TYPE_IMPLEMENTATION)
+            {
+                int headerSize = System.Runtime.InteropServices.Marshal.SizeOf<ImplementationUseExtendedAttribute>();
+
+                if(eaOffset + headerSize <= feBuffer.Length)
+                {
+                    ImplementationUseExtendedAttribute iuea =
+                        Marshal.ByteArrayToStructureLittleEndian<ImplementationUseExtendedAttribute>(feBuffer,
+                            eaOffset,
+                            headerSize);
+
+                    if(CompareIdentifier(iuea.implementationIdentifier.identifier, _os2_Ea))
+                    {
+                        // Enumerate all FEA entries
+                        List<string> os2Xattrs = GetOs2EaNames(feBuffer, eaOffset, iuea);
+
+                        foreach(string os2Xattr in os2Xattrs)
+                        {
+                            if(!xattrs.Contains(os2Xattr)) xattrs.Add(os2Xattr);
+                        }
+
+                        eaOffset += (int)eaHeader.attributeLength;
+
+                        continue;
+                    }
+                }
+            }
+
+            string xattrName = GetXAttrNameForEa(feBuffer, eaOffset, eaHeader);
+
+            if(!string.IsNullOrEmpty(xattrName) && !xattrs.Contains(xattrName)) xattrs.Add(xattrName);
+
+            eaOffset += (int)eaHeader.attributeLength;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf)
+    {
+        buf = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber errno = GetFileEntry(path, out FileEntry fileEntry);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(fileEntry.lengthOfExtendedAttributes == 0) return ErrorNumber.NoSuchExtendedAttribute;
+
+        errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Parse extended attributes
+        const int fileEntryFixedSize = 176;
+        int       eaOffset           = fileEntryFixedSize;
+        int       eaEnd              = fileEntryFixedSize + (int)fileEntry.lengthOfExtendedAttributes;
+
+        // First, check for Extended Attribute Header Descriptor
+        if(eaEnd - eaOffset >= 24)
+        {
+            var tagId = (TagIdentifier)BitConverter.ToUInt16(feBuffer, eaOffset);
+
+            if(tagId == TagIdentifier.ExtendedAttributeHeaderDescriptor) eaOffset += 24; // Skip the header descriptor
+        }
+
+        while(eaOffset + 12 <= eaEnd)
+        {
+            GenericExtendedAttributeHeader eaHeader =
+                Marshal.ByteArrayToStructureLittleEndian<GenericExtendedAttributeHeader>(feBuffer, eaOffset, 12);
+
+            if(eaHeader.attributeLength == 0) break;
+
+            // Special handling for OS/2 EAs
+            if(eaHeader.attributeType == EA_TYPE_IMPLEMENTATION &&
+               xattr.StartsWith("com.ibm.os2.", StringComparison.Ordinal))
+            {
+                int headerSize = System.Runtime.InteropServices.Marshal.SizeOf<ImplementationUseExtendedAttribute>();
+
+                if(eaOffset + headerSize <= feBuffer.Length)
+                {
+                    ImplementationUseExtendedAttribute iuea =
+                        Marshal.ByteArrayToStructureLittleEndian<ImplementationUseExtendedAttribute>(feBuffer,
+                            eaOffset,
+                            headerSize);
+
+                    if(CompareIdentifier(iuea.implementationIdentifier.identifier, _os2_Ea))
+                    {
+                        string os2EaName = xattr["com.ibm.os2.".Length..];
+                        buf = GetOs2EaData(feBuffer, eaOffset, iuea, os2EaName);
+
+                        return buf != null ? ErrorNumber.NoError : ErrorNumber.NoSuchExtendedAttribute;
+                    }
+                }
+            }
+
+            string xattrName = GetXAttrNameForEa(feBuffer, eaOffset, eaHeader);
+
+            if(xattrName == xattr)
+            {
+                buf = GetXAttrData(feBuffer, eaOffset, eaHeader);
+
+                return buf != null ? ErrorNumber.NoError : ErrorNumber.NoSuchExtendedAttribute;
+            }
+
+            eaOffset += (int)eaHeader.attributeLength;
+        }
+
+        return ErrorNumber.NoSuchExtendedAttribute;
+    }
+
+    /// <summary>
+    ///     Gets the extended attribute name for a given EA
+    /// </summary>
+    string GetXAttrNameForEa(byte[] feBuffer, int eaOffset, GenericExtendedAttributeHeader eaHeader)
+    {
+        switch(eaHeader.attributeType)
+        {
+            case EA_TYPE_CHARSET_INFO:
+                return "ch.ecma.charset_info";
+
+            case EA_TYPE_ALTERNATE_PERMS:
+                return "ch.ecma.alternate_permissions";
+
+            case EA_TYPE_FILE_TIMES:
+                return "ch.ecma.file_times";
+
+            case EA_TYPE_INFO_TIMES:
+                return "ch.ecma.info_times";
+
+            case EA_TYPE_DEVICE_SPEC:
+                return "ch.ecma.device_specification";
+
+            case EA_TYPE_IMPLEMENTATION:
+                return GetImplementationUseEaName(feBuffer, eaOffset);
+
+            case EA_TYPE_APPLICATION:
+                return GetApplicationUseEaName(feBuffer, eaOffset);
+
+            default:
+                return $"org.osta.udf.ea_type_{eaHeader.attributeType}";
+        }
+    }
+
+    /// <summary>
+    ///     Gets the name for an Implementation Use Extended Attribute
+    /// </summary>
+    string GetImplementationUseEaName(byte[] feBuffer, int eaOffset)
+    {
+        // Implementation Use EA has EntityIdentifier at offset 12 (after the 12-byte common header)
+        if(eaOffset + 44 > feBuffer.Length) return "org.osta.udf.implementation_use";
+
+        ImplementationUseExtendedAttribute iuea =
+            Marshal.ByteArrayToStructureLittleEndian<ImplementationUseExtendedAttribute>(feBuffer,
+                eaOffset,
+                System.Runtime.InteropServices.Marshal.SizeOf<ImplementationUseExtendedAttribute>());
+
+        if(iuea.implementationIdentifier.identifier == null) return "org.osta.udf.implementation_use";
+
+        // Check for known identifiers
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _mac_ResourceFork))
+            return "com.apple.ResourceFork";
+
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _mac_FinderInfo)) return "com.apple.FinderInfo";
+
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _mac_UniqueId))
+            return null; // MacUniqueIDTable is internal UDF structure, should be ignored
+
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _mac_VolumeInfo))
+            return "com.apple.FinderInfo"; // MacVolumeInfo contains Finder info
+
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _os2_Ea))
+            return null; // OS/2 EAs are handled separately in ListXAttr
+
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _os2_Ea_Len))
+            return null; // OS/2 EALength should be ignored
+
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _dvd_Cgms)) return "org.osta.udf.dvd_cgms_info";
+
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _udf_Free_Ea))
+            return "org.osta.udf.free_ea_space";
+
+        // Unknown implementation use EA
+        string identifier = StringHandlers.CToString(iuea.implementationIdentifier.identifier, Encoding.ASCII)?.Trim();
+
+        return string.IsNullOrEmpty(identifier)
+                   ? "org.osta.udf.implementation_use"
+                   : $"org.osta.udf.{identifier.Replace("*", "").Replace(" ", "_").ToLowerInvariant()}";
+    }
+
+    /// <summary>
+    ///     Gets the names for all OS/2 Extended Attributes (FEA entries)
+    /// </summary>
+    List<string> GetOs2EaNames(byte[] feBuffer, int eaOffset, ImplementationUseExtendedAttribute iuea)
+    {
+        var names = new List<string>();
+
+        // OS/2 EA data follows the Implementation Use EA header
+        // Format: 2-byte header checksum followed by FEA entries
+
+        int headerSize = System.Runtime.InteropServices.Marshal.SizeOf<ImplementationUseExtendedAttribute>();
+        int dataOffset = eaOffset   + headerSize;
+        int dataEnd    = dataOffset + (int)iuea.implementationUseLength;
+
+        if(dataOffset + 2 > feBuffer.Length) return names;
+
+        // Skip 2-byte header checksum
+        dataOffset += 2;
+
+        int feaSize = System.Runtime.InteropServices.Marshal.SizeOf<Fea>();
+
+        // Parse all FEA entries
+        while(dataOffset + feaSize <= dataEnd && dataOffset + feaSize <= feBuffer.Length)
+        {
+            Fea fea = Marshal.ByteArrayToStructureLittleEndian<Fea>(feBuffer, dataOffset, feaSize);
+
+            if(fea.lengthOfName == 0) break;
+
+            if(dataOffset + feaSize + fea.lengthOfName > feBuffer.Length) break;
+
+            string eaName = Encoding.ASCII.GetString(feBuffer, dataOffset + feaSize, fea.lengthOfName);
+
+            if(!string.IsNullOrEmpty(eaName)) names.Add($"com.ibm.os2.{eaName}");
+
+            // Move to next FEA entry: header + name + value
+            dataOffset += feaSize + fea.lengthOfName + fea.lengthOfValue;
+        }
+
+        return names;
+    }
+
+    /// <summary>
+    ///     Gets the data for a specific OS/2 Extended Attribute by name
+    /// </summary>
+    byte[] GetOs2EaData(byte[] feBuffer, int eaOffset, ImplementationUseExtendedAttribute iuea, string eaName)
+    {
+        // OS/2 EA data follows the Implementation Use EA header
+        // Format: 2-byte header checksum followed by FEA entries
+
+        int headerSize = System.Runtime.InteropServices.Marshal.SizeOf<ImplementationUseExtendedAttribute>();
+        int dataOffset = eaOffset   + headerSize;
+        int dataEnd    = dataOffset + (int)iuea.implementationUseLength;
+
+        if(dataOffset + 2 > feBuffer.Length) return null;
+
+        // Skip 2-byte header checksum
+        dataOffset += 2;
+
+        int feaSize = System.Runtime.InteropServices.Marshal.SizeOf<Fea>();
+
+        // Parse all FEA entries to find the requested one
+        while(dataOffset + feaSize <= dataEnd && dataOffset + feaSize <= feBuffer.Length)
+        {
+            Fea fea = Marshal.ByteArrayToStructureLittleEndian<Fea>(feBuffer, dataOffset, feaSize);
+
+            if(fea.lengthOfName == 0) break;
+
+            if(dataOffset + feaSize + fea.lengthOfName > feBuffer.Length) break;
+
+            string currentEaName = Encoding.ASCII.GetString(feBuffer, dataOffset + feaSize, fea.lengthOfName);
+
+            if(currentEaName.Equals(eaName, StringComparison.OrdinalIgnoreCase))
+            {
+                // Found it - extract the value
+                int valueOffset = dataOffset + feaSize + fea.lengthOfName;
+
+                if(valueOffset + fea.lengthOfValue > feBuffer.Length) return null;
+
+                var value = new byte[fea.lengthOfValue];
+                Array.Copy(feBuffer, valueOffset, value, 0, fea.lengthOfValue);
+
+                return value;
+            }
+
+            // Move to next FEA entry: header + name + value
+            dataOffset += feaSize + fea.lengthOfName + fea.lengthOfValue;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    ///     Gets the name for an Application Use Extended Attribute
+    /// </summary>
+    string GetApplicationUseEaName(byte[] feBuffer, int eaOffset)
+    {
+        if(eaOffset + 44 > feBuffer.Length) return "org.osta.udf.application_use";
+
+        ApplicationUseExtendedAttribute auea =
+            Marshal.ByteArrayToStructureLittleEndian<ApplicationUseExtendedAttribute>(feBuffer,
+                eaOffset,
+                System.Runtime.InteropServices.Marshal.SizeOf<ApplicationUseExtendedAttribute>());
+
+        if(auea.applicationIdentifier.identifier == null) return "org.osta.udf.application_use";
+
+        string identifier = StringHandlers.CToString(auea.applicationIdentifier.identifier, Encoding.ASCII)?.Trim();
+
+        return string.IsNullOrEmpty(identifier)
+                   ? "org.osta.udf.application_use"
+                   : $"org.osta.udf.app.{identifier.Replace("*", "").Replace(" ", "_").ToLowerInvariant()}";
+    }
+
+    /// <summary>
+    ///     Gets the data for an extended attribute
+    /// </summary>
+    byte[] GetXAttrData(byte[] feBuffer, int eaOffset, GenericExtendedAttributeHeader eaHeader)
+    {
+        switch(eaHeader.attributeType)
+        {
+            case EA_TYPE_CHARSET_INFO:
+            case EA_TYPE_ALTERNATE_PERMS:
+            case EA_TYPE_FILE_TIMES:
+            case EA_TYPE_INFO_TIMES:
+            case EA_TYPE_DEVICE_SPEC:
+            {
+                // Return the data portion after the 12-byte header
+                int dataOffset = eaOffset                      + 12;
+                int dataLength = (int)eaHeader.attributeLength - 12;
+
+                if(dataOffset + dataLength > feBuffer.Length || dataLength <= 0) return null;
+
+                var data = new byte[dataLength];
+                Array.Copy(feBuffer, dataOffset, data, 0, dataLength);
+
+                return data;
+            }
+
+            case EA_TYPE_IMPLEMENTATION:
+                return GetImplementationUseEaData(feBuffer, eaOffset, eaHeader);
+
+            case EA_TYPE_APPLICATION:
+                return GetApplicationUseEaData(feBuffer, eaOffset, eaHeader);
+
+            default:
+            {
+                // Unknown EA type, return raw data after header
+                int dataOffset = eaOffset                      + 12;
+                int dataLength = (int)eaHeader.attributeLength - 12;
+
+                if(dataOffset + dataLength > feBuffer.Length || dataLength <= 0) return null;
+
+                var data = new byte[dataLength];
+                Array.Copy(feBuffer, dataOffset, data, 0, dataLength);
+
+                return data;
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Gets the data for an Implementation Use Extended Attribute
+    /// </summary>
+    byte[] GetImplementationUseEaData(byte[] feBuffer, int eaOffset, GenericExtendedAttributeHeader eaHeader)
+    {
+        int headerSize = System.Runtime.InteropServices.Marshal.SizeOf<ImplementationUseExtendedAttribute>();
+
+        if(eaOffset + headerSize > feBuffer.Length) return null;
+
+        ImplementationUseExtendedAttribute iuea =
+            Marshal.ByteArrayToStructureLittleEndian<ImplementationUseExtendedAttribute>(feBuffer,
+                eaOffset,
+                headerSize);
+
+        // OS/2 EAs are handled separately via GetOs2EaData
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _os2_Ea)) return null;
+
+        int dataOffset = eaOffset + headerSize;
+        var dataLength = (int)iuea.implementationUseLength;
+
+        // For MacVolumeInfo, return only the volumeFinderInformation (32 bytes at offset 26)
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _mac_VolumeInfo))
+        {
+            int macVolumeInfoSize = System.Runtime.InteropServices.Marshal.SizeOf<MacVolumeInfo>();
+
+            if(dataOffset + macVolumeInfoSize <= feBuffer.Length)
+            {
+                MacVolumeInfo macVolumeInfo =
+                    Marshal.ByteArrayToStructureLittleEndian<MacVolumeInfo>(feBuffer, dataOffset, macVolumeInfoSize);
+
+                return macVolumeInfo.volumeFinderInformation;
+            }
+
+            return null;
+        }
+
+        // For MacFinderInfo, skip the 2-byte header checksum and 2-byte padding
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _mac_FinderInfo))
+        {
+            // Skip 2-byte header checksum + 2-byte padding
+            dataOffset += 4;
+            dataLength -= 4;
+
+            if(dataOffset + dataLength > feBuffer.Length || dataLength <= 0) return null;
+
+            var data = new byte[dataLength];
+            Array.Copy(feBuffer, dataOffset, data, 0, dataLength);
+
+            return data;
+        }
+
+        // For MacResourceFork, skip the 2-byte header checksum
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _mac_ResourceFork))
+        {
+            // Skip 2-byte header checksum
+            dataOffset += 2;
+            dataLength -= 2;
+
+            if(dataOffset + dataLength > feBuffer.Length || dataLength <= 0) return null;
+
+            var data = new byte[dataLength];
+            Array.Copy(feBuffer, dataOffset, data, 0, dataLength);
+
+            return data;
+        }
+
+        if(dataOffset + dataLength > feBuffer.Length || dataLength <= 0) return null;
+
+        var rawData = new byte[dataLength];
+        Array.Copy(feBuffer, dataOffset, rawData, 0, dataLength);
+
+        return rawData;
+    }
+
+    /// <summary>
+    ///     Gets the data for an Application Use Extended Attribute
+    /// </summary>
+    byte[] GetApplicationUseEaData(byte[] feBuffer, int eaOffset, GenericExtendedAttributeHeader eaHeader)
+    {
+        int headerSize = System.Runtime.InteropServices.Marshal.SizeOf<ApplicationUseExtendedAttribute>();
+
+        if(eaOffset + headerSize > feBuffer.Length) return null;
+
+        ApplicationUseExtendedAttribute auea =
+            Marshal.ByteArrayToStructureLittleEndian<ApplicationUseExtendedAttribute>(feBuffer, eaOffset, headerSize);
+
+        int dataOffset = eaOffset + headerSize;
+        var dataLength = (int)auea.applicationUseLength;
+
+        if(dataOffset + dataLength > feBuffer.Length || dataLength <= 0) return null;
+
+        var data = new byte[dataLength];
+        Array.Copy(feBuffer, dataOffset, data, 0, dataLength);
+
+        return data;
+    }
+
+    /// <summary>
+    ///     Gets the raw FileEntry buffer for a path
+    /// </summary>
+    ErrorNumber GetFileEntryBuffer(string path, out byte[] feBuffer)
+    {
+        feBuffer = null;
+
+        // Root directory
+        if(string.IsNullOrWhiteSpace(path) || path == "/")
+        {
+            ulong rootSector = _partitionStartingLocation + _rootDirectoryIcb.extentLocation.logicalBlockNumber;
+
+            return _imagePlugin.ReadSector(rootSector, false, out feBuffer, out _);
+        }
+
+        string   cutPath    = path.StartsWith("/", StringComparison.Ordinal) ? path[1..] : path;
+        string[] pieces     = cutPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        string   parentPath = pieces.Length > 1 ? string.Join("/", pieces[..^1]) : "";
+        string   fileName   = pieces[^1];
+
+        ErrorNumber errno = GetDirectoryEntries(parentPath, out Dictionary<string, UdfDirectoryEntry> parentEntries);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        UdfDirectoryEntry entry = null;
+
+        foreach(KeyValuePair<string, UdfDirectoryEntry> kvp in parentEntries)
+        {
+            if(!kvp.Key.Equals(fileName, StringComparison.OrdinalIgnoreCase)) continue;
+
+            entry = kvp.Value;
+
+            break;
+        }
+
+        if(entry == null) return ErrorNumber.NoSuchFile;
+
+        ulong fileEntrySector = _partitionStartingLocation + entry.Icb.extentLocation.logicalBlockNumber;
+
+        return _imagePlugin.ReadSector(fileEntrySector, false, out feBuffer, out _);
+    }
+
+    /// <summary>
+    ///     Compares an identifier byte array with a pattern
+    /// </summary>
+    static bool CompareIdentifier(byte[] identifier, byte[] pattern)
+    {
+        if(identifier == null || pattern == null) return false;
+
+        int compareLength = Math.Min(identifier.Length, pattern.Length);
+
+        for(var i = 0; i < compareLength; i++)
+        {
+            if(identifier[i] != pattern[i]) return false;
+        }
+
+        return true;
+    }
+}
