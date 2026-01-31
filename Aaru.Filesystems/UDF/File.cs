@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
@@ -74,21 +75,73 @@ public sealed partial class UDF
         if(fileEntry.icbTag.flags.HasFlag(FileFlags.Archive)) stat.Attributes |= FileAttributes.Archive;
 
         // Check for MacVolumeInfo extended attribute to get additional timestamps
-        if(fileEntry.lengthOfExtendedAttributes > 0)
+        if(fileEntry.lengthOfExtendedAttributes <= 0) return ErrorNumber.NoError;
+
+        errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+
+        if(errno != ErrorNumber.NoError) return ErrorNumber.NoError;
+
+        MacVolumeInfo? macVolumeInfo = GetMacVolumeInfo(feBuffer, fileEntry);
+
+        if(!macVolumeInfo.HasValue) return ErrorNumber.NoError;
+
+        stat.LastWriteTimeUtc = EcmaToDateTime(macVolumeInfo.Value.lastModificationDate);
+        stat.BackupTimeUtc    = EcmaToDateTime(macVolumeInfo.Value.lastBackupDate);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
+    {
+        attributes = new FileAttributes();
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber errno = GetFileEntry(path, out FileEntry fileEntry);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Set file attributes based on file type
+        switch(fileEntry.icbTag.fileType)
         {
-            errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+            case FileType.Directory:
+                attributes |= FileAttributes.Directory;
 
-            if(errno == ErrorNumber.NoError)
-            {
-                MacVolumeInfo? macVolumeInfo = GetMacVolumeInfo(feBuffer, fileEntry);
+                break;
+            case FileType.SymbolicLink:
+                attributes |= FileAttributes.Symlink;
 
-                if(macVolumeInfo.HasValue)
-                {
-                    stat.LastWriteTimeUtc = EcmaToDateTime(macVolumeInfo.Value.lastModificationDate);
-                    stat.BackupTimeUtc    = EcmaToDateTime(macVolumeInfo.Value.lastBackupDate);
-                }
-            }
+                break;
+            case FileType.BlockDevice:
+                attributes |= FileAttributes.BlockDevice;
+
+                break;
+            case FileType.CharacterDevice:
+                attributes |= FileAttributes.CharDevice;
+
+                break;
+            case FileType.Fifo:
+                attributes |= FileAttributes.Pipe;
+
+                break;
+            case FileType.Socket:
+                attributes |= FileAttributes.Socket;
+
+                break;
         }
+
+        // Set attributes based on flags
+        if(fileEntry.icbTag.flags.HasFlag(FileFlags.System)) attributes |= FileAttributes.System;
+
+        if(fileEntry.icbTag.flags.HasFlag(FileFlags.Archive)) attributes |= FileAttributes.Archive;
+
+        // Check for hidden flag in file characteristics (from directory entry)
+        // We need to check if the file was marked as hidden in its directory entry
+        errno = GetFileCharacteristics(path, out FileCharacteristics characteristics);
+
+        if(errno == ErrorNumber.NoError && characteristics.HasFlag(FileCharacteristics.Hidden))
+            attributes |= FileAttributes.Hidden;
 
         return ErrorNumber.NoError;
     }
@@ -127,9 +180,41 @@ public sealed partial class UDF
     }
 
     /// <summary>
+    ///     Gets the FileCharacteristics for a file from its parent directory entry
+    /// </summary>
+    ErrorNumber GetFileCharacteristics(string path, out FileCharacteristics characteristics)
+    {
+        characteristics = 0;
+
+        // Root directory has no parent entry
+        if(string.IsNullOrWhiteSpace(path) || path == "/") return ErrorNumber.NoError;
+
+        string   cutPath = path.StartsWith("/", StringComparison.Ordinal) ? path[1..] : path;
+        string[] pieces  = cutPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        string parentPath = pieces.Length > 1 ? string.Join("/", pieces[..^1]) : "";
+        string fileName   = pieces[^1];
+
+        ErrorNumber errno = GetDirectoryEntries(parentPath, out Dictionary<string, UdfDirectoryEntry> parentEntries);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        foreach(KeyValuePair<string, UdfDirectoryEntry> kvp in parentEntries)
+        {
+            if(!kvp.Key.Equals(fileName, StringComparison.OrdinalIgnoreCase)) continue;
+
+            characteristics = kvp.Value.FileCharacteristics;
+
+            return ErrorNumber.NoError;
+        }
+
+        return ErrorNumber.NoSuchFile;
+    }
+
+    /// <summary>
     ///     Gets MacVolumeInfo from the extended attributes if present
     /// </summary>
-    MacVolumeInfo? GetMacVolumeInfo(byte[] feBuffer, FileEntry fileEntry)
+    static MacVolumeInfo? GetMacVolumeInfo(byte[] feBuffer, in FileEntry fileEntry)
     {
         const int fileEntryFixedSize = 176;
         int       eaOffset           = fileEntryFixedSize;
@@ -219,16 +304,10 @@ public sealed partial class UDF
         if(errno != ErrorNumber.NoError) return errno;
 
         // Find the entry in the parent directory (case-insensitive)
-        UdfDirectoryEntry entry = null;
-
-        foreach(KeyValuePair<string, UdfDirectoryEntry> kvp in parentEntries)
-        {
-            if(!kvp.Key.Equals(fileName, StringComparison.OrdinalIgnoreCase)) continue;
-
-            entry = kvp.Value;
-
-            break;
-        }
+        UdfDirectoryEntry entry =
+            (from kvp in parentEntries
+             where kvp.Key.Equals(fileName, StringComparison.OrdinalIgnoreCase)
+             select kvp.Value).FirstOrDefault();
 
         if(entry == null) return ErrorNumber.NoSuchFile;
 
