@@ -27,8 +27,6 @@
 // ****************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -37,13 +35,6 @@ namespace Aaru.Filesystems;
 
 public sealed partial class UDF
 {
-    /// <inheritdoc />
-    public FileSystem Metadata { get; }
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; }
-    /// <inheritdoc />
-    public Dictionary<string, string> Namespaces { get; }
-
     /// <inheritdoc />
     public ErrorNumber Unmount() => throw new NotImplementedException();
 

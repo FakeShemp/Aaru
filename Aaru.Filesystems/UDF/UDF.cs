@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 
@@ -52,6 +53,15 @@ public sealed partial class UDF : IReadOnlyFilesystem
     FileSystemInfo                                            _statfs;
 
 #region IFilesystem Members
+
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces => null;
 
     /// <inheritdoc />
     public string Name => Localization.UDF_Name;

@@ -29,9 +29,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Helpers;
 using Partition = Aaru.CommonTypes.Partition;
 using Marshal = Aaru.Helpers.Marshal;
 
@@ -112,12 +114,12 @@ public sealed partial class UDF
 
         // Parse Volume Descriptor Sequence to find PVD, LVD, and Partition Descriptor(s)
         var                     partitionDescriptors = new Dictionary<ushort, PartitionDescriptor>();
-        PrimaryVolumeDescriptor pvd;
-        LogicalVolumeDescriptor lvd         = default;
-        var                     foundPvd    = false;
-        var                     foundLvd    = false;
-        uint                    vdsLength   = avdp.mainVolumeDescriptorSequenceExtent.length / sectorSize;
-        uint                    vdsLocation = avdp.mainVolumeDescriptorSequenceExtent.location;
+        PrimaryVolumeDescriptor pvd                  = default;
+        LogicalVolumeDescriptor lvd                  = default;
+        var                     foundPvd             = false;
+        var                     foundLvd             = false;
+        uint                    vdsLength            = avdp.mainVolumeDescriptorSequenceExtent.length / sectorSize;
+        uint                    vdsLocation          = avdp.mainVolumeDescriptorSequenceExtent.location;
 
         for(uint i = 0; i < vdsLength; i++)
         {
@@ -251,6 +253,22 @@ public sealed partial class UDF
             FreeFiles      = 0, // UDF doesn't have a fixed inode table
             PluginId       = Id,
             Type           = $"UDF {lvidiu.minimumReadUDF >> 8}.{lvidiu.minimumReadUDF & 0xFF:D2}"
+        };
+
+        // Fill Metadata
+        Metadata = new FileSystem
+        {
+            Type                  = FS_TYPE,
+            ClusterSize           = lvd.logicalBlockSize,
+            Clusters              = firstPartition.partitionLength,
+            FreeClusters          = freeBlocks,
+            Files                 = lvidiu.files + lvidiu.directories,
+            VolumeName            = StringHandlers.DecompressUnicode(lvd.logicalVolumeIdentifier),
+            VolumeSetIdentifier   = StringHandlers.DecompressUnicode(pvd.volumeSetIdentifier),
+            VolumeSerial          = StringHandlers.DecompressUnicode(pvd.volumeSetIdentifier),
+            ModificationDate      = EcmaToDateTime(lvid.recordingDateTime),
+            ApplicationIdentifier = Encoding.ASCII.GetString(pvd.implementationIdentifier.identifier).TrimEnd('\u0000'),
+            SystemIdentifier      = Encoding.ASCII.GetString(pvd.implementationIdentifier.identifier).TrimEnd('\u0000')
         };
 
         // Save instance fields for later use
