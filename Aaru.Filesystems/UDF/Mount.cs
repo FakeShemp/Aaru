@@ -291,4 +291,29 @@ public sealed partial class UDF
 
         return ErrorNumber.NoError;
     }
+
+    /// <inheritdoc />
+    public ErrorNumber Unmount()
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Clear directory caches
+        _rootDirectoryCache?.Clear();
+        _directoryCache?.Clear();
+
+        _rootDirectoryCache = null;
+        _directoryCache     = null;
+
+        // Clear instance fields
+        _imagePlugin               = null;
+        _sectorSize                = 0;
+        _partitionStartingLocation = 0;
+        _rootDirectoryIcb          = default(LongAllocationDescriptor);
+        _statfs                    = null;
+        Metadata                   = null;
+
+        _mounted = false;
+
+        return ErrorNumber.NoError;
+    }
 }
