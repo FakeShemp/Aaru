@@ -45,45 +45,65 @@ public sealed partial class UDF
     public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
                              Dictionary<string, string> options,     string    @namespace)
     {
-        // At position 0x8000, there should be a Volume Recognition Sequence
+        // Volume Recognition Sequence starts at sector 16 (for 2048 bps) or byte offset 0x8000 (for other bps)
         uint sectorSize = imagePlugin.Info.SectorSize;
 
         if(sectorSize == 2352) sectorSize = 2048;
 
-        uint beaLocation = 0x8000 / sectorSize;
+        // Calculate starting sector: sector 16 for 2048 bps, or 0x8000 / sectorSize for other sizes
+        ulong vrsStart = sectorSize == 2048 ? 16 : 0x8000 / sectorSize;
 
-        if(imagePlugin.ReadSector(beaLocation, false, out byte[] buffer, out _) != ErrorNumber.NoError)
-            return ErrorNumber.InvalidArgument;
+        // Search through the Volume Recognition Sequence for BEA
+        // The VRS can contain various descriptors (including ISO 9660's CD001)
+        // We must traverse them all until finding BEA
+        var    beaFound  = false;
+        ulong  beaSector = 0;
+        byte[] buffer;
 
-        BeginningExtendedAreaDescriptor bea =
-            Marshal.ByteArrayToStructureLittleEndian<BeginningExtendedAreaDescriptor>(buffer);
-
-        // Not the beginning of an Extended Area
-        if(!bea.identifier.SequenceEqual(_bea)) return ErrorNumber.InvalidArgument;
-
-        // Search for 16 sectors for a correct volume structure descriptor
-        var foundVsd = false;
-
-        for(var i = 1; i < 16; i++)
+        for(ulong i = 0; i < 32; i++) // Search up to 32 sectors
         {
-            if(imagePlugin.ReadSector((ulong)(beaLocation + i), false, out buffer, out _) != ErrorNumber.NoError)
+            ulong sector = vrsStart + i;
+
+            if(imagePlugin.ReadSector(sector, false, out buffer, out _) != ErrorNumber.NoError) continue;
+
+            // Check for BEA01 identifier at offset 1
+            if(buffer.Length >= 6 && buffer[1..6].SequenceEqual(_bea))
+            {
+                beaFound  = true;
+                beaSector = sector;
+
+                break;
+            }
+        }
+
+        if(!beaFound) return ErrorNumber.InvalidArgument;
+
+        // Now search within the extended area (after BEA) for NSR02 before TEA
+        var foundNsr = false;
+
+        for(ulong i = 1; i < 16; i++)
+        {
+            ulong sector = beaSector + i;
+
+            if(imagePlugin.ReadSector(sector, false, out buffer, out _) != ErrorNumber.NoError)
                 return ErrorNumber.InvalidArgument;
 
-            VolumeStructureDescriptor vsd = Marshal.ByteArrayToStructureLittleEndian<VolumeStructureDescriptor>(buffer);
+            // Check identifier at offset 1-5
+            if(buffer.Length < 6) continue;
 
-            // This media is recorded according to ECMA-167 version 2
-            if(vsd.type == 0 && vsd.identifier.SequenceEqual(_nsr))
+            // Found NSR02 - this media is recorded according to ECMA-167 version 2
+            if(buffer[1..6].SequenceEqual(_nsr))
             {
-                foundVsd = true;
+                foundNsr = true;
 
                 continue;
             }
 
-            // Terminating Extended Area Descriptor
-            if(vsd.type == 0 && vsd.identifier.SequenceEqual(_tea)) break;
+            // Found TEA01 - Terminating Extended Area Descriptor, stop searching
+            if(buffer[1..6].SequenceEqual(_tea)) break;
         }
 
-        if(!foundVsd) return ErrorNumber.InvalidArgument;
+        if(!foundNsr) return ErrorNumber.InvalidArgument;
 
         // Next we search for the anchor volume descriptor pointer
         // It should be at sector 256, N-256 or N, with N being the last sector of the volume
