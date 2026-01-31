@@ -700,6 +700,16 @@ public sealed partial class UDF
         public readonly byte[] protectionSystemInformation;
     }
 
+    /// <summary>OS/400 Directory Info per UDF 2.01</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Os400DirInfo
+    {
+        public readonly ushort headerChecksum;
+        public readonly ushort reserved; // Must be 0
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 44)]
+        public readonly byte[] directoryInfo;
+    }
+
     /// <summary>OS/2 EA header per UDF 1.02 3.3.4.5.3.1</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     readonly struct Os2EaHeader

@@ -174,8 +174,9 @@ public sealed partial class UDF
                         List<string> os2Xattrs = GetOs2EaNames(feBuffer, eaOffset, iuea);
 
                         foreach(string os2Xattr in os2Xattrs)
-                            if(!xattrs.Contains(os2Xattr))
-                                xattrs.Add(os2Xattr);
+                        {
+                            if(!xattrs.Contains(os2Xattr)) xattrs.Add(os2Xattr);
+                        }
 
                         eaOffset += (int)eaHeader.attributeLength;
 
@@ -476,6 +477,9 @@ public sealed partial class UDF
         if(CompareIdentifier(iuea.implementationIdentifier.identifier, _udf_Free_Ea))
             return "org.osta.udf.free_ea_space";
 
+        // UDF 2.01: OS/400 DirInfo
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _os400_DirInfo)) return "com.ibm.os400.dirinfo";
+
         // Unknown implementation use EA
         string identifier = StringHandlers.CToString(iuea.implementationIdentifier.identifier, Encoding.ASCII)?.Trim();
 
@@ -738,6 +742,21 @@ public sealed partial class UDF
             return data;
         }
 
+        // For OS/400 DirInfo, skip the 2-byte header checksum and 2-byte reserved padding
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _os400_DirInfo))
+        {
+            // Skip 2-byte header checksum + 2-byte reserved
+            dataOffset += 4;
+            dataLength -= 4;
+
+            if(dataOffset + dataLength > feBuffer.Length || dataLength <= 0) return null;
+
+            var data = new byte[dataLength];
+            Array.Copy(feBuffer, dataOffset, data, 0, dataLength);
+
+            return data;
+        }
+
         if(dataOffset + dataLength > feBuffer.Length || dataLength <= 0) return null;
 
         var rawData = new byte[dataLength];
@@ -840,8 +859,9 @@ public sealed partial class UDF
         int compareLength = Math.Min(identifier.Length, pattern.Length);
 
         for(var i = 0; i < compareLength; i++)
-            if(identifier[i] != pattern[i])
-                return false;
+        {
+            if(identifier[i] != pattern[i]) return false;
+        }
 
         return true;
     }

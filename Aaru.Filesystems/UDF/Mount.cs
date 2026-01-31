@@ -203,9 +203,9 @@ public sealed partial class UDF
         // Store UDF version
         _udfVersion = lvidiu.minimumReadUDF;
 
-        // Support UDF versions up to 2.00
-        // UDF 1.02 = 0x0102, UDF 1.50 = 0x0150, UDF 2.00 = 0x0200
-        if(lvidiu.minimumReadUDF > UDF_VERSION_200) return ErrorNumber.InvalidArgument;
+        // Support UDF versions up to 2.01
+        // UDF 1.02 = 0x0102, UDF 1.50 = 0x0150, UDF 2.00 = 0x0200, UDF 2.01 = 0x0201
+        if(lvidiu.minimumReadUDF > UDF_VERSION_201) return ErrorNumber.InvalidArgument;
 
         // Parse partition maps from LVD to handle Type 1, Virtual, and Sparable partitions
         ErrorNumber errno = ParsePartitionMaps(lvd, partitionDescriptors);
@@ -607,9 +607,8 @@ public sealed partial class UDF
 
         // If this is a virtual partition, translate through the VAT
         if(_hasVirtualPartition && partitionNumber == _virtualPartitionNumber && _vat != null)
-        {
-            if(logicalBlock < _vat.Length) physicalBlock = _vat[logicalBlock];
-        }
+            if(logicalBlock < _vat.Length)
+                physicalBlock = _vat[logicalBlock];
 
         // If this is a sparable partition, check the sparing table
         if(_hasSparablePartition && partitionNumber == _sparablePartitionNumber && _sparingTable != null)

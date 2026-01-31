@@ -47,6 +47,7 @@ public sealed partial class UDF
     static readonly byte[] _mac_FinderInfo   = "*UDF Mac FinderInfo"u8.ToArray();
     static readonly byte[] _mac_UniqueId     = "*UDF Mac UniqueID Table"u8.ToArray();
     static readonly byte[] _mac_ResourceFork = "*UDF Mac ResourceFork"u8.ToArray();
+    static readonly byte[] _os400_DirInfo    = "*UDF OS/400 DirInfo"u8.ToArray();
     static readonly byte[] _bea              = "BEA01"u8.ToArray();
     static readonly byte[] _nsr              = "NSR02"u8.ToArray();
     static readonly byte[] _nsr3             = "NSR03"u8.ToArray();
