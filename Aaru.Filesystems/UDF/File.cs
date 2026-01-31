@@ -28,8 +28,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
+using Aaru.Helpers;
 using Marshal = Aaru.Helpers.Marshal;
 using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
@@ -89,6 +91,39 @@ public sealed partial class UDF
         }
 
         return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber errno = GetFileEntry(path, out FileEntry fileEntry);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Check if this is a symbolic link
+        if(fileEntry.icbTag.fileType != FileType.SymbolicLink) return ErrorNumber.InvalidArgument;
+
+        // Read the file entry buffer to get the symlink data
+        errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read the symlink data based on allocation descriptor type
+        var adType = (byte)((ushort)fileEntry.icbTag.flags & 0x07);
+
+        errno = ReadFileData(fileEntry, feBuffer, adType, out byte[] linkData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Parse the symbolic link path components per ECMA-167 4/14.16
+        // The symlink data contains path components
+        dest = ParseSymbolicLinkData(linkData);
+
+        return string.IsNullOrEmpty(dest) ? ErrorNumber.InvalidArgument : ErrorNumber.NoError;
     }
 
     /// <summary>
@@ -239,5 +274,76 @@ public sealed partial class UDF
         if(permissions.HasFlag(Permissions.OtherExecute)) mode |= 0x001; // S_IXOTH
 
         return mode;
+    }
+
+    /// <summary>
+    ///     Parses symbolic link data per ECMA-167 4/14.16
+    /// </summary>
+    /// <param name="linkData">The raw symbolic link data</param>
+    /// <returns>The resolved path string</returns>
+    static string ParseSymbolicLinkData(byte[] linkData)
+    {
+        if(linkData == null || linkData.Length == 0) return null;
+
+        var path   = new StringBuilder();
+        var offset = 0;
+
+        while(offset < linkData.Length)
+        {
+            // Path component format per ECMA-167 4/14.16.1:
+            // - 1 byte: Component Type
+            // - 1 byte: Length of Component Identifier (L_CI)
+            // - 2 bytes: Component File Version Number
+            // - L_CI bytes: Component Identifier
+
+            if(offset + 4 > linkData.Length) break;
+
+            byte componentType = linkData[offset];
+            byte identifierLen = linkData[offset + 1];
+
+            // ushort fileVersion = BitConverter.ToUInt16(linkData, offset + 2); // Usually ignored
+
+            offset += 4;
+
+            switch(componentType)
+            {
+                case 1: // Root directory
+                    path.Clear();
+                    path.Append('/');
+
+                    break;
+
+                case 2: // Current directory (.)
+                    // Skip, don't add anything
+                    break;
+
+                case 3: // Parent directory (..)
+                    if(path.Length > 0 && path[^1] != '/') path.Append('/');
+
+                    path.Append("..");
+
+                    break;
+
+                case 4: // Path component name
+                case 5: // Path component name (with d-string encoding)
+                    if(identifierLen > 0 && offset + identifierLen <= linkData.Length)
+                    {
+                        if(path.Length > 0 && path[^1] != '/') path.Append('/');
+
+                        var identifierBytes = new byte[identifierLen];
+                        Array.Copy(linkData, offset, identifierBytes, 0, identifierLen);
+
+                        string componentName = StringHandlers.DecompressUnicode(identifierBytes);
+
+                        if(!string.IsNullOrEmpty(componentName)) path.Append(componentName);
+                    }
+
+                    break;
+            }
+
+            offset += identifierLen;
+        }
+
+        return path.Length > 0 ? path.ToString() : null;
     }
 }

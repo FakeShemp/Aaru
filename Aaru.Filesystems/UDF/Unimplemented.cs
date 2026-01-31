@@ -43,9 +43,6 @@ public sealed partial class UDF
 
 
     /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
 
     /// <inheritdoc />
