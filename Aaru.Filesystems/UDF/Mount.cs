@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 using Partition = Aaru.CommonTypes.Partition;
 using Marshal = Aaru.Helpers.Marshal;
 
@@ -158,12 +159,12 @@ public sealed partial class UDF
         if(!lvd.domainIdentifier.identifier.SequenceEqual(_magic)) return ErrorNumber.InvalidArgument;
 
         // Read the Logical Volume Integrity Descriptor to check UDF revision
-        if(imagePlugin.ReadSector(lvd.integritySequenceExtent.location, false, out buffer, out _) !=
+        if(imagePlugin.ReadSector(lvd.integritySequenceExtent.location, false, out byte[] lvidBuffer, out _) !=
            ErrorNumber.NoError)
             return ErrorNumber.InvalidArgument;
 
         LogicalVolumeIntegrityDescriptor lvid =
-            Marshal.ByteArrayToStructureLittleEndian<LogicalVolumeIntegrityDescriptor>(buffer);
+            Marshal.ByteArrayToStructureLittleEndian<LogicalVolumeIntegrityDescriptor>(lvidBuffer);
 
         if(lvid.tag.tagIdentifier != TagIdentifier.LogicalVolumeIntegrityDescriptor ||
            lvid.tag.tagLocation   != lvd.integritySequenceExtent.location)
@@ -172,7 +173,7 @@ public sealed partial class UDF
         // The Implementation Use area follows the free space and size tables
         // Offset = 80 (fixed LVID header) + numberOfPartitions * 4 (free space) + numberOfPartitions * 4 (size)
         LogicalVolumeIntegrityDescriptorImplementationUse lvidiu =
-            Marshal.ByteArrayToStructureLittleEndian<LogicalVolumeIntegrityDescriptorImplementationUse>(buffer,
+            Marshal.ByteArrayToStructureLittleEndian<LogicalVolumeIntegrityDescriptorImplementationUse>(lvidBuffer,
                 (int)(80 + lvid.numberOfPartitions * 8),
                 System.Runtime.InteropServices.Marshal
                       .SizeOf<LogicalVolumeIntegrityDescriptorImplementationUse>());
@@ -224,8 +225,26 @@ public sealed partial class UDF
 
         if(rootEntry.tag.tagIdentifier != TagIdentifier.FileEntry) return ErrorNumber.InvalidArgument;
 
-        // TODO: Continue mounting filesystem, parse root directory, etc.
+        // Fill filesystem info from the descriptors
+        // Free space table is at offset 80 in LVID, each entry is 4 bytes per partition
+        uint freeBlocks = 0;
 
-        return ErrorNumber.NotImplemented;
+        for(uint i = 0; i < lvid.numberOfPartitions; i++)
+            freeBlocks += BitConverter.ToUInt32(lvidBuffer, (int)(80 + i * 4));
+
+        _statfs = new FileSystemInfo
+        {
+            Blocks         = firstPartition.partitionLength,
+            FilenameLength = 254, // UDF 1.02 max filename length
+            Files          = lvidiu.files + lvidiu.directories,
+            FreeBlocks     = freeBlocks,
+            FreeFiles      = 0, // UDF doesn't have a fixed inode table
+            PluginId       = Id,
+            Type           = $"UDF {lvidiu.minimumReadUDF >> 8}.{lvidiu.minimumReadUDF & 0xFF:D2}"
+        };
+
+        _mounted = true;
+
+        return ErrorNumber.NoError;
     }
 }
