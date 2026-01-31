@@ -201,8 +201,14 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Gets the extended attribute name for a given EA
+    ///     Gets the extended attribute name for a given EA based on its type.
+    ///     Maps ECMA-167 attribute types to appropriate namespace prefixes
+    ///     (ch.ecma.*, com.apple.*, com.ibm.os2.*, org.osta.udf.*).
     /// </summary>
+    /// <param name="feBuffer">The buffer containing the FileEntry sector</param>
+    /// <param name="eaOffset">Offset to the extended attribute within the buffer</param>
+    /// <param name="eaHeader">The generic EA header</param>
+    /// <returns>The xattr name, or null if the EA should be ignored</returns>
     string GetXAttrNameForEa(byte[] feBuffer, int eaOffset, GenericExtendedAttributeHeader eaHeader)
     {
         switch(eaHeader.attributeType)
@@ -234,8 +240,13 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Gets the name for an Implementation Use Extended Attribute
+    ///     Gets the xattr name for an Implementation Use Extended Attribute.
+    ///     Identifies known UDF implementation EAs like Mac ResourceFork, FinderInfo,
+    ///     OS/2 EAs, DVD CGMS info, etc. and maps them to appropriate names.
     /// </summary>
+    /// <param name="feBuffer">The buffer containing the FileEntry sector</param>
+    /// <param name="eaOffset">Offset to the extended attribute within the buffer</param>
+    /// <returns>The xattr name, or null if the EA should be ignored or handled separately</returns>
     string GetImplementationUseEaName(byte[] feBuffer, int eaOffset)
     {
         // Implementation Use EA has EntityIdentifier at offset 12 (after the 12-byte common header)
@@ -280,8 +291,14 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Gets the names for all OS/2 Extended Attributes (FEA entries)
+    ///     Gets the names for all OS/2 Extended Attributes stored as FEA (Full EA) entries.
+    ///     OS/2 EAs are stored as multiple FEA records within a single Implementation Use EA,
+    ///     so this method enumerates all of them and returns their names prefixed with "com.ibm.os2.".
     /// </summary>
+    /// <param name="feBuffer">The buffer containing the FileEntry sector</param>
+    /// <param name="eaOffset">Offset to the Implementation Use EA within the buffer</param>
+    /// <param name="iuea">The Implementation Use EA header</param>
+    /// <returns>List of xattr names for all FEA entries</returns>
     List<string> GetOs2EaNames(byte[] feBuffer, int eaOffset, ImplementationUseExtendedAttribute iuea)
     {
         var names = new List<string>();
@@ -321,8 +338,14 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Gets the data for a specific OS/2 Extended Attribute by name
+    ///     Gets the data for a specific OS/2 Extended Attribute by name.
+    ///     Searches through the FEA entries within the OS/2 EA to find the one with the matching name.
     /// </summary>
+    /// <param name="feBuffer">The buffer containing the FileEntry sector</param>
+    /// <param name="eaOffset">Offset to the Implementation Use EA within the buffer</param>
+    /// <param name="iuea">The Implementation Use EA header</param>
+    /// <param name="eaName">The OS/2 EA name to search for (without the "com.ibm.os2." prefix)</param>
+    /// <returns>The EA value data, or null if not found</returns>
     byte[] GetOs2EaData(byte[] feBuffer, int eaOffset, ImplementationUseExtendedAttribute iuea, string eaName)
     {
         // OS/2 EA data follows the Implementation Use EA header
@@ -371,8 +394,13 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Gets the name for an Application Use Extended Attribute
+    ///     Gets the xattr name for an Application Use Extended Attribute.
+    ///     Application Use EAs are generic EAs identified by an application identifier,
+    ///     which is converted to an xattr name with the "org.osta.udf.app." prefix.
     /// </summary>
+    /// <param name="feBuffer">The buffer containing the FileEntry sector</param>
+    /// <param name="eaOffset">Offset to the extended attribute within the buffer</param>
+    /// <returns>The xattr name for this Application Use EA</returns>
     string GetApplicationUseEaName(byte[] feBuffer, int eaOffset)
     {
         if(eaOffset + 44 > feBuffer.Length) return "org.osta.udf.application_use";
@@ -392,8 +420,14 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Gets the data for an extended attribute
+    ///     Gets the data for an extended attribute based on its type.
+    ///     Routes to specialized handlers for Implementation Use and Application Use EAs,
+    ///     and returns raw data for standard ECMA-167 EA types.
     /// </summary>
+    /// <param name="feBuffer">The buffer containing the FileEntry sector</param>
+    /// <param name="eaOffset">Offset to the extended attribute within the buffer</param>
+    /// <param name="eaHeader">The generic EA header</param>
+    /// <returns>The EA data, or null if extraction fails</returns>
     byte[] GetXAttrData(byte[] feBuffer, int eaOffset, GenericExtendedAttributeHeader eaHeader)
     {
         switch(eaHeader.attributeType)
@@ -439,8 +473,14 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Gets the data for an Implementation Use Extended Attribute
+    ///     Gets the data for an Implementation Use Extended Attribute.
+    ///     Handles special cases for Mac EAs (strips headers from FinderInfo and ResourceFork),
+    ///     and returns the implementation use data for other types.
     /// </summary>
+    /// <param name="feBuffer">The buffer containing the FileEntry sector</param>
+    /// <param name="eaOffset">Offset to the extended attribute within the buffer</param>
+    /// <param name="eaHeader">The generic EA header</param>
+    /// <returns>The EA data with UDF-specific headers stripped, or null if extraction fails</returns>
     byte[] GetImplementationUseEaData(byte[] feBuffer, int eaOffset, GenericExtendedAttributeHeader eaHeader)
     {
         int headerSize = System.Runtime.InteropServices.Marshal.SizeOf<ImplementationUseExtendedAttribute>();
@@ -513,8 +553,13 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Gets the data for an Application Use Extended Attribute
+    ///     Gets the data for an Application Use Extended Attribute.
+    ///     Returns the application use data portion after the EA header.
     /// </summary>
+    /// <param name="feBuffer">The buffer containing the FileEntry sector</param>
+    /// <param name="eaOffset">Offset to the extended attribute within the buffer</param>
+    /// <param name="eaHeader">The generic EA header</param>
+    /// <returns>The application use data, or null if extraction fails</returns>
     byte[] GetApplicationUseEaData(byte[] feBuffer, int eaOffset, GenericExtendedAttributeHeader eaHeader)
     {
         int headerSize = System.Runtime.InteropServices.Marshal.SizeOf<ApplicationUseExtendedAttribute>();
@@ -536,8 +581,13 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Gets the raw FileEntry buffer for a path
+    ///     Gets the raw sector buffer containing the FileEntry for a given path.
+    ///     This buffer includes the FileEntry structure followed by extended attributes
+    ///     and allocation descriptors.
     /// </summary>
+    /// <param name="path">Path to the file or directory</param>
+    /// <param name="feBuffer">The raw sector buffer if found</param>
+    /// <returns>Error number</returns>
     ErrorNumber GetFileEntryBuffer(string path, out byte[] feBuffer)
     {
         feBuffer = null;
@@ -578,8 +628,13 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Compares an identifier byte array with a pattern
+    ///     Compares an identifier byte array with a pattern for UDF entity identification.
+    ///     Used to match Implementation Identifier and Application Identifier fields
+    ///     against known UDF identifiers like "*UDF Mac ResourceFork".
     /// </summary>
+    /// <param name="identifier">The identifier bytes to check</param>
+    /// <param name="pattern">The expected pattern to match</param>
+    /// <returns>True if the identifier starts with the pattern bytes</returns>
     static bool CompareIdentifier(byte[] identifier, byte[] pattern)
     {
         if(identifier == null || pattern == null) return false;

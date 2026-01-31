@@ -1,4 +1,4 @@
-﻿// /***************************************************************************
+﻿﻿// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
@@ -38,6 +38,11 @@ namespace Aaru.Filesystems;
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public sealed partial class UDF
 {
+    /// <summary>
+    ///     Converts an ECMA-167 Timestamp structure to a .NET DateTime
+    /// </summary>
+    /// <param name="timestamp">The ECMA-167 timestamp to convert</param>
+    /// <returns>The equivalent DateTime value</returns>
     static DateTime EcmaToDateTime(Timestamp timestamp) => DateHandlers.EcmaToDateTime(timestamp.typeAndZone,
         timestamp.year,
         timestamp.month,

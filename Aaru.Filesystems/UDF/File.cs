@@ -270,8 +270,11 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Gets the ICB for a file at the given path
+    ///     Gets the ICB (Information Control Block) for a file at the given path
     /// </summary>
+    /// <param name="path">Path to the file or directory</param>
+    /// <param name="icb">The ICB descriptor if found</param>
+    /// <returns>Error number</returns>
     ErrorNumber GetFileIcb(string path, out LongAllocationDescriptor icb)
     {
         icb = default(LongAllocationDescriptor);
@@ -307,8 +310,13 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Gets the FileCharacteristics for a file from its parent directory entry
+    ///     Gets the FileCharacteristics flags for a file from its parent directory entry.
+    ///     This is needed because UDF stores attributes like Hidden in the File Identifier Descriptor,
+    ///     not in the File Entry itself.
     /// </summary>
+    /// <param name="path">Path to the file or directory</param>
+    /// <param name="characteristics">The file characteristics flags if found</param>
+    /// <returns>Error number</returns>
     ErrorNumber GetFileCharacteristics(string path, out FileCharacteristics characteristics)
     {
         characteristics = 0;
@@ -339,8 +347,12 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Gets MacVolumeInfo from the extended attributes if present
+    ///     Searches for and parses a MacVolumeInfo extended attribute from the FileEntry's extended attributes.
+    ///     This attribute contains Macintosh-specific volume information including modification and backup dates.
     /// </summary>
+    /// <param name="feBuffer">The buffer containing the FileEntry sector</param>
+    /// <param name="fileEntry">The FileEntry structure</param>
+    /// <returns>The MacVolumeInfo if found, null otherwise</returns>
     static MacVolumeInfo? GetMacVolumeInfo(byte[] feBuffer, in FileEntry fileEntry)
     {
         const int fileEntryFixedSize = 176;
@@ -452,8 +464,10 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Converts UDF permissions to POSIX mode
+    ///     Converts UDF permissions flags to standard POSIX mode bits
     /// </summary>
+    /// <param name="permissions">The UDF permissions flags</param>
+    /// <returns>POSIX mode bits (e.g., 0755 for rwxr-xr-x)</returns>
     static uint ConvertPermissionsToMode(Permissions permissions)
     {
         uint mode = 0;
@@ -483,10 +497,12 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Parses symbolic link data per ECMA-167 4/14.16
+    ///     Parses symbolic link data per ECMA-167 4/14.16.
+    ///     The symlink data consists of path component records, each with a type byte indicating
+    ///     root directory, current directory, parent directory, or named component.
     /// </summary>
-    /// <param name="linkData">The raw symbolic link data</param>
-    /// <returns>The resolved path string</returns>
+    /// <param name="linkData">The raw symbolic link data from the file</param>
+    /// <returns>The resolved path string, or null if parsing fails</returns>
     static string ParseSymbolicLinkData(byte[] linkData)
     {
         if(linkData == null || linkData.Length == 0) return null;

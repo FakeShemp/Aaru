@@ -173,8 +173,14 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Reads file data using Short Allocation Descriptors
+    ///     Reads file data using Short Allocation Descriptors (8-byte descriptors with partition-relative addresses)
     /// </summary>
+    /// <param name="feBuffer">The buffer containing the FileEntry sector</param>
+    /// <param name="adOffset">Offset within the buffer where allocation descriptors start</param>
+    /// <param name="adLength">Total length of allocation descriptors in bytes</param>
+    /// <param name="dataLength">Expected file data length</param>
+    /// <param name="data">The file data read from the extents</param>
+    /// <returns>Error number</returns>
     ErrorNumber ReadDataFromShortAd(byte[] feBuffer, int adOffset, int adLength, long dataLength, out byte[] data)
     {
         data = new byte[dataLength];
@@ -212,8 +218,14 @@ public sealed partial class UDF
     }
 
     /// <summary>
-    ///     Reads file data using Long Allocation Descriptors
+    ///     Reads file data using Long Allocation Descriptors (16-byte descriptors with partition reference numbers)
     /// </summary>
+    /// <param name="feBuffer">The buffer containing the FileEntry sector</param>
+    /// <param name="adOffset">Offset within the buffer where allocation descriptors start</param>
+    /// <param name="adLength">Total length of allocation descriptors in bytes</param>
+    /// <param name="dataLength">Expected file data length</param>
+    /// <param name="data">The file data read from the extents</param>
+    /// <returns>Error number</returns>
     ErrorNumber ReadDataFromLongAd(byte[] feBuffer, int adOffset, int adLength, long dataLength, out byte[] data)
     {
         data = new byte[dataLength];
