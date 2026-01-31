@@ -194,8 +194,18 @@ public sealed partial class UDF
             firstPartition = enumerator.Current;
         }
 
-        // FSD is at logical block 0 of the partition (UDF 1.02)
-        ulong fsdAbsoluteSector = firstPartition.partitionStartingLocation;
+        // The logicalVolumeContentsUse field in the LVD contains a long_ad pointing to the File Set Descriptor
+        LongAllocationDescriptor fsdLocation =
+            Marshal.ByteArrayToStructureLittleEndian<LongAllocationDescriptor>(lvd.logicalVolumeContentsUse);
+
+        // Get the partition where the FSD resides
+        if(!partitionDescriptors.TryGetValue(fsdLocation.extentLocation.partitionReferenceNumber,
+                                             out PartitionDescriptor fsdPartition))
+            fsdPartition = firstPartition;
+
+        // Calculate the absolute sector of the File Set Descriptor
+        ulong fsdAbsoluteSector =
+            fsdPartition.partitionStartingLocation + fsdLocation.extentLocation.logicalBlockNumber;
 
         if(imagePlugin.ReadSector(fsdAbsoluteSector, false, out buffer, out _) != ErrorNumber.NoError)
             return ErrorNumber.InvalidArgument;
@@ -242,6 +252,22 @@ public sealed partial class UDF
             PluginId       = Id,
             Type           = $"UDF {lvidiu.minimumReadUDF >> 8}.{lvidiu.minimumReadUDF & 0xFF:D2}"
         };
+
+        // Save instance fields for later use
+        _imagePlugin = imagePlugin;
+        _sectorSize  = sectorSize;
+
+        // Initialize directory caches
+        _rootDirectoryCache = [];
+        _directoryCache     = [];
+
+        // Read root directory
+        ErrorNumber errno =
+            ReadDirectoryContents(_rootDirectoryIcb, out Dictionary<string, UdfDirectoryEntry> rootEntries);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        _rootDirectoryCache = rootEntries;
 
         _mounted = true;
 

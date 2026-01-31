@@ -428,7 +428,7 @@ public sealed partial class UDF
         public readonly FileCharacteristics      fileCharacteristics;
         public readonly byte                     lengthOfFileIdentifier;
         public readonly LongAllocationDescriptor icb;
-        public readonly uint                     lengthOfImplementationUse;
+        public readonly ushort                   lengthOfImplementationUse;
 
         // Followed by Implementation Use, and File Identifier
     }

@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Dir.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Universal Disk Format plugin.
@@ -26,50 +26,63 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class UDF
 {
     /// <inheritdoc />
-    public FileSystem Metadata { get; }
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; }
-    /// <inheritdoc />
-    public Dictionary<string, string> Namespaces { get; }
+    public ErrorNumber OpenDir(string path, out IDirNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber errno = GetDirectoryEntries(path, out Dictionary<string, UdfDirectoryEntry> entries);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        node = new UdfDirNode
+        {
+            Path     = path,
+            Position = 0,
+            Entries  = entries.Values.ToArray()
+        };
+
+        return ErrorNumber.NoError;
+    }
 
     /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(node is not UdfDirNode myNode) return ErrorNumber.InvalidArgument;
+
+        myNode.Position = -1;
+        myNode.Entries  = null;
+
+        return ErrorNumber.NoError;
+    }
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
 
-    /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
+        if(node is not UdfDirNode myNode) return ErrorNumber.InvalidArgument;
 
+        if(myNode.Position < 0) return ErrorNumber.InvalidArgument;
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
+        if(myNode.Position >= myNode.Entries.Length) return ErrorNumber.NoError;
 
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+        filename = myNode.Entries[myNode.Position].Filename;
+        myNode.Position++;
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        return ErrorNumber.NoError;
+    }
 }

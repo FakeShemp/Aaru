@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -41,10 +42,14 @@ public sealed partial class UDF : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "UDF Plugin";
 
-    bool                     _mounted;
-    uint                     _partitionStartingLocation;
-    LongAllocationDescriptor _rootDirectoryIcb;
-    FileSystemInfo           _statfs;
+    Dictionary<string, Dictionary<string, UdfDirectoryEntry>> _directoryCache;
+    IMediaImage                                               _imagePlugin;
+    bool                                                      _mounted;
+    uint                                                      _partitionStartingLocation;
+    Dictionary<string, UdfDirectoryEntry>                     _rootDirectoryCache;
+    LongAllocationDescriptor                                  _rootDirectoryIcb;
+    uint                                                      _sectorSize;
+    FileSystemInfo                                            _statfs;
 
 #region IFilesystem Members
 
