@@ -175,6 +175,17 @@ public sealed partial class UDF
                 stat.LastWriteTimeUtc = EcmaToDateTime(macVolumeInfo.Value.lastModificationDate);
                 stat.BackupTimeUtc    = EcmaToDateTime(macVolumeInfo.Value.lastBackupDate);
             }
+
+            // Check for ch.ecma.file_times extended attribute
+            GetFileTimesFromEa(feBuffer,
+                               fileEntryInfo,
+                               out DateTime? eaAccessTime,
+                               out DateTime? eaModificationTime,
+                               out DateTime? eaAttributeTime);
+
+            if(eaAccessTime.HasValue) stat.AccessTimeUtc          = eaAccessTime.Value;
+            if(eaModificationTime.HasValue) stat.LastWriteTimeUtc = eaModificationTime.Value;
+            if(eaAttributeTime.HasValue) stat.StatusChangeTimeUtc = eaAttributeTime.Value;
         }
 
         // Check for *UDF Backup named stream (UDF 2.00+)
@@ -620,4 +631,95 @@ public sealed partial class UDF
 
         return path.Length > 0 ? path.ToString() : null;
     }
+
+    /// <summary>
+    ///     Gets file times from the ch.ecma.file_times extended attribute if present
+    /// </summary>
+    static DateTime? GetFileTimesFromEa(byte[] feBuffer, UdfFileEntryInfo fileEntryInfo, out DateTime? accessTime,
+                                        out DateTime? modificationTime, out DateTime? attributeTime)
+    {
+        accessTime       = null;
+        modificationTime = null;
+        attributeTime    = null;
+
+        if(fileEntryInfo.LengthOfExtendedAttributes == 0) return null;
+
+        int fixedSize = fileEntryInfo.IsExtended ? 216 : 176;
+        int eaOffset  = fixedSize;
+        int eaEnd     = fixedSize + (int)fileEntryInfo.LengthOfExtendedAttributes;
+
+        // First, check for Extended Attribute Header Descriptor
+        if(eaEnd - eaOffset >= 24)
+        {
+            var tagId = (TagIdentifier)BitConverter.ToUInt16(feBuffer, eaOffset);
+
+            if(tagId == TagIdentifier.ExtendedAttributeHeaderDescriptor) eaOffset += 24;
+        }
+
+        while(eaOffset + 12 <= eaEnd)
+        {
+            GenericExtendedAttributeHeader eaHeader =
+                Marshal.ByteArrayToStructureLittleEndian<GenericExtendedAttributeHeader>(feBuffer, eaOffset, 12);
+
+            if(eaHeader.attributeLength == 0) break;
+
+            // Look for file times EA (type 5)
+            if(eaHeader.attributeType == 5) // EA_TYPE_FILE_TIMES
+            {
+                // File Times EA format:
+                // Offset 0-3: Attribute Type (4 bytes)
+                // Offset 4: Attribute Subtype (1 byte)
+                // Offset 5-7: Reserved (3 bytes)
+                // Offset 8-11: Attribute Length (4 bytes)
+                // Offset 12-15: Data Length (4 bytes)
+                // Offset 16-19: File Time Existence (4 bytes) - bitmask indicating which times are present
+                // Offset 20+: File Times data (variable length)
+
+                if(eaOffset + 20 > feBuffer.Length) break;
+
+                var timeExistenceMask = BitConverter.ToUInt32(feBuffer, eaOffset + 16);
+                int timesOffset       = eaOffset + 20;
+
+                // Bit 0: Access time present
+                // Bit 1: Modification time present
+                // Bit 2: Attribute time present
+
+                if((timeExistenceMask & 0x01) != 0 && timesOffset + 12 <= feBuffer.Length)
+                {
+                    Timestamp ts = Marshal.ByteArrayToStructureLittleEndian<Timestamp>(feBuffer, timesOffset, 12);
+                    accessTime  =  EcmaToDateTime(ts);
+                    timesOffset += 12;
+                }
+
+                if((timeExistenceMask & 0x02) != 0 && timesOffset + 12 <= feBuffer.Length)
+                {
+                    Timestamp ts = Marshal.ByteArrayToStructureLittleEndian<Timestamp>(feBuffer, timesOffset, 12);
+                    modificationTime =  EcmaToDateTime(ts);
+                    timesOffset      += 12;
+                }
+
+                if((timeExistenceMask & 0x04) != 0 && timesOffset + 12 <= feBuffer.Length)
+                {
+                    Timestamp ts = Marshal.ByteArrayToStructureLittleEndian<Timestamp>(feBuffer, timesOffset, 12);
+                    attributeTime = EcmaToDateTime(ts);
+                }
+
+                return accessTime ?? modificationTime ?? attributeTime;
+            }
+
+            eaOffset += (int)eaHeader.attributeLength;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    ///     Checks if a specific extended attribute type should be hidden from ListXAttr
+    ///     because it's handled specially in other methods (like Stat)
+    /// </summary>
+    static bool IsEaHandledSpecially(uint attributeType) =>
+
+        // File times EA (type 5) is handled in Stat method
+        // Info times EA (type 6) could also be handled similarly if needed
+        attributeType == 5; // EA_TYPE_FILE_TIMES
 }

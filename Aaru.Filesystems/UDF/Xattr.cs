@@ -156,6 +156,14 @@ public sealed partial class UDF
 
             if(eaHeader.attributeLength == 0) break;
 
+            // Skip EAs that are handled specially (e.g., file times are parsed in Stat)
+            if(IsEaHandledSpecially(eaHeader.attributeType))
+            {
+                eaOffset += (int)eaHeader.attributeLength;
+
+                continue;
+            }
+
             // Special handling for OS/2 EAs - they contain multiple FEA entries
             if(eaHeader.attributeType == EA_TYPE_IMPLEMENTATION)
             {
@@ -260,6 +268,14 @@ public sealed partial class UDF
                 Marshal.ByteArrayToStructureLittleEndian<GenericExtendedAttributeHeader>(feBuffer, eaOffset, 12);
 
             if(eaHeader.attributeLength == 0) break;
+
+            // Skip EAs that are handled specially (e.g., file times are parsed in Stat)
+            if(IsEaHandledSpecially(eaHeader.attributeType))
+            {
+                eaOffset += (int)eaHeader.attributeLength;
+
+                continue;
+            }
 
             // Special handling for OS/2 EAs
             if(eaHeader.attributeType == EA_TYPE_IMPLEMENTATION &&
