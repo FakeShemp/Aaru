@@ -40,7 +40,7 @@ namespace Aaru.Filesystems;
 // https://developer.apple.com/legacy/library/documentation/mac/pdf/Files/File_Manager.pdf
 /// <inheritdoc />
 /// <summary>Implements detection of the Apple Hierarchical File System (HFS)</summary>
-public sealed partial class AppleHFS : IFilesystem
+public sealed partial class AppleHFS : IReadOnlyFilesystem
 {
 #region IFilesystem Members
 
