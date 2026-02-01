@@ -65,6 +65,10 @@ public sealed partial class AppleHFS
         // Add Finder Info xattr (always present for files)
         xattrs.Add("com.apple.FinderInfo");
 
+        // Add HFS creator and type xattrs
+        xattrs.Add("hfs.creator");
+        xattrs.Add("hfs.type");
+
         // Add Resource Fork xattr if it exists and is non-empty
         if(fileEntry.ResourceForkLogicalSize > 0) xattrs.Add("com.apple.ResourceFork");
 
@@ -103,6 +107,22 @@ public sealed partial class AppleHFS
             // FXInfo (16 bytes)
             byte[] extendedFinderInfoBytes = Marshal.StructureToByteArrayBigEndian(fileEntry.ExtendedFinderInfo);
             Array.Copy(extendedFinderInfoBytes, 0, buf, 16, Math.Min(extendedFinderInfoBytes.Length, 16));
+
+            return ErrorNumber.NoError;
+        }
+
+        // Handle HFS creator xattr (4 bytes, as stored)
+        if(string.Equals(xattr, "hfs.creator", StringComparison.OrdinalIgnoreCase))
+        {
+            buf = BitConverter.GetBytes(fileEntry.FinderInfo.fdCreator);
+
+            return ErrorNumber.NoError;
+        }
+
+        // Handle HFS type xattr (4 bytes, as stored)
+        if(string.Equals(xattr, "hfs.type", StringComparison.OrdinalIgnoreCase))
+        {
+            buf = BitConverter.GetBytes(fileEntry.FinderInfo.fdType);
 
             return ErrorNumber.NoError;
         }
