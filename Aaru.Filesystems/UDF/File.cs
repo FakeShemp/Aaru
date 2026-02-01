@@ -61,11 +61,6 @@ public sealed partial class UDF
         if(fileEntryInfo.IcbTag.fileType != FileType.File && fileEntryInfo.IcbTag.fileType != FileType.Unspecified)
             return ErrorNumber.IsDirectory;
 
-        // Get the ICB for this file
-        errno = GetFileIcb(path, out LongAllocationDescriptor icb);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
         node = new UdfFileNode
         {
             Path            = path,
@@ -73,7 +68,7 @@ public sealed partial class UDF
             Offset          = 0,
             FileEntryInfo   = fileEntryInfo,
             FileEntryBuffer = feBuffer,
-            Icb             = icb
+            Icb             = default(LongAllocationDescriptor) // Not needed for reading - we have the entry buffer
         };
 
         return ErrorNumber.NoError;
@@ -110,23 +105,21 @@ public sealed partial class UDF
 
         if(length == 0) return ErrorNumber.NoError;
 
-        // Read the file data based on allocation descriptor type
+        // Read only the requested portion of the file, not the entire file
         var adType = (byte)((ushort)myNode.FileEntryInfo.IcbTag.flags & 0x07);
 
-        ErrorNumber errno =
-            ReadFileDataFromInfo(myNode.FileEntryInfo, myNode.FileEntryBuffer, adType, out byte[] fileData);
+        ErrorNumber errno = ReadFileDataFromInfoRange(myNode.FileEntryInfo,
+                                                      myNode.FileEntryBuffer,
+                                                      adType,
+                                                      myNode.Offset,
+                                                      length,
+                                                      buffer,
+                                                      out long bytesRead);
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        // Copy the requested portion to the buffer
-        long bytesToCopy = Math.Min(length, buffer.Length);
-        bytesToCopy = Math.Min(bytesToCopy, fileData.Length - myNode.Offset);
-
-        if(bytesToCopy <= 0) return ErrorNumber.NoError;
-
-        Array.Copy(fileData, myNode.Offset, buffer, 0, bytesToCopy);
-        read          =  bytesToCopy;
-        myNode.Offset += bytesToCopy;
+        read          =  bytesRead;
+        myNode.Offset += bytesRead;
 
         return ErrorNumber.NoError;
     }

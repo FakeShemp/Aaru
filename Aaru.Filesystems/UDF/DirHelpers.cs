@@ -97,8 +97,9 @@ public sealed partial class UDF
                 offset += fidLength;
 
                 continue;
-            } // Skip deleted entries
+            }
 
+            // Skip deleted entries
             if(fid.fileCharacteristics.HasFlag(FileCharacteristics.Deleted))
             {
                 offset += fidLength;
@@ -185,17 +186,22 @@ public sealed partial class UDF
     /// <returns>Error number</returns>
     ErrorNumber ReadDataFromShortAd(byte[] feBuffer, int adOffset, int adLength, long dataLength, out byte[] data)
     {
+        data = null;
+
+        // Sanity check: reject files larger than 1GB to prevent memory exhaustion
+        if(dataLength > 1073741824) // 1GB
+            return ErrorNumber.InvalidArgument;
+
         data = new byte[dataLength];
 
         var dataOffset = 0;
         int adPos      = adOffset;
+        int sadSize    = System.Runtime.InteropServices.Marshal.SizeOf<ShortAllocationDescriptor>();
 
         while(adPos < adOffset + adLength && dataOffset < dataLength)
         {
             ShortAllocationDescriptor sad =
-                Marshal.ByteArrayToStructureLittleEndian<ShortAllocationDescriptor>(feBuffer,
-                    adPos,
-                    System.Runtime.InteropServices.Marshal.SizeOf<ShortAllocationDescriptor>());
+                Marshal.ByteArrayToStructureLittleEndian<ShortAllocationDescriptor>(feBuffer, adPos, sadSize);
 
             // Extract length (lower 30 bits) and type (upper 2 bits)
             uint extentLength = sad.extentLength & 0x3FFFFFFF;
@@ -217,7 +223,7 @@ public sealed partial class UDF
             Array.Copy(extentData, 0, data, dataOffset, bytesToCopy);
             dataOffset += bytesToCopy;
 
-            adPos += 8; // ShortAllocationDescriptor is 8 bytes
+            adPos += sadSize; // ShortAllocationDescriptor size
         }
 
         return ErrorNumber.NoError;
@@ -234,17 +240,22 @@ public sealed partial class UDF
     /// <returns>Error number</returns>
     ErrorNumber ReadDataFromLongAd(byte[] feBuffer, int adOffset, int adLength, long dataLength, out byte[] data)
     {
+        data = null;
+
+        // Sanity check: reject files larger than 1GB to prevent memory exhaustion
+        if(dataLength > 1073741824) // 1GB
+            return ErrorNumber.InvalidArgument;
+
         data = new byte[dataLength];
 
         var dataOffset = 0;
         int adPos      = adOffset;
+        int ladSize    = System.Runtime.InteropServices.Marshal.SizeOf<LongAllocationDescriptor>();
 
         while(adPos < adOffset + adLength && dataOffset < dataLength)
         {
             LongAllocationDescriptor lad =
-                Marshal.ByteArrayToStructureLittleEndian<LongAllocationDescriptor>(feBuffer,
-                    adPos,
-                    System.Runtime.InteropServices.Marshal.SizeOf<LongAllocationDescriptor>());
+                Marshal.ByteArrayToStructureLittleEndian<LongAllocationDescriptor>(feBuffer, adPos, ladSize);
 
             // Extract length (lower 30 bits) and type (upper 2 bits)
             uint extentLength = lad.extentLength & 0x3FFFFFFF;
@@ -265,7 +276,7 @@ public sealed partial class UDF
             Array.Copy(extentData, 0, data, dataOffset, bytesToCopy);
             dataOffset += bytesToCopy;
 
-            adPos += 16; // LongAllocationDescriptor is 16 bytes
+            adPos += ladSize; // LongAllocationDescriptor size
         }
 
         return ErrorNumber.NoError;
@@ -301,11 +312,13 @@ public sealed partial class UDF
         for(var i = 0; i < pieces.Length; i++)
         {
             // Find the entry in current directory (case-insensitive)
-            UdfDirectoryEntry entry = null;
+            // Normalize the search key for case-insensitive lookup
+            string            normalizedKey = pieces[i].ToLowerInvariant();
+            UdfDirectoryEntry entry         = null;
 
             foreach(KeyValuePair<string, UdfDirectoryEntry> kvp in currentDirectory)
             {
-                if(kvp.Key.Equals(pieces[i], StringComparison.OrdinalIgnoreCase))
+                if(kvp.Key.Equals(normalizedKey, StringComparison.OrdinalIgnoreCase))
                 {
                     entry = kvp.Value;
 
@@ -425,6 +438,10 @@ public sealed partial class UDF
     {
         data = null;
 
+        // Sanity check: reject files larger than 1GB to prevent memory exhaustion
+        if(info.InformationLength > 1073741824) // 1GB
+            return ErrorNumber.InvalidArgument;
+
         // The allocation descriptors follow the extended attributes in the file entry
         // FileEntry fixed size is 176 bytes, ExtendedFileEntry fixed size is 216 bytes
         int fixedSize = info.IsExtended ? 216 : 176;
@@ -445,6 +462,190 @@ public sealed partial class UDF
             case 3: // Data is embedded in the allocation descriptor area
                 data = new byte[info.InformationLength];
                 Array.Copy(feBuffer, adOffset, data, 0, (int)info.InformationLength);
+
+                return ErrorNumber.NoError;
+
+            default:
+                return ErrorNumber.InvalidArgument;
+        }
+    }
+
+    /// <summary>
+    ///     Reads a specific byte range from a file using Short Allocation Descriptors
+    ///     without loading the entire file into memory
+    /// </summary>
+    /// <param name="feBuffer">The buffer containing the FileEntry sector</param>
+    /// <param name="adOffset">Offset within the buffer where allocation descriptors start</param>
+    /// <param name="adLength">Total length of allocation descriptors in bytes</param>
+    /// <param name="fileOffset">Byte offset in the file to start reading from</param>
+    /// <param name="readLength">Number of bytes to read</param>
+    /// <param name="buffer">Buffer to read into</param>
+    /// <param name="bytesRead">Number of bytes actually read</param>
+    /// <returns>Error number</returns>
+    ErrorNumber ReadDataFromShortAdRange(byte[] feBuffer, int adOffset, int adLength, long fileOffset, long readLength,
+                                         byte[] buffer,   out long bytesRead)
+    {
+        bytesRead = 0;
+        long currentOffset = 0;
+        var  bufferOffset  = 0;
+        int  adPos         = adOffset;
+        int  sadSize       = System.Runtime.InteropServices.Marshal.SizeOf<ShortAllocationDescriptor>();
+
+        while(adPos < adOffset + adLength && bytesRead < readLength)
+        {
+            ShortAllocationDescriptor sad =
+                Marshal.ByteArrayToStructureLittleEndian<ShortAllocationDescriptor>(feBuffer, adPos, sadSize);
+
+            uint extentLength = sad.extentLength & 0x3FFFFFFF;
+
+            if(extentLength == 0) break;
+
+            long extentEnd = currentOffset + extentLength;
+
+            // Check if this extent contains any data we need
+            if(extentEnd > fileOffset && currentOffset < fileOffset + readLength)
+            {
+                // Calculate the offset within this extent to start reading
+                long offsetInExtent = fileOffset > currentOffset ? fileOffset - currentOffset : 0;
+
+                // Calculate how much to read from this extent
+                long toRead                                = extentLength - offsetInExtent;
+                if(toRead > readLength - bytesRead) toRead = readLength - bytesRead;
+
+                // Read the extent data
+                uint sectorsToRead = (extentLength + _sectorSize - 1) / _sectorSize;
+
+                ErrorNumber errno = ReadSectorsFromPartition(sad.extentLocation,
+                                                             0,
+                                                             _partitionStartingLocation,
+                                                             sectorsToRead,
+                                                             out byte[] extentData);
+
+                if(errno != ErrorNumber.NoError) return errno;
+
+                // Copy the relevant portion
+                Array.Copy(extentData, (int)offsetInExtent, buffer, bufferOffset, (int)toRead);
+
+                bytesRead    += toRead;
+                bufferOffset += (int)toRead;
+            }
+
+            currentOffset += extentLength;
+            adPos         += sadSize;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Reads a specific byte range from a file using Long Allocation Descriptors
+    ///     without loading the entire file into memory
+    /// </summary>
+    ErrorNumber ReadDataFromLongAdRange(byte[] feBuffer, int adOffset, int adLength, long fileOffset, long readLength,
+                                        byte[] buffer,   out long bytesRead)
+    {
+        bytesRead = 0;
+        long currentOffset = 0;
+        var  bufferOffset  = 0;
+        int  adPos         = adOffset;
+        int  ladSize       = System.Runtime.InteropServices.Marshal.SizeOf<LongAllocationDescriptor>();
+
+        while(adPos < adOffset + adLength && bytesRead < readLength)
+        {
+            LongAllocationDescriptor lad =
+                Marshal.ByteArrayToStructureLittleEndian<LongAllocationDescriptor>(feBuffer, adPos, ladSize);
+
+            uint extentLength = lad.extentLength & 0x3FFFFFFF;
+
+            if(extentLength == 0) break;
+
+            long extentEnd = currentOffset + extentLength;
+
+            // Check if this extent contains any data we need
+            if(extentEnd > fileOffset && currentOffset < fileOffset + readLength)
+            {
+                // Calculate the offset within this extent to start reading
+                long offsetInExtent = fileOffset > currentOffset ? fileOffset - currentOffset : 0;
+
+                // Calculate how much to read from this extent
+                long toRead                                = extentLength - offsetInExtent;
+                if(toRead > readLength - bytesRead) toRead = readLength - bytesRead;
+
+                // Read the extent data
+                uint sectorsToRead = (extentLength + _sectorSize - 1) / _sectorSize;
+
+                ErrorNumber errno = ReadSectorsFromPartition(lad.extentLocation.logicalBlockNumber,
+                                                             lad.extentLocation.partitionReferenceNumber,
+                                                             _partitionStartingLocation,
+                                                             sectorsToRead,
+                                                             out byte[] extentData);
+
+                if(errno != ErrorNumber.NoError) return errno;
+
+                // Copy the relevant portion
+                Array.Copy(extentData, (int)offsetInExtent, buffer, bufferOffset, (int)toRead);
+
+                bytesRead    += toRead;
+                bufferOffset += (int)toRead;
+            }
+
+            currentOffset += extentLength;
+            adPos         += ladSize;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Reads a specific byte range from a file based on allocation descriptor type,
+    ///     without loading the entire file into memory
+    /// </summary>
+    ErrorNumber ReadFileDataFromInfoRange(UdfFileEntryInfo info,       byte[] feBuffer, byte adType, long fileOffset,
+                                          long             readLength, byte[] buffer,   out long bytesRead)
+    {
+        bytesRead = 0;
+
+        // Sanity checks
+        if((ulong)fileOffset >= info.InformationLength) return ErrorNumber.NoError;
+
+        if(fileOffset < 0) return ErrorNumber.InvalidArgument;
+
+        // Adjust read length to not exceed file bounds
+        if(fileOffset + readLength > (long)info.InformationLength)
+            readLength = (long)info.InformationLength - fileOffset;
+
+        int fixedSize = info.IsExtended ? 216 : 176;
+        int adOffset  = fixedSize + (int)info.LengthOfExtendedAttributes;
+        var adLength  = (int)info.LengthOfAllocationDescriptors;
+
+        switch(adType)
+        {
+            case 0: // Short Allocation Descriptors
+                return ReadDataFromShortAdRange(feBuffer,
+                                                adOffset,
+                                                adLength,
+                                                fileOffset,
+                                                readLength,
+                                                buffer,
+                                                out bytesRead);
+
+            case 1: // Long Allocation Descriptors
+                return ReadDataFromLongAdRange(feBuffer,
+                                               adOffset,
+                                               adLength,
+                                               fileOffset,
+                                               readLength,
+                                               buffer,
+                                               out bytesRead);
+
+            case 2: // Extended Allocation Descriptors
+                return ErrorNumber.NotSupported;
+
+            case 3: // Data is embedded in the allocation descriptor area
+                // For embedded data, we still need to read it all at once
+                long toRead = Math.Min(readLength, (long)info.InformationLength - fileOffset);
+                Array.Copy(feBuffer, adOffset + (int)fileOffset, buffer, 0, (int)toRead);
+                bytesRead = toRead;
 
                 return ErrorNumber.NoError;
 
