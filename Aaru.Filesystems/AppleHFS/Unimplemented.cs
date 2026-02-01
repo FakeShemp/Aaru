@@ -32,7 +32,6 @@
 // ReSharper disable MemberCanBePrivate.Local
 
 using System;
-using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -49,11 +48,6 @@ public sealed partial class AppleHFS
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();

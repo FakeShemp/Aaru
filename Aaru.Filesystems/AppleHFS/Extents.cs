@@ -118,6 +118,24 @@ public sealed partial class AppleHFS
     /// <summary>Cache of extent records by file ID and fork type</summary>
     Dictionary<(uint fileId, ForkType forkType), List<ExtDescriptor>> _extentCache;
 
+    /// <summary>Safely validates and initializes an ExtDataRec structure</summary>
+    private static ExtDataRec EnsureValidExtDataRec(ExtDataRec extents)
+    {
+        // If the xdr array is null, create a new one with all zeros
+        if(extents.xdr == null)
+        {
+            extents.xdr = new ExtDescriptor[3];
+
+            for(var i = 0; i < 3; i++)
+            {
+                extents.xdr[i].xdrStABN    = 0;
+                extents.xdr[i].xdrNumABlks = 0;
+            }
+        }
+
+        return extents;
+    }
+
     /// <summary>Initializes the extents overflow file B-Tree header information</summary>
     ErrorNumber InitializeExtentsOverflowBTree()
     {
@@ -180,6 +198,8 @@ public sealed partial class AppleHFS
     {
         nodeData = null;
 
+        // Ensure the extents struct is properly initialized
+        extents = EnsureValidExtDataRec(extents);
 
         // Calculate which extent contains this node
         uint nodeSize     = 512; // Default HFS node size
@@ -240,25 +260,6 @@ public sealed partial class AppleHFS
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        // First, add the three extents that are stored in the catalog record
-        for(var i = 0; i < 3; i++)
-        {
-            if(firstExtents.xdr[i].xdrNumABlks == 0) break;
-
-            allExtents.Add(firstExtents.xdr[i]);
-        }
-
-        // If the last extent is 0, there are no overflow extents
-        if(firstExtents.xdr[2].xdrNumABlks == 0)
-        {
-            // Cache and return
-            (uint fileId, ForkType forkType) key = (fileId, forkType);
-
-            if(!_extentCache.ContainsKey(key)) _extentCache[key] = allExtents;
-
-            return ErrorNumber.NoError;
-        }
-
         // Check cache first
         (uint fileId, ForkType forkType) cacheKey = (fileId, forkType);
 
@@ -269,22 +270,52 @@ public sealed partial class AppleHFS
             return ErrorNumber.NoError;
         }
 
-        // Need to search the extents B-Tree for overflow extents
-        // The search key is (fileId, forkType, starting allocation block)
-        // We need to find all extent records for this file and fork type
-
-        ErrorNumber errno = SearchExtentsOverflowBTree(fileId, forkType, out List<ExtDescriptor> overflowExtents);
-
-        if(errno != ErrorNumber.NoError)
+        // First, add the three extents that are stored in the catalog record
+        // Ensure xdr array is properly initialized
+        if(firstExtents.xdr != null)
         {
-            // If no overflow extents found, it's ok - file just has 3 or fewer extents
-            if(errno == ErrorNumber.NoSuchFile) return ErrorNumber.NoError;
+            for(var i = 0; i < 3; i++)
+            {
+                if(i >= firstExtents.xdr.Length || firstExtents.xdr[i].xdrNumABlks == 0) break;
 
-            return errno;
+                allExtents.Add(firstExtents.xdr[i]);
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Adding extent from catalog: startBlock={0}, numBlocks={1}",
+                                  firstExtents.xdr[i].xdrStABN,
+                                  firstExtents.xdr[i].xdrNumABlks);
+            }
         }
 
-        // Combine initial and overflow extents
-        allExtents.AddRange(overflowExtents);
+        // If all three initial extents are full (or we have 3), we might have overflow extents
+        // Check if we need to search the extents B-Tree
+        bool hasThreeExtents = firstExtents.xdr                != null &&
+                               firstExtents.xdr.Length         >= 3    &&
+                               firstExtents.xdr[2].xdrNumABlks != 0;
+
+        if(hasThreeExtents)
+        {
+            // Need to search the extents B-Tree for overflow extents
+            ErrorNumber errno = SearchExtentsOverflowBTree(fileId, forkType, out List<ExtDescriptor> overflowExtents);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                // If no overflow extents found, it's ok - file just has 3 extents
+                if(errno != ErrorNumber.NoSuchFile) return errno;
+            }
+            else if(overflowExtents != null && overflowExtents.Count > 0)
+            {
+                // Combine initial and overflow extents
+                allExtents.AddRange(overflowExtents);
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Added {0} overflow extents for file {1}",
+                                  overflowExtents.Count,
+                                  fileId);
+            }
+        }
+
+        if(allExtents.Count == 0) return ErrorNumber.NoSuchFile;
 
         // Cache the result
         _extentCache[cacheKey] = allExtents;
@@ -301,6 +332,9 @@ public sealed partial class AppleHFS
 
         if(_extentsBTreeHeader.bthRoot == 0) return ErrorNumber.NoSuchFile;
 
+        // Validate that MDB and its extents are properly initialized
+        if(_mdb.drXTExtRec.xdr == null || _mdb.drXTExtRec.xdr[0].xdrNumABlks == 0) return ErrorNumber.NoSuchFile;
+
         // Start from the root node
         uint currentNode = _extentsBTreeHeader.bthRoot;
 
@@ -310,6 +344,9 @@ public sealed partial class AppleHFS
             ErrorNumber errno = ReadNode(currentNode, _mdb.drXTExtRec, _mdb.drXTFlSize, out byte[] nodeData);
 
             if(errno != ErrorNumber.NoError) return errno;
+
+            if(nodeData == null || nodeData.Length < Marshal.SizeOf<NodeDescriptor>())
+                return ErrorNumber.InvalidArgument;
 
             // Parse node descriptor
             NodeDescriptor nodeDesc =
@@ -330,7 +367,7 @@ public sealed partial class AppleHFS
                     if(extents.Count == 0) return ErrorNumber.NoSuchFile;
                 }
 
-                extents.AddRange(records);
+                if(records != null) extents.AddRange(records);
 
                 // Continue searching through linked leaf nodes
                 if(nodeDesc.ndFLink != 0)
