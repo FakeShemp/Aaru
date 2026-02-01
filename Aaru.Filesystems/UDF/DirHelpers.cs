@@ -492,11 +492,8 @@ public sealed partial class UDF
         int  sadSize       = System.Runtime.InteropServices.Marshal.SizeOf<ShortAllocationDescriptor>();
 
         // Fast path: skip to the approximate starting position ONLY if reading from a high offset
-        // Skip this optimization if reading from the start (fileOffset == 0)
-        if(fileOffset > 0 && adLength > sadSize * 16) // Only optimize if many descriptors and non-zero offset
+        if(fileOffset > 0 && adLength > sadSize * 16)
         {
-            // Estimate: scan for approximate position
-            // We'll still need to verify, but this gets us close
             long scannedOffset = 0;
             int  scanPos       = adOffset;
 
@@ -506,23 +503,26 @@ public sealed partial class UDF
                     Marshal.ByteArrayToStructureLittleEndian<ShortAllocationDescriptor>(feBuffer, scanPos, sadSize);
 
                 uint extentLength = sadScan.extentLength & 0x3FFFFFFF;
+
                 if(extentLength == 0) break;
 
                 scannedOffset += extentLength;
                 scanPos       += sadSize;
 
-                // If we've scanned past the target, backtrack to the previous position
                 if(scannedOffset >= fileOffset)
                 {
-                    scanPos  -= sadSize;
+                    scanPos       -= sadSize;
                     scannedOffset -= extentLength;
+
                     break;
                 }
             }
 
-            adPos           = scanPos;
-            currentOffset   = scannedOffset;
+            adPos         = scanPos;
+            currentOffset = scannedOffset;
         }
+
+        long targetEnd = fileOffset + readLength;
 
         while(adPos < adOffset + adLength && bytesRead < readLength)
         {
@@ -531,41 +531,49 @@ public sealed partial class UDF
 
             uint extentLength = sad.extentLength & 0x3FFFFFFF;
 
-            if(extentLength == 0)
-                break;
+            if(extentLength == 0) break;
 
             long extentEnd = currentOffset + extentLength;
 
-            // Optimization: if we've already passed the range we need and have read enough, exit early
-            if(currentOffset > fileOffset + readLength && bytesRead > 0)
-                break;
+            // Early exit: if we've read everything we need, stop
+            if(currentOffset >= targetEnd) break;
 
-            // Check if this extent contains any data we need
-            if(extentEnd > fileOffset && currentOffset < fileOffset + readLength)
+            // Check if this extent overlaps with the range we need
+            if(extentEnd > fileOffset)
             {
                 // Calculate the offset within this extent to start reading
-                long offsetInExtent = fileOffset > currentOffset ? fileOffset - currentOffset : 0;
+                long offsetInExtent = currentOffset < fileOffset ? fileOffset - currentOffset : 0;
 
                 // Calculate how much to read from this extent
-                long toRead                                = extentLength - offsetInExtent;
-                if(toRead > readLength - bytesRead) toRead = readLength - bytesRead;
+                long toRead = extentLength - offsetInExtent;
 
-                // Read the extent data
-                uint sectorsToRead = (extentLength + _sectorSize - 1) / _sectorSize;
+                if(currentOffset + offsetInExtent + toRead > targetEnd)
+                    toRead = targetEnd - (currentOffset + offsetInExtent);
 
-                ErrorNumber errno = ReadSectorsFromPartition(sad.extentLocation,
-                                                             0,
-                                                             _partitionStartingLocation,
-                                                             sectorsToRead,
-                                                             out byte[] extentData);
+                if(toRead > 0)
+                {
+                    // Optimization: calculate exact sector range to read
+                    // Don't read entire extent if we only need part of it
+                    long sectorOffset = offsetInExtent / _sectorSize;
+                    long byteOffsetInFirstSector = offsetInExtent % _sectorSize;
+                    var  sectorsToRead = (uint)((byteOffsetInFirstSector + toRead + _sectorSize - 1) / _sectorSize);
 
-                if(errno != ErrorNumber.NoError) return errno;
+                    // Read from the correct starting sector of the extent
+                    ErrorNumber errno = ReadSectorsFromPartition((uint)(sad.extentLocation + sectorOffset),
+                                                                 0,
+                                                                 _partitionStartingLocation,
+                                                                 sectorsToRead,
+                                                                 out byte[] extentData);
 
-                // Copy the relevant portion
-                Array.Copy(extentData, (int)offsetInExtent, buffer, bufferOffset, (int)toRead);
+                    if(errno != ErrorNumber.NoError) return errno;
 
-                bytesRead    += toRead;
-                bufferOffset += (int)toRead;
+                    // Copy from the byte offset in the first sector
+                    int copyLen = Math.Min((int)toRead, buffer.Length - bufferOffset);
+                    Array.Copy(extentData, (int)byteOffsetInFirstSector, buffer, bufferOffset, copyLen);
+
+                    bytesRead    += copyLen;
+                    bufferOffset += copyLen;
+                }
             }
 
             currentOffset += extentLength;
@@ -589,11 +597,8 @@ public sealed partial class UDF
         int  ladSize       = System.Runtime.InteropServices.Marshal.SizeOf<LongAllocationDescriptor>();
 
         // Fast path: skip to the approximate starting position ONLY if reading from a high offset
-        // Skip this optimization if reading from the start (fileOffset == 0)
-        if(fileOffset > 0 && adLength > ladSize * 16) // Only optimize if many descriptors and non-zero offset
+        if(fileOffset > 0 && adLength > ladSize * 16)
         {
-            // Estimate: scan for approximate position
-            // We'll still need to verify, but this gets us close
             long scannedOffset = 0;
             int  scanPos       = adOffset;
 
@@ -603,23 +608,26 @@ public sealed partial class UDF
                     Marshal.ByteArrayToStructureLittleEndian<LongAllocationDescriptor>(feBuffer, scanPos, ladSize);
 
                 uint extentLength = ladScan.extentLength & 0x3FFFFFFF;
+
                 if(extentLength == 0) break;
 
                 scannedOffset += extentLength;
                 scanPos       += ladSize;
 
-                // If we've scanned past the target, backtrack to the previous position
                 if(scannedOffset >= fileOffset)
                 {
-                    scanPos  -= ladSize;
+                    scanPos       -= ladSize;
                     scannedOffset -= extentLength;
+
                     break;
                 }
             }
 
-            adPos           = scanPos;
-            currentOffset   = scannedOffset;
+            adPos         = scanPos;
+            currentOffset = scannedOffset;
         }
+
+        long targetEnd = fileOffset + readLength;
 
         while(adPos < adOffset + adLength && bytesRead < readLength)
         {
@@ -632,36 +640,46 @@ public sealed partial class UDF
 
             long extentEnd = currentOffset + extentLength;
 
-            // Optimization: if we've already passed the range we need and have read enough, exit early
-            if(currentOffset > fileOffset + readLength && bytesRead > 0)
-                break;
+            // Early exit: if we've read everything we need, stop
+            if(currentOffset >= targetEnd) break;
 
-            // Check if this extent contains any data we need
-            if(extentEnd > fileOffset && currentOffset < fileOffset + readLength)
+            // Check if this extent overlaps with the range we need
+            if(extentEnd > fileOffset)
             {
                 // Calculate the offset within this extent to start reading
-                long offsetInExtent = fileOffset > currentOffset ? fileOffset - currentOffset : 0;
+                long offsetInExtent = currentOffset < fileOffset ? fileOffset - currentOffset : 0;
 
                 // Calculate how much to read from this extent
-                long toRead                                = extentLength - offsetInExtent;
-                if(toRead > readLength - bytesRead) toRead = readLength - bytesRead;
+                long toRead = extentLength - offsetInExtent;
 
-                // Read the extent data
-                uint sectorsToRead = (extentLength + _sectorSize - 1) / _sectorSize;
+                if(currentOffset + offsetInExtent + toRead > targetEnd)
+                    toRead = targetEnd - (currentOffset + offsetInExtent);
 
-                ErrorNumber errno = ReadSectorsFromPartition(lad.extentLocation.logicalBlockNumber,
-                                                             lad.extentLocation.partitionReferenceNumber,
-                                                             _partitionStartingLocation,
-                                                             sectorsToRead,
-                                                             out byte[] extentData);
+                if(toRead > 0)
+                {
+                    // Optimization: calculate exact sector range to read
+                    // Don't read entire extent if we only need part of it
+                    long sectorOffset = offsetInExtent / _sectorSize;
+                    long byteOffsetInFirstSector = offsetInExtent % _sectorSize;
+                    var  sectorsToRead = (uint)((byteOffsetInFirstSector + toRead + _sectorSize - 1) / _sectorSize);
 
-                if(errno != ErrorNumber.NoError) return errno;
+                    // Read from the correct starting sector of the extent
+                    ErrorNumber errno =
+                        ReadSectorsFromPartition((uint)(lad.extentLocation.logicalBlockNumber + sectorOffset),
+                                                 lad.extentLocation.partitionReferenceNumber,
+                                                 _partitionStartingLocation,
+                                                 sectorsToRead,
+                                                 out byte[] extentData);
 
-                // Copy the relevant portion
-                Array.Copy(extentData, (int)offsetInExtent, buffer, bufferOffset, (int)toRead);
+                    if(errno != ErrorNumber.NoError) return errno;
 
-                bytesRead    += toRead;
-                bufferOffset += (int)toRead;
+                    // Copy from the byte offset in the first sector
+                    int copyLen = Math.Min((int)toRead, buffer.Length - bufferOffset);
+                    Array.Copy(extentData, (int)byteOffsetInFirstSector, buffer, bufferOffset, copyLen);
+
+                    bytesRead    += copyLen;
+                    bufferOffset += copyLen;
+                }
             }
 
             currentOffset += extentLength;
