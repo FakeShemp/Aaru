@@ -888,5 +888,26 @@ public sealed partial class UDF
         // Followed by VAT entries (uint32 array)
     }
 
+    /// <summary>Metadata Partition Map per UDF 2.50 2.2.10</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct MetadataPartitionMap
+    {
+        public readonly byte partitionMapType;   // 2
+        public readonly byte partitionMapLength; // 64
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public readonly byte[] reserved1;
+        public readonly EntityIdentifier partitionTypeIdentifier; // "*UDF Metadata Partition"
+        public readonly ushort           volumeSequenceNumber;
+        public readonly ushort           partitionNumber;
+        public readonly uint             metadataFileLocation;
+        public readonly uint             metadataMirrorFileLocation;
+        public readonly uint             metadataBitmapFileLocation;
+        public readonly uint             allocationUnitSize;
+        public readonly ushort           alignmentUnitSize;
+        public readonly byte             flags;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+        public readonly byte[] reserved2;
+    }
+
 #endregion
 }

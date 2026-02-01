@@ -203,11 +203,11 @@ public sealed partial class UDF
         // Store UDF version
         _udfVersion = lvidiu.minimumReadUDF;
 
-        // Support UDF versions up to 2.01
-        // UDF 1.02 = 0x0102, UDF 1.50 = 0x0150, UDF 2.00 = 0x0200, UDF 2.01 = 0x0201
-        if(lvidiu.minimumReadUDF > UDF_VERSION_201) return ErrorNumber.InvalidArgument;
+        // Support UDF versions up to 2.50
+        // UDF 1.02 = 0x0102, UDF 1.50 = 0x0150, UDF 2.00 = 0x0200, UDF 2.01 = 0x0201, UDF 2.50 = 0x0250
+        if(lvidiu.minimumReadUDF > UDF_VERSION_250) return ErrorNumber.InvalidArgument;
 
-        // Parse partition maps from LVD to handle Type 1, Virtual, and Sparable partitions
+        // Parse partition maps from LVD to handle Type 1, Virtual, Sparable, and Metadata partitions
         ErrorNumber errno = ParsePartitionMaps(lvd, partitionDescriptors);
 
         if(errno != ErrorNumber.NoError) return errno;
@@ -224,6 +224,14 @@ public sealed partial class UDF
         if(_hasSparablePartition)
         {
             errno = LoadSparingTable(imagePlugin);
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+
+        // For UDF 2.50+ metadata partitions, load the metadata file
+        if(_hasMetadataPartition)
+        {
+            errno = LoadMetadataPartition(imagePlugin, partitionDescriptors);
 
             if(errno != ErrorNumber.NoError) return errno;
         }
@@ -372,6 +380,14 @@ public sealed partial class UDF
         _sparablePacketLength    = 0;
         _udfVersion              = 0;
 
+        // Clear UDF 2.50 metadata partition fields
+        _hasMetadataPartition       = false;
+        _metadataPartitionNumber    = 0;
+        _metadataFileLocation       = 0;
+        _metadataMirrorFileLocation = 0;
+        _metadataAllocationUnitSize = 0;
+        _metadataFileData           = null;
+
         _mounted = false;
 
         return ErrorNumber.NoError;
@@ -387,6 +403,7 @@ public sealed partial class UDF
         _partitionMap         = [];
         _hasVirtualPartition  = false;
         _hasSparablePartition = false;
+        _hasMetadataPartition = false;
 
         var offset = 0;
 
@@ -416,7 +433,7 @@ public sealed partial class UDF
 
                 case 2:
                 {
-                    // Type 2 Partition Map - check for Virtual or Sparable
+                    // Type 2 Partition Map - check for Virtual, Sparable, or Metadata
                     Type2PartitionMapHeader type2Header =
                         Marshal.ByteArrayToStructureLittleEndian<Type2PartitionMapHeader>(lvd.partitionMaps,
                             offset,
@@ -446,6 +463,21 @@ public sealed partial class UDF
                         _sparablePartitionNumber = (ushort)i;
                         _sparablePacketLength    = sparableMap.packetLength;
                         _partitionMap[(ushort)i] = sparableMap.partitionNumber;
+                    }
+                    else if(CompareIdentifier(type2Header.partitionTypeIdentifier.identifier, _udf_MetadataPartition))
+                    {
+                        // Metadata Partition Map (UDF 2.50+)
+                        MetadataPartitionMap metadataMap =
+                            Marshal.ByteArrayToStructureLittleEndian<MetadataPartitionMap>(lvd.partitionMaps,
+                                offset,
+                                System.Runtime.InteropServices.Marshal.SizeOf<MetadataPartitionMap>());
+
+                        _hasMetadataPartition       = true;
+                        _metadataPartitionNumber    = (ushort)i;
+                        _metadataFileLocation       = metadataMap.metadataFileLocation;
+                        _metadataMirrorFileLocation = metadataMap.metadataMirrorFileLocation;
+                        _metadataAllocationUnitSize = metadataMap.allocationUnitSize;
+                        _partitionMap[(ushort)i]    = metadataMap.partitionNumber;
                     }
                     else
                     {
@@ -593,9 +625,62 @@ public sealed partial class UDF
     }
 
     /// <summary>
+    ///     Loads the Metadata Partition file for UDF 2.50+ metadata partitions.
+    ///     The metadata file contains all metadata (file entries, directories) for the volume.
+    /// </summary>
+    ErrorNumber LoadMetadataPartition(IMediaImage                             imagePlugin,
+                                      Dictionary<ushort, PartitionDescriptor> partitionDescriptors)
+    {
+        // Get the physical partition that the metadata partition references
+        if(!_partitionMap.TryGetValue(_metadataPartitionNumber, out ushort physicalPartitionNum))
+            return ErrorNumber.InvalidArgument;
+
+        if(!partitionDescriptors.TryGetValue(physicalPartitionNum, out PartitionDescriptor physicalPartition))
+            return ErrorNumber.InvalidArgument;
+
+        // Read the metadata file entry from the physical partition
+        ulong metadataFileSector = physicalPartition.partitionStartingLocation + _metadataFileLocation;
+
+        if(imagePlugin.ReadSector(metadataFileSector, false, out byte[] metadataFeBuffer, out _) != ErrorNumber.NoError)
+        {
+            // Try the mirror location if primary fails
+            if(_metadataMirrorFileLocation != 0xFFFFFFFF)
+            {
+                metadataFileSector = physicalPartition.partitionStartingLocation + _metadataMirrorFileLocation;
+
+                if(imagePlugin.ReadSector(metadataFileSector, false, out metadataFeBuffer, out _) !=
+                   ErrorNumber.NoError)
+                    return ErrorNumber.InvalidArgument;
+            }
+            else
+                return ErrorNumber.InvalidArgument;
+        }
+
+        // Parse the metadata file entry
+        ErrorNumber errno = ParseFileEntryInfo(metadataFeBuffer, out UdfFileEntryInfo metadataFileInfo);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read the metadata file content
+        var adType = (byte)((ushort)metadataFileInfo.IcbTag.flags & 0x07);
+
+        // For metadata file, we need to read using the physical partition directly
+        // Store the current partition start, temporarily use physical partition
+        uint originalPartitionStart = _partitionStartingLocation;
+        _partitionStartingLocation = physicalPartition.partitionStartingLocation;
+
+        errno = ReadFileDataFromInfo(metadataFileInfo, metadataFeBuffer, adType, out _metadataFileData);
+
+        // Restore original partition start
+        _partitionStartingLocation = originalPartitionStart;
+
+        return errno;
+    }
+
+    /// <summary>
     ///     Translates a logical block number to an absolute sector number,
-    ///     taking into account VAT (for virtual partitions) and sparing tables
-    ///     (for sparable partitions).
+    ///     taking into account VAT (for virtual partitions), sparing tables
+    ///     (for sparable partitions), and metadata partitions (UDF 2.50+).
     /// </summary>
     /// <param name="logicalBlock">The logical block number within the partition</param>
     /// <param name="partitionNumber">The partition reference number</param>
@@ -605,10 +690,16 @@ public sealed partial class UDF
     {
         uint physicalBlock = logicalBlock;
 
+        // If this is a metadata partition, the logical block is an offset into the metadata file
+        // The metadata file is already loaded into _metadataFileData, so we return a special value
+        // that indicates the data should be read from the cached metadata file
+        // Note: This is handled specially in the read methods
+
         // If this is a virtual partition, translate through the VAT
         if(_hasVirtualPartition && partitionNumber == _virtualPartitionNumber && _vat != null)
-            if(logicalBlock < _vat.Length)
-                physicalBlock = _vat[logicalBlock];
+        {
+            if(logicalBlock < _vat.Length) physicalBlock = _vat[logicalBlock];
+        }
 
         // If this is a sparable partition, check the sparing table
         if(_hasSparablePartition && partitionNumber == _sparablePartitionNumber && _sparingTable != null)
@@ -624,5 +715,75 @@ public sealed partial class UDF
         }
 
         return partitionStart + physicalBlock;
+    }
+
+    /// <summary>
+    ///     Reads a sector from the appropriate location, handling metadata partitions.
+    ///     For metadata partitions, data is read from the cached metadata file.
+    /// </summary>
+    /// <param name="logicalBlock">The logical block number</param>
+    /// <param name="partitionNumber">The partition reference number</param>
+    /// <param name="partitionStart">The starting sector of the physical partition</param>
+    /// <param name="buffer">The buffer to read into</param>
+    /// <returns>Error number</returns>
+    ErrorNumber ReadSectorFromPartition(uint       logicalBlock, ushort partitionNumber, uint partitionStart,
+                                        out byte[] buffer)
+    {
+        buffer = null;
+
+        // Check if this is a metadata partition read
+        if(_hasMetadataPartition && partitionNumber == _metadataPartitionNumber && _metadataFileData != null)
+        {
+            // Read from the cached metadata file
+            long offset = logicalBlock * _sectorSize;
+
+            if(offset + _sectorSize > _metadataFileData.Length) return ErrorNumber.InvalidArgument;
+
+            buffer = new byte[_sectorSize];
+            Array.Copy(_metadataFileData, offset, buffer, 0, _sectorSize);
+
+            return ErrorNumber.NoError;
+        }
+
+        // For other partitions, translate and read from the image
+        ulong absoluteSector = TranslateLogicalBlock(logicalBlock, partitionNumber, partitionStart);
+
+        return _imagePlugin.ReadSector(absoluteSector, false, out buffer, out _);
+    }
+
+    /// <summary>
+    ///     Reads multiple sectors from the appropriate location, handling metadata partitions.
+    ///     For metadata partitions, data is read from the cached metadata file.
+    /// </summary>
+    /// <param name="logicalBlock">The starting logical block number</param>
+    /// <param name="partitionNumber">The partition reference number</param>
+    /// <param name="partitionStart">The starting sector of the physical partition</param>
+    /// <param name="count">Number of sectors to read</param>
+    /// <param name="buffer">The buffer to read into</param>
+    /// <returns>Error number</returns>
+    ErrorNumber ReadSectorsFromPartition(uint logicalBlock, ushort partitionNumber, uint partitionStart, uint count,
+                                         out byte[] buffer)
+    {
+        buffer = null;
+
+        // Check if this is a metadata partition read
+        if(_hasMetadataPartition && partitionNumber == _metadataPartitionNumber && _metadataFileData != null)
+        {
+            // Read from the cached metadata file
+            long offset      = logicalBlock * _sectorSize;
+            long bytesToRead = count        * _sectorSize;
+
+            if(offset + bytesToRead > _metadataFileData.Length) return ErrorNumber.InvalidArgument;
+
+            buffer = new byte[bytesToRead];
+            Array.Copy(_metadataFileData, offset, buffer, 0, bytesToRead);
+
+            return ErrorNumber.NoError;
+        }
+
+        // For other partitions, translate and read from the image
+        ulong absoluteSector = TranslateLogicalBlock(logicalBlock, partitionNumber, partitionStart);
+
+        return _imagePlugin.ReadSectors(absoluteSector, false, count, out buffer, out _);
     }
 }

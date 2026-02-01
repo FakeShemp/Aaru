@@ -60,6 +60,9 @@ public sealed partial class UDF
     static readonly byte[] _udf_SparablePartition = "*UDF Sparable Partition"u8.ToArray();
     static readonly byte[] _udf_SparingTable      = "*UDF Sparing Table"u8.ToArray();
 
+    // UDF 2.50+ partition type identifiers
+    static readonly byte[] _udf_MetadataPartition = "*UDF Metadata Partition"u8.ToArray();
+
     // UDF 2.00+ named stream identifiers
     const string STREAM_MAC_RESOURCE_FORK = "*UDF Macintosh Resource Fork";
     const string STREAM_OS2_EA            = "*UDF OS/2 EA";

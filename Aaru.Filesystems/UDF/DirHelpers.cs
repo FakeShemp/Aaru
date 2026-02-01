@@ -46,16 +46,16 @@ public sealed partial class UDF
     {
         entries = [];
 
-        // Read the File Entry for this directory
-        ulong fileEntrySector = TranslateLogicalBlock(icb.extentLocation.logicalBlockNumber,
-                                                      icb.extentLocation.partitionReferenceNumber,
-                                                      _partitionStartingLocation);
+        // Read the File Entry for this directory (using partition-aware read for metadata partition support)
+        ErrorNumber errno = ReadSectorFromPartition(icb.extentLocation.logicalBlockNumber,
+                                                    icb.extentLocation.partitionReferenceNumber,
+                                                    _partitionStartingLocation,
+                                                    out byte[] feBuffer);
 
-        if(_imagePlugin.ReadSector(fileEntrySector, false, out byte[] feBuffer, out _) != ErrorNumber.NoError)
-            return ErrorNumber.InvalidArgument;
+        if(errno != ErrorNumber.NoError) return errno;
 
         // Parse as unified file entry info (handles both FileEntry and ExtendedFileEntry)
-        ErrorNumber errno = ParseFileEntryInfo(feBuffer, out UdfFileEntryInfo fileEntryInfo);
+        errno = ParseFileEntryInfo(feBuffer, out UdfFileEntryInfo fileEntryInfo);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -203,12 +203,15 @@ public sealed partial class UDF
             if(extentLength == 0) break;
 
             // Short ADs don't have partition reference, use partition 0
-            ulong extentSector  = TranslateLogicalBlock(sad.extentLocation, 0, _partitionStartingLocation);
-            uint  sectorsToRead = (extentLength + _sectorSize - 1) / _sectorSize;
+            uint sectorsToRead = (extentLength + _sectorSize - 1) / _sectorSize;
 
-            if(_imagePlugin.ReadSectors(extentSector, false, sectorsToRead, out byte[] extentData, out _) !=
-               ErrorNumber.NoError)
-                return ErrorNumber.InvalidArgument;
+            ErrorNumber errno = ReadSectorsFromPartition(sad.extentLocation,
+                                                         0,
+                                                         _partitionStartingLocation,
+                                                         sectorsToRead,
+                                                         out byte[] extentData);
+
+            if(errno != ErrorNumber.NoError) return errno;
 
             var bytesToCopy = (int)Math.Min(extentLength, dataLength - dataOffset);
             Array.Copy(extentData, 0, data, dataOffset, bytesToCopy);
@@ -248,15 +251,15 @@ public sealed partial class UDF
 
             if(extentLength == 0) break;
 
-            ulong extentSector = TranslateLogicalBlock(lad.extentLocation.logicalBlockNumber,
-                                                       lad.extentLocation.partitionReferenceNumber,
-                                                       _partitionStartingLocation);
-
             uint sectorsToRead = (extentLength + _sectorSize - 1) / _sectorSize;
 
-            if(_imagePlugin.ReadSectors(extentSector, false, sectorsToRead, out byte[] extentData, out _) !=
-               ErrorNumber.NoError)
-                return ErrorNumber.InvalidArgument;
+            ErrorNumber errno = ReadSectorsFromPartition(lad.extentLocation.logicalBlockNumber,
+                                                         lad.extentLocation.partitionReferenceNumber,
+                                                         _partitionStartingLocation,
+                                                         sectorsToRead,
+                                                         out byte[] extentData);
+
+            if(errno != ErrorNumber.NoError) return errno;
 
             var bytesToCopy = (int)Math.Min(extentLength, dataLength - dataOffset);
             Array.Copy(extentData, 0, data, dataOffset, bytesToCopy);
@@ -463,15 +466,15 @@ public sealed partial class UDF
         // Stream directory ICB with all zeros means no streams
         if(streamDirIcb.extentLength == 0) return ErrorNumber.NoError;
 
-        // Read the stream directory file entry
-        ulong streamDirSector = TranslateLogicalBlock(streamDirIcb.extentLocation.logicalBlockNumber,
-                                                      streamDirIcb.extentLocation.partitionReferenceNumber,
-                                                      _partitionStartingLocation);
+        // Read the stream directory file entry (using partition-aware read for metadata partition support)
+        ErrorNumber errno = ReadSectorFromPartition(streamDirIcb.extentLocation.logicalBlockNumber,
+                                                    streamDirIcb.extentLocation.partitionReferenceNumber,
+                                                    _partitionStartingLocation,
+                                                    out byte[] sdBuffer);
 
-        if(_imagePlugin.ReadSector(streamDirSector, false, out byte[] sdBuffer, out _) != ErrorNumber.NoError)
-            return ErrorNumber.InvalidArgument;
+        if(errno != ErrorNumber.NoError) return errno;
 
-        ErrorNumber errno = ParseFileEntryInfo(sdBuffer, out UdfFileEntryInfo streamDirInfo);
+        errno = ParseFileEntryInfo(sdBuffer, out UdfFileEntryInfo streamDirInfo);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -518,13 +521,13 @@ public sealed partial class UDF
 
             if(!string.IsNullOrEmpty(streamName))
             {
-                // Read the stream file entry to get its length
-                ulong streamEntrySector = TranslateLogicalBlock(fid.icb.extentLocation.logicalBlockNumber,
+                // Read the stream file entry to get its length (using partition-aware read)
+                ErrorNumber streamErr = ReadSectorFromPartition(fid.icb.extentLocation.logicalBlockNumber,
                                                                 fid.icb.extentLocation.partitionReferenceNumber,
-                                                                _partitionStartingLocation);
+                                                                _partitionStartingLocation,
+                                                                out byte[] streamBuffer);
 
-                if(_imagePlugin.ReadSector(streamEntrySector, false, out byte[] streamBuffer, out _) ==
-                   ErrorNumber.NoError)
+                if(streamErr == ErrorNumber.NoError)
                 {
                     if(ParseFileEntryInfo(streamBuffer, out UdfFileEntryInfo streamInfo) == ErrorNumber.NoError)
                     {

@@ -62,6 +62,14 @@ public sealed partial class UDF : IReadOnlyFilesystem
     ushort                     _sparablePartitionNumber;
     uint                       _sparablePacketLength;
 
+    // UDF 2.50+ metadata partition fields
+    bool   _hasMetadataPartition;
+    ushort _metadataPartitionNumber;
+    uint   _metadataFileLocation;
+    uint   _metadataMirrorFileLocation;
+    uint   _metadataAllocationUnitSize;
+    byte[] _metadataFileData; // Cached metadata file content
+
 #region IFilesystem Members
 
     /// <inheritdoc />

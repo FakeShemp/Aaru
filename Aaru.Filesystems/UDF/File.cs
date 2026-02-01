@@ -298,13 +298,13 @@ public sealed partial class UDF
 
         if(backupStream == null) return null;
 
-        // Read the backup stream data (should contain a timestamp)
-        ulong streamSector = TranslateLogicalBlock(backupStream.Icb.extentLocation.logicalBlockNumber,
-                                                   backupStream.Icb.extentLocation.partitionReferenceNumber,
-                                                   _partitionStartingLocation);
+        // Read the backup stream data (should contain a timestamp) using partition-aware read
+        errno = ReadSectorFromPartition(backupStream.Icb.extentLocation.logicalBlockNumber,
+                                        backupStream.Icb.extentLocation.partitionReferenceNumber,
+                                        _partitionStartingLocation,
+                                        out byte[] streamBuffer);
 
-        if(_imagePlugin.ReadSector(streamSector, false, out byte[] streamBuffer, out _) != ErrorNumber.NoError)
-            return null;
+        if(errno != ErrorNumber.NoError) return null;
 
         if(ParseFileEntryInfo(streamBuffer, out UdfFileEntryInfo streamInfo) != ErrorNumber.NoError) return null;
 

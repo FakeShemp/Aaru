@@ -174,9 +174,8 @@ public sealed partial class UDF
                         List<string> os2Xattrs = GetOs2EaNames(feBuffer, eaOffset, iuea);
 
                         foreach(string os2Xattr in os2Xattrs)
-                        {
-                            if(!xattrs.Contains(os2Xattr)) xattrs.Add(os2Xattr);
-                        }
+                            if(!xattrs.Contains(os2Xattr))
+                                xattrs.Add(os2Xattr);
 
                         eaOffset += (int)eaHeader.attributeLength;
 
@@ -198,12 +197,13 @@ public sealed partial class UDF
     /// </summary>
     void ListOs2EaFromStream(UdfNamedStream stream, List<string> xattrs)
     {
-        // Read the stream data
-        ulong streamSector = TranslateLogicalBlock(stream.Icb.extentLocation.logicalBlockNumber,
-                                                   stream.Icb.extentLocation.partitionReferenceNumber,
-                                                   _partitionStartingLocation);
+        // Read the stream data using partition-aware read
+        ErrorNumber errno = ReadSectorFromPartition(stream.Icb.extentLocation.logicalBlockNumber,
+                                                    stream.Icb.extentLocation.partitionReferenceNumber,
+                                                    _partitionStartingLocation,
+                                                    out byte[] streamBuffer);
 
-        if(_imagePlugin.ReadSector(streamSector, false, out byte[] streamBuffer, out _) != ErrorNumber.NoError) return;
+        if(errno != ErrorNumber.NoError) return;
 
         if(ParseFileEntryInfo(streamBuffer, out UdfFileEntryInfo streamInfo) != ErrorNumber.NoError) return;
 
@@ -324,13 +324,13 @@ public sealed partial class UDF
 
             if(!matches) continue;
 
-            // Read the stream data
-            ulong streamSector = TranslateLogicalBlock(stream.Icb.extentLocation.logicalBlockNumber,
-                                                       stream.Icb.extentLocation.partitionReferenceNumber,
-                                                       _partitionStartingLocation);
+            // Read the stream data using partition-aware read
+            ErrorNumber streamErr = ReadSectorFromPartition(stream.Icb.extentLocation.logicalBlockNumber,
+                                                            stream.Icb.extentLocation.partitionReferenceNumber,
+                                                            _partitionStartingLocation,
+                                                            out byte[] streamBuffer);
 
-            if(_imagePlugin.ReadSector(streamSector, false, out byte[] streamBuffer, out _) != ErrorNumber.NoError)
-                continue;
+            if(streamErr != ErrorNumber.NoError) continue;
 
             if(ParseFileEntryInfo(streamBuffer, out UdfFileEntryInfo streamInfo) != ErrorNumber.NoError) continue;
 
@@ -348,13 +348,13 @@ public sealed partial class UDF
     /// </summary>
     byte[] GetOs2EaDataFromStream(UdfNamedStream stream, string eaName)
     {
-        // Read the stream data
-        ulong streamSector = TranslateLogicalBlock(stream.Icb.extentLocation.logicalBlockNumber,
-                                                   stream.Icb.extentLocation.partitionReferenceNumber,
-                                                   _partitionStartingLocation);
+        // Read the stream data using partition-aware read
+        ErrorNumber errno = ReadSectorFromPartition(stream.Icb.extentLocation.logicalBlockNumber,
+                                                    stream.Icb.extentLocation.partitionReferenceNumber,
+                                                    _partitionStartingLocation,
+                                                    out byte[] streamBuffer);
 
-        if(_imagePlugin.ReadSector(streamSector, false, out byte[] streamBuffer, out _) != ErrorNumber.NoError)
-            return null;
+        if(errno != ErrorNumber.NoError) return null;
 
         if(ParseFileEntryInfo(streamBuffer, out UdfFileEntryInfo streamInfo) != ErrorNumber.NoError) return null;
 
@@ -805,14 +805,13 @@ public sealed partial class UDF
     {
         feBuffer = null;
 
-        // Root directory
+        // Root directory - use partition-aware read
         if(string.IsNullOrWhiteSpace(path) || path == "/")
         {
-            ulong rootSector = TranslateLogicalBlock(_rootDirectoryIcb.extentLocation.logicalBlockNumber,
-                                                     _rootDirectoryIcb.extentLocation.partitionReferenceNumber,
-                                                     _partitionStartingLocation);
-
-            return _imagePlugin.ReadSector(rootSector, false, out feBuffer, out _);
+            return ReadSectorFromPartition(_rootDirectoryIcb.extentLocation.logicalBlockNumber,
+                                           _rootDirectoryIcb.extentLocation.partitionReferenceNumber,
+                                           _partitionStartingLocation,
+                                           out feBuffer);
         }
 
         string   cutPath    = path.StartsWith("/", StringComparison.Ordinal) ? path[1..] : path;
@@ -837,11 +836,10 @@ public sealed partial class UDF
 
         if(entry == null) return ErrorNumber.NoSuchFile;
 
-        ulong fileEntrySector = TranslateLogicalBlock(entry.Icb.extentLocation.logicalBlockNumber,
-                                                      entry.Icb.extentLocation.partitionReferenceNumber,
-                                                      _partitionStartingLocation);
-
-        return _imagePlugin.ReadSector(fileEntrySector, false, out feBuffer, out _);
+        return ReadSectorFromPartition(entry.Icb.extentLocation.logicalBlockNumber,
+                                       entry.Icb.extentLocation.partitionReferenceNumber,
+                                       _partitionStartingLocation,
+                                       out feBuffer);
     }
 
     /// <summary>
@@ -859,9 +857,8 @@ public sealed partial class UDF
         int compareLength = Math.Min(identifier.Length, pattern.Length);
 
         for(var i = 0; i < compareLength; i++)
-        {
-            if(identifier[i] != pattern[i]) return false;
-        }
+            if(identifier[i] != pattern[i])
+                return false;
 
         return true;
     }
