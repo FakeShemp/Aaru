@@ -33,7 +33,6 @@
 
 using System;
 using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -44,15 +43,6 @@ namespace Aaru.Filesystems;
 // https://developer.apple.com/legacy/library/documentation/mac/pdf/Files/File_Manager.pdf
 public sealed partial class AppleHFS
 {
-    /// <inheritdoc />
-    public FileSystem Metadata { get; private set; }
-
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
-
-    /// <inheritdoc />
-    public Dictionary<string, string> Namespaces { get; } = [];
-
     /// <inheritdoc />
     public ErrorNumber Unmount() => throw new NotImplementedException();
 

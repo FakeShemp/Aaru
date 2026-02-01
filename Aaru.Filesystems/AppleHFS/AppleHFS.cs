@@ -34,6 +34,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 
@@ -80,6 +81,14 @@ public sealed partial class AppleHFS : IReadOnlyFilesystem
 
     /// <summary>Sector size for I/O operations</summary>
     uint _sectorSize;
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
 #region IFilesystem Members
 
