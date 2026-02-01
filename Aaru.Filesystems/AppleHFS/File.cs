@@ -234,6 +234,10 @@ public sealed partial class AppleHFS
         // Normalize path
         string normalizedPath = string.IsNullOrEmpty(path) ? "/" : path;
 
+        // Convert colons back to forward slashes for internal path matching
+        // Mac OS filenames use colons for the path separator, so convert them back to our internal format
+        normalizedPath = normalizedPath.Replace(":", "/");
+
         // Root directory case
         if(string.Equals(normalizedPath, "/", StringComparison.OrdinalIgnoreCase))
         {
@@ -275,8 +279,9 @@ public sealed partial class AppleHFS
         {
             string component = pieces[p];
 
-            // Replace ':' back to '/' in names
-            component = component.Replace(":", "/");
+            // Replace '/' with ':' in names for HFS path matching
+            // HFS uses ':' as path separator, so '/' in the search must be converted
+            component = component.Replace("/", ":");
 
             // Look for the component in current directory
             KeyValuePair<string, CatalogEntry> foundEntry = default;
@@ -319,8 +324,9 @@ public sealed partial class AppleHFS
         // Now look for the final component
         string lastComponent = pieces[pieces.Length - 1];
 
-        // Replace ':' back to '/' in names
-        lastComponent = lastComponent.Replace(":", "/");
+        // Replace '/' with ':' in names for HFS path matching
+        // HFS uses ':' as path separator, so '/' in the search must be converted
+        lastComponent = lastComponent.Replace("/", ":");
 
         KeyValuePair<string, CatalogEntry> finalEntry = default;
         var                                foundFinal = false;
@@ -394,6 +400,10 @@ public sealed partial class AppleHFS
     {
         entry = null;
 
+        // Convert colons back to forward slashes for internal path matching
+        // Mac OS filenames use colons for the path separator, so convert them back to our internal format
+        path = path.Replace(":", "/");
+
         // Root directory case
         if(string.Equals(path, "/", StringComparison.OrdinalIgnoreCase))
         {
@@ -429,8 +439,9 @@ public sealed partial class AppleHFS
         {
             string component = pieces[p];
 
-            // Replace ':' back to '/' in names
-            component = component.Replace(":", "/");
+            // Replace '/' with ':' in names for HFS path matching
+            // HFS uses ':' as path separator, so '/' in the search must be converted
+            component = component.Replace("/", ":");
 
             // Look for the component in current directory
             var          found        = false;
