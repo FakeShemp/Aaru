@@ -103,6 +103,7 @@
 // - Proper handling of fragmented files
 //
 
+using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.Helpers;
@@ -236,11 +237,14 @@ public sealed partial class AppleHFS
         if(!foundExtent) return ErrorNumber.InvalidArgument;
 
         // Read the node from disk
-        ErrorNumber errno = _imagePlugin.ReadSectors(foundBlock * _mdb.drAlBlkSiz / _sectorSize,
-                                                     false,
-                                                     nodeSizeBlks * _mdb.drAlBlkSiz / _sectorSize,
-                                                     out nodeData,
-                                                     out _);
+        // HFS allocation blocks are at offsets expressed in 512-byte sectors
+        ulong extentOffsetSector512 = (ulong)foundBlock * _mdb.drAlBlkSiz / 512;
+
+        // Convert to device sector address
+        HfsOffsetToDeviceSector(extentOffsetSector512, out ulong deviceSector, out uint byteOffset);
+        uint sectorCount = (nodeSizeBlks * _mdb.drAlBlkSiz + byteOffset + _sectorSize - 1) / _sectorSize;
+
+        ErrorNumber errno = _imagePlugin.ReadSectors(deviceSector, false, sectorCount, out byte[] sectorData, out _);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -248,6 +252,12 @@ public sealed partial class AppleHFS
 
             return errno;
         }
+
+        // Extract node data from the appropriate offset
+        if(sectorData == null || sectorData.Length < (int)byteOffset + nodeSize) return ErrorNumber.InvalidArgument;
+
+        nodeData = new byte[nodeSize];
+        Array.Copy(sectorData, (int)byteOffset, nodeData, 0, nodeSize);
 
         return ErrorNumber.NoError;
     }

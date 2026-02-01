@@ -157,23 +157,39 @@ public sealed partial class AppleHFS
 
         if(catalogExtent.xdrNumABlks == 0) return ErrorNumber.InvalidArgument;
 
-        // Calculate node offset: each node is nodeSize bytes
-        // But nodes are always stored in 512-byte units on disk
-        ulong nodeOffset = nodeNumber * 512;
-
-        // Convert allocation block to sector
+        // All HFS offsets are in 512-byte sectors:
+        // - drAlBlSt: Start of allocation blocks (from partition start, in 512-byte sectors)
+        // - xdrStABN: Start allocation block number
+        // - drAlBlkSiz: Allocation block size in bytes
         ulong allocBlockSectorSize = _mdb.drAlBlkSiz / 512;
-        ulong catalogBaseSector    = _mdb.drAlBlSt + catalogExtent.xdrStABN * allocBlockSectorSize;
 
-        // Add node offset in sectors
-        ulong nodeSector = catalogBaseSector + nodeOffset / 512;
+        // Calculate HFS offset for this node (in 512-byte sectors)
+        // Node offset from start of catalog file (in bytes)
+        ulong nodeByteOffset = nodeNumber * 512UL;
 
-        AaruLogging.Debug(MODULE_NAME, $"ReadNode: num={nodeNumber}, sector={nodeSector}");
+        // Catalog file starts at this offset from partition (in 512-byte sectors)
+        ulong catalogSectorOffset512 = _mdb.drAlBlSt + catalogExtent.xdrStABN * allocBlockSectorSize;
 
-        // Read 1 sector (512 bytes) for the node
-        ErrorNumber errno = _imagePlugin.ReadSector(_partitionStart + nodeSector, false, out nodeData, out _);
+        // Total offset for this node
+        ulong nodeOffsetSector512 = catalogSectorOffset512 + nodeByteOffset / 512;
 
-        return errno;
+        // Convert to device sector address
+        HfsOffsetToDeviceSector(nodeOffsetSector512, out ulong deviceSector, out uint byteOffset);
+
+        AaruLogging.Debug(MODULE_NAME, $"ReadNode: num={nodeNumber}, deviceSector={deviceSector}, offset={byteOffset}");
+
+        // Read sectors containing the node
+        ErrorNumber errno = _imagePlugin.ReadSectors(deviceSector, false, 2, out byte[] sectorData, out _);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Extract node data from the appropriate offset
+        if(sectorData.Length < (int)byteOffset + 512) return ErrorNumber.InvalidArgument;
+
+        nodeData = new byte[512];
+        Array.Copy(sectorData, (int)byteOffset, nodeData, 0, 512);
+
+        return ErrorNumber.NoError;
     }
 
     ErrorNumber FindIndexPointer(byte[] indexNode, ushort nodeSize, uint targetParentID, out uint childNode)

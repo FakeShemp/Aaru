@@ -318,6 +318,29 @@ public sealed partial class AppleHFS
         return ErrorNumber.NoError;
     }
 
+    /// <summary>Converts HFS offset (in 512-byte sectors) to device sector address</summary>
+    /// <remarks>
+    ///     HFS always uses 512-byte sectors internally for all offset calculations.
+    ///     This method converts an HFS offset to the correct device sector address,
+    ///     accounting for the partition start and device sector size.
+    ///     Returns the device sector address and byte offset within that sector.
+    /// </remarks>
+    void HfsOffsetToDeviceSector(ulong hfsSectorOffset512, out ulong deviceSector, out uint byteOffset)
+    {
+        // Convert HFS 512-byte sector offset to byte offset from partition start
+        ulong byteOffsetFromPartition = hfsSectorOffset512 * 512;
+
+        // Convert partition start from device sectors to bytes
+        ulong partitionStartBytes = _partitionStart * _sectorSize;
+
+        // Calculate absolute byte offset from device start
+        ulong absoluteByteOffset = partitionStartBytes + byteOffsetFromPartition;
+
+        // Convert to device sector address and byte offset
+        deviceSector = absoluteByteOffset / _sectorSize;
+        byteOffset   = (uint)(absoluteByteOffset % _sectorSize);
+    }
+
     /// <summary>Reads and parses the Master Directory Block from the appropriate sector</summary>
     /// <returns>ErrorNumber indicating success or failure</returns>
     ErrorNumber ReadAndParseMdb()
@@ -326,34 +349,55 @@ public sealed partial class AppleHFS
         ErrorNumber errno;
 
         // According to Inside Macintosh, the MDB is located at sector 2 (512-byte sectors)
-        // On CD media with 2048-byte sectors, we must search at 2KB-aligned boundaries
-        // The MDB is always 512 bytes and can appear at offsets 0x400, 0x800, 0xC00, 0x1000, 0x1400, 0x1800 within read data
+        // Sector 2 = 0x400 bytes (1024 bytes) from the start of the HFS partition
+        //
+        // On CD media with 2048-byte sectors:
+        // - The partition may start at any CD sector boundary
+        // - We need to search within the partition data for the HFS magic at the proper offset
+        // - The HFS MDB is always at sector 2 (0x400 bytes) from partition start
+        // - However, we need to read enough data to account for potential misalignment
 
         if(_imagePlugin.Info.SectorSize is 2352 or 2448 or 2048)
         {
-            // Read 2 sectors from the start of the partition to search for MDB
-            errno = _imagePlugin.ReadSectors(_partitionStart, false, 2, out byte[] tmpSector, out _);
+            // For CD sectors, read enough sectors to ensure we get the full MDB
+            // Read 4 2048-byte sectors = 8192 bytes to be safe
+            // The HFS MDB should be at offset 0x400 from the partition start
+            errno = _imagePlugin.ReadSectors(_partitionStart, false, 4, out byte[] tmpSector, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            // Search at standard 2KB-aligned offsets where the MDB might be located
-            // This covers common CD layouts where HFS data starts at various alignments
-            foreach(int offset in new[]
-                    {
-                        0x000, 0x200, 0x400, 0x600, 0x800, 0xA00
-                    })
+            if(tmpSector.Length < 0x400 + 512) return ErrorNumber.InvalidArgument;
+
+            // The HFS MDB is at sector 2 (512-byte sectors) = offset 0x400
+            var drSigWord = BigEndianBitConverter.ToUInt16(tmpSector, 0x400);
+
+            if(drSigWord == AppleCommon.HFS_MAGIC)
             {
-                if(tmpSector.Length < offset + 512) continue;
-
-                var drSigWord = BigEndianBitConverter.ToUInt16(tmpSector, offset);
-
-                if(drSigWord != AppleCommon.HFS_MAGIC) continue;
-
-                // Found the MDB, extract the 512-byte MDB sector
+                // Found the MDB at the expected offset
                 mdbSector = new byte[512];
-                Array.Copy(tmpSector, offset, mdbSector, 0, 512);
+                Array.Copy(tmpSector, 0x400, mdbSector, 0, 512);
+            }
+            else
+            {
+                // If not at standard offset, search for it
+                // This handles cases where the partition might have unusual alignment
+                foreach(int offset in new[]
+                        {
+                            0x000, 0x200, 0x600, 0x800, 0xA00, 0xC00, 0xE00, 0x1000
+                        })
+                {
+                    if(tmpSector.Length < offset + 512) continue;
 
-                break;
+                    var testSigWord = BigEndianBitConverter.ToUInt16(tmpSector, offset);
+
+                    if(testSigWord != AppleCommon.HFS_MAGIC) continue;
+
+                    // Found the MDB at an unexpected offset
+                    mdbSector = new byte[512];
+                    Array.Copy(tmpSector, offset, mdbSector, 0, 512);
+
+                    break;
+                }
             }
 
             if(mdbSector == null) return ErrorNumber.InvalidArgument;
@@ -428,30 +472,62 @@ public sealed partial class AppleHFS
 
         if(firstExtent.xdrNumABlks == 0) return ErrorNumber.InvalidArgument; // Catalog must have at least one block
 
-        // Calculate the sector offset of the first allocation block of the catalog
-        // Sectors are 512 bytes, but we need to convert allocation blocks to sectors
-        ulong allocBlockSectorSize  = _mdb.drAlBlkSiz / 512;
-        ulong firstAllocBlockSector = _mdb.drAlBlSt + firstExtent.xdrStABN * allocBlockSectorSize;
+        // Calculate the HFS offset of the first allocation block of the catalog
+        // All offsets within HFS are in 512-byte sector units:
+        // - drAlBlSt: First allocation block start (in 512-byte sectors from partition start)
+        // - xdrStABN: Start allocation block number
+        // - drAlBlkSiz: Allocation block size in bytes
+        ulong allocBlockSectorSize     = _mdb.drAlBlkSiz / 512;
+        ulong firstAllocBlockSector512 = _mdb.drAlBlSt + firstExtent.xdrStABN * allocBlockSectorSize;
 
-        // Read the first node of the B-Tree (header node)
-        ErrorNumber errno =
-            _imagePlugin.ReadSector(_partitionStart + firstAllocBlockSector, false, out byte[] headerSector, out _);
+        // Convert to device sector address
+        HfsOffsetToDeviceSector(firstAllocBlockSector512, out ulong deviceSector, out uint byteOffset);
+
+        // Read the sector containing the start of the header node
+        ErrorNumber errno = _imagePlugin.ReadSector(deviceSector, false, out byte[] headerSectorData, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
         int nodeDescSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(NodeDescriptor));
         int btHdrSize    = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BTHdrRed));
 
-        if(headerSector.Length < nodeDescSize + btHdrSize) return ErrorNumber.InvalidArgument;
+        // Extract the header node from the sector data
+        // If the node doesn't start at the sector boundary, we need to skip to the right offset
+        byte[] headerSector;
+
+        if(byteOffset > 0)
+        {
+            // Node is not at sector boundary, we may need to read more sectors
+            // For now, check if we have enough data in this sector
+            if(headerSectorData.Length - (int)byteOffset < nodeDescSize + btHdrSize)
+            {
+                // Not enough data in this sector, need to read more and combine
+                errno = _imagePlugin.ReadSectors(deviceSector, false, 2, out byte[] multiSectorData, out _);
+
+                if(errno != ErrorNumber.NoError) return errno;
+                headerSector = multiSectorData;
+            }
+            else
+                headerSector = headerSectorData;
+        }
+        else
+            headerSector = headerSectorData;
+
+        // Verify we have enough data
+        var startOffset = (int)byteOffset;
+
+        if(headerSector.Length < startOffset + nodeDescSize + btHdrSize) return ErrorNumber.InvalidArgument;
 
         // Parse the node descriptor
-        NodeDescriptor nodeDesc = Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(headerSector, 0, nodeDescSize);
+        NodeDescriptor nodeDesc =
+            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(headerSector, startOffset, nodeDescSize);
 
         // Verify this is a header node
         if(nodeDesc.ndType != NodeType.ndHdrNode) return ErrorNumber.InvalidArgument;
 
         // Parse the B-Tree header record which follows the node descriptor
-        BTHdrRed bthdr = Marshal.ByteArrayToStructureBigEndian<BTHdrRed>(headerSector, nodeDescSize, btHdrSize);
+        BTHdrRed bthdr =
+            Marshal.ByteArrayToStructureBigEndian<BTHdrRed>(headerSector, startOffset + nodeDescSize, btHdrSize);
 
         // Verify B-Tree consistency
         // According to Inside Macintosh, depth must be at least 1 and tree must have records

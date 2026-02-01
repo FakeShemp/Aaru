@@ -149,9 +149,15 @@ public sealed partial class AppleHFS
             var toReadFromExtent = (uint)Math.Min(extentSizeBytes - offsetInExtent, bytesToRead);
 
             // Calculate sector info for this extent
-            ulong sector = (ulong)(extent.xdrStABN * _mdb.drAlBlkSiz / _sectorSize) + offsetInExtent / _sectorSize;
-            uint  sectorOffset = offsetInExtent % _sectorSize;
-            uint  sectorCount = (toReadFromExtent + sectorOffset + _sectorSize - 1) / _sectorSize;
+            // HFS uses 512-byte sectors internally; extent.xdrStABN is in allocation blocks
+            ulong extentOffsetSector512 = (ulong)extent.xdrStABN * _mdb.drAlBlkSiz / 512 + offsetInExtent / 512;
+
+            // Convert to device sector address
+            HfsOffsetToDeviceSector(extentOffsetSector512, out ulong deviceSector, out uint byteOffset);
+
+            // Adjust byte offset for offset within the first extent
+            byteOffset += offsetInExtent % 512;
+            uint sectorCount = (toReadFromExtent + byteOffset + _sectorSize - 1) / _sectorSize;
 
             AaruLogging.Debug(MODULE_NAME,
                               "ReadFile: Reading extent at block={0}, offset={1}, sectorCount={2}, toRead={3}",
@@ -160,7 +166,8 @@ public sealed partial class AppleHFS
                               sectorCount,
                               toReadFromExtent);
 
-            ErrorNumber readErr = _imagePlugin.ReadSectors(sector, false, sectorCount, out byte[] sectorData, out _);
+            ErrorNumber readErr =
+                _imagePlugin.ReadSectors(deviceSector, false, sectorCount, out byte[] sectorData, out _);
 
             if(readErr != ErrorNumber.NoError)
             {
@@ -177,9 +184,9 @@ public sealed partial class AppleHFS
             }
 
             // Copy data from sector buffer to output buffer, accounting for offset
-            uint bytesToCopy = Math.Min(toReadFromExtent, (uint)(sectorData.Length - sectorOffset));
+            uint bytesToCopy = Math.Min(toReadFromExtent, (uint)(sectorData.Length - byteOffset));
 
-            Array.Copy(sectorData, sectorOffset, buffer, bufferPos, bytesToCopy);
+            Array.Copy(sectorData, (int)byteOffset, buffer, bufferPos, bytesToCopy);
 
             bufferPos      += (int)bytesToCopy;
             bytesProcessed += bytesToCopy;
@@ -547,21 +554,22 @@ public sealed partial class AppleHFS
             uint toRead     = Math.Min(extentSize, logicalSize - bytesRead);
 
             // Read the allocation blocks for this extent
-            ulong sector    = (ulong)extent.xdrStABN * _mdb.drAlBlkSiz / _sectorSize;
-            uint  sectorCnt = toRead                                   / _sectorSize;
-            uint  bytesLeft = toRead                                   % _sectorSize;
+            ulong extentOffsetSector512 = (ulong)extent.xdrStABN * _mdb.drAlBlkSiz / 512;
 
-            if(bytesLeft > 0) sectorCnt++;
+            // Convert to device sector address
+            HfsOffsetToDeviceSector(extentOffsetSector512, out ulong deviceSector, out uint byteOffset);
+            uint sectorCnt = (toRead + byteOffset + _sectorSize - 1) / _sectorSize;
 
             AaruLogging.Debug(MODULE_NAME,
                               "Reading extent: startBlock={0}, numBlocks={1}, size={2} bytes at sector {3}, sectorCnt={4}",
                               extent.xdrStABN,
                               extent.xdrNumABlks,
                               toRead,
-                              sector,
+                              deviceSector,
                               sectorCnt);
 
-            ErrorNumber readErr = _imagePlugin.ReadSectors(sector, false, sectorCnt, out byte[] extentData, out _);
+            ErrorNumber readErr =
+                _imagePlugin.ReadSectors(deviceSector, false, sectorCnt, out byte[] extentData, out _);
 
             if(readErr != ErrorNumber.NoError)
             {
@@ -577,14 +585,26 @@ public sealed partial class AppleHFS
                 return ErrorNumber.InvalidArgument;
             }
 
-            uint bytesToCopy = Math.Min(toRead, (uint)extentData.Length);
+            // Account for sector offset when copying data
+            if(extentData.Length < (int)byteOffset + toRead)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Insufficient data read: got {0} bytes, expected at least {1}",
+                                  extentData.Length,
+                                  byteOffset + toRead);
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            uint bytesToCopy = Math.Min(toRead, (uint)(extentData.Length - byteOffset));
 
             AaruLogging.Debug(MODULE_NAME,
-                              "Read {0} bytes from extent, copying {1} bytes",
+                              "Read {0} bytes from extent, copying {1} bytes from offset {2}",
                               extentData.Length,
-                              bytesToCopy);
+                              bytesToCopy,
+                              byteOffset);
 
-            Array.Copy(extentData, 0, forkData, bytesRead, bytesToCopy);
+            Array.Copy(extentData, (int)byteOffset, forkData, bytesRead, bytesToCopy);
 
             bytesRead += bytesToCopy;
 
