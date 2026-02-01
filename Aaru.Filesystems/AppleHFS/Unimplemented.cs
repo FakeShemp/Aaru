@@ -66,9 +66,6 @@ public sealed partial class AppleHFS
     public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
 
     /// <inheritdoc />
