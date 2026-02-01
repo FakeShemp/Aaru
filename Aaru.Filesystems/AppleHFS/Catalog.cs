@@ -358,8 +358,10 @@ public sealed partial class AppleHFS
                 int cdrDirRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrDirRec));
 
                 if(dataOffset + cdrDirRecSize > leafNode.Length)
+                {
                     AaruLogging.Debug(MODULE_NAME,
                                       $"Record {i}: dataOffset {dataOffset} + {cdrDirRecSize} > leafNode.Length {leafNode.Length}");
+                }
                 else
                 {
                     AaruLogging.Debug(MODULE_NAME, $"Record {i}: Found root directory record with CNID={recordCNID}");
@@ -784,15 +786,8 @@ public sealed partial class AppleHFS
 
             byte recordType = leafNode[dataOffset];
 
-            // Extract the name from the key
-            string entryName = null;
-
-            if(nameLen > 0 && nameLen <= 31)
-            {
-                var nameBytes = new byte[nameLen];
-                Array.Copy(leafNode, recordOffset + 7, nameBytes, 0, nameLen);
-                entryName = _encoding.GetString(nameBytes);
-            }
+            // Extract the name from the key using proper encoding handling
+            string entryName = ExtractCatalogName(leafNode, recordOffset + 7, nameLen);
 
             AaruLogging.Debug(MODULE_NAME,
                               $"Processing entry: name='{entryName}', type={recordType}, dataOffset={dataOffset}");
@@ -892,5 +887,24 @@ public sealed partial class AppleHFS
         }
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Extracts a catalog name from a byte array with proper encoding handling</summary>
+    /// <param name="data">Source byte array</param>
+    /// <param name="offset">Offset to name in the array</param>
+    /// <param name="length">Length of the name in bytes</param>
+    /// <returns>Decoded name string, or empty string if length is 0</returns>
+    string ExtractCatalogName(byte[] data, int offset, byte length)
+    {
+        // HFS catalog names are not Pascal strings - they are just length-delimited
+        // Valid names have length from 1 to 31 bytes
+        if(length == 0 || length > 31 || offset < 0 || offset + length > data.Length) return "";
+
+        // Extract the name bytes and decode using the configured encoding
+        var nameBytes = new byte[length];
+        Array.Copy(data, offset, nameBytes, 0, length);
+
+        // Use StringHandlers.CToString for proper null-terminated string handling
+        return StringHandlers.CToString(nameBytes, _encoding);
     }
 }
