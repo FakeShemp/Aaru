@@ -275,7 +275,10 @@ public sealed partial class UDF
         // Get the partition where the root directory ICB resides
         if(!partitionDescriptors.TryGetValue(_rootDirectoryIcb.extentLocation.partitionReferenceNumber,
                                              out PartitionDescriptor rootPartition))
-            return ErrorNumber.InvalidArgument;
+        {
+            // If partition not found, try to use the FSD partition as fallback
+            rootPartition = fsdPartition;
+        }
 
         // Save partition starting location for offset calculations
         _partitionStartingLocation = rootPartition.partitionStartingLocation;
@@ -285,6 +288,8 @@ public sealed partial class UDF
                                                             _rootDirectoryIcb.extentLocation.partitionReferenceNumber,
                                                             _partitionStartingLocation);
 
+        // Try to read the root directory ICB
+        // If the sector is invalid, the read will fail and we'll return InvalidArgument
         if(imagePlugin.ReadSector(rootIcbAbsoluteSector, false, out buffer, out _) != ErrorNumber.NoError)
             return ErrorNumber.InvalidArgument;
 
