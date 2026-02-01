@@ -182,6 +182,7 @@ public sealed partial class AppleHFS
         _imagePlugin    = imagePlugin;
         _partitionStart = partition.Start;
         _encoding       = encoding;
+        _sectorSize     = imagePlugin.Info.SectorSize;
 
         // Initialize metadata object
         Metadata = new FileSystem();
@@ -208,6 +209,16 @@ public sealed partial class AppleHFS
 
         // Initialize directory cache dictionary
         _directoryCaches = new Dictionary<uint, Dictionary<string, CatalogEntry>>();
+
+        // Initialize extents overflow B-Tree
+        errno = InitializeExtentsOverflowBTree();
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, $"Failed to initialize extents B-Tree: {errno}");
+
+            return errno;
+        }
 
         // Attempt to read and validate the Catalog File (B-Tree)
         errno = ReadAndValidateCatalog();

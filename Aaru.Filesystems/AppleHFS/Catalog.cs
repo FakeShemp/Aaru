@@ -1176,9 +1176,11 @@ public sealed partial class AppleHFS
                         DataForkLogicalSize      = filRec.filLgLen,
                         DataForkPhysicalSize     = filRec.filPyLen,
                         DataForkStartBlock       = filRec.filStBlk,
+                        DataForkExtents          = filRec.filExtRec,
                         ResourceForkLogicalSize  = filRec.filRLgLen,
                         ResourceForkPhysicalSize = filRec.filRPyLen,
                         ResourceForkStartBlock   = filRec.filRStBlk,
+                        ResourceForkExtents      = filRec.filRExtRec,
                         CreationDate             = filRec.filCrDat,
                         ModificationDate         = filRec.filMdDat,
                         BackupDate               = filRec.filBkDat

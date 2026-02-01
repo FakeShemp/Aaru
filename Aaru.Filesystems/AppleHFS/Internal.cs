@@ -113,6 +113,9 @@ public sealed partial class AppleHFS
         /// <summary>First allocation block of data fork</summary>
         public ushort DataForkStartBlock { get; set; }
 
+        /// <summary>First three extents of data fork</summary>
+        public ExtDataRec DataForkExtents { get; set; }
+
         /// <summary>Logical end-of-file for resource fork</summary>
         public uint ResourceForkLogicalSize { get; set; }
 
@@ -121,6 +124,9 @@ public sealed partial class AppleHFS
 
         /// <summary>First allocation block of resource fork</summary>
         public ushort ResourceForkStartBlock { get; set; }
+
+        /// <summary>First three extents of resource fork</summary>
+        public ExtDataRec ResourceForkExtents { get; set; }
 
         /// <summary>Creation date (Mac format)</summary>
         public uint CreationDate { get; set; }

@@ -54,6 +54,9 @@ public sealed partial class AppleHFS : IReadOnlyFilesystem
     /// <summary>Character encoding for filenames and volume name</summary>
     Encoding _encoding;
 
+    /// <summary>Extents B-Tree header information</summary>
+    BTHdrRed _extentsBTreeHeader;
+
     /// <summary>Cached filesystem information</summary>
     FileSystemInfo _fileSystemInfo;
 
@@ -74,6 +77,9 @@ public sealed partial class AppleHFS : IReadOnlyFilesystem
 
     /// <summary>Cached root directory entries, keyed by filename</summary>
     Dictionary<string, CatalogEntry> _rootDirectoryCache;
+
+    /// <summary>Sector size for I/O operations</summary>
+    uint _sectorSize;
 
 #region IFilesystem Members
 

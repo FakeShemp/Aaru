@@ -227,7 +227,7 @@ public sealed partial class AppleHFS
     /// <summary>Extent data record</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct ExtDataRec
+    public partial struct ExtDataRec
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
         public ExtDescriptor[] xdr;
@@ -240,7 +240,7 @@ public sealed partial class AppleHFS
     /// <summary>Extent descriptor</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct ExtDescriptor
+    public partial struct ExtDescriptor
     {
         /// <summary>First allocation block</summary>
         public ushort xdrStABN;
