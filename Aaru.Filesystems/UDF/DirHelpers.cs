@@ -491,6 +491,39 @@ public sealed partial class UDF
         int  adPos         = adOffset;
         int  sadSize       = System.Runtime.InteropServices.Marshal.SizeOf<ShortAllocationDescriptor>();
 
+        // Fast path: skip to the approximate starting position ONLY if reading from a high offset
+        // Skip this optimization if reading from the start (fileOffset == 0)
+        if(fileOffset > 0 && adLength > sadSize * 16) // Only optimize if many descriptors and non-zero offset
+        {
+            // Estimate: scan for approximate position
+            // We'll still need to verify, but this gets us close
+            long scannedOffset = 0;
+            int  scanPos       = adOffset;
+
+            while(scanPos < adOffset + adLength && scannedOffset < fileOffset)
+            {
+                ShortAllocationDescriptor sadScan =
+                    Marshal.ByteArrayToStructureLittleEndian<ShortAllocationDescriptor>(feBuffer, scanPos, sadSize);
+
+                uint extentLength = sadScan.extentLength & 0x3FFFFFFF;
+                if(extentLength == 0) break;
+
+                scannedOffset += extentLength;
+                scanPos       += sadSize;
+
+                // If we've scanned past the target, backtrack to the previous position
+                if(scannedOffset >= fileOffset)
+                {
+                    scanPos  -= sadSize;
+                    scannedOffset -= extentLength;
+                    break;
+                }
+            }
+
+            adPos           = scanPos;
+            currentOffset   = scannedOffset;
+        }
+
         while(adPos < adOffset + adLength && bytesRead < readLength)
         {
             ShortAllocationDescriptor sad =
@@ -498,9 +531,14 @@ public sealed partial class UDF
 
             uint extentLength = sad.extentLength & 0x3FFFFFFF;
 
-            if(extentLength == 0) break;
+            if(extentLength == 0)
+                break;
 
             long extentEnd = currentOffset + extentLength;
+
+            // Optimization: if we've already passed the range we need and have read enough, exit early
+            if(currentOffset > fileOffset + readLength && bytesRead > 0)
+                break;
 
             // Check if this extent contains any data we need
             if(extentEnd > fileOffset && currentOffset < fileOffset + readLength)
@@ -550,6 +588,39 @@ public sealed partial class UDF
         int  adPos         = adOffset;
         int  ladSize       = System.Runtime.InteropServices.Marshal.SizeOf<LongAllocationDescriptor>();
 
+        // Fast path: skip to the approximate starting position ONLY if reading from a high offset
+        // Skip this optimization if reading from the start (fileOffset == 0)
+        if(fileOffset > 0 && adLength > ladSize * 16) // Only optimize if many descriptors and non-zero offset
+        {
+            // Estimate: scan for approximate position
+            // We'll still need to verify, but this gets us close
+            long scannedOffset = 0;
+            int  scanPos       = adOffset;
+
+            while(scanPos < adOffset + adLength && scannedOffset < fileOffset)
+            {
+                LongAllocationDescriptor ladScan =
+                    Marshal.ByteArrayToStructureLittleEndian<LongAllocationDescriptor>(feBuffer, scanPos, ladSize);
+
+                uint extentLength = ladScan.extentLength & 0x3FFFFFFF;
+                if(extentLength == 0) break;
+
+                scannedOffset += extentLength;
+                scanPos       += ladSize;
+
+                // If we've scanned past the target, backtrack to the previous position
+                if(scannedOffset >= fileOffset)
+                {
+                    scanPos  -= ladSize;
+                    scannedOffset -= extentLength;
+                    break;
+                }
+            }
+
+            adPos           = scanPos;
+            currentOffset   = scannedOffset;
+        }
+
         while(adPos < adOffset + adLength && bytesRead < readLength)
         {
             LongAllocationDescriptor lad =
@@ -560,6 +631,10 @@ public sealed partial class UDF
             if(extentLength == 0) break;
 
             long extentEnd = currentOffset + extentLength;
+
+            // Optimization: if we've already passed the range we need and have read enough, exit early
+            if(currentOffset > fileOffset + readLength && bytesRead > 0)
+                break;
 
             // Check if this extent contains any data we need
             if(extentEnd > fileOffset && currentOffset < fileOffset + readLength)
