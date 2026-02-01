@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -566,10 +567,10 @@ public sealed partial class AppleHFS
         // B-Tree Navigation Strategy:
         // 1. Navigate from root to the appropriate leaf node for targetParentID
         // 2. Once at a leaf node, traverse BACKWARD using ndBLink to find the FIRST leaf node
-        //    that might contain entries with parentID = targetParentID
+        //    that contains entries with parentID = targetParentID
         // 3. Then traverse FORWARD through sibling nodes (using ndFLink)
         // 4. Extract ALL records with parentID = targetParentID from each leaf node
-        // 5. Stop when we encounter entries with parentID > targetParentID consistently
+        // 5. Stop when we encounter parentID > targetParentID
 
         uint   currentNode  = bthdr.bthRoot;
         ushort entriesFound = 0;
@@ -592,14 +593,14 @@ public sealed partial class AppleHFS
                                                                       System.Runtime.InteropServices.Marshal
                                                                             .SizeOf(typeof(NodeDescriptor)));
 
-            // If we've reached a leaf node, we'll process from here
+            // If we've reached a leaf node, process from here
             if(nodeDesc.ndType == NodeType.ndLeafNode)
             {
                 // We've found a leaf node that may contain targetParentID entries.
-                // Now traverse backwards to find the FIRST leaf node that contains targetParentID entries
+                // Traverse backward to find the FIRST leaf node containing targetParentID entries
                 uint leafNode = currentNode;
 
-                // Traverse backward to find the start of targetParentID entries
+                // Keep going back while we can
                 while(leafNode != 0)
                 {
                     errno = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] leafData);
@@ -617,22 +618,47 @@ public sealed partial class AppleHFS
                                                                               System.Runtime.InteropServices.Marshal
                                                                                  .SizeOf(typeof(NodeDescriptor)));
 
-                    // Check if this leaf node contains any targetParentID entries
-                    if(!LeafContainsTargetParentID(leafData, bthdr.bthNodeSize, targetParentID))
+                    // Check if this leaf has records with parentID <= targetParentID
+                    if(!LeafHasTargetOrEarlier(leafData, bthdr.bthNodeSize, targetParentID))
                     {
-                        // This leaf doesn't have our target, move to next
-                        if(leafDesc.ndFLink == 0) break;
-
-                        leafNode = leafDesc.ndFLink;
+                        // This node is entirely after target, so move forward
+                        if(leafDesc.ndFLink != 0)
+                            leafNode = leafDesc.ndFLink;
+                        else
+                            break;
 
                         continue;
                     }
 
-                    // Found a leaf with targetParentID entries. Move back one more to make sure we're at the beginning
+                    // This leaf might contain our target, but check if we should go back more
                     if(leafDesc.ndBLink != 0)
-                        leafNode = leafDesc.ndBLink;
-                    else
-                        break; // This is the first leaf node
+                    {
+                        uint prevNode = leafDesc.ndBLink;
+
+                        // Peek at previous leaf to check if it has our parentID too
+                        errno = ReadNode(prevNode, bthdr.bthNodeSize, out byte[] prevData);
+
+                        if(errno != ErrorNumber.NoError)
+                        {
+                            // Can't read previous, so process from here
+                            leafNode = leafNode;
+
+                            break;
+                        }
+
+                        if(LeafHasTargetOrEarlier(prevData, bthdr.bthNodeSize, targetParentID))
+                        {
+                            // Previous node has our target too, so go back
+                            leafNode = prevNode;
+
+                            continue;
+                        }
+
+                        // Previous node doesn't have our target, so this is the start
+                    }
+
+                    // No previous link, this is the first leaf
+                    break;
                 }
 
                 // Now traverse forward and extract all entries with targetParentID
@@ -666,29 +692,36 @@ public sealed partial class AppleHFS
                         return errno;
                     }
 
-                    // Check if next leaf node contains entries with targetParentID
+                    // Check if we've found all entries
+                    if(entriesFound >= expectedCount)
+                    {
+                        AaruLogging.Debug(MODULE_NAME, $"Found all expected entries: {entriesFound}/{expectedCount}");
+
+                        break;
+                    }
+
+                    // Move to next leaf node
                     if(leafDesc.ndFLink == 0) break; // Last leaf node reached
 
-                    uint nextLeafNode = leafDesc.ndFLink;
-                    errno = ReadNode(nextLeafNode, bthdr.bthNodeSize, out byte[] nextLeafData);
+                    leafNode = leafDesc.ndFLink;
+
+                    // Peek at next leaf to check if it still has targetParentID entries
+                    errno = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] nextLeafData);
 
                     if(errno != ErrorNumber.NoError)
                     {
-                        AaruLogging.Debug(MODULE_NAME, $"Failed to read next leaf node {nextLeafNode}");
+                        AaruLogging.Debug(MODULE_NAME, $"Failed to peek at next leaf node {leafNode}");
 
                         break;
                     }
 
-                    // If the next leaf doesn't contain targetParentID, we're done
-                    if(!LeafContainsTargetParentID(nextLeafData, bthdr.bthNodeSize, targetParentID))
+                    if(!LeafHasTargetParentID(nextLeafData, bthdr.bthNodeSize, targetParentID))
                     {
                         AaruLogging.Debug(MODULE_NAME,
-                                          $"Next leaf node {nextLeafNode} doesn't contain parentID={targetParentID}, stopping traversal");
+                                          $"Next leaf node {leafNode} doesn't contain parentID={targetParentID}, stopping");
 
                         break;
                     }
-
-                    leafNode = nextLeafNode;
                 }
 
                 AaruLogging.Debug(MODULE_NAME, $"Root directory caching complete: {entriesFound} entries found");
@@ -713,7 +746,7 @@ public sealed partial class AppleHFS
     }
 
     /// <summary>Checks if a leaf node contains any entries with a specific parentID</summary>
-    bool LeafContainsTargetParentID(byte[] leafNode, ushort nodeSize, uint targetParentID)
+    bool LeafHasTargetParentID(byte[] leafNode, ushort nodeSize, uint targetParentID)
     {
         NodeDescriptor nodeDesc =
             Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafNode,
@@ -741,6 +774,37 @@ public sealed partial class AppleHFS
 
         return false;
     }
+
+    /// <summary>Checks if a leaf node contains entries with parentID less than or equal to target</summary>
+    bool LeafHasTargetOrEarlier(byte[] leafNode, ushort nodeSize, uint targetParentID)
+    {
+        NodeDescriptor nodeDesc =
+            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafNode,
+                                                                  0,
+                                                                  System.Runtime.InteropServices.Marshal
+                                                                        .SizeOf(typeof(NodeDescriptor)));
+
+        if(nodeDesc.ndType != NodeType.ndLeafNode) return false;
+
+        if(nodeDesc.ndNRecs == 0) return false;
+
+        // Check first record (smallest parentID in this node)
+        var offsetPos = (ushort)(nodeSize - 2);
+
+        if(offsetPos < 14 || offsetPos >= nodeSize) return false;
+
+        var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPos);
+
+        if(recordOffset < 14 || recordOffset >= nodeSize) return false;
+
+        var minParentID = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 2);
+
+        return minParentID <= targetParentID;
+    }
+
+    /// <summary>Checks if a leaf node contains any entries with a specific parentID</summary>
+    bool LeafContainsTargetParentID(byte[] leafNode, ushort nodeSize, uint targetParentID) =>
+        LeafHasTargetParentID(leafNode, nodeSize, targetParentID);
 
 
     /// <summary>Extracts all directory and file entries from a leaf node matching a given parent ID</summary>
@@ -906,5 +970,242 @@ public sealed partial class AppleHFS
 
         // Use StringHandlers.CToString for proper null-terminated string handling
         return StringHandlers.CToString(nameBytes, _encoding);
+    }
+
+    /// <summary>
+    ///     Caches directory entries for a given CNID if not already cached.
+    ///     Reuses existing root directory cache if CNID is kRootCnid.
+    /// </summary>
+    /// <param name="cnid">Catalog Node ID of the directory to cache</param>
+    /// <returns>Error status</returns>
+    ErrorNumber CacheDirectoryIfNeeded(uint cnid)
+    {
+        // Initialize directory cache dictionary if needed
+        _directoryCaches ??= new Dictionary<uint, Dictionary<string, CatalogEntry>>();
+
+        // Root directory is already cached in _rootDirectoryCache
+        if(cnid == kRootCnid) return ErrorNumber.NoError;
+
+        // Check if already cached
+        if(_directoryCaches.ContainsKey(cnid)) return ErrorNumber.NoError;
+
+        // Cache this directory
+        return CacheDirectory(cnid);
+    }
+
+    /// <summary>
+    ///     Caches all entries for a directory by its CNID.
+    ///     Searches the catalog B-Tree for all records with the given parentID.
+    /// </summary>
+    /// <param name="cnid">Catalog Node ID (used as parentID for records) of the directory to cache</param>
+    /// <returns>Error status</returns>
+    ErrorNumber CacheDirectory(uint cnid)
+    {
+        _directoryCaches ??= new Dictionary<uint, Dictionary<string, CatalogEntry>>();
+
+        // Read catalog header to get B-Tree information
+        ErrorNumber errno = ReadCatalogHeader(out BTHdrRed bthdr);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        var directoryEntries = new Dictionary<string, CatalogEntry>();
+
+        // Navigate B-Tree to find entries with parentID = cnid
+        uint currentNode    = bthdr.bthRoot;
+        uint targetParentID = cnid;
+
+        // Traverse from root to leaf
+        for(var level = 0; level < bthdr.bthDepth; level++)
+        {
+            errno = ReadNode(currentNode, bthdr.bthNodeSize, out byte[] nodeData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            NodeDescriptor nodeDesc =
+                Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData,
+                                                                      0,
+                                                                      System.Runtime.InteropServices.Marshal
+                                                                            .SizeOf(typeof(NodeDescriptor)));
+
+            // Reached a leaf node
+            if(nodeDesc.ndType == NodeType.ndLeafNode)
+            {
+                // Extract all entries with parentID = cnid from this leaf and following siblings
+                uint leafNode = currentNode;
+
+                while(leafNode != 0)
+                {
+                    errno = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] leafData);
+
+                    if(errno != ErrorNumber.NoError) return errno;
+
+                    NodeDescriptor leafDesc =
+                        Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafData,
+                                                                              0,
+                                                                              System.Runtime.InteropServices.Marshal
+                                                                                 .SizeOf(typeof(NodeDescriptor)));
+
+                    // Extract entries from this leaf
+                    errno = ExtractDirectoryEntriesFromLeafForCnid(leafData,
+                                                                   bthdr.bthNodeSize,
+                                                                   targetParentID,
+                                                                   directoryEntries);
+
+                    if(errno != ErrorNumber.NoError) return errno;
+
+                    // Check if next leaf contains entries for this parentID
+                    if(leafDesc.ndFLink == 0) break;
+
+                    leafNode = leafDesc.ndFLink;
+                    errno    = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] nextLeafData);
+
+                    if(errno != ErrorNumber.NoError) break;
+
+                    if(!LeafContainsTargetParentID(nextLeafData, bthdr.bthNodeSize, targetParentID)) break;
+                }
+
+                // Cache the directory
+                _directoryCaches[cnid] = directoryEntries;
+
+                return ErrorNumber.NoError;
+            }
+
+            // Index node - find the child pointer for targetParentID
+            errno = FindIndexPointer(nodeData, bthdr.bthNodeSize, targetParentID, out currentNode);
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+
+        return ErrorNumber.InvalidArgument;
+    }
+
+    /// <summary>
+    ///     Extracts directory entries from a leaf node for a specific CNID.
+    ///     Similar to ExtractDirectoryEntriesFromLeaf but extracts to a provided dictionary.
+    /// </summary>
+    ErrorNumber ExtractDirectoryEntriesFromLeafForCnid(byte[] leafNode, ushort nodeSize, uint targetParentID,
+                                                       Dictionary<string, CatalogEntry> entries)
+    {
+        NodeDescriptor nodeDesc =
+            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafNode,
+                                                                  0,
+                                                                  System.Runtime.InteropServices.Marshal
+                                                                        .SizeOf(typeof(NodeDescriptor)));
+
+        if(nodeDesc.ndType != NodeType.ndLeafNode) return ErrorNumber.InvalidArgument;
+
+        // Iterate through records in this leaf node
+        for(ushort i = 0; i < nodeDesc.ndNRecs; i++)
+        {
+            var offsetPos = (ushort)(nodeSize - 2 - i * 2);
+
+            if(offsetPos < 14 || offsetPos >= nodeSize) continue;
+
+            var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPos);
+
+            if(recordOffset < 14 || recordOffset >= nodeSize) continue;
+
+            // Parse the key
+            byte keyLen      = leafNode[recordOffset];
+            var  keyParentID = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 2);
+
+            // Stop if we've passed the target parentID
+            if(keyParentID > targetParentID) break;
+
+            // Skip if not our target parentID
+            if(keyParentID != targetParentID) continue;
+
+            // Extract the name
+            byte   nameLen = leafNode[recordOffset                     + 6];
+            string name    = ExtractCatalogName(leafNode, recordOffset + 7, nameLen);
+
+            if(string.IsNullOrEmpty(name)) continue;
+
+            // Key size (padded to word boundary)
+            var keySize    = (ushort)(keyLen + 1 + 1 & ~1);
+            int dataOffset = recordOffset + keySize;
+
+            if(dataOffset >= leafNode.Length) continue;
+
+            byte recordType = leafNode[dataOffset];
+
+            CatalogEntry entry = null;
+
+            // Parse based on record type
+            if(recordType == kCatalogRecordTypeDirectory)
+            {
+                int cdrDirRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrDirRec));
+
+                if(dataOffset + cdrDirRecSize <= leafNode.Length)
+                {
+                    CdrDirRec dirRec =
+                        Marshal.ByteArrayToStructureBigEndian<CdrDirRec>(leafNode, dataOffset, cdrDirRecSize);
+
+                    entry = new DirectoryEntry
+                    {
+                        Name               = name,
+                        CNID               = dirRec.dirDirID,
+                        ParentID           = keyParentID,
+                        Type               = kCatalogRecordTypeDirectory,
+                        Valence            = dirRec.dirVal,
+                        CreationDate       = dirRec.dirCrDat,
+                        ModificationDate   = dirRec.dirMdDat,
+                        BackupDate         = dirRec.dirBkDat,
+                        FinderInfo         = dirRec.dirUsrInfo,
+                        ExtendedFinderInfo = dirRec.dirFndrInfo
+                    };
+                }
+            }
+            else if(recordType == kCatalogRecordTypeFile)
+            {
+                int cdrFilRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrFilRec));
+
+                if(dataOffset + cdrFilRecSize <= leafNode.Length)
+                {
+                    CdrFilRec filRec =
+                        Marshal.ByteArrayToStructureBigEndian<CdrFilRec>(leafNode, dataOffset, cdrFilRecSize);
+
+                    entry = new FileEntry
+                    {
+                        Name                     = name,
+                        CNID                     = filRec.filFlNum,
+                        ParentID                 = keyParentID,
+                        Type                     = kCatalogRecordTypeFile,
+                        FinderInfo               = filRec.filUsrWds,
+                        ExtendedFinderInfo       = filRec.filFndrInfo,
+                        DataForkLogicalSize      = filRec.filLgLen,
+                        DataForkPhysicalSize     = filRec.filPyLen,
+                        DataForkStartBlock       = filRec.filStBlk,
+                        ResourceForkLogicalSize  = filRec.filRLgLen,
+                        ResourceForkPhysicalSize = filRec.filRPyLen,
+                        ResourceForkStartBlock   = filRec.filRStBlk,
+                        CreationDate             = filRec.filCrDat,
+                        ModificationDate         = filRec.filMdDat,
+                        BackupDate               = filRec.filBkDat
+                    };
+                }
+            }
+
+            if(entry != null) entries[name] = entry;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Gets cached directory entries for a given CNID.
+    ///     Returns the root directory cache if CNID is kRootCnid.
+    /// </summary>
+    /// <param name="cnid">Catalog Node ID of the directory</param>
+    /// <returns>Dictionary of entries keyed by filename, or null if not cached</returns>
+    Dictionary<string, CatalogEntry> GetDirectoryEntries(uint cnid)
+    {
+        if(cnid == kRootCnid) return _rootDirectoryCache;
+
+        if(_directoryCaches == null) return null;
+
+        _directoryCaches.TryGetValue(cnid, out Dictionary<string, CatalogEntry> entries);
+
+        return entries;
     }
 }

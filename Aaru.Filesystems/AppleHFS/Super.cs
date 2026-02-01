@@ -47,17 +47,7 @@ public sealed partial class AppleHFS
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        stat = new FileSystemInfo
-        {
-            Blocks         = _mdb.drNmAlBlks,
-            FilenameLength = 31,
-            Files          = _mdb.drFilCnt + _mdb.drDirCnt,
-            FreeBlocks     = _mdb.drFreeBks,
-            PluginId       = Id,
-            Type           = FS_TYPE
-        };
-
-        stat.FreeFiles = 0; // HFS doesn't track free files separately
+        stat = _fileSystemInfo;
 
         return ErrorNumber.NoError;
     }

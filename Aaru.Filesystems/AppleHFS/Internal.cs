@@ -30,10 +30,31 @@
 // These are not part of the Inside Macintosh specification and are
 // implementation-specific to the Aaru HFS plugin.
 
+using Aaru.CommonTypes.Interfaces;
+
 namespace Aaru.Filesystems;
 
 public sealed partial class AppleHFS
 {
+    /// <summary>DirNode implementation for Apple HFS</summary>
+    sealed class HfsDirNode : IDirNode
+    {
+        /// <summary>Array of sorted filenames in the directory</summary>
+        internal string[] Contents;
+
+        /// <summary>CNID of this directory for caching purposes</summary>
+        internal uint DirectoryCNID;
+        /// <summary>Current position in the directory contents array</summary>
+        internal int Position;
+
+#region IDirNode Members
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+#endregion
+    }
+
 #region Nested type: CatalogEntry
 
     /// <summary>Represents a catalog entry (directory or file)</summary>

@@ -37,6 +37,7 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
 using Partition = Aaru.CommonTypes.Partition;
@@ -205,6 +206,9 @@ public sealed partial class AppleHFS
             return errno;
         }
 
+        // Initialize directory cache dictionary
+        _directoryCaches = new Dictionary<uint, Dictionary<string, CatalogEntry>>();
+
         // Attempt to read and validate the Catalog File (B-Tree)
         errno = ReadAndValidateCatalog();
 
@@ -237,6 +241,17 @@ public sealed partial class AppleHFS
 
         // Populate metadata from MDB
         PopulateMetadata();
+
+        // Initialize cached filesystem information
+        _fileSystemInfo = new FileSystemInfo
+        {
+            Blocks         = _mdb.drNmAlBlks,
+            FilenameLength = 31,
+            Files          = (ulong)_mdb.drFilCnt + _mdb.drDirCnt,
+            FreeBlocks     = _mdb.drFreeBks,
+            FreeFiles      = 0, // HFS doesn't track free files separately
+            PluginId       = Id
+        };
 
         // Mark filesystem as mounted
         _mounted = true;

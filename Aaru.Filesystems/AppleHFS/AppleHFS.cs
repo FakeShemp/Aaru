@@ -35,6 +35,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
@@ -47,8 +48,14 @@ public sealed partial class AppleHFS : IReadOnlyFilesystem
     /// <summary>Module name for debugging</summary>
     const string MODULE_NAME = "HFS plugin";
 
+    /// <summary>Cached directory entries by CNID, each entry keyed by filename</summary>
+    Dictionary<uint, Dictionary<string, CatalogEntry>> _directoryCaches;
+
     /// <summary>Character encoding for filenames and volume name</summary>
     Encoding _encoding;
+
+    /// <summary>Cached filesystem information</summary>
+    FileSystemInfo _fileSystemInfo;
 
     /// <summary>Reference to the media image for sector I/O operations</summary>
     IMediaImage _imagePlugin;
