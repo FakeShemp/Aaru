@@ -185,6 +185,7 @@ Fully supported file-systems (identify and extraction)
 * Microsoft 16-bit File Allocation Table (FAT16)
 * Microsoft 32-bit File Allocation Table (FAT32), including FAT+ extension
 * U.C.S.D Pascal file system
+* Universal Disk Format (UDF)
 * Xbox filesystems
 
 Supported file systems for identification and information only
@@ -242,7 +243,6 @@ Supported file systems for identification and information only
 * SolarOS file system
 * Squash file system
 * UNICOS file system
-* Universal Disk Format (UDF)
 * UNIX System V file system
 * UNIX Version 7 file system
 * UnixWare boot file system
