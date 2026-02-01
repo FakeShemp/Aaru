@@ -41,8 +41,5 @@ namespace Aaru.Filesystems;
 public sealed partial class AppleHFS
 {
     /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
 }

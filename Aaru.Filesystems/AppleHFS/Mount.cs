@@ -272,6 +272,52 @@ public sealed partial class AppleHFS
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber Unmount()
+    {
+        if(!_mounted) return ErrorNumber.NoError;
+
+        // Clear all cached directory entries
+        _directoryCaches?.Clear();
+        _directoryCaches = null;
+
+        // Clear root directory cache
+        _rootDirectoryCache?.Clear();
+        _rootDirectoryCache = null;
+
+        // Clear filesystem metadata
+        Metadata = null;
+
+        // Clear cached filesystem information
+        _fileSystemInfo = null;
+
+        // Clear encoding reference
+        _encoding = null;
+
+        // Clear image plugin reference
+        _imagePlugin = null;
+
+        // Clear MDB (set to default value)
+        _mdb = default(MasterDirectoryBlock);
+
+        // Clear extent B-Tree header
+        _extentsBTreeHeader = default(BTHdrRed);
+
+        // Clear root directory cache
+        _rootDirectory = default(CdrDirRec);
+
+        // Clear partition and sector information
+        _partitionStart = 0;
+        _sectorSize     = 0;
+
+        // Finally, mark as unmounted
+        _mounted = false;
+
+        AaruLogging.Debug(MODULE_NAME, "Filesystem unmounted successfully");
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Reads and parses the Master Directory Block from the appropriate sector</summary>
     /// <returns>ErrorNumber indicating success or failure</returns>
     ErrorNumber ReadAndParseMdb()
