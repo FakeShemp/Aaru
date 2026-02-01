@@ -47,6 +47,54 @@ public sealed partial class AppleHFS
         AaruLogging.Debug(MODULE_NAME,
                           $"Catalog B-Tree: depth={bthdr.bthDepth}, rootNode={bthdr.bthRoot}, nodeSize={bthdr.bthNodeSize}");
 
+        AaruLogging.Debug(MODULE_NAME,
+                          $"B-Tree header details: numRecs={bthdr.bthNRecs}, firstLeaf={bthdr.bthFNode}, lastLeaf={bthdr.bthLNode}, totalNodes={bthdr.bthNNodes}");
+
+        // **BRUTE FORCE APPROACH**: Scan all leaf nodes from firstLeaf to lastLeaf looking for CNID=2
+        // macOS appears to do this rather than strict B-tree pointer following
+        // Skip if leaf range is invalid (firstLeaf > lastLeaf means empty or unusual structure)
+        if(bthdr.bthFNode <= bthdr.bthLNode)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              $"Scanning leaf nodes from {bthdr.bthFNode} to {bthdr.bthLNode} for CNID=2 (root)");
+
+            for(uint leafNode = bthdr.bthFNode; leafNode <= bthdr.bthLNode; leafNode++)
+            {
+                ErrorNumber scanErr = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] leafData);
+
+                if(scanErr != ErrorNumber.NoError) continue;
+
+                NodeDescriptor leafDesc =
+                    Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafData,
+                                                                          0,
+                                                                          System.Runtime.InteropServices.Marshal
+                                                                             .SizeOf(typeof(NodeDescriptor)));
+
+                if(leafDesc.ndType != NodeType.ndLeafNode) continue;
+
+                // Search this leaf for CNID=2
+                ErrorNumber foundErr = FindRootInLeaf(leafData, bthdr.bthNodeSize, out CdrDirRec rootRec);
+
+                if(foundErr == ErrorNumber.NoError)
+                {
+                    _rootDirectory = rootRec;
+
+                    AaruLogging.Debug(MODULE_NAME,
+                                      $"Found root directory (CNID=2) in leaf node {leafNode}: {rootRec.dirVal} entries");
+
+                    return ErrorNumber.NoError;
+                }
+            }
+        }
+        else
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              $"Leaf node range invalid (firstLeaf={bthdr.bthFNode} > lastLeaf={bthdr.bthLNode}), skipping brute-force scan");
+        }
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "Root directory (CNID=2) not found in any leaf node. Falling back to standard tree traversal.");
+
         // The root directory has:
         //   CNID = kRootCnid (2)
         //   parentID = kRootParentCnid (1)
@@ -75,11 +123,23 @@ public sealed partial class AppleHFS
                                                                             .SizeOf(typeof(NodeDescriptor)));
 
             AaruLogging.Debug(MODULE_NAME,
-                              $"Level {level}: Node {currentNode}, type={nodeDesc.ndType}, nRecs={nodeDesc.ndNRecs}");
+                              $"Level {level}: Node {currentNode}, type={nodeDesc.ndType} ({(nodeDesc.ndType == NodeType.ndLeafNode ? "LEAF" : nodeDesc.ndType == NodeType.ndIndxNode ? "INDEX" : "UNKNOWN")}), nRecs={nodeDesc.ndNRecs}, fLink={nodeDesc.ndFLink}, bLink={nodeDesc.ndBLink}");
 
-            // If this is a leaf node, search for root directory records (parentID=1, CNID=2)
+            // Validate node type - must be leaf (-1) or index (0)
+            if(nodeDesc.ndType != NodeType.ndLeafNode && nodeDesc.ndType != NodeType.ndIndxNode)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  $"Invalid node type {nodeDesc.ndType} in node {currentNode}, stopping traversal");
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            // If this is a leaf node, we've reached the end
             if(nodeDesc.ndType == NodeType.ndLeafNode)
             {
+                AaruLogging.Debug(MODULE_NAME,
+                                  $"Reached leaf node at level {level} (expected depth={bthdr.bthDepth}). This may indicate a malformed B-tree.");
+
                 errno = FindRootInLeaf(nodeData, bthdr.bthNodeSize, out CdrDirRec rootRec);
 
                 if(errno == ErrorNumber.NoError)
@@ -92,21 +152,113 @@ public sealed partial class AppleHFS
                     return ErrorNumber.NoError;
                 }
 
-                // Root directory not found in this leaf node, try next leaf if available
+                // Root directory not found in this leaf node, try traversing linked leaves
                 AaruLogging.Debug(MODULE_NAME,
-                                  $"Root directory not found in leaf node {currentNode}, trying next leaf node");
+                                  $"Root directory not found in leaf node {currentNode}, traversing sibling nodes");
 
-                // Get next leaf node number from node descriptor
+                // Try forward link first
                 if(nodeDesc.ndFLink != 0)
                 {
-                    currentNode = nodeDesc.ndFLink;
-                    level--; // Don't increment level, stay at leaf level to traverse sibling nodes
+                    uint      nextNode    = nodeDesc.ndFLink;
+                    var       attempts    = 0;
+                    const int maxAttempts = 100; // Prevent infinite loops
 
-                    continue;
+                    while(nextNode != 0 && attempts < maxAttempts)
+                    {
+                        attempts++;
+                        ErrorNumber readErr = ReadNode(nextNode, bthdr.bthNodeSize, out byte[] nextNodeData);
+
+                        if(readErr != ErrorNumber.NoError)
+                        {
+                            AaruLogging.Debug(MODULE_NAME, $"Failed to read sibling node {nextNode}");
+
+                            break;
+                        }
+
+                        NodeDescriptor nextDesc =
+                            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nextNodeData,
+                                0,
+                                System.Runtime.InteropServices.Marshal.SizeOf(typeof(NodeDescriptor)));
+
+                        // Stop if we hit an invalid node
+                        if(nextDesc.ndType != NodeType.ndLeafNode)
+                        {
+                            AaruLogging.Debug(MODULE_NAME,
+                                              $"Sibling node {nextNode} is not a leaf node (type={nextDesc.ndType})");
+
+                            break;
+                        }
+
+                        // Try to find root in this sibling
+                        ErrorNumber siblingErr =
+                            FindRootInLeaf(nextNodeData, bthdr.bthNodeSize, out CdrDirRec siblingRoot);
+
+                        if(siblingErr == ErrorNumber.NoError)
+                        {
+                            _rootDirectory = siblingRoot;
+
+                            AaruLogging.Debug(MODULE_NAME,
+                                              $"Root directory found in sibling node {nextNode}: CNID={siblingRoot.dirDirID}, {siblingRoot.dirVal} entries");
+
+                            return ErrorNumber.NoError;
+                        }
+
+                        nextNode = nextDesc.ndFLink;
+                    }
+                }
+
+                // Try backward link as fallback
+                if(nodeDesc.ndBLink != 0)
+                {
+                    uint      prevNode    = nodeDesc.ndBLink;
+                    var       attempts    = 0;
+                    const int maxAttempts = 100;
+
+                    while(prevNode != 0 && attempts < maxAttempts)
+                    {
+                        attempts++;
+                        ErrorNumber readErr = ReadNode(prevNode, bthdr.bthNodeSize, out byte[] prevNodeData);
+
+                        if(readErr != ErrorNumber.NoError)
+                        {
+                            AaruLogging.Debug(MODULE_NAME, $"Failed to read backward node {prevNode}");
+
+                            break;
+                        }
+
+                        NodeDescriptor prevDesc =
+                            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(prevNodeData,
+                                0,
+                                System.Runtime.InteropServices.Marshal.SizeOf(typeof(NodeDescriptor)));
+
+                        // Stop if we hit an invalid node
+                        if(prevDesc.ndType != NodeType.ndLeafNode)
+                        {
+                            AaruLogging.Debug(MODULE_NAME,
+                                              $"Backward node {prevNode} is not a leaf node (type={prevDesc.ndType})");
+
+                            break;
+                        }
+
+                        // Try to find root in this backward node
+                        ErrorNumber backErr = FindRootInLeaf(prevNodeData, bthdr.bthNodeSize, out CdrDirRec backRoot);
+
+                        if(backErr == ErrorNumber.NoError)
+                        {
+                            _rootDirectory = backRoot;
+
+                            AaruLogging.Debug(MODULE_NAME,
+                                              $"Root directory found in backward node {prevNode}: CNID={backRoot.dirDirID}, {backRoot.dirVal} entries");
+
+                            return ErrorNumber.NoError;
+                        }
+
+                        prevNode = prevDesc.ndBLink;
+                    }
                 }
 
                 // No more leaf nodes to check
-                AaruLogging.Debug(MODULE_NAME, "No more leaf nodes to check");
+                AaruLogging.Debug(MODULE_NAME, "No root directory found in any accessible leaf node");
 
                 return errno;
             }
@@ -551,6 +703,96 @@ public sealed partial class AppleHFS
             }
         }
 
+        // Third pass: As final fallback, use any directory record with parentID=1 (root parent)
+        // Some non-standard volumes might not follow the CNID=2 convention
+        AaruLogging.Debug(MODULE_NAME, "Third pass: using any directory record with parentID=1 as fallback root");
+
+        for(ushort i = 0; i < nodeDesc.ndNRecs; i++)
+        {
+            var offsetPos = (ushort)(nodeSize - 2 - i * 2);
+
+            if(offsetPos < 14 || offsetPos >= nodeSize) continue;
+
+            var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPos);
+
+            if(recordOffset < 14 || recordOffset >= nodeSize) continue;
+
+            // Parse the key
+            byte keyLen      = leafNode[recordOffset];
+            var  keyParentID = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 2);
+            byte nameLen     = leafNode[recordOffset                                 + 6];
+
+            // Skip named entries - we want the thread/root entries with empty names
+            if(nameLen != 0) continue;
+
+            // Calculate key size
+            var keySize    = (ushort)(keyLen + 1 + 1 & ~1);
+            int dataOffset = recordOffset + keySize;
+
+            if(dataOffset + 2 > leafNode.Length) continue;
+
+            byte recordType = leafNode[dataOffset];
+
+            // Only look at directory records (type 1)
+            if(recordType != kCatalogRecordTypeDirectory) continue;
+
+            // Only records with parentID=1 (root parent)
+            if(keyParentID != kRootParentCnid) continue;
+
+            // Parse the directory record
+            int cdrDirRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrDirRec));
+
+            if(dataOffset + cdrDirRecSize > leafNode.Length) continue;
+
+            rootRec = Marshal.ByteArrayToStructureBigEndian<CdrDirRec>(leafNode, dataOffset, cdrDirRecSize);
+
+            AaruLogging.Debug(MODULE_NAME,
+                              $"Record {i} (third pass/fallback): Found directory with parentID=1, CNID={rootRec.dirDirID}");
+
+            return ErrorNumber.NoError;
+        }
+
+        // Fourth pass: If NO directory with parentID=1 found, use the first available directory as root
+        // This handles severely malformed volumes
+        AaruLogging.Debug(MODULE_NAME, "Fourth pass: using first available directory as emergency fallback root");
+
+        for(ushort i = 0; i < nodeDesc.ndNRecs; i++)
+        {
+            var offsetPos = (ushort)(nodeSize - 2 - i * 2);
+
+            if(offsetPos < 14 || offsetPos >= nodeSize) continue;
+
+            var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPos);
+
+            if(recordOffset < 14 || recordOffset >= nodeSize) continue;
+
+            // Parse the key
+            byte keyLen = leafNode[recordOffset];
+
+            // Calculate key size
+            var keySize    = (ushort)(keyLen + 1 + 1 & ~1);
+            int dataOffset = recordOffset + keySize;
+
+            if(dataOffset + 2 > leafNode.Length) continue;
+
+            byte recordType = leafNode[dataOffset];
+
+            // Only look at directory records (type 1)
+            if(recordType != kCatalogRecordTypeDirectory) continue;
+
+            // Parse the directory record
+            int cdrDirRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrDirRec));
+
+            if(dataOffset + cdrDirRecSize > leafNode.Length) continue;
+
+            rootRec = Marshal.ByteArrayToStructureBigEndian<CdrDirRec>(leafNode, dataOffset, cdrDirRecSize);
+
+            AaruLogging.Debug(MODULE_NAME,
+                              $"Record {i} (fourth pass/emergency): Using first directory as root, CNID={rootRec.dirDirID}");
+
+            return ErrorNumber.NoError;
+        }
+
         return ErrorNumber.InvalidArgument;
     }
 
@@ -577,31 +819,64 @@ public sealed partial class AppleHFS
             return errno;
         }
 
-        // CRITICAL: The B-Tree stores entries sorted by (parentID, name).
-        // Entries with the same parentID are grouped together but may span MULTIPLE leaf nodes.
-        //
-        // B-Tree Navigation Strategy:
-        // 1. Navigate from root to the appropriate leaf node for targetParentID
-        // 2. Once at a leaf node, traverse BACKWARD using ndBLink to find the FIRST leaf node
-        //    that contains entries with parentID = targetParentID
-        // 3. Then traverse FORWARD through sibling nodes (using ndFLink)
-        // 4. Extract ALL records with parentID = targetParentID from each leaf node
-        // 5. Stop when we encounter parentID > targetParentID
+        // **BRUTE FORCE APPROACH**: Since we found the root by scanning leaf nodes,
+        // scan through all leaf nodes looking for entries with parentID = targetParentID (which is 2 for root)
+        // Skip if leaf range is invalid
+        if(bthdr.bthFNode <= bthdr.bthLNode)
+        {
+            ushort entriesFound = 0;
 
-        uint   currentNode  = bthdr.bthRoot;
-        ushort entriesFound = 0;
+            for(uint leafNode = bthdr.bthFNode; leafNode <= bthdr.bthLNode; leafNode++)
+            {
+                errno = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] leafData);
 
-        // Navigate from root to a leaf node for targetParentID
+                if(errno != ErrorNumber.NoError) continue;
+
+                NodeDescriptor leafDesc =
+                    Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafData,
+                                                                          0,
+                                                                          System.Runtime.InteropServices.Marshal
+                                                                             .SizeOf(typeof(NodeDescriptor)));
+
+                if(leafDesc.ndType != NodeType.ndLeafNode) continue;
+
+                // Extract all entries with parentID = targetParentID from this leaf node
+                errno = ExtractDirectoryEntriesFromLeaf(leafData, bthdr.bthNodeSize, targetParentID, ref entriesFound);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME, $"Error extracting entries from leaf node {leafNode}");
+
+                    continue;
+                }
+
+                // Check if we've found all entries
+                if(entriesFound >= expectedCount)
+                {
+                    AaruLogging.Debug(MODULE_NAME, $"Found all expected entries: {entriesFound}/{expectedCount}");
+
+                    break;
+                }
+            }
+
+            AaruLogging.Debug(MODULE_NAME, $"Root directory caching complete: {entriesFound} entries found");
+
+            return ErrorNumber.NoError;
+        }
+
+        // Leaf range is invalid, fall back to standard B-tree traversal
+        AaruLogging.Debug(MODULE_NAME,
+                          $"Leaf node range invalid (firstLeaf={bthdr.bthFNode} > lastLeaf={bthdr.bthLNode}), using standard B-tree traversal");
+
+        // Navigate B-Tree to find entries with parentID = targetParentID
+        uint currentNode = bthdr.bthRoot;
+
+        // Traverse from root to leaf
         for(var level = 0; level < bthdr.bthDepth; level++)
         {
             errno = ReadNode(currentNode, bthdr.bthNodeSize, out byte[] nodeData);
 
-            if(errno != ErrorNumber.NoError)
-            {
-                AaruLogging.Debug(MODULE_NAME, $"Failed to read node {currentNode} at level {level}");
-
-                return errno;
-            }
+            if(errno != ErrorNumber.NoError) return errno;
 
             NodeDescriptor nodeDesc =
                 Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData,
@@ -609,85 +884,45 @@ public sealed partial class AppleHFS
                                                                       System.Runtime.InteropServices.Marshal
                                                                             .SizeOf(typeof(NodeDescriptor)));
 
-            // If we've reached a leaf node, process from here
+            // Reached a leaf node
             if(nodeDesc.ndType == NodeType.ndLeafNode)
             {
-                // We've found a leaf node that may contain targetParentID entries.
-                // Traverse backward to find the FIRST leaf node containing targetParentID entries
-                uint leafNode = currentNode;
+                // Extract all entries with parentID = targetParentID from this leaf and following siblings
+                // First, backtrack to find the FIRST leaf node that contains targetParentID entries
+                uint   leafNode     = currentNode;
+                ushort entriesFound = 0;
 
-                // Keep going back while we can
-                while(leafNode != 0)
+                // Traverse backward to find the start of targetParentID entries
+                while(nodeDesc.ndBLink != 0)
                 {
-                    errno = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] leafData);
+                    errno = ReadNode(nodeDesc.ndBLink, bthdr.bthNodeSize, out byte[] backData);
 
-                    if(errno != ErrorNumber.NoError)
-                    {
-                        AaruLogging.Debug(MODULE_NAME, $"Failed to read leaf node {leafNode}");
+                    if(errno != ErrorNumber.NoError) break;
 
-                        return errno;
-                    }
-
-                    NodeDescriptor leafDesc =
-                        Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafData,
+                    NodeDescriptor backDesc =
+                        Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(backData,
                                                                               0,
                                                                               System.Runtime.InteropServices.Marshal
                                                                                  .SizeOf(typeof(NodeDescriptor)));
 
-                    // Check if this leaf has records with parentID <= targetParentID
-                    if(!LeafHasTargetOrEarlier(leafData, bthdr.bthNodeSize, targetParentID))
+                    // Check if previous leaf contains entries with parentID <= targetParentID
+                    if(!LeafHasTargetOrEarlier(backData, bthdr.bthNodeSize, targetParentID))
                     {
-                        // This node is entirely after target, so move forward
-                        if(leafDesc.ndFLink != 0)
-                            leafNode = leafDesc.ndFLink;
-                        else
-                            break;
-
-                        continue;
+                        // Previous leaf doesn't have our target, so current leaf is the start
+                        break;
                     }
 
-                    // This leaf might contain our target, but check if we should go back more
-                    if(leafDesc.ndBLink != 0)
-                    {
-                        uint prevNode = leafDesc.ndBLink;
-
-                        // Peek at previous leaf to check if it has our parentID too
-                        errno = ReadNode(prevNode, bthdr.bthNodeSize, out byte[] prevData);
-
-                        if(errno != ErrorNumber.NoError)
-                        {
-                            // Can't read previous, so process from here
-                            leafNode = leafNode;
-
-                            break;
-                        }
-
-                        if(LeafHasTargetOrEarlier(prevData, bthdr.bthNodeSize, targetParentID))
-                        {
-                            // Previous node has our target too, so go back
-                            leafNode = prevNode;
-
-                            continue;
-                        }
-
-                        // Previous node doesn't have our target, so this is the start
-                    }
-
-                    // No previous link, this is the first leaf
-                    break;
+                    // Previous leaf has our target or earlier, so go back
+                    leafNode = nodeDesc.ndBLink;
+                    nodeDesc = backDesc;
                 }
 
-                // Now traverse forward and extract all entries with targetParentID
+                // Now traverse forward and extract all entries
                 while(leafNode != 0)
                 {
                     errno = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] leafData);
 
-                    if(errno != ErrorNumber.NoError)
-                    {
-                        AaruLogging.Debug(MODULE_NAME, $"Failed to read leaf node {leafNode}");
-
-                        return errno;
-                    }
+                    if(errno != ErrorNumber.NoError) return errno;
 
                     NodeDescriptor leafDesc =
                         Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafData,
@@ -695,18 +930,13 @@ public sealed partial class AppleHFS
                                                                               System.Runtime.InteropServices.Marshal
                                                                                  .SizeOf(typeof(NodeDescriptor)));
 
-                    // Extract all entries with parentID = targetParentID from this leaf node
+                    // Extract entries from this leaf
                     errno = ExtractDirectoryEntriesFromLeaf(leafData,
                                                             bthdr.bthNodeSize,
                                                             targetParentID,
                                                             ref entriesFound);
 
-                    if(errno != ErrorNumber.NoError)
-                    {
-                        AaruLogging.Debug(MODULE_NAME, $"Error extracting entries from leaf node {leafNode}");
-
-                        return errno;
-                    }
+                    if(errno != ErrorNumber.NoError) return errno;
 
                     // Check if we've found all entries
                     if(entriesFound >= expectedCount)
@@ -717,27 +947,14 @@ public sealed partial class AppleHFS
                     }
 
                     // Move to next leaf node
-                    if(leafDesc.ndFLink == 0) break; // Last leaf node reached
+                    if(leafDesc.ndFLink == 0) break;
 
                     leafNode = leafDesc.ndFLink;
+                    errno    = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] nextLeafData);
 
-                    // Peek at next leaf to check if it still has targetParentID entries
-                    errno = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] nextLeafData);
+                    if(errno != ErrorNumber.NoError) break;
 
-                    if(errno != ErrorNumber.NoError)
-                    {
-                        AaruLogging.Debug(MODULE_NAME, $"Failed to peek at next leaf node {leafNode}");
-
-                        break;
-                    }
-
-                    if(!LeafHasTargetParentID(nextLeafData, bthdr.bthNodeSize, targetParentID))
-                    {
-                        AaruLogging.Debug(MODULE_NAME,
-                                          $"Next leaf node {leafNode} doesn't contain parentID={targetParentID}, stopping");
-
-                        break;
-                    }
+                    if(!LeafHasTargetParentID(nextLeafData, bthdr.bthNodeSize, targetParentID)) break;
                 }
 
                 AaruLogging.Debug(MODULE_NAME, $"Root directory caching complete: {entriesFound} entries found");
@@ -745,18 +962,11 @@ public sealed partial class AppleHFS
                 return ErrorNumber.NoError;
             }
 
-            // This is an index node - find the appropriate child pointer for targetParentID
+            // Index node - find the child pointer for targetParentID
             errno = FindIndexPointer(nodeData, bthdr.bthNodeSize, targetParentID, out currentNode);
 
-            if(errno != ErrorNumber.NoError)
-            {
-                AaruLogging.Debug(MODULE_NAME, "Could not find appropriate index pointer for target parentID");
-
-                return errno;
-            }
+            if(errno != ErrorNumber.NoError) return errno;
         }
-
-        AaruLogging.Debug(MODULE_NAME, "Failed to reach a leaf node");
 
         return ErrorNumber.InvalidArgument;
     }
@@ -1028,9 +1238,49 @@ public sealed partial class AppleHFS
 
         var directoryEntries = new Dictionary<string, CatalogEntry>();
 
+        // **BRUTE FORCE APPROACH**: Scan all leaf nodes looking for entries with parentID = cnid
+        // This is robust against malformed B-tree structures like the one in this image
+        // Skip if leaf range is invalid
+        if(bthdr.bthFNode <= bthdr.bthLNode)
+        {
+            uint targetParentID = cnid;
+
+            for(uint leafNode = bthdr.bthFNode; leafNode <= bthdr.bthLNode; leafNode++)
+            {
+                errno = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] leafData);
+
+                if(errno != ErrorNumber.NoError) continue;
+
+                NodeDescriptor leafDesc =
+                    Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafData,
+                                                                          0,
+                                                                          System.Runtime.InteropServices.Marshal
+                                                                             .SizeOf(typeof(NodeDescriptor)));
+
+                if(leafDesc.ndType != NodeType.ndLeafNode) continue;
+
+                // Extract entries from this leaf
+                errno = ExtractDirectoryEntriesFromLeafForCnid(leafData,
+                                                               bthdr.bthNodeSize,
+                                                               targetParentID,
+                                                               directoryEntries);
+
+                if(errno != ErrorNumber.NoError) continue;
+            }
+
+            // Cache the directory
+            _directoryCaches[cnid] = directoryEntries;
+
+            return ErrorNumber.NoError;
+        }
+
+        // Leaf range is invalid, fall back to standard B-tree traversal
+        AaruLogging.Debug(MODULE_NAME,
+                          $"Leaf node range invalid (firstLeaf={bthdr.bthFNode} > lastLeaf={bthdr.bthLNode}), using standard B-tree traversal");
+
         // Navigate B-Tree to find entries with parentID = cnid
-        uint currentNode    = bthdr.bthRoot;
-        uint targetParentID = cnid;
+        uint currentNode     = bthdr.bthRoot;
+        uint targetParentID2 = cnid;
 
         // Traverse from root to leaf
         for(var level = 0; level < bthdr.bthDepth; level++)
@@ -1049,8 +1299,35 @@ public sealed partial class AppleHFS
             if(nodeDesc.ndType == NodeType.ndLeafNode)
             {
                 // Extract all entries with parentID = cnid from this leaf and following siblings
-                uint leafNode = currentNode;
+                // First, traverse backward to find the first leaf with targetParentID entries
+                uint leafNode  = currentNode;
+                var  leafCount = 0;
 
+                AaruLogging.Debug(MODULE_NAME,
+                                  $"CacheDirectory B-tree fallback: Starting leaf traversal for CNID={cnid}, first leaf={currentNode}");
+
+                // Traverse backward to find first leaf with targetParentID
+                while(nodeDesc.ndBLink != 0)
+                {
+                    errno = ReadNode(nodeDesc.ndBLink, bthdr.bthNodeSize, out byte[] backData);
+
+                    if(errno != ErrorNumber.NoError) break;
+
+                    NodeDescriptor backDesc =
+                        Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(backData,
+                                                                              0,
+                                                                              System.Runtime.InteropServices.Marshal
+                                                                                 .SizeOf(typeof(NodeDescriptor)));
+
+                    if(!LeafHasTargetOrEarlier(backData, bthdr.bthNodeSize, targetParentID2)) break;
+
+                    leafNode = nodeDesc.ndBLink;
+                    nodeDesc = backDesc;
+                }
+
+                AaruLogging.Debug(MODULE_NAME, $"  Backward traversal found first leaf at {leafNode}");
+
+                // Now traverse forward from the first leaf, extracting all entries for this CNID
                 while(leafNode != 0)
                 {
                     errno = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] leafData);
@@ -1063,24 +1340,31 @@ public sealed partial class AppleHFS
                                                                               System.Runtime.InteropServices.Marshal
                                                                                  .SizeOf(typeof(NodeDescriptor)));
 
+                    AaruLogging.Debug(MODULE_NAME, $"  Checking leaf {leafNode}, next={leafDesc.ndFLink}");
+
                     // Extract entries from this leaf
                     errno = ExtractDirectoryEntriesFromLeafForCnid(leafData,
                                                                    bthdr.bthNodeSize,
-                                                                   targetParentID,
+                                                                   targetParentID2,
                                                                    directoryEntries);
 
                     if(errno != ErrorNumber.NoError) return errno;
 
-                    // Check if next leaf contains entries for this parentID
-                    if(leafDesc.ndFLink == 0) break;
+                    leafCount++;
+
+                    // Continue to next sibling leaf
+                    if(leafDesc.ndFLink == 0)
+                    {
+                        AaruLogging.Debug(MODULE_NAME, "  No next leaf, stopping");
+
+                        break;
+                    }
 
                     leafNode = leafDesc.ndFLink;
-                    errno    = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] nextLeafData);
-
-                    if(errno != ErrorNumber.NoError) break;
-
-                    if(!LeafContainsTargetParentID(nextLeafData, bthdr.bthNodeSize, targetParentID)) break;
                 }
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  $"CacheDirectory traversed {leafCount} leaves, found {directoryEntries.Count} total entries");
 
                 // Cache the directory
                 _directoryCaches[cnid] = directoryEntries;
@@ -1089,7 +1373,7 @@ public sealed partial class AppleHFS
             }
 
             // Index node - find the child pointer for targetParentID
-            errno = FindIndexPointer(nodeData, bthdr.bthNodeSize, targetParentID, out currentNode);
+            errno = FindIndexPointer(nodeData, bthdr.bthNodeSize, targetParentID2, out currentNode);
 
             if(errno != ErrorNumber.NoError) return errno;
         }
@@ -1111,6 +1395,8 @@ public sealed partial class AppleHFS
                                                                         .SizeOf(typeof(NodeDescriptor)));
 
         if(nodeDesc.ndType != NodeType.ndLeafNode) return ErrorNumber.InvalidArgument;
+
+        var entriesInThisLeaf = 0;
 
         // Iterate through records in this leaf node
         for(ushort i = 0; i < nodeDesc.ndNRecs; i++)
@@ -1138,6 +1424,8 @@ public sealed partial class AppleHFS
             string name    = ExtractCatalogName(leafNode, recordOffset + 7, nameLen);
 
             if(string.IsNullOrEmpty(name)) continue;
+
+            entriesInThisLeaf++;
 
             // Key size (padded to word boundary)
             var keySize    = (ushort)(keyLen + 1 + 1 & ~1);
@@ -1208,6 +1496,9 @@ public sealed partial class AppleHFS
 
             if(entry != null) entries[name] = entry;
         }
+
+        AaruLogging.Debug(MODULE_NAME,
+                          $"Extracted {entriesInThisLeaf} entries with parentID={targetParentID} from this leaf");
 
         return ErrorNumber.NoError;
     }
