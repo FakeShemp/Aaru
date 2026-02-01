@@ -34,6 +34,7 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -44,6 +45,160 @@ namespace Aaru.Filesystems;
 // https://developer.apple.com/legacy/library/documentation/mac/pdf/Files/File_Manager.pdf
 public sealed partial class AppleHFS
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Get the file entry
+        ErrorNumber err = GetFileEntry(path, out CatalogEntry entry);
+
+        if(err != ErrorNumber.NoError) return err;
+
+        if(entry is not FileEntry fileEntry) return ErrorNumber.IsDirectory;
+
+        // We'll open the data fork by default
+        node = new HfsFileNode
+        {
+            Path         = path,
+            Length       = fileEntry.DataForkLogicalSize,
+            Offset       = 0,
+            FileEntry    = fileEntry,
+            ForkType     = ForkType.Data,
+            FirstExtents = fileEntry.DataForkExtents,
+            AllExtents   = null // Will be lazily loaded on first read if needed
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not HfsFileNode myNode) return ErrorNumber.InvalidArgument;
+
+        // Clear references
+        myNode.FileEntry  = null;
+        myNode.AllExtents = null;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(buffer is null || buffer.Length < length) return ErrorNumber.InvalidArgument;
+
+        if(node is not HfsFileNode myNode) return ErrorNumber.InvalidArgument;
+
+        // Clamp read length to remaining file size
+        if(myNode.Offset + length > myNode.Length) length = myNode.Length - myNode.Offset;
+
+        if(length <= 0) return ErrorNumber.NoError;
+
+        // Lazy load extents if not already loaded
+        if(myNode.AllExtents == null)
+        {
+            ErrorNumber extentErr = GetFileExtents(myNode.FileEntry.CNID,
+                                                   myNode.ForkType,
+                                                   myNode.FirstExtents,
+                                                   out List<ExtDescriptor> allExtents);
+
+            if(extentErr != ErrorNumber.NoError) return extentErr;
+
+            myNode.AllExtents = allExtents ?? [];
+        }
+
+        if(myNode.AllExtents.Count == 0)
+        {
+            if(length > 0) return ErrorNumber.InvalidArgument;
+
+            return ErrorNumber.NoError;
+        }
+
+        // Find the starting extent and offset within that extent
+        long bytesProcessed = 0;
+        long currentOffset  = myNode.Offset;
+        long bytesToRead    = length;
+        var  bufferPos      = 0;
+
+        foreach(ExtDescriptor extent in myNode.AllExtents)
+        {
+            if(extent.xdrNumABlks == 0) break;
+
+            uint extentSizeBytes = extent.xdrNumABlks * _mdb.drAlBlkSiz;
+
+            // Skip extents that are entirely before our current offset
+            if(currentOffset >= extentSizeBytes)
+            {
+                currentOffset -= extentSizeBytes;
+
+                continue;
+            }
+
+            // Calculate how much to read from this extent
+            var offsetInExtent   = (uint)currentOffset;
+            var toReadFromExtent = (uint)Math.Min(extentSizeBytes - offsetInExtent, bytesToRead);
+
+            // Calculate sector info for this extent
+            ulong sector = (ulong)(extent.xdrStABN * _mdb.drAlBlkSiz / _sectorSize) + offsetInExtent / _sectorSize;
+            uint  sectorOffset = offsetInExtent % _sectorSize;
+            uint  sectorCount = (toReadFromExtent + sectorOffset + _sectorSize - 1) / _sectorSize;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "ReadFile: Reading extent at block={0}, offset={1}, sectorCount={2}, toRead={3}",
+                              extent.xdrStABN,
+                              offsetInExtent,
+                              sectorCount,
+                              toReadFromExtent);
+
+            ErrorNumber readErr = _imagePlugin.ReadSectors(sector, false, sectorCount, out byte[] sectorData, out _);
+
+            if(readErr != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadFile: Failed to read sectors: {0}", readErr);
+
+                return readErr;
+            }
+
+            if(sectorData == null || sectorData.Length == 0)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadFile: Got empty sector data");
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            // Copy data from sector buffer to output buffer, accounting for offset
+            uint bytesToCopy = Math.Min(toReadFromExtent, (uint)(sectorData.Length - sectorOffset));
+
+            Array.Copy(sectorData, sectorOffset, buffer, bufferPos, bytesToCopy);
+
+            bufferPos      += (int)bytesToCopy;
+            bytesProcessed += bytesToCopy;
+            bytesToRead    -= bytesToCopy;
+
+            // Reset offset for next extent
+            currentOffset = 0;
+
+            if(bytesToRead <= 0) break;
+        }
+
+        read          =  bytesProcessed;
+        myNode.Offset += bytesProcessed;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: Read {0} bytes, new offset={1}", bytesProcessed, myNode.Offset);
+
+        return ErrorNumber.NoError;
+    }
+
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
     {

@@ -33,7 +33,6 @@
 
 using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
@@ -46,14 +45,4 @@ public sealed partial class AppleHFS
 
     /// <inheritdoc />
     public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
 }

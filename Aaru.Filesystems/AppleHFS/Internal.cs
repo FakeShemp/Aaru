@@ -30,12 +30,41 @@
 // These are not part of the Inside Macintosh specification and are
 // implementation-specific to the Aaru HFS plugin.
 
+using System.Collections.Generic;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class AppleHFS
 {
+    /// <summary>FileNode implementation for Apple HFS</summary>
+    sealed class HfsFileNode : IFileNode
+    {
+        /// <summary>Cached list of all extents (including overflow)</summary>
+        internal List<ExtDescriptor> AllExtents;
+        /// <summary>The file entry containing extent information</summary>
+        internal FileEntry FileEntry;
+
+        /// <summary>First three extents of the fork</summary>
+        internal ExtDataRec FirstExtents;
+
+        /// <summary>Type of fork (Data or Resource)</summary>
+        internal ForkType ForkType;
+
+#region IFileNode Members
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+#endregion
+    }
+
     /// <summary>DirNode implementation for Apple HFS</summary>
     sealed class HfsDirNode : IDirNode
     {
