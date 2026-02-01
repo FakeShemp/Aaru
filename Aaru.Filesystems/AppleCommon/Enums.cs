@@ -36,12 +36,12 @@ namespace Aaru.Filesystems;
 
 // Information from Inside Macintosh
 // https://developer.apple.com/legacy/library/documentation/mac/pdf/Files/File_Manager.pdf
-static partial class AppleCommon
+public static partial class AppleCommon
 {
 #region Nested type: ExtendedFinderFlags
 
     [Flags]
-    internal enum ExtendedFinderFlags : ushort
+    public enum ExtendedFinderFlags : ushort
     {
         /// <summary>If set the other extended flags are ignored.</summary>
         kExtendedFlagsAreInvalid = 0x8000,
@@ -58,7 +58,7 @@ static partial class AppleCommon
 #region Nested type: FinderFlags
 
     [Flags]
-    internal enum FinderFlags : ushort
+    public enum FinderFlags : ushort
     {
         /// <summary>Is on desktop.</summary>
         kIsOnDesk = 0x0001,
@@ -95,7 +95,7 @@ static partial class AppleCommon
 
 #region Nested type: FinderFolder
 
-    internal enum FinderFolder : short
+    public enum FinderFolder : short
     {
         fTrash   = -3,
         fDesktop = -2,

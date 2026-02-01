@@ -48,6 +48,16 @@ public sealed partial class AppleHFS
     /// <summary>File number of the bad allocation block file.</summary>
     const uint kBadBlocksFileCnid = 5;
 
+    // Catalog record types
+    /// <summary>Directory record type in catalog.</summary>
+    const byte kCatalogRecordTypeDirectory = 1;
+    /// <summary>File record type in catalog.</summary>
+    const byte kCatalogRecordTypeFile = 2;
+    /// <summary>Directory thread record type in catalog.</summary>
+    const byte kCatalogRecordTypeDirectoryThread = 3;
+    /// <summary>File thread record type in catalog.</summary>
+    const byte kCatalogRecordTypeFileThread = 4;
+
     // Do not translate
     const string FS_TYPE = "hfs";
 }

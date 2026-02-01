@@ -44,29 +44,30 @@ public sealed partial class AppleHFS
 
     /// <summary>B*-tree header</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct BTHdrRed
+    [SwapEndian]
+    partial struct BTHdrRed
     {
         /// <summary>Current depth of tree.</summary>
-        public readonly ushort bthDepth;
+        public ushort bthDepth;
         /// <summary>Number of root node.</summary>
-        public readonly uint bthRoot;
+        public uint bthRoot;
         /// <summary>Number of leaf records in tree.</summary>
-        public readonly uint bthNRecs;
+        public uint bthNRecs;
         /// <summary>Number of first leaf node.</summary>
-        public readonly uint bthFNode;
+        public uint bthFNode;
         /// <summary>Number of last leaf node.</summary>
-        public readonly uint bthLNode;
+        public uint bthLNode;
         /// <summary>Size of a node.</summary>
-        public readonly ushort bthNodeSize;
+        public ushort bthNodeSize;
         /// <summary>Maximum length of a key.</summary>
-        public readonly ushort bthKeyLen;
+        public ushort bthKeyLen;
         /// <summary>Total number of nodes in tree.</summary>
-        public readonly uint bthNNodes;
+        public uint bthNNodes;
         /// <summary>Number of free nodes.</summary>
-        public readonly uint bthFree;
+        public uint bthFree;
         /// <summary>Reserved</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 76)]
-        public readonly sbyte[] bthResv;
+        public sbyte[] bthResv;
     }
 
 #endregion
@@ -75,10 +76,11 @@ public sealed partial class AppleHFS
 
     /// <summary>Catalog data record header</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct CatDataRec
+    [SwapEndian]
+    partial struct CatDataRec
     {
-        public readonly CatDataType cdrType;
-        public readonly sbyte       cdrResvr2;
+        public CatDataType cdrType;
+        public sbyte       cdrResvr2;
     }
 
 #endregion
@@ -87,17 +89,18 @@ public sealed partial class AppleHFS
 
     /// <summary>Catalog key record</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct CatKeyRec
+    [SwapEndian]
+    partial struct CatKeyRec
     {
         /// <summary>Key length.</summary>
-        public readonly sbyte ckrKeyLen;
+        public sbyte ckrKeyLen;
         /// <summary>Reserved.</summary>
-        public readonly sbyte ckrResrv1;
+        public sbyte ckrResrv1;
         /// <summary>Parent directory ID.</summary>
-        public readonly uint ckrParID;
+        public uint ckrParID;
         /// <summary>Catalog node name. Full 32 bytes in index nodes but only the needed bytes, padded to word, in leaf nodes.</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] ckrCName;
+        public byte[] ckrCName;
     }
 
 #endregion
@@ -106,28 +109,29 @@ public sealed partial class AppleHFS
 
     /// <summary>Directory record</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct CdrDirRec
+    [SwapEndian]
+    partial struct CdrDirRec
     {
-        public readonly CatDataRec dirHdr;
+        public CatDataRec dirHdr;
         /// <summary>Directory flags.</summary>
-        public readonly ushort dirFlags;
+        public ushort dirFlags;
         /// <summary>Directory valence.</summary>
-        public readonly ushort dirVal;
+        public ushort dirVal;
         /// <summary>Directory ID.</summary>
-        public readonly uint dirDirID;
+        public uint dirDirID;
         /// <summary>Date and time of creation.</summary>
-        public readonly uint dirCrDat;
+        public uint dirCrDat;
         /// <summary>Date and time of last modification.</summary>
-        public readonly uint dirMdDat;
+        public uint dirMdDat;
         /// <summary>Date and time of last backup.</summary>
-        public readonly uint dirBkDat;
+        public uint dirBkDat;
         /// <summary>Finder information.</summary>
-        public readonly AppleCommon.DInfo dirUsrInfo;
+        public AppleCommon.DInfo dirUsrInfo;
         /// <summary>Additional Finder information.</summary>
-        public readonly AppleCommon.DXInfo dirFndrInfo;
+        public AppleCommon.DXInfo dirFndrInfo;
         /// <summary>Reserved</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public readonly uint[] dirResrv;
+        public uint[] dirResrv;
     }
 
 #endregion
@@ -136,45 +140,46 @@ public sealed partial class AppleHFS
 
     /// <summary>File record</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct CdrFilRec
+    [SwapEndian]
+    partial struct CdrFilRec
     {
-        public readonly CatDataRec filHdr;
+        public CatDataRec filHdr;
         /// <summary>File flags.</summary>
-        public readonly sbyte filFlags;
+        public sbyte filFlags;
         /// <summary>File type.</summary>
-        public readonly sbyte filType;
+        public sbyte filType;
         /// <summary>Finder information.</summary>
-        public readonly AppleCommon.FInfo filUsrWds;
+        public AppleCommon.FInfo filUsrWds;
         /// <summary>File ID.</summary>
-        public readonly uint filFlNum;
+        public uint filFlNum;
         /// <summary>First allocation block of data fork.</summary>
-        public readonly ushort filStBlk;
+        public ushort filStBlk;
         /// <summary>Logical EOF of data fork.</summary>
-        public readonly uint filLgLen;
+        public uint filLgLen;
         /// <summary>Physical EOF of data fork.</summary>
-        public readonly uint filPyLen;
+        public uint filPyLen;
         /// <summary>First allocation block of resource fork.</summary>
-        public readonly ushort filRStBlk;
+        public ushort filRStBlk;
         /// <summary>Logical EOF of resource fork.</summary>
-        public readonly uint filRLgLen;
+        public uint filRLgLen;
         /// <summary>Physical EOF of resource fork.</summary>
-        public readonly uint filRPyLen;
+        public uint filRPyLen;
         /// <summary>Date and time of creation.</summary>
-        public readonly uint filCrDat;
+        public uint filCrDat;
         /// <summary>Date and time of last modification.</summary>
-        public readonly uint filMdDat;
+        public uint filMdDat;
         /// <summary>Date and time of last backup.</summary>
-        public readonly uint filBkDat;
+        public uint filBkDat;
         /// <summary>Additional Finder information.</summary>
-        public readonly AppleCommon.FXInfo filFndrInfo;
+        public AppleCommon.FXInfo filFndrInfo;
         /// <summary>File clump size.</summary>
-        public readonly ushort filClpSize;
+        public ushort filClpSize;
         /// <summary>First data fork extent record.</summary>
-        public readonly ExtDataRec filExtRec;
+        public ExtDataRec filExtRec;
         /// <summary>First resource fork extent record.</summary>
-        public readonly ExtDataRec filRExtRec;
+        public ExtDataRec filRExtRec;
         /// <summary>Reserved</summary>
-        public readonly uint filResrv;
+        public uint filResrv;
     }
 
 #endregion
@@ -221,10 +226,11 @@ public sealed partial class AppleHFS
 
     /// <summary>Extent data record</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct ExtDataRec
+    [SwapEndian]
+    partial struct ExtDataRec
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public readonly ExtDescriptor[] xdr;
+        public ExtDescriptor[] xdr;
     }
 
 #endregion
@@ -233,12 +239,13 @@ public sealed partial class AppleHFS
 
     /// <summary>Extent descriptor</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct ExtDescriptor
+    [SwapEndian]
+    partial struct ExtDescriptor
     {
         /// <summary>First allocation block</summary>
-        public readonly ushort xdrStABN;
+        public ushort xdrStABN;
         /// <summary>Number of allocation blocks</summary>
-        public readonly ushort xdrNumABlks;
+        public ushort xdrNumABlks;
     }
 
 #endregion
@@ -349,8 +356,12 @@ public sealed partial class AppleHFS
         // End of variable variables :D
         /// <summary>0x082, Bytes in the extents B-Tree 3 HFS extents following, 32 bits each</summary>
         public uint drXTFlSize;
+        /// <summary>0x086, Extents B-Tree extent records (3 ExtDescriptors)</summary>
+        public ExtDataRec drXTExtRec;
         /// <summary>0x092, Bytes in the catalog B-Tree 3 HFS extents following, 32 bits each</summary>
         public uint drCTFlSize;
+        /// <summary>0x096, Catalog B-Tree extent records (3 ExtDescriptors)</summary>
+        public ExtDataRec drCTExtRec;
     }
 
 #endregion
@@ -358,20 +369,21 @@ public sealed partial class AppleHFS
 #region Nested type: NodeDescriptor
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct NodeDescriptor
+    [SwapEndian]
+    partial struct NodeDescriptor
     {
         /// <summary>A link to the next node of this type, or <c>null</c> if this is the last one.</summary>
-        public readonly uint ndFLink;
+        public uint ndFLink;
         /// <summary>A link to the previous node of this type, or <c>null</c> if this is the first one.</summary>
-        public readonly uint ndBLink;
+        public uint ndBLink;
         /// <summary>The type of this node.</summary>
-        public readonly NodeType ndType;
+        public NodeType ndType;
         /// <summary>The depth of this node in the B*-tree hierarchy. Maximum depth is apparently 8.</summary>
-        public readonly sbyte ndNHeight;
+        public sbyte ndNHeight;
         /// <summary>The number of records contained in this node.</summary>
-        public readonly ushort ndNRecs;
+        public ushort ndNRecs;
         /// <summary>Reserved, should be 0.</summary>
-        public readonly ushort ndResv2;
+        public ushort ndResv2;
     }
 
 #endregion

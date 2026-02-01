@@ -32,6 +32,8 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
@@ -42,6 +44,30 @@ namespace Aaru.Filesystems;
 /// <summary>Implements detection of the Apple Hierarchical File System (HFS)</summary>
 public sealed partial class AppleHFS : IReadOnlyFilesystem
 {
+    /// <summary>Module name for debugging</summary>
+    const string MODULE_NAME = "HFS plugin";
+
+    /// <summary>Character encoding for filenames and volume name</summary>
+    Encoding _encoding;
+
+    /// <summary>Reference to the media image for sector I/O operations</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Cached Master Directory Block</summary>
+    MasterDirectoryBlock _mdb;
+
+    /// <summary>Indicates if the filesystem is currently mounted</summary>
+    bool _mounted;
+
+    /// <summary>Starting sector of the partition</summary>
+    ulong _partitionStart;
+
+    /// <summary>Cached root directory structure</summary>
+    CdrDirRec _rootDirectory;
+
+    /// <summary>Cached root directory entries, keyed by filename</summary>
+    Dictionary<string, CatalogEntry> _rootDirectoryCache;
+
 #region IFilesystem Members
 
     /// <inheritdoc />

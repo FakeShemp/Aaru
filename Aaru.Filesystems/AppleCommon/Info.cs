@@ -33,7 +33,7 @@ namespace Aaru.Filesystems;
 
 // Information from Inside Macintosh
 // https://developer.apple.com/legacy/library/documentation/mac/pdf/Files/File_Manager.pdf
-static partial class AppleCommon
+public static partial class AppleCommon
 {
     internal static string GetBootBlockInformation(byte[] bbSector, Encoding encoding)
     {

@@ -35,7 +35,7 @@ namespace Aaru.Filesystems;
 
 // Information from Inside Macintosh
 // https://developer.apple.com/legacy/library/documentation/mac/pdf/Files/File_Manager.pdf
-static partial class AppleCommon
+public static partial class AppleCommon
 {
 #region Nested type: BootBlock
 
@@ -95,7 +95,9 @@ static partial class AppleCommon
 
 #region Nested type: DInfo
 
-    internal struct DInfo
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    public partial struct DInfo
     {
         /// <summary>Position and dimensions of the folder's window.</summary>
         public Rect frRect;
@@ -111,7 +113,9 @@ static partial class AppleCommon
 
 #region Nested type: DXInfo
 
-    internal struct DXInfo
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    public partial struct DXInfo
     {
         /// <summary>Scroll position for icon views.</summary>
         public Point frScroll;
@@ -130,7 +134,7 @@ static partial class AppleCommon
 #region Nested type: FInfo
 
     [SwapEndian]
-    internal partial struct FInfo
+    public partial struct FInfo
     {
         /// <summary>The type of the file.</summary>
         public uint fdType;
@@ -148,7 +152,9 @@ static partial class AppleCommon
 
 #region Nested type: FXInfo
 
-    internal struct FXInfo
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    public partial struct FXInfo
     {
         /// <summary>Resource fork ID of file icon.</summary>
         public ushort fdIconID;
@@ -166,8 +172,9 @@ static partial class AppleCommon
 
 #region Nested type: Point
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    internal partial struct Point
+    public partial struct Point
     {
         public ushort v;
         public ushort h;
@@ -177,7 +184,9 @@ static partial class AppleCommon
 
 #region Nested type: Rect
 
-    internal struct Rect
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    public partial struct Rect
     {
         public ushort top;
         public ushort left;

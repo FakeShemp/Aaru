@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Structs.cs
+// Filename       : Unimplemented.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Apple Hierarchical File System plugin.
@@ -33,12 +33,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -47,16 +45,13 @@ namespace Aaru.Filesystems;
 public sealed partial class AppleHFS
 {
     /// <inheritdoc />
-    public FileSystem Metadata { get; }
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; }
-    /// <inheritdoc />
-    public Dictionary<string, string> Namespaces { get; }
+    public FileSystem Metadata { get; private set; }
 
     /// <inheritdoc />
-    public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
-                             Dictionary<string, string> options,     string    @namespace) =>
-        throw new NotImplementedException();
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
     /// <inheritdoc />
     public ErrorNumber Unmount() => throw new NotImplementedException();
