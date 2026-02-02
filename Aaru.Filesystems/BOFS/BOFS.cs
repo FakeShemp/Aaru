@@ -31,7 +31,7 @@ using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
-public sealed partial class BOFS : IFilesystem
+public sealed partial class BOFS : IReadOnlyFilesystem
 {
     const string FS_TYPE = "beofs";
     /// <inheritdoc />
