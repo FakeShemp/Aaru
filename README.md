@@ -178,6 +178,7 @@ Fully supported file-systems (identify and extraction)
 * Apple Hierarchical File System (HFS)
 * Apple Hierarchical File System+ (HFS+)
 * Apple Macintosh File System (MFS)
+* BeOS filesystem
 * CD-i file system
 * Commodore 1540/1541/1571/1581 filesystems
 * CP/M file system
@@ -201,7 +202,6 @@ Supported file systems for identification and information only
 * Apple File System (preliminary detection until on-disk layout is stable)
 * Apple ProDOS / SOS file system
 * AtheOS file system
-* BeOS filesystem
 * BSD Fast File System (FFS) / Unix File System (UFS)
 * BSD Unix File System 2 (UFS2)
 * B-tree file system (btrfs)
