@@ -44,20 +44,45 @@ public sealed partial class BeFS
     {
         entries = [];
 
-        // Read B+tree header
+        // Traverse B+tree to collect all entries
+        const long BEFS_BT_INVAL = unchecked((long)0xFFFFFFFFFFFFFFFF);
+
+        // Read B+tree header (should be at the start of the first direct block)
         ErrorNumber errno = ReadFromDataStream(dataStream, 0, 32, out byte[] headerData);
 
         if(errno != ErrorNumber.NoError) return errno;
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "B+tree header raw bytes: {0}",
+                          BitConverter.ToString(headerData, 0, Math.Min(32, headerData.Length)));
 
         bt_header btHeader = _littleEndian
                                  ? Marshal.ByteArrayToStructureLittleEndian<bt_header>(headerData)
                                  : Marshal.ByteArrayToStructureBigEndian<bt_header>(headerData);
 
-        if(btHeader.magic != BTREE_MAGIC) return ErrorNumber.InvalidArgument;
+        AaruLogging.Debug(MODULE_NAME,
+                          "B+tree header: magic=0x{0:X16}, node_size={1}, root_ptr={2}, data_type={3}",
+                          btHeader.magic,
+                          btHeader.node_size,
+                          btHeader.node_root_pointer,
+                          btHeader.data_type);
+
+        if(btHeader.magic != BTREE_MAGIC)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "Invalid B+tree magic! Expected 0x{0:X16}, got 0x{1:X16}",
+                              BTREE_MAGIC,
+                              btHeader.magic);
+
+            return ErrorNumber.InvalidArgument;
+        }
 
         // Traverse B+tree to collect all entries
-        const long BEFS_BT_INVAL = unchecked((long)0xFFFFFFFFFFFFFFFF);
-        long       nodeOffset    = btHeader.node_root_pointer;
+        long nodeOffset = btHeader.node_root_pointer;
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "ParseDirectoryBTree: Starting traversal from root node at offset {0}",
+                          nodeOffset);
 
         while(nodeOffset != 0 && nodeOffset != BEFS_BT_INVAL)
         {
@@ -65,20 +90,51 @@ public sealed partial class BeFS
 
             if(errno != ErrorNumber.NoError) return errno;
 
+            AaruLogging.Debug(MODULE_NAME,
+                              "ParseDirectoryBTree: Read node at offset {0}, got {1} bytes",
+                              nodeOffset,
+                              nodeData.Length);
+
             bt_node_hdr nodeHeader = _littleEndian
                                          ? Marshal.ByteArrayToStructureLittleEndian<bt_node_hdr>(nodeData)
                                          : Marshal.ByteArrayToStructureBigEndian<bt_node_hdr>(nodeData);
 
+            AaruLogging.Debug(MODULE_NAME,
+                              "ParseDirectoryBTree: Node header: keys_length={0}, node_keys={1}, left_link={2}, right_link={3}, overflow_link=0x{4:X16}",
+                              nodeHeader.keys_length,
+                              nodeHeader.node_keys,
+                              nodeHeader.left_link,
+                              nodeHeader.right_link,
+                              nodeHeader.overflow_link);
+
             bool isLeafNode = nodeHeader.overflow_link == BEFS_BT_INVAL;
+
+            AaruLogging.Debug(MODULE_NAME, "ParseDirectoryBTree: Node type: {0}", isLeafNode ? "LEAF" : "INTERIOR");
 
             if(isLeafNode)
             {
                 // Parse leaf node entries
-                const int headerSize          = 28;
-                int       keyDataStart        = headerSize;
-                int       keyDataEnd          = keyDataStart + nodeHeader.keys_length;
-                int       keyLengthIndexStart = keyDataEnd + 3 & ~3;
-                int       valueDataStart      = keyLengthIndexStart + nodeHeader.node_keys * 2;
+                // According to Linux code: "Except that rounding up to 8 works, and rounding up to 4 doesn't."
+                // Header is 28 bytes (left, right, overflow = 3 off_t = 24 bytes + count + length = 4 bytes)
+                const int headerSize   = 28;
+                int       keyDataStart = headerSize;
+                int       keyDataEnd   = keyDataStart + nodeHeader.keys_length;
+
+                // Align to 8-byte boundary, not 4-byte!
+                int keyLengthIndexStart = (keyDataEnd + 7)                           / 8 * 8;
+                int valueDataStart      = keyLengthIndexStart + nodeHeader.node_keys * 2;
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Leaf node layout: headerSize={0}, keyDataStart={1}, keyDataEnd={2}, keyLengthIndexStart={3}, valueDataStart={4}",
+                                  headerSize,
+                                  keyDataStart,
+                                  keyDataEnd,
+                                  keyLengthIndexStart,
+                                  valueDataStart);
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Node data first 128 bytes: {0}",
+                                  BitConverter.ToString(nodeData, 0, Math.Min(128, nodeData.Length)));
 
                 var keyOffset = 0;
 
@@ -100,6 +156,13 @@ public sealed partial class BeFS
                     ushort keyEndOffset = _littleEndian
                                               ? BitConverter.ToUInt16(nodeData, offsetIndex)
                                               : BigEndianBitConverter.ToUInt16(nodeData, offsetIndex);
+
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "Key {0}: offsetIndex={1}, keyOffset={2}, keyEndOffset={3}",
+                                      i,
+                                      offsetIndex,
+                                      keyOffset,
+                                      keyEndOffset);
 
                     int keyStart  = keyDataStart + keyOffset;
                     int keyLength = keyEndOffset - keyOffset;
