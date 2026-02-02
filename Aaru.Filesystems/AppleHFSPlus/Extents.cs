@@ -271,8 +271,13 @@ public sealed partial class AppleHFSPlus
                 ulong blockOffset    = (ulong)extent.startBlock * _volumeHeader.blockSize + offsetInExtent;
 
                 // Convert to device sector address
-                ulong deviceSector = (_partitionStart * _sectorSize + blockOffset) / _sectorSize;
-                var   byteOffset   = (uint)((_partitionStart * _sectorSize + blockOffset) % _sectorSize);
+                // For wrapped volumes, blocks start after the HFS+ volume offset
+                // For pure HFS+, _hfsPlusVolumeOffset is 0
+                ulong deviceSector = ((_partitionStart + _hfsPlusVolumeOffset) * _sectorSize + blockOffset) /
+                                     _sectorSize;
+
+                var byteOffset = (uint)(((_partitionStart + _hfsPlusVolumeOffset) * _sectorSize + blockOffset) %
+                                        _sectorSize);
 
                 uint sectorsToRead = (_extentsFileHeader.nodeSize + byteOffset + _sectorSize - 1) / _sectorSize;
 

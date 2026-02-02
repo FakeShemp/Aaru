@@ -175,11 +175,10 @@ public sealed partial class AppleHFSPlus
         // 1. Offset 0x0400 (1024 bytes) for pure HFS+ volumes
         // 2. At an offset calculated from the HFS MDB for HFS+ wrapped in HFS
 
-        // First, try to read the HFS MDB to check if this is a wrapped HFS+ volume
-        ulong hfspOffset = 0; // Offset in 512-byte sectors
+        // Read 0x800 (2048) bytes to cover both HFS MDB and HFS+ VH locations
+        uint sectorsToRead = 0x800 / _sectorSize;
 
-        // Read sector 2 (512-byte sectors) which contains the HFS MDB or HFS+ VH
-        uint sectorsToRead = (0x400 + 512 + _sectorSize - 1) / _sectorSize;
+        if(0x800 % _sectorSize > 0) sectorsToRead++;
 
         ErrorNumber errno = _imagePlugin.ReadSectors(_partitionStart,
                                                      false,
@@ -189,72 +188,86 @@ public sealed partial class AppleHFSPlus
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        if(vhSectors.Length < 0x400 + 512) return ErrorNumber.InvalidArgument;
+        if(vhSectors.Length < 0x800) return ErrorNumber.InvalidArgument;
 
         // Check if there's an HFS MDB at offset 0x0400
-        var hfsMdbSig = BigEndianBitConverter.ToUInt16(vhSectors, 0x400);
+        var drSigWord = BigEndianBitConverter.ToUInt16(vhSectors, 0x400);
 
-        if(hfsMdbSig == AppleCommon.HFS_MAGIC)
+        if(drSigWord == AppleCommon.HFS_MAGIC)
         {
             // This is an HFS wrapper around HFS+
-            // Read the embedded HFS+ location from the HFS MDB
-            // MDB offsets:
-            // 0x414: drAlBlkSiz (allocation block size)
-            // 0x41C: drAlBlSt (first allocation block start, in 512-byte sectors)
-            // 0x47E: xdrStABN (start allocation block number of embedded HFS+)
+            // Check for embedded HFS+ signature at 0x47C
+            drSigWord = BigEndianBitConverter.ToUInt16(vhSectors, 0x47C);
 
-            var drAlBlkSiz = BigEndianBitConverter.ToUInt32(vhSectors, 0x400 + 0x14);
-            var drAlBlSt   = BigEndianBitConverter.ToUInt16(vhSectors, 0x400 + 0x1C);
-            var xdrStABN   = BigEndianBitConverter.ToUInt16(vhSectors, 0x400 + 0x7E);
+            if(drSigWord == AppleCommon.HFSP_MAGIC) // "H+"
+            {
+                // Read the embedded HFS+ location from the HFS MDB
+                // MDB offsets (absolute from partition start):
+                // 0x414: drAlBlkSiz (allocation block size)
+                // 0x41C: drAlBlSt (first allocation block start, in 512-byte sectors)
+                // 0x47E: xdrStABN (start allocation block number of embedded HFS+)
 
-            // Calculate the offset to the embedded HFS+ volume header
-            // offset = drAlBlSt + (xdrStABN * drAlBlkSiz)
-            // This gives us the byte offset, which we need to convert to sector offset
-            ulong byteOffset = (ulong)drAlBlSt * 512 + (ulong)xdrStABN * drAlBlkSiz;
-            hfspOffset = byteOffset / _sectorSize;
+                var drAlBlkSiz = BigEndianBitConverter.ToUInt32(vhSectors, 0x414);
+                var drAlBlSt   = BigEndianBitConverter.ToUInt16(vhSectors, 0x41C);
+                var xdrStABN   = BigEndianBitConverter.ToUInt16(vhSectors, 0x47E);
 
-            AaruLogging.Debug(MODULE_NAME,
-                              $"Found HFS wrapper: drAlBlSt={drAlBlSt}, xdrStABN={xdrStABN}, drAlBlkSiz={drAlBlkSiz}, hfspOffset={hfspOffset} sectors");
+                // Calculate the offset to the embedded HFS+ volume header
+                // offset (in bytes) = (drAlBlSt * 512) + (xdrStABN * drAlBlkSiz)
+                // Then convert to sector offset (matching GetInformation logic)
+                ulong byteOffset = (ulong)drAlBlSt * 512 + (ulong)xdrStABN * drAlBlkSiz;
+                ulong hfspOffset = byteOffset / _sectorSize;
 
-            // Now read the HFS+ VH from the calculated offset
-            sectorsToRead = (uint)((byteOffset % _sectorSize + 512 + _sectorSize - 1) / _sectorSize);
+                _hfsPlusVolumeOffset = hfspOffset;
 
-            errno = _imagePlugin.ReadSectors(_partitionStart + hfspOffset, false, sectorsToRead, out vhSectors, out _);
+                AaruLogging.Debug(MODULE_NAME,
+                                  $"Found HFS wrapper: drAlBlSt={drAlBlSt}, xdrStABN={xdrStABN}, drAlBlkSiz={drAlBlkSiz}, VH at sector offset {hfspOffset}");
 
-            if(errno != ErrorNumber.NoError) return errno;
+                // Now read the HFS+ VH from the calculated sector offset
+                // Read the same amount of data (0x800) from the new offset
+                sectorsToRead = 0x800 / _sectorSize;
 
-            var vhByteOffset = (uint)(byteOffset % _sectorSize);
+                if(0x800 % _sectorSize > 0) sectorsToRead++;
 
-            if(vhSectors.Length < vhByteOffset + 512) return ErrorNumber.InvalidArgument;
+                errno = _imagePlugin.ReadSectors(_partitionStart + hfspOffset,
+                                                 false,
+                                                 sectorsToRead,
+                                                 out vhSectors,
+                                                 out _);
 
-            // Parse the Volume Header structure
-            _volumeHeader = Marshal.ByteArrayToStructureBigEndian<VolumeHeader>(vhSectors,
-                                                                                    (int)vhByteOffset,
-                                                                                    System.Runtime.InteropServices
-                                                                                       .Marshal
-                                                                                       .SizeOf(typeof(VolumeHeader)));
+                if(errno != ErrorNumber.NoError) return errno;
+
+                if(vhSectors.Length < 0x400 + 512) return ErrorNumber.InvalidArgument;
+
+                // Parse the Volume Header structure from offset 0x400 (as in GetInformation)
+                _volumeHeader = Marshal.ByteArrayToStructureBigEndian<VolumeHeader>(vhSectors,
+                    0x400,
+                    System.Runtime.InteropServices.Marshal.SizeOf(typeof(VolumeHeader)));
+            }
+            else
+            {
+                // HFS wrapper but no embedded HFS+ found
+                return ErrorNumber.InvalidArgument;
+            }
         }
         else
         {
             // Pure HFS+ volume, VH is at offset 0x0400 from partition start
-            uint vhByteOffset   = 0x400 % _sectorSize;
-            uint vhSectorOffset = 0x400 / _sectorSize;
+            // Read 0x800 bytes from partition start, then parse from offset 0x400
+            _hfsPlusVolumeOffset = 0; // No wrapper offset for pure HFS+
 
-            sectorsToRead = (vhByteOffset + 512 + _sectorSize - 1) / _sectorSize;
+            sectorsToRead = 0x800 / _sectorSize;
 
-            errno = _imagePlugin.ReadSectors(_partitionStart + vhSectorOffset,
-                                             false,
-                                             sectorsToRead,
-                                             out vhSectors,
-                                             out _);
+            if(0x800 % _sectorSize > 0) sectorsToRead++;
+
+            errno = _imagePlugin.ReadSectors(_partitionStart, false, sectorsToRead, out vhSectors, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            if(vhSectors.Length < vhByteOffset + 512) return ErrorNumber.InvalidArgument;
+            if(vhSectors.Length < 0x400 + 512) return ErrorNumber.InvalidArgument;
 
-            // Parse the Volume Header structure
+            // Parse the Volume Header structure from offset 0x400
             _volumeHeader = Marshal.ByteArrayToStructureBigEndian<VolumeHeader>(vhSectors,
-                                                                                    (int)vhByteOffset,
+                                                                                    0x400,
                                                                                     System.Runtime.InteropServices
                                                                                        .Marshal
                                                                                        .SizeOf(typeof(VolumeHeader)));
@@ -303,8 +316,13 @@ public sealed partial class AppleHFSPlus
         ulong catalogFileOffset = firstExtent.startBlock * _volumeHeader.blockSize;
 
         // Convert to device sector address
-        ulong deviceSector = (_partitionStart * _sectorSize + catalogFileOffset) / _sectorSize;
-        var   byteOffset   = (uint)((_partitionStart * _sectorSize + catalogFileOffset) % _sectorSize);
+        // For wrapped volumes, blocks start after the HFS+ volume header offset
+        // For pure HFS+, _hfsPlusVolumeOffset is 0
+        ulong deviceSector = (_partitionStart + _hfsPlusVolumeOffset) * _sectorSize + catalogFileOffset;
+        deviceSector /= _sectorSize;
+
+        var byteOffset =
+            (uint)(((_partitionStart + _hfsPlusVolumeOffset) * _sectorSize + catalogFileOffset) % _sectorSize);
 
         // Read the header node (first node in the catalog B-Tree)
         // For now, we don't know the node size yet, so read a reasonable amount
@@ -357,9 +375,7 @@ public sealed partial class AppleHFSPlus
         _isCaseSensitive = _catalogBTreeHeader.keyCompareType == kHFSBinaryCompare;
 
         if(_volumeHeader.signature == AppleCommon.HFSX_MAGIC)
-        {
             AaruLogging.Debug(MODULE_NAME, $"HFSX volume: case-sensitive={_isCaseSensitive}");
-        }
 
         return ErrorNumber.NoError;
     }

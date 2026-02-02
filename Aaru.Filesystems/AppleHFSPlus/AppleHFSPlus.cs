@@ -53,6 +53,9 @@ public sealed partial class AppleHFSPlus : IReadOnlyFilesystem
     /// <summary>Filesystem information</summary>
     FileSystemInfo _fileSystemInfo;
 
+    /// <summary>Offset in sectors to the start of HFS+ volume (for wrapped volumes, 0 for pure HFS+)</summary>
+    ulong _hfsPlusVolumeOffset;
+
     /// <summary>Media image plugin reference</summary>
     IMediaImage _imagePlugin;
 
