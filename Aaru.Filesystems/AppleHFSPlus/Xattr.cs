@@ -180,7 +180,7 @@ public sealed partial class AppleHFSPlus
             {
                 foreach(CatalogEntry catalogEntry in currentDirectory.Values)
                 {
-                    if(string.Equals(catalogEntry.Name, component, StringComparison.OrdinalIgnoreCase))
+                    if(CompareNames(catalogEntry.Name, component))
                     {
                         foundEntry = catalogEntry;
 
@@ -217,7 +217,7 @@ public sealed partial class AppleHFSPlus
         {
             foreach(CatalogEntry catalogEntry in currentDirectory.Values)
             {
-                if(string.Equals(catalogEntry.Name, lastComponent, StringComparison.OrdinalIgnoreCase))
+                if(CompareNames(catalogEntry.Name, lastComponent))
                 {
                     entry = catalogEntry;
 

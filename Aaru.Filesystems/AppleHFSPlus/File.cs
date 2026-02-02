@@ -716,7 +716,7 @@ public sealed partial class AppleHFSPlus
             {
                 foreach(KeyValuePair<string, CatalogEntry> catalogEntry in currentDirectory)
                 {
-                    if(string.Equals(catalogEntry.Key, component, StringComparison.OrdinalIgnoreCase))
+                    if(CompareNames(catalogEntry.Key, component))
                     {
                         foundEntry = catalogEntry.Value;
 
@@ -750,7 +750,7 @@ public sealed partial class AppleHFSPlus
 
         foreach(KeyValuePair<string, CatalogEntry> catalogEntry in currentDirectory)
         {
-            if(!string.Equals(catalogEntry.Key, lastComponent, StringComparison.OrdinalIgnoreCase)) continue;
+            if(!CompareNames(catalogEntry.Key, lastComponent)) continue;
             entry = catalogEntry.Value;
 
             return ErrorNumber.NoError;

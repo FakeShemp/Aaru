@@ -56,6 +56,9 @@ public sealed partial class AppleHFSPlus : IReadOnlyFilesystem
     /// <summary>Media image plugin reference</summary>
     IMediaImage _imagePlugin;
 
+    /// <summary>Whether the volume uses case-sensitive name comparison (HFSX only)</summary>
+    bool _isCaseSensitive;
+
     /// <summary>Whether the filesystem is mounted</summary>
     bool _mounted;
 

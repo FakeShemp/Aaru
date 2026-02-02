@@ -65,4 +65,9 @@ public sealed partial class AppleHFSPlus
     const HFSCatalogNodeID kHFSBogusExtentFileID = 15;
     /// <summary>First file ID available for user-visible files and folders.</summary>
     const HFSCatalogNodeID kHFSFirstUserCatalogNodeID = 16;
+
+    /// <summary>B-tree comparison type: Binary comparison (case-sensitive, HFSX only).</summary>
+    const byte kHFSBinaryCompare = 0;
+    /// <summary>B-tree comparison type: Case-folding comparison (case-insensitive, HFS+ and HFSX).</summary>
+    const byte kHFSCaseFolding = 0xCF;
 }

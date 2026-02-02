@@ -219,4 +219,25 @@ public sealed partial class AppleHFSPlus
             return string.Empty;
         }
     }
+
+    /// <summary>
+    ///     Compares two filenames according to the volume's case-sensitivity setting.
+    ///     For case-sensitive volumes (HFSX with kHFSBinaryCompare), performs binary comparison.
+    ///     For case-insensitive volumes (HFS+ or HFSX with kHFSCaseFolding), performs case-insensitive comparison.
+    /// </summary>
+    /// <param name="name1">First name to compare</param>
+    /// <param name="name2">Second name to compare</param>
+    /// <returns>True if names match according to volume's comparison rules, false otherwise</returns>
+    private bool CompareNames(string name1, string name2)
+    {
+        if(_isCaseSensitive)
+        {
+            // Case-sensitive: binary comparison of UTF-16 code units
+            // According to TN1150: each character compared as unsigned 16-bit integer
+            return string.Equals(name1, name2, StringComparison.Ordinal);
+        }
+
+        // Case-insensitive: use Unicode case-folding comparison (same as HFS+)
+        return string.Equals(name1, name2, StringComparison.OrdinalIgnoreCase);
+    }
 }

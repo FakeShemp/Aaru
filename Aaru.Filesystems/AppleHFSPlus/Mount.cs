@@ -150,6 +150,9 @@ public sealed partial class AppleHFSPlus
         // Clear filesystem info
         _fileSystemInfo = null;
 
+        // Reset case sensitivity flag
+        _isCaseSensitive = false;
+
         // Clear metadata
         Metadata = null;
 
@@ -347,6 +350,16 @@ public sealed partial class AppleHFSPlus
 
         AaruLogging.Debug(MODULE_NAME,
                           $"Catalog B-Tree header: depth={_catalogBTreeHeader.treeDepth}, rootNode={_catalogBTreeHeader.rootNode}, nodeSize={_catalogBTreeHeader.nodeSize}, leafRecords={_catalogBTreeHeader.leafRecords}");
+
+        // Determine if the volume is case-sensitive (HFSX only)
+        // keyCompareType = 0 (kHFSBinaryCompare) means case-sensitive
+        // keyCompareType = 0xCF (kHFSCaseFolding) means case-insensitive
+        _isCaseSensitive = _catalogBTreeHeader.keyCompareType == kHFSBinaryCompare;
+
+        if(_volumeHeader.signature == AppleCommon.HFSX_MAGIC)
+        {
+            AaruLogging.Debug(MODULE_NAME, $"HFSX volume: case-sensitive={_isCaseSensitive}");
+        }
 
         return ErrorNumber.NoError;
     }

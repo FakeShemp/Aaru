@@ -111,7 +111,7 @@ public sealed partial class AppleHFSPlus
             {
                 foreach(KeyValuePair<string, CatalogEntry> entry in currentDirectory)
                 {
-                    if(string.Equals(entry.Key, component, StringComparison.OrdinalIgnoreCase))
+                    if(CompareNames(entry.Key, component))
                     {
                         foundEntry = entry.Value;
 
