@@ -27,7 +27,9 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.Helpers;
 using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
@@ -37,73 +39,134 @@ namespace Aaru.Filesystems;
 /// <summary>Implements detection of the Be (new) filesystem</summary>
 public sealed partial class BeFS
 {
-    /// <summary>Parses the directory B+tree structure from a data stream</summary>
-    /// <remarks>
-    ///     Reads the B+tree header from the start of the data stream, validates it,
-    ///     reads the root node, and traverses the tree to extract all directory entries
-    ///     which are then cached for later retrieval.
-    /// </remarks>
-    /// <param name="dataStream">The data stream containing the B+tree data</param>
-    /// <returns>Error code indicating success or failure</returns>
-    private ErrorNumber ParseDirectoryBTree(data_stream dataStream)
+    /// <summary>Parses a directory's B+tree and returns all entries</summary>
+    private ErrorNumber ParseDirectoryBTree(data_stream dataStream, out Dictionary<string, long> entries)
     {
-        AaruLogging.Debug(MODULE_NAME, "Parsing directory B+tree from data stream...");
-        AaruLogging.Debug(MODULE_NAME, "Filesystem endianness: {0}", _littleEndian ? "Little-endian" : "Big-endian");
+        entries = [];
 
-        // Read B+tree header from position 0 of the data stream
+        // Read B+tree header
         ErrorNumber errno = ReadFromDataStream(dataStream, 0, 32, out byte[] headerData);
 
-        if(errno != ErrorNumber.NoError)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Error reading B+tree header: {0}", errno);
-
-            return errno;
-        }
-
-        AaruLogging.Debug(MODULE_NAME,
-                          "B+tree header raw bytes: {0}",
-                          BitConverter.ToString(headerData, 0, Math.Min(32, headerData.Length)));
+        if(errno != ErrorNumber.NoError) return errno;
 
         bt_header btHeader = _littleEndian
                                  ? Marshal.ByteArrayToStructureLittleEndian<bt_header>(headerData)
                                  : Marshal.ByteArrayToStructureBigEndian<bt_header>(headerData);
 
-        AaruLogging.Debug(MODULE_NAME,
-                          "B+tree header: magic=0x{0:X8}, node_size={1}, root_ptr={2}",
-                          btHeader.magic,
-                          btHeader.node_size,
-                          btHeader.node_root_pointer);
+        if(btHeader.magic != BTREE_MAGIC) return ErrorNumber.InvalidArgument;
 
-        // Validate B+tree header
-        if(btHeader.magic != BTREE_MAGIC)
+        // Traverse B+tree to collect all entries
+        const long BEFS_BT_INVAL = unchecked((long)0xFFFFFFFFFFFFFFFF);
+        long       nodeOffset    = btHeader.node_root_pointer;
+
+        while(nodeOffset != 0 && nodeOffset != BEFS_BT_INVAL)
         {
-            AaruLogging.Debug(MODULE_NAME,
-                              "Invalid B+tree magic! Expected 0x{0:X8}, got 0x{1:X8}",
-                              BTREE_MAGIC,
-                              btHeader.magic);
+            errno = ReadFromDataStream(dataStream, nodeOffset, btHeader.node_size, out byte[] nodeData);
 
-            return ErrorNumber.InvalidArgument;
+            if(errno != ErrorNumber.NoError) return errno;
+
+            bt_node_hdr nodeHeader = _littleEndian
+                                         ? Marshal.ByteArrayToStructureLittleEndian<bt_node_hdr>(nodeData)
+                                         : Marshal.ByteArrayToStructureBigEndian<bt_node_hdr>(nodeData);
+
+            bool isLeafNode = nodeHeader.overflow_link == BEFS_BT_INVAL;
+
+            if(isLeafNode)
+            {
+                // Parse leaf node entries
+                const int headerSize          = 28;
+                int       keyDataStart        = headerSize;
+                int       keyDataEnd          = keyDataStart + nodeHeader.keys_length;
+                int       keyLengthIndexStart = keyDataEnd + 3 & ~3;
+                int       valueDataStart      = keyLengthIndexStart + nodeHeader.node_keys * 2;
+
+                var keyOffset = 0;
+
+                for(var i = 0; i < nodeHeader.node_keys; i++)
+                {
+                    int offsetIndex = keyLengthIndexStart + i * 2;
+
+                    // Bounds check before reading
+                    if(offsetIndex + 2 > nodeData.Length)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Offset index {0} extends beyond node data length {1}",
+                                          offsetIndex + 2,
+                                          nodeData.Length);
+
+                        break;
+                    }
+
+                    ushort keyEndOffset = _littleEndian
+                                              ? BitConverter.ToUInt16(nodeData, offsetIndex)
+                                              : BigEndianBitConverter.ToUInt16(nodeData, offsetIndex);
+
+                    int keyStart  = keyDataStart + keyOffset;
+                    int keyLength = keyEndOffset - keyOffset;
+
+                    // Validate key length - must be positive and reasonable
+                    if(keyLength <= 0 || keyLength > 256)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Invalid key length at index {0}: keyOffset={1}, keyEndOffset={2}, calculated length={3}",
+                                          i,
+                                          keyOffset,
+                                          keyEndOffset,
+                                          keyLength);
+
+                        break;
+                    }
+
+                    // Validate key data is within the key data section
+                    if(keyStart < keyDataStart || keyStart + keyLength > keyDataEnd)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Key data out of bounds at index {0}: start={1}, length={2}, range=[{3},{4}]",
+                                          i,
+                                          keyStart,
+                                          keyLength,
+                                          keyDataStart,
+                                          keyDataEnd);
+
+                        break;
+                    }
+
+                    int valueIndex = valueDataStart + i * 8;
+
+                    // Bounds check for value data
+                    if(valueIndex + 8 > nodeData.Length)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Value index {0} extends beyond node data length {1}",
+                                          valueIndex + 8,
+                                          nodeData.Length);
+
+                        break;
+                    }
+
+                    long inodeNumber = _littleEndian
+                                           ? BitConverter.ToInt64(nodeData, valueIndex)
+                                           : BigEndianBitConverter.ToInt64(nodeData, valueIndex);
+
+                    string keyName = _encoding.GetString(nodeData, keyStart, keyLength);
+
+                    // Filter out "." (current directory) and ".." (parent directory)
+                    // These should not be cached as they cause infinite loops during path traversal
+                    if(keyName != "." && keyName != ".." && !entries.ContainsKey(keyName))
+                        entries[keyName] = inodeNumber;
+
+                    keyOffset = keyEndOffset;
+                }
+            }
+
+            // Move to next sibling
+            if(nodeHeader.right_link != 0 && nodeHeader.right_link != BEFS_BT_INVAL)
+                nodeOffset = nodeHeader.right_link;
+            else
+                break;
         }
 
-        if(btHeader.node_size != 1024)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Invalid B+tree node size! Expected 1024, got {0}", btHeader.node_size);
-
-            return ErrorNumber.InvalidArgument;
-        }
-
-        // Read root node from data stream
-        errno = ReadFromDataStream(dataStream, btHeader.node_root_pointer, btHeader.node_size, out byte[] rootNodeData);
-
-        if(errno != ErrorNumber.NoError)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Error reading root B+tree node: {0}", errno);
-
-            return errno;
-        }
-
-        // Traverse B+tree
-        return TraverseBTree(dataStream, btHeader, btHeader.node_root_pointer, rootNodeData);
+        return ErrorNumber.NoError;
     }
 
     /// <summary>Recursively traverses a B+tree node and its siblings</summary>
