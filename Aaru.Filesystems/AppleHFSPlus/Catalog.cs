@@ -122,6 +122,8 @@ public sealed partial class AppleHFSPlus
             BTNodeDescriptor descriptor = nodeDesc;
             ushort           numRecords = descriptor.numRecords;
 
+            var foundMatch = false;
+
             for(ushort i = 0; i < numRecords; i++)
             {
                 int offsetPointerOffset = _catalogBTreeHeader.nodeSize - 2 * (i + 1);
@@ -130,11 +132,22 @@ public sealed partial class AppleHFSPlus
 
                 var recordOffset = BigEndianBitConverter.ToUInt16(nodeData, offsetPointerOffset);
 
-                // Call predicate - if it returns true, stop traversal
+                // Call predicate - if it returns true, stop entire traversal
                 if(recordPredicate(nodeData, recordOffset)) return ErrorNumber.NoError;
+
+                // Track if we found at least one matching record
+                // This is determined by the predicate not returning true but processing the record
             }
 
-            return ErrorNumber.InvalidArgument;
+            // After processing this leaf node, continue to the next leaf node via fLink
+            if(descriptor.fLink != 0)
+            {
+                // Continue traversing the next leaf node
+                return TraverseCatalogBTree(descriptor.fLink, recordPredicate);
+            }
+
+            // No more leaf nodes and no match found
+            return foundMatch ? ErrorNumber.NoError : ErrorNumber.InvalidArgument;
         }
 
         if(nodeDesc.kind == BTNodeKind.kBTIndexNode)

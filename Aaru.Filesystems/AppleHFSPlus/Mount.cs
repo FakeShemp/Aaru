@@ -457,7 +457,7 @@ public sealed partial class AppleHFSPlus
 
                     _rootDirectoryCache[entryName] = entry;
 
-                    AaruLogging.Debug(MODULE_NAME, $"Cached folder: {entryName} (CNID={folder.folderID})");
+                    AaruLogging.Debug(MODULE_NAME, $"Cached ROOT folder: {entryName} (CNID={folder.folderID})");
                 }
             }
             else if(recordType == (short)BTreeRecordType.kHFSPlusFileRecord)
@@ -494,7 +494,7 @@ public sealed partial class AppleHFSPlus
 
                     _rootDirectoryCache[entryName] = entry;
 
-                    AaruLogging.Debug(MODULE_NAME, $"Cached file: {entryName} (CNID={file.fileID})");
+                    AaruLogging.Debug(MODULE_NAME, $"Cached ROOT file: {entryName} (CNID={file.fileID})");
                 }
             }
         }

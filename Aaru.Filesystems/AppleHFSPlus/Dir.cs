@@ -313,9 +313,9 @@ public sealed partial class AppleHFSPlus
 
                                                              AaruLogging.Debug(MODULE_NAME,
                                                                                $"Cached folder: {entryName} (CNID={folder.folderID})");
+                                                         }
 
                                                              break;
-                                                         }
 
                                                          // Process file records
                                                          case (short)BTreeRecordType.kHFSPlusFileRecord:
@@ -370,15 +370,13 @@ public sealed partial class AppleHFSPlus
                                                      return false; // Keep searching for more entries
                                                  });
 
-        if(errno == ErrorNumber.NoError)
-        {
-            // Cache the directory
-            _directoryCaches[cnid] = directoryEntries;
+        // Cache the directory entries regardless of the TraverseCatalogBTree return value
+        // InvalidArgument just means the predicate never returned true, not that we found nothing
+        _directoryCaches[cnid] = directoryEntries;
 
-            AaruLogging.Debug(MODULE_NAME, $"Cached directory CNID={cnid} with {directoryEntries.Count} entries");
-        }
+        AaruLogging.Debug(MODULE_NAME, $"Cached directory CNID={cnid} with {directoryEntries.Count} entries");
 
-        return errno;
+        return ErrorNumber.NoError;
     }
 
     /// <summary>
