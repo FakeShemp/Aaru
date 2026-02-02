@@ -30,6 +30,7 @@
 // These are not part of the Apple TechNote 1150 specification and are
 // implementation-specific to the Aaru HFS+ plugin.
 
+using System.Collections.Generic;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
@@ -53,10 +54,29 @@ public sealed partial class AppleHFSPlus
         public string Path { get; init; }
     }
 
+    /// <summary>FileNode implementation for Apple HFS+</summary>
+    public sealed class HfsPlusFileNode : IFileNode
+    {
+        /// <summary>File entry with metadata</summary>
+        internal FileEntry FileEntry { get; set; }
+
+        /// <summary>All extents for this fork (lazy-loaded)</summary>
+        internal List<HFSPlusExtentDescriptor> AllExtents { get; set; }
+
+        /// <summary>Current offset in file for reads</summary>
+        public long Offset { get; set; }
+
+        /// <summary>Path to this file</summary>
+        public string Path { get; init; }
+
+        /// <summary>Total length of data fork in bytes</summary>
+        public long Length { get; init; }
+    }
+
 #region Nested type: CatalogEntry
 
     /// <summary>Represents a catalog entry (directory or file)</summary>
-    abstract class CatalogEntry
+    internal abstract class CatalogEntry
     {
         /// <summary>Name of the entry</summary>
         public string Name { get; set; }
@@ -106,7 +126,7 @@ public sealed partial class AppleHFSPlus
     }
 
     /// <summary>Represents a file entry in the catalog</summary>
-    sealed class FileEntry : CatalogEntry
+    internal sealed class FileEntry : CatalogEntry
     {
         /// <summary>Finder information</summary>
         public AppleCommon.FInfo FinderInfo { get; set; }

@@ -143,7 +143,7 @@ public sealed partial class AppleHFSPlus
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct HFSPlusBSDInfo
+    internal partial struct HFSPlusBSDInfo
     {
         /// <summary>User ID of the file's owner.</summary>
         public uint ownerID;
@@ -185,7 +185,7 @@ public sealed partial class AppleHFSPlus
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct HFSPlusExtentRecord
+    internal partial struct HFSPlusExtentRecord
     {
         /// <summary>Array of 8 extent descriptors.</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
@@ -198,7 +198,7 @@ public sealed partial class AppleHFSPlus
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct HFSPlusExtentDescriptor
+    internal partial struct HFSPlusExtentDescriptor
     {
         /// <summary>First allocation block in this extent.</summary>
         public uint startBlock;
