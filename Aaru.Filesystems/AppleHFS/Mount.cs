@@ -437,9 +437,9 @@ public sealed partial class AppleHFS
         // Allocation blocks define the total volume capacity
         if(_mdb.drNmAlBlks == 0) return ErrorNumber.InvalidArgument; // Must have at least one allocation block
 
-        // Allocation block size must be a power of 2 (typically 512, 1024, 2048, 4096, etc.)
-        if(_mdb.drAlBlkSiz == 0 || (_mdb.drAlBlkSiz & _mdb.drAlBlkSiz - 1) != 0)
-            return ErrorNumber.InvalidArgument; // Block size must be a power of 2
+        // Allocation block size must be a multiple of 512 bytes (can be 512, 1024, 2048, 4096, 12288, etc.)
+        if(_mdb.drAlBlkSiz == 0 || _mdb.drAlBlkSiz % 512 != 0)
+            return ErrorNumber.InvalidArgument; // Block size must be a multiple of 512
 
         // Catalog B-Tree must exist and have a non-zero size
         if(_mdb.drCTFlSize == 0) return ErrorNumber.InvalidArgument;
