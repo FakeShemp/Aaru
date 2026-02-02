@@ -36,7 +36,7 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 /// <summary>Implements detection of the Be (new) filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
-public sealed partial class BeFS : IFilesystem
+public sealed partial class BeFS : IReadOnlyFilesystem
 {
 #region IFilesystem Members
 
