@@ -240,9 +240,42 @@ public sealed partial class AppleHFS
         {
             if(_rootDirectory.dirDirID != kRootCnid) return ErrorNumber.InvalidArgument;
 
+            FileAttributes attributes = FileAttributes.Directory;
+
+            // Translate Finder flags to file attributes (matches AppleMFS pattern)
+            if(_rootDirectory.dirUsrInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kIsAlias))
+                attributes |= FileAttributes.Alias;
+
+            if(_rootDirectory.dirUsrInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kHasBundle))
+                attributes |= FileAttributes.Bundle;
+
+            if(_rootDirectory.dirUsrInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kHasBeenInited))
+                attributes |= FileAttributes.HasBeenInited;
+
+            if(_rootDirectory.dirUsrInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kHasCustomIcon))
+                attributes |= FileAttributes.HasCustomIcon;
+
+            if(_rootDirectory.dirUsrInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kHasNoINITs))
+                attributes |= FileAttributes.HasNoINITs;
+
+            if(_rootDirectory.dirUsrInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kIsInvisible))
+                attributes |= FileAttributes.Hidden;
+
+            if(_rootDirectory.dirFndrInfo.frXFlags.HasFlag(AppleCommon.ExtendedFinderFlags.kExtendedFlagIsImmutable))
+                attributes |= FileAttributes.Immutable;
+
+            if(_rootDirectory.dirUsrInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kIsOnDesk))
+                attributes |= FileAttributes.IsOnDesk;
+
+            if(_rootDirectory.dirUsrInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kIsShared))
+                attributes |= FileAttributes.Shared;
+
+            if(_rootDirectory.dirUsrInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kIsStationery))
+                attributes |= FileAttributes.Stationery;
+
             stat = new FileEntryInfo
             {
-                Attributes       = FileAttributes.Directory,
+                Attributes       = attributes,
                 BlockSize        = _mdb.drAlBlkSiz,
                 Inode            = _rootDirectory.dirDirID,
                 Links            = 1,
@@ -275,7 +308,7 @@ public sealed partial class AppleHFS
         for(var p = 0; p < pieces.Length - 1; p++)
         {
             string component = pieces[p];
-            
+
             // Convert colons to slashes in component (readdir returns display names with colons)
             component = component.Replace(":", "/");
 
@@ -319,7 +352,7 @@ public sealed partial class AppleHFS
 
         // Now look for the final component
         string lastComponent = pieces[pieces.Length - 1];
-        
+
         // Convert colons to slashes in component (readdir returns display names with colons)
         lastComponent = lastComponent.Replace(":", "/");
 
@@ -345,9 +378,42 @@ public sealed partial class AppleHFS
         // Populate stat info based on entry type
         if(finalCatalogEntry is DirectoryEntry dirEntry)
         {
+            FileAttributes attributes = FileAttributes.Directory;
+
+            // Translate Finder flags to file attributes (matches AppleMFS pattern)
+            if(dirEntry.FinderInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kIsAlias))
+                attributes |= FileAttributes.Alias;
+
+            if(dirEntry.FinderInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kHasBundle))
+                attributes |= FileAttributes.Bundle;
+
+            if(dirEntry.FinderInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kHasBeenInited))
+                attributes |= FileAttributes.HasBeenInited;
+
+            if(dirEntry.FinderInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kHasCustomIcon))
+                attributes |= FileAttributes.HasCustomIcon;
+
+            if(dirEntry.FinderInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kHasNoINITs))
+                attributes |= FileAttributes.HasNoINITs;
+
+            if(dirEntry.FinderInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kIsInvisible))
+                attributes |= FileAttributes.Hidden;
+
+            if(dirEntry.ExtendedFinderInfo.frXFlags.HasFlag(AppleCommon.ExtendedFinderFlags.kExtendedFlagIsImmutable))
+                attributes |= FileAttributes.Immutable;
+
+            if(dirEntry.FinderInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kIsOnDesk))
+                attributes |= FileAttributes.IsOnDesk;
+
+            if(dirEntry.FinderInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kIsShared))
+                attributes |= FileAttributes.Shared;
+
+            if(dirEntry.FinderInfo.frFlags.HasFlag(AppleCommon.FinderFlags.kIsStationery))
+                attributes |= FileAttributes.Stationery;
+
             stat = new FileEntryInfo
             {
-                Attributes       = FileAttributes.Directory,
+                Attributes       = attributes,
                 BlockSize        = _mdb.drAlBlkSiz,
                 Inode            = dirEntry.CNID,
                 Links            = 1,
@@ -365,9 +431,47 @@ public sealed partial class AppleHFS
             // Use data fork size as file length
             uint fileSize = fileEntry.DataForkLogicalSize;
 
+            FileAttributes attributes = FileAttributes.File;
+
+            // Translate Finder flags to file attributes (matches AppleMFS pattern)
+            if(fileEntry.FinderInfo.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsAlias))
+                attributes |= FileAttributes.Alias;
+
+            if(fileEntry.FinderInfo.fdFlags.HasFlag(AppleCommon.FinderFlags.kHasBundle))
+                attributes |= FileAttributes.Bundle;
+
+            if(fileEntry.FinderInfo.fdFlags.HasFlag(AppleCommon.FinderFlags.kHasBeenInited))
+                attributes |= FileAttributes.HasBeenInited;
+
+            if(fileEntry.FinderInfo.fdFlags.HasFlag(AppleCommon.FinderFlags.kHasCustomIcon))
+                attributes |= FileAttributes.HasCustomIcon;
+
+            if(fileEntry.FinderInfo.fdFlags.HasFlag(AppleCommon.FinderFlags.kHasNoINITs))
+                attributes |= FileAttributes.HasNoINITs;
+
+            if(fileEntry.FinderInfo.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsInvisible))
+                attributes |= FileAttributes.Hidden;
+
+            if(fileEntry.ExtendedFinderInfo.fdXFlags.HasFlag(AppleCommon.ExtendedFinderFlags.kExtendedFlagIsImmutable))
+                attributes |= FileAttributes.Immutable;
+
+            if(fileEntry.FinderInfo.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsOnDesk))
+                attributes |= FileAttributes.IsOnDesk;
+
+            if(fileEntry.FinderInfo.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsShared))
+                attributes |= FileAttributes.Shared;
+
+            if(fileEntry.FinderInfo.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsStationery))
+                attributes |= FileAttributes.Stationery;
+
+            if(!attributes.HasFlag(FileAttributes.Alias)  &&
+               !attributes.HasFlag(FileAttributes.Bundle) &&
+               !attributes.HasFlag(FileAttributes.Stationery))
+                attributes |= FileAttributes.File;
+
             stat = new FileEntryInfo
             {
-                Attributes       = FileAttributes.File,
+                Attributes       = attributes,
                 Blocks           = (fileSize + _mdb.drAlBlkSiz - 1) / _mdb.drAlBlkSiz,
                 BlockSize        = _mdb.drAlBlkSiz,
                 Length           = fileSize,

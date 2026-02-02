@@ -49,6 +49,8 @@ public static partial class AppleCommon
         kExtendedFlagHasCustomBadge = 0x0100,
         /// <summary>Set if the object is marked as busy/incomplete.</summary>
         kExtendedFlagObjectIsBusy = 0x0080,
+        /// <summary>Set if the file is immutable (cannot be modified).</summary>
+        kExtendedFlagIsImmutable = 0x0002,
         /// <summary>Set if the file contains routing info resource.</summary>
         kExtendedFlagHasRoutingInfo = 0x0004
     }
