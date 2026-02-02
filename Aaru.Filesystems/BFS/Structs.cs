@@ -73,11 +73,7 @@ public sealed partial class BeFS
         /// <summary>0x054, 0x434c454e if clean, 0x44495254 if dirty</summary>
         public uint flags;
         /// <summary>0x058, Allocation group of journal</summary>
-        public int log_blocks_ag;
-        /// <summary>0x05C, Start block of journal, inside ag</summary>
-        public ushort log_blocks_start;
-        /// <summary>0x05E, Length in blocks of journal, inside ag</summary>
-        public ushort log_blocks_len;
+        public block_run log_blocks;
         /// <summary>0x060, Start of journal</summary>
         public long log_start;
         /// <summary>0x068, End of journal</summary>
@@ -85,18 +81,106 @@ public sealed partial class BeFS
         /// <summary>0x070, 0x15B6830E</summary>
         public uint magic3;
         /// <summary>0x074, Allocation group where root folder's i-node resides</summary>
-        public int root_dir_ag;
-        /// <summary>0x078, Start in ag of root folder's i-node</summary>
-        public ushort root_dir_start;
-        /// <summary>0x07A, As this is part of inode_addr, this is 1</summary>
-        public ushort root_dir_len;
+        public block_run root_dir;
         /// <summary>0x07C, Allocation group where indices' i-node resides</summary>
-        public int indices_ag;
-        /// <summary>0x080, Start in ag of indices' i-node</summary>
-        public ushort indices_start;
-        /// <summary>0x082, As this is part of inode_addr, this is 1</summary>
-        public ushort indices_len;
+        public block_run indices;
     }
 
 #endregion
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct block_run
+    {
+        /// <summary>Starting allocation group</summary>
+        public uint allocation_group;
+        /// <summary>Starting block inside allocation group</summary>
+        public ushort start;
+        /// <summary>Number of blocks</summary>
+        public ushort len;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct bfs_inode
+    {
+        public int         magic1;
+        public block_run   inode_num;
+        public int         uid;
+        public int         gid;
+        public int         mode;
+        public InodeFlags  flags;
+        public ulong       create_time;
+        public ulong       last_modified_time;
+        public block_run   parent;
+        public block_run   attributes;
+        public uint        type;
+        public int         node_size;
+        public ulong       etc;
+        public data_stream data;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public int[] pad;
+        public small_data small_data;
+    }
+
+    enum InodeFlags
+    {
+        INODE_IN_USE      = 0x00000001,
+        ATTR_INODE        = 0x00000004,
+        INODE_LOGGED      = 0x00000008,
+        INODE_DELETED     = 0x00000010,
+        PERMANENT_FLAGS   = 0x0000ffff,
+        INODE_NO_CACHE    = 0x00010000,
+        INODE_WAS_WRITTEN = 0x00020000,
+        NO_TRANSACTION    = 0x00040000
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct data_stream
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NUM_DIRECT_BLOCKS)]
+        public block_run[] direct;
+        public long      max_direct_range;
+        public block_run indirect;
+        public long      max_indirect_range;
+        public block_run double_indirect;
+        public long      max_double_indirect_range;
+        public long      size;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct small_data
+    {
+        public uint   type;
+        public ushort name_size;
+        public ushort data_size;
+
+        // Followed by name[name_size] and data[data_size]
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct bt_header
+    {
+        public long magic;
+        public int  node_size;
+        public int  max_number_of_levels;
+        public int  data_type;
+        public long node_root_pointer;
+        public long free_node_pointer;
+        public long maximum_size;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct bt_node_hdr
+    {
+        public long  left_link;
+        public long  right_link;
+        public long  overflow_link;
+        public short node_keys;
+        public short keys_length;
+    }
 }

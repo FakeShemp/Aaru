@@ -140,8 +140,8 @@ public sealed partial class BeFS
            besb.fs_byte_order         != BEFS_ENDIAN ||
            besb.magic2                != BEFS_MAGIC2 ||
            besb.magic3                != BEFS_MAGIC3 ||
-           besb.root_dir_len          != 1           ||
-           besb.indices_len           != 1           ||
+           besb.root_dir.len          != 1           ||
+           besb.indices.len           != 1           ||
            1 << (int)besb.block_shift != besb.block_size)
         {
             sb.AppendLine(Localization.Superblock_seems_corrupt_following_information_may_be_incorrect);
@@ -151,10 +151,10 @@ public sealed partial class BeFS
 
             sb.AppendFormat(Localization.Filesystem_endianness_0_Should_be_0x42494745, besb.fs_byte_order).AppendLine();
 
-            sb.AppendFormat(Localization.Root_folder_i_node_size_0_blocks_Should_be_one, besb.root_dir_len)
+            sb.AppendFormat(Localization.Root_folder_i_node_size_0_blocks_Should_be_one, besb.root_dir.len)
               .AppendLine();
 
-            sb.AppendFormat(Localization.Indices_i_node_size_0_blocks_Should_be_one, besb.indices_len).AppendLine();
+            sb.AppendFormat(Localization.Indices_i_node_size_0_blocks_Should_be_one, besb.indices.len).AppendLine();
 
             sb.AppendFormat(Localization.blockshift_0_1_should_be_2,
                             besb.block_shift,
@@ -200,10 +200,10 @@ public sealed partial class BeFS
         sb.AppendFormat(Localization._0_allocation_groups_in_volume, besb.num_ags).AppendLine();
 
         sb.AppendFormat(Localization.Journal_resides_in_block_0_of_allocation_group_1_and_runs_for_2_blocks_3_bytes,
-                        besb.log_blocks_start,
-                        besb.log_blocks_ag,
-                        besb.log_blocks_len,
-                        besb.log_blocks_len * besb.block_size)
+                        besb.log_blocks.start,
+                        besb.log_blocks.allocation_group,
+                        besb.log_blocks.len,
+                        besb.log_blocks.len * besb.block_size)
           .AppendLine();
 
         sb.AppendFormat(Localization.Journal_starts_in_byte_0_and_ends_in_byte_1, besb.log_start, besb.log_end)
@@ -211,18 +211,18 @@ public sealed partial class BeFS
 
         sb.AppendFormat(Localization
                            .Root_folder_s_i_node_resides_in_block_0_of_allocation_group_1_and_runs_for_2_blocks_3_bytes,
-                        besb.root_dir_start,
-                        besb.root_dir_ag,
-                        besb.root_dir_len,
-                        besb.root_dir_len * besb.block_size)
+                        besb.root_dir.start,
+                        besb.root_dir.allocation_group,
+                        besb.root_dir.len,
+                        besb.root_dir.len * besb.block_size)
           .AppendLine();
 
         sb.AppendFormat(Localization
                            .Indices_i_node_resides_in_block_0_of_allocation_group_1_and_runs_for_2_blocks_3_bytes,
-                        besb.indices_start,
-                        besb.indices_ag,
-                        besb.indices_len,
-                        besb.indices_len * besb.block_size)
+                        besb.indices.start,
+                        besb.indices.allocation_group,
+                        besb.indices.len,
+                        besb.indices.len * besb.block_size)
           .AppendLine();
 
         information = sb.ToString();
