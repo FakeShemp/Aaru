@@ -39,16 +39,16 @@ public sealed partial class AppleHFS
     /// <summary>Caches the root directory from the catalog B-Tree</summary>
     ErrorNumber CacheRootDirectory()
     {
-        // Read the catalog header node (node 0) to get B-Tree information
-        ErrorNumber errno = ReadCatalogHeader(out BTHdrRed bthdr);
-
-        if(errno != ErrorNumber.NoError) return errno;
+        // Use the catalog B-tree header that was already validated in Mount.cs
+        BTHdrRed bthdr = _catalogBTreeHeader;
 
         AaruLogging.Debug(MODULE_NAME,
                           $"Catalog B-Tree: depth={bthdr.bthDepth}, rootNode={bthdr.bthRoot}, nodeSize={bthdr.bthNodeSize}");
 
         AaruLogging.Debug(MODULE_NAME,
                           $"B-Tree header details: numRecs={bthdr.bthNRecs}, firstLeaf={bthdr.bthFNode}, lastLeaf={bthdr.bthLNode}, totalNodes={bthdr.bthNNodes}");
+
+        ErrorNumber errno;
 
         // **BRUTE FORCE APPROACH**: Scan all leaf nodes from firstLeaf to lastLeaf looking for CNID=2
         // macOS appears to do this rather than strict B-tree pointer following
@@ -808,16 +808,16 @@ public sealed partial class AppleHFS
 
         AaruLogging.Debug(MODULE_NAME,
                           $"Caching root directory entries: CNID={targetParentID}, expectedCount={expectedCount}");
+        AaruLogging.Debug(MODULE_NAME,
+                          $"Root directory details: dirDirID={_rootDirectory.dirDirID}, dirVal={_rootDirectory.dirVal}");
 
-        // Read the catalog header to get B-Tree information
-        ErrorNumber errno = ReadCatalogHeader(out BTHdrRed bthdr);
+        // Use the catalog B-tree header that was already validated and recovered in Mount.cs
+        BTHdrRed bthdr = _catalogBTreeHeader;
 
-        if(errno != ErrorNumber.NoError)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Failed to read catalog header for caching entries");
+        AaruLogging.Debug(MODULE_NAME,
+                          $"Using cached B-tree header: firstLeaf={bthdr.bthFNode}, lastLeaf={bthdr.bthLNode}");
 
-            return errno;
-        }
+        ErrorNumber errno;
 
         // **BRUTE FORCE APPROACH**: Since we found the root by scanning leaf nodes,
         // scan through all leaf nodes looking for entries with parentID = targetParentID (which is 2 for root)
@@ -825,6 +825,9 @@ public sealed partial class AppleHFS
         if(bthdr.bthFNode <= bthdr.bthLNode)
         {
             ushort entriesFound = 0;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              $"CacheRootDirectoryEntries brute-force: Scanning leaf nodes {bthdr.bthFNode} to {bthdr.bthLNode}");
 
             for(uint leafNode = bthdr.bthFNode; leafNode <= bthdr.bthLNode; leafNode++)
             {
@@ -840,6 +843,9 @@ public sealed partial class AppleHFS
 
                 if(leafDesc.ndType != NodeType.ndLeafNode) continue;
 
+                AaruLogging.Debug(MODULE_NAME,
+                                  $"Processing leaf node {leafNode}, {leafDesc.ndNRecs} records");
+
                 // Extract all entries with parentID = targetParentID from this leaf node
                 errno = ExtractDirectoryEntriesFromLeaf(leafData, bthdr.bthNodeSize, targetParentID, ref entriesFound);
 
@@ -850,6 +856,9 @@ public sealed partial class AppleHFS
                     continue;
                 }
 
+                AaruLogging.Debug(MODULE_NAME,
+                                  $"After leaf {leafNode}, entriesFound={entriesFound}, expectedCount={expectedCount}");
+
                 // Check if we've found all entries
                 if(entriesFound >= expectedCount)
                 {
@@ -859,7 +868,8 @@ public sealed partial class AppleHFS
                 }
             }
 
-            AaruLogging.Debug(MODULE_NAME, $"Root directory caching complete: {entriesFound} entries found");
+            AaruLogging.Debug(MODULE_NAME,
+                              $"Root directory caching complete: {entriesFound} entries found, cache has {_rootDirectoryCache.Count} items");
 
             return ErrorNumber.NoError;
         }
@@ -1064,8 +1074,14 @@ public sealed partial class AppleHFS
             var  keyParentID = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 2);
             byte nameLen     = leafNode[recordOffset                                 + 6];
 
+            AaruLogging.Debug(MODULE_NAME,
+                              $"Record {i}: keyParentID={keyParentID}, targetParentID={targetParentID}, nameLen={nameLen}");
+
             // Only process records with parentID = targetParentID
             if(keyParentID != targetParentID) continue;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              $"Record {i}: MATCH! Processing record with matching parentID");
 
 
             // Calculate key size for reading data
@@ -1231,14 +1247,12 @@ public sealed partial class AppleHFS
     {
         _directoryCaches ??= new Dictionary<uint, Dictionary<string, CatalogEntry>>();
 
-        // Read catalog header to get B-Tree information
-        ErrorNumber errno = ReadCatalogHeader(out BTHdrRed bthdr);
-
-        if(errno != ErrorNumber.NoError) return errno;
+        // Use the catalog B-tree header that was already validated and recovered in Mount.cs
+        BTHdrRed bthdr = _catalogBTreeHeader;
 
         var directoryEntries = new Dictionary<string, CatalogEntry>();
 
-        // **BRUTE FORCE APPROACH**: Scan all leaf nodes looking for entries with parentID = cnid
+        ErrorNumber errno;
         // This is robust against malformed B-tree structures like the one in this image
         // Skip if leaf range is invalid
         if(bthdr.bthFNode <= bthdr.bthLNode)

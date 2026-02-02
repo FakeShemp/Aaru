@@ -58,6 +58,9 @@ public sealed partial class AppleHFS : IReadOnlyFilesystem
     /// <summary>Extents B-Tree header information</summary>
     BTHdrRed _extentsBTreeHeader;
 
+    /// <summary>Catalog B-Tree header information</summary>
+    BTHdrRed _catalogBTreeHeader;
+
     /// <summary>Cached filesystem information</summary>
     FileSystemInfo _fileSystemInfo;
 

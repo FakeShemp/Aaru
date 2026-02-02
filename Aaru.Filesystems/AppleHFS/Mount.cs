@@ -341,6 +341,67 @@ public sealed partial class AppleHFS
         byteOffset   = (uint)(absoluteByteOffset % _sectorSize);
     }
 
+    /// <summary>Brute-force search for catalog header node within catalog file data</summary>
+    /// <remarks>
+    ///     Edge case handler: if offset calculation lands on an index node instead of header,
+    ///     scan the catalog file looking for a valid header node (ndType == ndHdrNode).
+    ///     Only used when standard offset calculation fails.
+    /// </remarks>
+    /// <param name="headerOffset">Absolute byte offset of found header node, or 0 if not found</param>
+    /// <returns>ErrorNumber indicating success or failure</returns>
+    ErrorNumber BruteForceFindCatalogHeader(out ulong headerOffset)
+    {
+        headerOffset = 0;
+
+        ExtDescriptor firstExtent = _mdb.drCTExtRec.xdr[0];
+        if(firstExtent.xdrNumABlks == 0) return ErrorNumber.InvalidArgument;
+
+        // Read the entire first extent of the catalog file
+        ulong allocBlockSectorSize      = _mdb.drAlBlkSiz / 512;
+        ulong firstAllocBlockSector512  = _mdb.drAlBlSt + firstExtent.xdrStABN * allocBlockSectorSize;
+        HfsOffsetToDeviceSector(firstAllocBlockSector512, out ulong startDeviceSector, out uint startByteOffset);
+
+        // Read enough data to cover the full extent
+        uint sectorsToRead = (uint)((startByteOffset + firstExtent.xdrNumABlks * _mdb.drAlBlkSiz + _sectorSize - 1) / _sectorSize);
+
+        ErrorNumber errno = _imagePlugin.ReadSectors(startDeviceSector, false, sectorsToRead, out byte[] catalogData, out _);
+        if(errno != ErrorNumber.NoError) return errno;
+
+        var nodeDescSize = (ulong)System.Runtime.InteropServices.Marshal.SizeOf(typeof(NodeDescriptor));
+
+        AaruLogging.Debug(MODULE_NAME, $"BruteForceFindCatalogHeader: Searching for header node. startByteOffset={startByteOffset}, catalogData.Length={catalogData.Length}");
+
+        // Search for header nodes (ndType == ndHdrNode == 1)
+        // B-Tree nodes are always 512 bytes per Inside Macintosh
+        // Scan through looking for valid node boundaries
+        for(ulong offset = startByteOffset; offset + nodeDescSize <= (ulong)catalogData.Length; offset += 512UL)
+        {
+            try
+            {
+                NodeDescriptor nodeDesc = Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(
+                    catalogData, (int)offset, (int)nodeDescSize);
+
+                AaruLogging.Debug(MODULE_NAME, $"BruteForceFindCatalogHeader: Found node type {nodeDesc.ndType} at offset {offset}");
+
+                if(nodeDesc.ndType == NodeType.ndHdrNode)
+                {
+                    // Found a header node, calculate absolute offset
+                    headerOffset = startDeviceSector * _sectorSize + offset;
+                    AaruLogging.Debug(MODULE_NAME, $"BruteForceFindCatalogHeader: Found header node at offset {offset}, headerOffset={headerOffset}");
+                    return ErrorNumber.NoError;
+                }
+            }
+            catch(Exception ex)
+            {
+                // Skip invalid structures, continue searching
+                AaruLogging.Debug(MODULE_NAME, $"BruteForceFindCatalogHeader: Error parsing node at offset {offset}: {ex}");
+            }
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "BruteForceFindCatalogHeader: No header node found");
+        return ErrorNumber.InvalidArgument; // Header node not found
+    }
+
     /// <summary>Reads and parses the Master Directory Block from the appropriate sector</summary>
     /// <returns>ErrorNumber indicating success or failure</returns>
     ErrorNumber ReadAndParseMdb()
@@ -522,12 +583,47 @@ public sealed partial class AppleHFS
         NodeDescriptor nodeDesc =
             Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(headerSector, startOffset, nodeDescSize);
 
+        AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Initial node parse at offset {startOffset}: ndType={nodeDesc.ndType}, ndNRecs={nodeDesc.ndNRecs}");
+
         // Verify this is a header node
-        if(nodeDesc.ndType != NodeType.ndHdrNode) return ErrorNumber.InvalidArgument;
+        if(nodeDesc.ndType != NodeType.ndHdrNode)
+        {
+            // Edge case: offset calculation was wrong and we're at an index node
+            // Brute-force search for the header node within the catalog file
+            AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Not a header node, triggering brute force search");
+            ErrorNumber bruteForceResult = BruteForceFindCatalogHeader(out var bruteForceOffset);
+            if(bruteForceResult != ErrorNumber.NoError) return ErrorNumber.InvalidArgument;
+
+            AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Brute force found header at offset {bruteForceOffset}");
+
+            // Re-read from the correct location
+            ulong sectorToRead = bruteForceOffset / _sectorSize;
+            uint newByteOffset = (uint)(bruteForceOffset % _sectorSize);
+            uint sectorCount = (uint)((_sectorSize - newByteOffset + 512 + _sectorSize - 1) / _sectorSize);
+
+            AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Re-reading sector {sectorToRead}, count={sectorCount}, byteOffset={newByteOffset}");
+
+            errno = _imagePlugin.ReadSectors(sectorToRead, false, sectorCount, out headerSector, out _);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            startOffset = (int)newByteOffset;
+
+            AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Re-read {headerSector.Length} bytes, startOffset={startOffset}");
+
+            // Re-parse node descriptor from new location
+            nodeDesc = Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(headerSector, startOffset, nodeDescSize);
+
+            AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Re-parsed node descriptor: ndType={nodeDesc.ndType}, ndNRecs={nodeDesc.ndNRecs}, ndFLink={nodeDesc.ndFLink}, ndBLink={nodeDesc.ndBLink}");
+
+            if(nodeDesc.ndType != NodeType.ndHdrNode) return ErrorNumber.InvalidArgument;
+        }
 
         // Parse the B-Tree header record which follows the node descriptor
         BTHdrRed bthdr =
             Marshal.ByteArrayToStructureBigEndian<BTHdrRed>(headerSector, startOffset + nodeDescSize, btHdrSize);
+
+        AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Parsed BTHdrRed from offset {startOffset + nodeDescSize}: bthDepth={bthdr.bthDepth}, bthRoot={bthdr.bthRoot}, bthNRecs={bthdr.bthNRecs}, bthFNode={bthdr.bthFNode}, bthLNode={bthdr.bthLNode}, bthNodeSize={bthdr.bthNodeSize}, bthKeyLen={bthdr.bthKeyLen}");
 
         // Verify B-Tree consistency
         // According to Inside Macintosh, depth must be at least 1 and tree must have records
@@ -542,6 +638,9 @@ public sealed partial class AppleHFS
         // Standard B-Tree node sizes: 512, 1024, 2048, 4096, 8192 bytes
         if(bthdr.bthNodeSize < 512 || bthdr.bthNodeSize > 8192)
             return ErrorNumber.InvalidArgument; // Outside valid range
+
+        // Store the catalog B-tree header for later use by Catalog.cs
+        _catalogBTreeHeader = bthdr;
 
         return ErrorNumber.NoError;
     }
