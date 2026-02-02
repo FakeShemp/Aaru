@@ -109,4 +109,49 @@ public sealed partial class BOFS
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 107)]
         public int[] Padding2;
     }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct DirectoryBlockHeader
+    {
+        public int NextDirectoryBlock;
+        public int LinkUp;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 14)]
+        public int[] Filler;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct FileEntry
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] FileName;
+        public int FirstAllocList;
+        public int LastAllocList;
+        public int FileType;
+        public int CreationDate;
+        public int ModificationDate;
+        public int LogicalSize;
+        public int PhysicalSize;
+        public int Creator;
+        public int RecordId;
+        public int Mode;
+        public int unused2;
+        public int unused3;
+        public int unused4;
+        public int unused5;
+        public int unused6;
+        public int unused7;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct DirectoryBlock
+    {
+        public DirectoryBlockHeader Header;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 63)]
+        public FileEntry[] Entries;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public int[] Filler;
+    }
 }
