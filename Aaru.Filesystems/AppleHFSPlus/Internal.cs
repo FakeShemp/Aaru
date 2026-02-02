@@ -30,11 +30,29 @@
 // These are not part of the Apple TechNote 1150 specification and are
 // implementation-specific to the Aaru HFS+ plugin.
 
+using Aaru.CommonTypes.Interfaces;
+
 namespace Aaru.Filesystems;
 
 /// <summary>Implements detection of Apple Hierarchical File System Plus (HFS+)</summary>
 public sealed partial class AppleHFSPlus
 {
+    /// <summary>DirNode implementation for Apple HFS+</summary>
+    public sealed class HfsPlusDirNode : IDirNode
+    {
+        /// <summary>Array of sorted filenames in the directory (in Mac OS display format with colons)</summary>
+        internal string[] Contents;
+
+        /// <summary>CNID of this directory for caching purposes</summary>
+        internal uint DirectoryCNID;
+
+        /// <summary>Current position in the directory contents array</summary>
+        internal int Position;
+
+        /// <summary>Path to this directory</summary>
+        public string Path { get; init; }
+    }
+
 #region Nested type: CatalogEntry
 
     /// <summary>Represents a catalog entry (directory or file)</summary>
