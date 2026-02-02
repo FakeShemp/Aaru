@@ -45,4 +45,26 @@ public sealed partial class BeFS
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>File node for reading file contents with streaming support</summary>
+    /// <remarks>
+    ///     Tracks the current read position and file metadata without caching entire file contents.
+    ///     Supports efficient streaming reads of any file size.
+    /// </remarks>
+    sealed class BefsFileNode : IFileNode
+    {
+        /// <summary>The file's i-node containing metadata</summary>
+        internal bfs_inode Inode { get; set; }
+
+        /// <summary>The file's data stream for reading file blocks</summary>
+        internal data_stream DataStream { get; set; }
+        /// <summary>Current read position in the file</summary>
+        public long Offset { get; set; }
+
+        /// <summary>Total file size in bytes</summary>
+        public long Length { get; set; }
+
+        /// <summary>Path to the file</summary>
+        public string Path { get; init; }
+    }
 }

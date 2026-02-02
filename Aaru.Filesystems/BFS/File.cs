@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -76,9 +77,6 @@ public sealed partial class BeFS
 
         return ErrorNumber.NoError;
     }
-
-    // ...existing code...
-
 
     /// <summary>Gets file metadata (stat) for a given path</summary>
     /// <remarks>
@@ -301,4 +299,177 @@ public sealed partial class BeFS
     ///     S_IFSOCK = 0xC000
     /// </remarks>
     private bool IsSocket(bfs_inode inode) => (inode.mode & 0xF000) == 0xC000;
+
+    /// <summary>Opens a file for reading</summary>
+    /// <remarks>
+    ///     Validates that the path points to a regular file (not a directory),
+    ///     reads the file's i-node, and creates a file node for tracking the current read position.
+    ///     No data is cached - only metadata needed for reading.
+    /// </remarks>
+    /// <param name="path">Path to the file to open</param>
+    /// <param name="node">Output file node for read operations</param>
+    /// <returns>Error code indicating success or failure</returns>
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: path='{0}'", path);
+
+        // Get file metadata
+        ErrorNumber statError = Stat(path, out FileEntryInfo fileInfo);
+
+        if(statError != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error getting file stat: {0}", statError);
+
+            return statError;
+        }
+
+        // Verify it's a regular file, not a directory or special file
+        if(fileInfo.Attributes.HasFlag(FileAttributes.Directory))
+        {
+            AaruLogging.Debug(MODULE_NAME, "Cannot open directory as file");
+
+            return ErrorNumber.IsDirectory;
+        }
+
+        // Get the i-node for the file to store in the node
+        ErrorNumber inodeError = GetInodeForPath(path, out bfs_inode inode);
+
+        if(inodeError != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error getting i-node: {0}", inodeError);
+
+            return inodeError;
+        }
+
+        // Create file node
+        node = new BefsFileNode
+        {
+            Path       = path,
+            Length     = fileInfo.Length,
+            Offset     = 0,
+            Inode      = inode,
+            DataStream = inode.data
+        };
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile successful: path='{0}', size={1}", path, fileInfo.Length);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Closes a file, freeing any resources</summary>
+    /// <remarks>
+    ///     Validates the file node and clears references.
+    ///     No actual cleanup needed since no data is cached.
+    /// </remarks>
+    /// <param name="node">The file node to close</param>
+    /// <returns>Error code indicating success or failure</returns>
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not BefsFileNode befsNode)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Invalid file node type");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Clear the i-node data
+        befsNode.Inode = default(bfs_inode);
+
+        AaruLogging.Debug(MODULE_NAME, "CloseFile successful: path='{0}'", node.Path);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads data from an opened file at the current offset</summary>
+    /// <remarks>
+    ///     Reads the specified amount of data from the file using the data stream.
+    ///     Updates the file node's offset after each read.
+    ///     No caching - data is read on-demand using ReadFromDataStream.
+    /// </remarks>
+    /// <param name="node">The file node to read from</param>
+    /// <param name="length">Number of bytes to read</param>
+    /// <param name="buffer">Buffer to receive the data</param>
+    /// <param name="read">Output: actual number of bytes read</param>
+    /// <returns>Error code indicating success or failure</returns>
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(buffer is null || buffer.Length < length)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Invalid buffer");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        if(node is not BefsFileNode befsNode)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Invalid file node type");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        if(befsNode.Offset < 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Invalid file offset");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        if(length < 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Invalid read length");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // If at or past end of file, return zero bytes read
+        if(befsNode.Offset >= befsNode.Length)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadFile: at EOF");
+
+            return ErrorNumber.NoError;
+        }
+
+        // Adjust length to not read past end of file
+        long bytesToRead                                                = length;
+        if(befsNode.Offset + bytesToRead > befsNode.Length) bytesToRead = befsNode.Length - befsNode.Offset;
+
+        if(bytesToRead == 0) return ErrorNumber.NoError;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: offset={0}, length={1}", befsNode.Offset, bytesToRead);
+
+        // Read data from the data stream at current offset
+        ErrorNumber readError =
+            ReadFromDataStream(befsNode.DataStream, befsNode.Offset, (int)bytesToRead, out byte[] fileData);
+
+        if(readError != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error reading from data stream: {0}", readError);
+
+            return readError;
+        }
+
+        // Copy to output buffer
+        Array.Copy(fileData, 0, buffer, 0, fileData.Length);
+        read = fileData.Length;
+
+        // Update file offset
+        befsNode.Offset += read;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile successful: read={0}, newOffset={1}", read, befsNode.Offset);
+
+        return ErrorNumber.NoError;
+    }
 }
