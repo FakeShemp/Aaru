@@ -7377,5 +7377,59 @@ namespace Aaru.Filesystems {
                 return ResourceManager.GetString("Unhandled_exception_mounting_Lisa_filesystem", resourceCulture);
             }
         }
+        
+        internal static string Be_old_filesystem {
+            get {
+                return ResourceManager.GetString("Be_old_filesystem", resourceCulture);
+            }
+        }
+        
+        internal static string First_allocation_bitmap_sector_0 {
+            get {
+                return ResourceManager.GetString("First_allocation_bitmap_sector_0", resourceCulture);
+            }
+        }
+        
+        internal static string Allocation_bitmap_size_0_sectors {
+            get {
+                return ResourceManager.GetString("Allocation_bitmap_size_0_sectors", resourceCulture);
+            }
+        }
+        
+        internal static string Hint_of_first_free_sector_for_a_directory_0 {
+            get {
+                return ResourceManager.GetString("Hint_of_first_free_sector_for_a_directory_0", resourceCulture);
+            }
+        }
+        
+        internal static string Hint_of_first_free_sector_for_a_file_0 {
+            get {
+                return ResourceManager.GetString("Hint_of_first_free_sector_for_a_file_0", resourceCulture);
+            }
+        }
+        
+        internal static string Volume_is_removable {
+            get {
+                return ResourceManager.GetString("Volume_is_removable", resourceCulture);
+            }
+        }
+        
+        internal static string Volume_is_not_removable {
+            get {
+                return ResourceManager.GetString("Volume_is_not_removable", resourceCulture);
+            }
+        }
+        
+        internal static string Root_reference_0 {
+            get {
+                return ResourceManager.GetString("Root_reference_0", resourceCulture);
+            }
+        }
+        
+        internal static string Root_mode_0 {
+            get {
+                return ResourceManager.GetString("Root_mode_0", resourceCulture);
+            }
+        }
     }
 }

@@ -8,14 +8,18 @@ You can see user documentation [here](https://www.aaru.app)
 
 What is Aaru?
 =============
-**Aaru** (named after the Egyptian paradise where the righteous dwell eternally) is the ultimate **Data Preservation Suite** — your all-in-one solution for digital media preservation and archival.
+**Aaru** (named after the Egyptian paradise where the righteous dwell eternally) is the ultimate **Data Preservation
+Suite** — your all-in-one solution for digital media preservation and archival.
 
-Aaru is designed to assist you through the entire workflow of digital media preservation — from the initial creation of disk images (commonly called "dumping") all the way through long-term archival storage.
+Aaru is designed to assist you through the entire workflow of digital media preservation — from the initial creation of
+disk images (commonly called "dumping") all the way through long-term archival storage.
 
 ### 🔧 Key Features
 
 #### Media Dumping
+
 Aaru can dump media from virtually any drive you have:
+
 - **Magnetic disks** (floppy disks, hard drives)
 - **Optical discs** (CDs, DVDs, Blu-rays)
 - **Magneto-optical disks** (MO discs)
@@ -23,33 +27,48 @@ Aaru can dump media from virtually any drive you have:
 - **Memory cards** (SD, CF, and more)
 - **Tapes** (various formats)
 
-It works with drives connected via **ATA, ATAPI, SCSI, USB, FireWire, and SDHCI** interfaces, producing archival-grade images in multiple supported formats.
+It works with drives connected via **ATA, ATAPI, SCSI, USB, FireWire, and SDHCI** interfaces, producing archival-grade
+images in multiple supported formats.
 
 #### Hardware Flexibility
-You don't need specialized hardware. Aaru will always try to extract the most accurate, archival-quality image from your media using whatever drive you have available. All parameters are fully customizable, with sensible and battle-tested defaults.
+
+You don't need specialized hardware. Aaru will always try to extract the most accurate, archival-quality image from your
+media using whatever drive you have available. All parameters are fully customizable, with sensible and battle-tested
+defaults.
 
 #### Image Management
+
 - **Identify** existing disk images and get detailed information
 - **Compare** two dumps to verify integrity or find differences
 - **Convert** between supported formats without any data loss
 
 #### Filesystem Analysis & Extraction
-Aaru recognizes dozens of filesystems and can display detailed information about them. For many filesystems, you can extract the complete contents — including all files, extended attributes, and alternate data streams.
+
+Aaru recognizes dozens of filesystems and can display detailed information about them. For many filesystems, you can
+extract the complete contents — including all files, extended attributes, and alternate data streams.
 
 #### Archive & Game Package Support
-Beyond disk images, Aaru supports compressed archives and game packages, enabling you to view and extract their contents as part of your preservation workflow.
+
+Beyond disk images, Aaru supports compressed archives and game packages, enabling you to view and extract their contents
+as part of your preservation workflow.
 
 #### Dual Interface
-Not comfortable with command lines? Aaru includes a modern, fully-featured **graphical user interface** that makes preservation accessible to everyone.
+
+Not comfortable with command lines? Aaru includes a modern, fully-featured **graphical user interface** that makes
+preservation accessible to everyone.
 
 #### AaruFormat — The Archival Standard
+
 We provide our own archival-oriented format, **AaruFormat**, specifically designed for preservation. It stores:
+
 - All data from your media
 - Comprehensive metadata
 - Full audit information
 
 #### Metadata Sidecar Generation
-Aaru can generate metadata sidecars in an open **JSON format**, perfect for integration with external systems and third-party software. These sidecars contain all extractable information from any supported image format.
+
+Aaru can generate metadata sidecars in an open **JSON format**, perfect for integration with external systems and
+third-party software. These sidecars contain all extractable information from any supported image format.
 
 System requirements
 ===================
@@ -202,6 +221,7 @@ Supported file systems for identification and information only
 * Apple File System (preliminary detection until on-disk layout is stable)
 * Apple ProDOS / SOS file system
 * AtheOS file system
+* BeOS (old) filesystem
 * BSD Fast File System (FFS) / Unix File System (UFS)
 * BSD Unix File System 2 (UFS2)
 * B-tree file system (btrfs)
@@ -287,4 +307,5 @@ These disk image formats cannot be read, but their contents can be checksummed o
 
 License
 =======
-Aaru is licensed under the GNU General Public License v2 license. Some components may be licensed under different licenses; see their respective documentation for details.
+Aaru is licensed under the GNU General Public License v2 license. Some components may be licensed under different
+licenses; see their respective documentation for details.

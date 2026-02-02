@@ -3695,4 +3695,31 @@
     <data name="Unhandled_exception_mounting_Lisa_filesystem" xml:space="preserve">
         <value>Unhandled exception mounting Lisa filesystem</value>
     </data>
+    <data name="Be_old_filesystem" xml:space="preserve">
+        <value>Be (old) filesystem</value>
+    </data>
+    <data name="First_allocation_bitmap_sector_0" xml:space="preserve">
+        <value>First allocation bitmap sector: {0}</value>
+    </data>
+    <data name="Allocation_bitmap_size_0_sectors" xml:space="preserve">
+        <value>Allocation bitmap size: {0} sectors</value>
+    </data>
+    <data name="Hint_of_first_free_sector_for_a_directory_0" xml:space="preserve">
+        <value>Hint of first free sector for a directory: {0}</value>
+    </data>
+    <data name="Hint_of_first_free_sector_for_a_file_0" xml:space="preserve">
+        <value>Hint of first free sector for a file: {0}</value>
+    </data>
+    <data name="Volume_is_removable" xml:space="preserve">
+        <value>Volume is removable</value>
+    </data>
+    <data name="Volume_is_not_removable" xml:space="preserve">
+        <value>Volume is not removable</value>
+    </data>
+    <data name="Root_reference_0" xml:space="preserve">
+        <value>Root reference: {0}</value>
+    </data>
+    <data name="Root_mode_0" xml:space="preserve">
+        <value>Root mode: {0}</value>
+    </data>
 </root>

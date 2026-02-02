@@ -3686,4 +3686,31 @@
     <data name="Unhandled_exception_mounting_Lisa_filesystem" xml:space="preserve">
         <value>Excepción no manejada montando sistema de ficheros Lisa</value>
     </data>
+    <data name="Be_old_filesystem" xml:space="preserve">
+        <value>Sistema de ficheros Be (antiguo)</value>
+    </data>
+    <data name="First_allocation_bitmap_sector_0" xml:space="preserve">
+        <value>Primer sector del mapa de bits de almacenamiento: {0}</value>
+    </data>
+    <data name="Allocation_bitmap_size_0_sectors" xml:space="preserve">
+        <value>Tamaño del mapa de bits de almacenamiento: {0} sectores</value>
+    </data>
+    <data name="Hint_of_first_free_sector_for_a_directory_0" xml:space="preserve">
+        <value>Pista del primer sector libre para un directorio: {0}</value>
+    </data>
+    <data name="Hint_of_first_free_sector_for_a_file_0" xml:space="preserve">
+        <value>Pista del primer sector libre para un fichero: {0}</value>
+    </data>
+    <data name="Volume_is_removable" xml:space="preserve">
+        <value>El volumen es extraíble</value>
+    </data>
+    <data name="Volume_is_not_removable" xml:space="preserve">
+        <value>El volumen no es extraíble</value>
+    </data>
+    <data name="Root_reference_0" xml:space="preserve">
+        <value>Referencia de la raíz: {0}</value>
+    </data>
+    <data name="Root_mode_0" xml:space="preserve">
+        <value>Modo de la raíz: {0}</value>
+    </data>
 </root>
