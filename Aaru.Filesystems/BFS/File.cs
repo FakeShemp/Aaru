@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -205,7 +206,9 @@ public sealed partial class BeFS
                                              ? normalizedPath[1..]
                                              : normalizedPath;
 
-        string[] pathComponents = pathWithoutLeadingSlash.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries);
+        string[] pathComponents = pathWithoutLeadingSlash.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries)
+                                                         .Where(static c => c != "." && c != "..")
+                                                         .ToArray();
 
         if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
 
@@ -227,16 +230,29 @@ public sealed partial class BeFS
                 return ErrorNumber.NoSuchFile;
             }
 
-            // Convert i-node address to block_run
-            var ag          = (uint)(childInodeAddr >> 32);
-            var blockOffset = (uint)(childInodeAddr & 0xFFFFFFFF);
+            // The childInodeAddr is a direct block number (inode address)
+            // Use it directly to calculate the block_run
+            AaruLogging.Debug(MODULE_NAME,
+                              "Component '{0}': raw i-node block address = {1}",
+                              component,
+                              childInodeAddr);
 
-            var childInodeBlockRun = new block_run
+            var ag    = (uint)(childInodeAddr >> _superblock.ag_shift);
+            var start = (uint)(childInodeAddr - (ag << _superblock.ag_shift));
+
+            block_run childInodeBlockRun = new()
             {
                 allocation_group = ag,
-                start            = (ushort)blockOffset,
+                start            = (ushort)start,
                 len              = 1
             };
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "Component '{0}': converted to AG={1}, start={2}, len={3}",
+                              component,
+                              ag,
+                              start,
+                              1);
 
             ErrorNumber errno = ReadInode(childInodeBlockRun, out bfs_inode childInode);
 
@@ -276,15 +292,26 @@ public sealed partial class BeFS
         }
 
         // Read the target i-node
-        var targetAg          = (uint)(targetInodeAddr >> 32);
-        var targetBlockOffset = (uint)(targetInodeAddr & 0xFFFFFFFF);
+        // The targetInodeAddr is a direct block number (inode address)
+        // Use it directly to calculate the block_run
+        AaruLogging.Debug(MODULE_NAME, "Target '{0}': raw i-node block address = {1}", targetName, targetInodeAddr);
 
-        var targetInodeBlockRun = new block_run
+        var targetAg    = (uint)(targetInodeAddr >> _superblock.ag_shift);
+        var targetStart = (uint)(targetInodeAddr - (targetAg << _superblock.ag_shift));
+
+        block_run targetInodeBlockRun = new()
         {
             allocation_group = targetAg,
-            start            = (ushort)targetBlockOffset,
+            start            = (ushort)targetStart,
             len              = 1
         };
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "Target '{0}': converted to AG={1}, start={2}, len={3}",
+                          targetName,
+                          targetAg,
+                          targetStart,
+                          1);
 
         ErrorNumber readError = ReadInode(targetInodeBlockRun, out bfs_inode targetInode);
 

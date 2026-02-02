@@ -417,7 +417,7 @@ public sealed partial class BeFS
         AaruLogging.Debug(MODULE_NAME, "Root i-node valid. Data stream size: {0} bytes", rootInode.data.size);
 
         // Read the B+tree from the data stream blocks (like Linux does)
-        errno = ParseDirectoryBTree(rootInode.data);
+        errno = ParseDirectoryBTree(rootInode.data, out Dictionary<string, long> rootDirEntries);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -425,6 +425,9 @@ public sealed partial class BeFS
 
             return errno;
         }
+
+        // Cache the root directory entries
+        foreach(KeyValuePair<string, long> kvp in rootDirEntries) _rootDirectoryCache[kvp.Key] = kvp.Value;
 
         AaruLogging.Debug(MODULE_NAME,
                           "Root directory B+tree parsed successfully. Cached {0} entries",

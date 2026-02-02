@@ -83,7 +83,9 @@ public sealed partial class BeFS
                                              ? normalizedPath[1..]
                                              : normalizedPath;
 
-        string[] pathComponents = pathWithoutLeadingSlash.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries);
+        string[] pathComponents = pathWithoutLeadingSlash.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries)
+                                                         .Where(c => c != "." && c != "..")
+                                                         .ToArray();
 
         if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
 
@@ -108,18 +110,28 @@ public sealed partial class BeFS
             }
 
             // Convert i-node address to block_run
-            // I-node address is stored as a block_run where allocation_group and start define the location
-            var ag          = (uint)(childInodeAddr >> 32);
-            var blockOffset = (uint)(childInodeAddr & 0xFFFFFFFF);
+            // I-node address is a direct block number, convert using ag_shift
+            AaruLogging.Debug(MODULE_NAME,
+                              "Component '{0}': raw i-node block address = {1}",
+                              component,
+                              childInodeAddr);
+
+            var ag    = (uint)(childInodeAddr >> _superblock.ag_shift);
+            var start = (uint)(childInodeAddr - (ag << _superblock.ag_shift));
 
             var childInodeBlockRun = new block_run
             {
                 allocation_group = ag,
-                start            = (ushort)blockOffset,
+                start            = (ushort)start,
                 len              = 1
             };
 
-            AaruLogging.Debug(MODULE_NAME, "Reading i-node at AG {0}, block {1}", ag, blockOffset);
+            AaruLogging.Debug(MODULE_NAME,
+                              "Component '{0}': converted to AG={1}, start={2}, len={3}",
+                              component,
+                              ag,
+                              start,
+                              1);
 
             // Read the child i-node
             ErrorNumber errno = ReadInode(childInodeBlockRun, out bfs_inode childInode);
@@ -271,6 +283,17 @@ public sealed partial class BeFS
                 {
                     int offsetIndex = keyLengthIndexStart + i * 2;
 
+                    // Bounds check before reading
+                    if(offsetIndex + 2 > nodeData.Length)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Offset index {0} extends beyond node data length {1}",
+                                          offsetIndex + 2,
+                                          nodeData.Length);
+
+                        break;
+                    }
+
                     ushort keyEndOffset = _littleEndian
                                               ? BitConverter.ToUInt16(nodeData, offsetIndex)
                                               : BigEndianBitConverter.ToUInt16(nodeData, offsetIndex);
@@ -278,7 +301,45 @@ public sealed partial class BeFS
                     int keyStart  = keyDataStart + keyOffset;
                     int keyLength = keyEndOffset - keyOffset;
 
+                    // Validate key length - must be positive and reasonable
+                    if(keyLength <= 0 || keyLength > 256)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Invalid key length at index {0}: keyOffset={1}, keyEndOffset={2}, calculated length={3}",
+                                          i,
+                                          keyOffset,
+                                          keyEndOffset,
+                                          keyLength);
+
+                        break;
+                    }
+
+                    // Validate key data is within the key data section
+                    if(keyStart < keyDataStart || keyStart + keyLength > keyDataEnd)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Key data out of bounds at index {0}: start={1}, length={2}, range=[{3},{4}]",
+                                          i,
+                                          keyStart,
+                                          keyLength,
+                                          keyDataStart,
+                                          keyDataEnd);
+
+                        break;
+                    }
+
                     int valueIndex = valueDataStart + i * 8;
+
+                    // Bounds check for value data
+                    if(valueIndex + 8 > nodeData.Length)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Value index {0} extends beyond node data length {1}",
+                                          valueIndex + 8,
+                                          nodeData.Length);
+
+                        break;
+                    }
 
                     long inodeNumber = _littleEndian
                                            ? BitConverter.ToInt64(nodeData, valueIndex)
@@ -286,7 +347,12 @@ public sealed partial class BeFS
 
                     string keyName = _encoding.GetString(nodeData, keyStart, keyLength);
 
-                    if(!entries.ContainsKey(keyName)) keyOffset = keyEndOffset;
+                    // Filter out "." (current directory) and ".." (parent directory)
+                    // These should not be cached as they cause infinite loops during path traversal
+                    if(keyName != "." && keyName != ".." && !entries.ContainsKey(keyName))
+                        entries[keyName] = inodeNumber;
+
+                    keyOffset = keyEndOffset;
                 }
             }
 
