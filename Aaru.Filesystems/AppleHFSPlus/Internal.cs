@@ -100,6 +100,9 @@ public sealed partial class AppleHFSPlus
 
         /// <summary>Text encoding hint for the folder name</summary>
         public uint TextEncoding { get; set; }
+
+        /// <summary>BSD permissions structure</summary>
+        public HFSPlusBSDInfo permissions { get; set; }
     }
 
     /// <summary>Represents a file entry in the catalog</summary>
@@ -152,6 +155,9 @@ public sealed partial class AppleHFSPlus
 
         /// <summary>Text encoding hint for the file name</summary>
         public uint TextEncoding { get; set; }
+
+        /// <summary>BSD permissions structure</summary>
+        public HFSPlusBSDInfo permissions { get; set; }
     }
 
     /// <summary>Represents a thread record entry in the catalog</summary>

@@ -301,7 +301,11 @@ public sealed partial class AppleHFSPlus
                                                                  ContentModDate = folder.contentModDate,
                                                                  AttributeModDate = folder.attributeModDate,
                                                                  AccessDate = folder.accessDate,
-                                                                 BackupDate = folder.backupDate
+                                                                 BackupDate = folder.backupDate,
+                                                                 FinderInfo = folder.userInfo,
+                                                                 ExtendedFinderInfo = folder.finderInfo,
+                                                                 TextEncoding = folder.textEncoding,
+                                                                 permissions = folder.permissions
                                                              };
 
                                                              if(!string.IsNullOrEmpty(entryName))
