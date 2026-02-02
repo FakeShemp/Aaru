@@ -232,8 +232,8 @@ public sealed partial class BeFS
                                      (long)nodeData[valueIndex + 6] << 8  |
                                      nodeData[valueIndex + 7];
 
-            // Extract the key name (null-terminated string)
-            string keyName = _encoding.GetString(nodeData, keyStart, keyLength).TrimEnd('\0');
+            // Extract the key name (fixed-length string, not null-terminated)
+            string keyName = _encoding.GetString(nodeData, keyStart, keyLength);
 
             AaruLogging.Debug(MODULE_NAME,
                               "Entry {0}: name='{1}' ({2} bytes), i-node={3}",

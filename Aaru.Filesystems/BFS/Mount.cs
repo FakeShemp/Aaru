@@ -115,6 +115,8 @@ public sealed partial class BeFS
                           Metadata.Dirty,
                           Metadata.FreeClusters);
 
+        _mounted = true;
+
         return ErrorNumber.NoError;
     }
 

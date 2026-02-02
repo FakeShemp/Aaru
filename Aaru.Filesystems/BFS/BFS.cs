@@ -57,6 +57,9 @@ public sealed partial class BeFS : IReadOnlyFilesystem
     /// <summary>The filesystem superblock containing metadata about the volume</summary>
     private SuperBlock _superblock;
 
+    /// <summary>Indicates if the filesystem is currently mounted</summary>
+    private bool _mounted;
+
     /// <summary>Cache of root directory entries mapped from filename to i-node address</summary>
     private readonly Dictionary<string, long> _rootDirectoryCache = new();
 
