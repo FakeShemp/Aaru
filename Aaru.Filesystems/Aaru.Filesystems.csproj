@@ -47,6 +47,7 @@
     <ProjectReference Include="..\Aaru.Decoders\Aaru.Decoders.csproj"/>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="BFS\NewDirectory1\"/>
     <Folder Include="LisaFS\"/>
     <Folder Include="UCSDPascal\"/>
     <Folder Include="AppleMFS\"/>

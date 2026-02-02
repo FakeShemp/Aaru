@@ -39,9 +39,9 @@ public sealed partial class BeFS
     /// <summary>Reads data from a data stream at a specified byte position</summary>
     /// <remarks>
     ///     Data streams in BFS are stored in blocks referenced by block_run structures.
+    ///     Supports direct, indirect, and double-indirect block ranges.
     ///     This method locates the appropriate block(s) for the requested position,
     ///     reads the necessary sectors from the device, and extracts the requested bytes.
-    ///     Currently supports direct blocks only; indirect blocks are not yet implemented.
     /// </remarks>
     /// <param name="dataStream">The data stream structure containing block_run entries</param>
     /// <param name="position">The byte offset within the data stream to read from</param>
@@ -51,71 +51,67 @@ public sealed partial class BeFS
     private ErrorNumber ReadFromDataStream(data_stream dataStream, long position, int length, out byte[] buffer)
     {
         buffer = null;
-        uint sectorSize           = _imagePlugin.Info.SectorSize;
-        var  partitionStartSector = (long)_partition.Start;
 
         AaruLogging.Debug(MODULE_NAME, "ReadFromDataStream: pos=0x{0:X8}, len={1}", position, length);
 
-        if(position >= dataStream.max_direct_range)
+        // Check which range the position falls into
+        if(position < dataStream.max_direct_range)
         {
-            AaruLogging.Debug(MODULE_NAME, "Position beyond direct range");
+            AaruLogging.Debug(MODULE_NAME, "Position in direct range");
 
-            return ErrorNumber.NotImplemented;
+            return ReadDataStreamDirect(dataStream, position, length, out buffer);
         }
+
+        if(position < dataStream.max_indirect_range)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Position in indirect range");
+
+            return ReadDataStreamIndirect(dataStream, position, length, out buffer);
+        }
+
+        if(position < dataStream.max_double_indirect_range)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Position in double-indirect range");
+
+            return ReadDataStreamDoubleIndirect(dataStream, position, length, out buffer);
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "Position beyond all allocated ranges");
+
+        return ErrorNumber.OutOfRange;
+    }
+
+    /// <summary>Reads from direct blocks in the data stream</summary>
+    private ErrorNumber ReadDataStreamDirect(data_stream dataStream, long position, int length, out byte[] buffer)
+    {
+        buffer = null;
+        uint sectorSize           = _imagePlugin.Info.SectorSize;
+        var  partitionStartSector = (long)_partition.Start;
 
         buffer = new byte[length];
         var  bytesRead         = 0;
-        long currentByteOffset = 0; // Track current byte position in data stream
+        long currentByteOffset = 0;
 
         for(var i = 0; i < NUM_DIRECT_BLOCKS && bytesRead < length; i++)
         {
             if(dataStream.direct[i].len == 0) break;
 
-            // All values are in blocks - use ag_shift like in LoadRootDirectory
             long blockStart = ((long)dataStream.direct[i].allocation_group << _superblock.ag_shift) +
                               dataStream.direct[i].start;
 
             long blockLen  = dataStream.direct[i].len;
             long blockSize = blockLen * _superblock.block_size;
 
-            AaruLogging.Debug(MODULE_NAME,
-                              "Block {0}: start={1}, len={2}, FS bytes 0x{3:X8}-0x{4:X8}",
-                              i,
-                              blockStart,
-                              blockLen,
-                              currentByteOffset,
-                              currentByteOffset + blockSize);
-
-            // Check if position is in this block
             if(position >= currentByteOffset && position < currentByteOffset + blockSize)
             {
                 long offsetInBlock = position - currentByteOffset;
                 long bytesToRead   = Math.Min(blockSize - offsetInBlock, length - bytesRead);
 
-                // Convert block to sector: blocks are already in filesystem units
-                // Starting sector = (blockStart * block_size) / sector_size
                 long blockByteAddr       = blockStart * _superblock.block_size;
                 long startingSector      = blockByteAddr / sectorSize + partitionStartSector;
                 var  offsetInFirstSector = (int)(blockByteAddr % sectorSize + offsetInBlock);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                  "Block calculation: blockStart={0}, blockByteAddr=0x{1:X8}, byteAddr%sectorSize={2}",
-                                  blockStart,
-                                  blockByteAddr,
-                                  blockByteAddr % sectorSize);
-
-                // How many sectors to read?
                 var sectorsToRead = (int)((offsetInFirstSector + bytesToRead + sectorSize - 1) / sectorSize);
-
-                AaruLogging.Debug(MODULE_NAME,
-                                  "Position 0x{0:X8} in block {1}: block_offset=0x{2:X8}, sector {3}, offset {4}, {5} bytes ({6} sectors)",
-                                  position,
-                                  i,
-                                  offsetInBlock,
-                                  startingSector,
-                                  offsetInFirstSector,
-                                  bytesToRead,
-                                  sectorsToRead);
 
                 ErrorNumber errno = _imagePlugin.ReadSectors((ulong)startingSector,
                                                              false,
@@ -130,17 +126,11 @@ public sealed partial class BeFS
                     return errno;
                 }
 
-                AaruLogging.Debug(MODULE_NAME,
-                                  "Read {0} bytes, first 32: {1}",
-                                  sectorData.Length,
-                                  BitConverter.ToString(sectorData, 0, Math.Min(32, sectorData.Length)));
-
                 Array.Copy(sectorData, offsetInFirstSector, buffer, bytesRead, (int)bytesToRead);
                 bytesRead += (int)bytesToRead;
 
                 if(bytesRead >= length) break;
 
-                // Continue reading from next position
                 position += bytesToRead;
             }
 
@@ -149,11 +139,30 @@ public sealed partial class BeFS
 
         if(bytesRead == 0)
         {
-            AaruLogging.Debug(MODULE_NAME, "No data read from data stream");
+            AaruLogging.Debug(MODULE_NAME, "No data read from direct blocks");
 
             return ErrorNumber.InOutError;
         }
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads from indirect blocks in the data stream</summary>
+    private ErrorNumber ReadDataStreamIndirect(data_stream dataStream, long position, int length, out byte[] buffer)
+    {
+        buffer = null;
+        AaruLogging.Debug(MODULE_NAME, "Reading from indirect blocks not yet fully implemented");
+
+        return ErrorNumber.NotImplemented;
+    }
+
+    /// <summary>Reads from double-indirect blocks in the data stream</summary>
+    private ErrorNumber ReadDataStreamDoubleIndirect(data_stream dataStream, long position, int length,
+                                                     out byte[]  buffer)
+    {
+        buffer = null;
+        AaruLogging.Debug(MODULE_NAME, "Reading from double-indirect blocks not yet fully implemented");
+
+        return ErrorNumber.NotImplemented;
     }
 }
