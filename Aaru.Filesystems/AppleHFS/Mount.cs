@@ -235,10 +235,54 @@ public sealed partial class AppleHFS
 
         if(errno != ErrorNumber.NoError)
         {
-            AaruLogging.Debug(MODULE_NAME, $"Failed to cache root directory: {errno}");
+            AaruLogging.Debug(MODULE_NAME, $"Failed to cache root directory via normal method: {errno}");
 
-            return errno;
+            // If normal caching failed, don't give up - continue anyway
+            // The filesystem might still be readable with zero-initialized root directory
+            // This handles severely malformed B-trees
         }
+
+        // Attempt to find and cache root directory if not already found
+        AaruLogging.Debug(MODULE_NAME, $"After CacheRootDirectory, _rootDirectory.dirDirID={_rootDirectory.dirDirID}");
+
+        if(_rootDirectory.dirDirID == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Root directory still not found, attempting emergency brute-force scan");
+
+            // Brute-force scan all nodes to find root directory (CNID=2)
+            for(uint nodeNum = 0; nodeNum < 2000; nodeNum++)
+            {
+                errno = ReadNode(nodeNum, _catalogBTreeHeader.bthNodeSize, out byte[] nodeData);
+
+                if(errno != ErrorNumber.NoError) continue;
+
+                // Check if this is a leaf node
+                NodeDescriptor checkDesc =
+                    Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData,
+                                                                          0,
+                                                                          System.Runtime.InteropServices.Marshal
+                                                                             .SizeOf(typeof(NodeDescriptor)));
+
+                if(checkDesc.ndType != NodeType.ndLeafNode) continue;
+
+                // Try to find root in this leaf
+                ErrorNumber findErr =
+                    FindRootInLeaf(nodeData, _catalogBTreeHeader.bthNodeSize, out CdrDirRec foundRoot);
+
+                if(findErr == ErrorNumber.NoError)
+                {
+                    _rootDirectory = foundRoot;
+
+                    AaruLogging.Debug(MODULE_NAME,
+                                      $"Found root directory via emergency scan in node {nodeNum}: CNID={foundRoot.dirDirID}");
+
+                    break;
+                }
+            }
+        }
+        else
+            AaruLogging.Debug(MODULE_NAME,
+                              $"Root directory already found: CNID={_rootDirectory.dirDirID}, entries={_rootDirectory.dirVal}");
 
         // Cache root directory entries
         errno = CacheRootDirectoryEntries();
@@ -354,22 +398,27 @@ public sealed partial class AppleHFS
         headerOffset = 0;
 
         ExtDescriptor firstExtent = _mdb.drCTExtRec.xdr[0];
+
         if(firstExtent.xdrNumABlks == 0) return ErrorNumber.InvalidArgument;
 
         // Read the entire first extent of the catalog file
-        ulong allocBlockSectorSize      = _mdb.drAlBlkSiz / 512;
-        ulong firstAllocBlockSector512  = _mdb.drAlBlSt + firstExtent.xdrStABN * allocBlockSectorSize;
+        ulong allocBlockSectorSize     = _mdb.drAlBlkSiz / 512;
+        ulong firstAllocBlockSector512 = _mdb.drAlBlSt + firstExtent.xdrStABN * allocBlockSectorSize;
         HfsOffsetToDeviceSector(firstAllocBlockSector512, out ulong startDeviceSector, out uint startByteOffset);
 
         // Read enough data to cover the full extent
-        uint sectorsToRead = (uint)((startByteOffset + firstExtent.xdrNumABlks * _mdb.drAlBlkSiz + _sectorSize - 1) / _sectorSize);
+        var sectorsToRead = (startByteOffset + firstExtent.xdrNumABlks * _mdb.drAlBlkSiz + _sectorSize - 1) /
+                            _sectorSize;
 
-        ErrorNumber errno = _imagePlugin.ReadSectors(startDeviceSector, false, sectorsToRead, out byte[] catalogData, out _);
+        ErrorNumber errno =
+            _imagePlugin.ReadSectors(startDeviceSector, false, sectorsToRead, out byte[] catalogData, out _);
+
         if(errno != ErrorNumber.NoError) return errno;
 
         var nodeDescSize = (ulong)System.Runtime.InteropServices.Marshal.SizeOf(typeof(NodeDescriptor));
 
-        AaruLogging.Debug(MODULE_NAME, $"BruteForceFindCatalogHeader: Searching for header node. startByteOffset={startByteOffset}, catalogData.Length={catalogData.Length}");
+        AaruLogging.Debug(MODULE_NAME,
+                          $"BruteForceFindCatalogHeader: Searching for header node. startByteOffset={startByteOffset}, catalogData.Length={catalogData.Length}");
 
         // Search for header nodes (ndType == ndHdrNode == 1)
         // B-Tree nodes are always 512 bytes per Inside Macintosh
@@ -378,27 +427,33 @@ public sealed partial class AppleHFS
         {
             try
             {
-                NodeDescriptor nodeDesc = Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(
-                    catalogData, (int)offset, (int)nodeDescSize);
+                NodeDescriptor nodeDesc =
+                    Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(catalogData, (int)offset, (int)nodeDescSize);
 
-                AaruLogging.Debug(MODULE_NAME, $"BruteForceFindCatalogHeader: Found node type {nodeDesc.ndType} at offset {offset}");
+                AaruLogging.Debug(MODULE_NAME,
+                                  $"BruteForceFindCatalogHeader: Found node type {nodeDesc.ndType} at offset {offset}");
 
                 if(nodeDesc.ndType == NodeType.ndHdrNode)
                 {
                     // Found a header node, calculate absolute offset
                     headerOffset = startDeviceSector * _sectorSize + offset;
-                    AaruLogging.Debug(MODULE_NAME, $"BruteForceFindCatalogHeader: Found header node at offset {offset}, headerOffset={headerOffset}");
+
+                    AaruLogging.Debug(MODULE_NAME,
+                                      $"BruteForceFindCatalogHeader: Found header node at offset {offset}, headerOffset={headerOffset}");
+
                     return ErrorNumber.NoError;
                 }
             }
             catch(Exception ex)
             {
                 // Skip invalid structures, continue searching
-                AaruLogging.Debug(MODULE_NAME, $"BruteForceFindCatalogHeader: Error parsing node at offset {offset}: {ex}");
+                AaruLogging.Debug(MODULE_NAME,
+                                  $"BruteForceFindCatalogHeader: Error parsing node at offset {offset}: {ex}");
             }
         }
 
         AaruLogging.Debug(MODULE_NAME, "BruteForceFindCatalogHeader: No header node found");
+
         return ErrorNumber.InvalidArgument; // Header node not found
     }
 
@@ -583,25 +638,29 @@ public sealed partial class AppleHFS
         NodeDescriptor nodeDesc =
             Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(headerSector, startOffset, nodeDescSize);
 
-        AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Initial node parse at offset {startOffset}: ndType={nodeDesc.ndType}, ndNRecs={nodeDesc.ndNRecs}");
+        AaruLogging.Debug(MODULE_NAME,
+                          $"ReadAndValidateCatalog: Initial node parse at offset {startOffset}: ndType={nodeDesc.ndType}, ndNRecs={nodeDesc.ndNRecs}");
 
         // Verify this is a header node
         if(nodeDesc.ndType != NodeType.ndHdrNode)
         {
             // Edge case: offset calculation was wrong and we're at an index node
             // Brute-force search for the header node within the catalog file
-            AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Not a header node, triggering brute force search");
-            ErrorNumber bruteForceResult = BruteForceFindCatalogHeader(out var bruteForceOffset);
+            AaruLogging.Debug(MODULE_NAME, "ReadAndValidateCatalog: Not a header node, triggering brute force search");
+            ErrorNumber bruteForceResult = BruteForceFindCatalogHeader(out ulong bruteForceOffset);
+
             if(bruteForceResult != ErrorNumber.NoError) return ErrorNumber.InvalidArgument;
 
-            AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Brute force found header at offset {bruteForceOffset}");
+            AaruLogging.Debug(MODULE_NAME,
+                              $"ReadAndValidateCatalog: Brute force found header at offset {bruteForceOffset}");
 
             // Re-read from the correct location
-            ulong sectorToRead = bruteForceOffset / _sectorSize;
-            uint newByteOffset = (uint)(bruteForceOffset % _sectorSize);
-            uint sectorCount = (uint)((_sectorSize - newByteOffset + 512 + _sectorSize - 1) / _sectorSize);
+            ulong sectorToRead  = bruteForceOffset / _sectorSize;
+            var   newByteOffset = (uint)(bruteForceOffset % _sectorSize);
+            var   sectorCount   = (_sectorSize - newByteOffset + 512 + _sectorSize - 1) / _sectorSize;
 
-            AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Re-reading sector {sectorToRead}, count={sectorCount}, byteOffset={newByteOffset}");
+            AaruLogging.Debug(MODULE_NAME,
+                              $"ReadAndValidateCatalog: Re-reading sector {sectorToRead}, count={sectorCount}, byteOffset={newByteOffset}");
 
             errno = _imagePlugin.ReadSectors(sectorToRead, false, sectorCount, out headerSector, out _);
 
@@ -609,12 +668,14 @@ public sealed partial class AppleHFS
 
             startOffset = (int)newByteOffset;
 
-            AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Re-read {headerSector.Length} bytes, startOffset={startOffset}");
+            AaruLogging.Debug(MODULE_NAME,
+                              $"ReadAndValidateCatalog: Re-read {headerSector.Length} bytes, startOffset={startOffset}");
 
             // Re-parse node descriptor from new location
             nodeDesc = Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(headerSector, startOffset, nodeDescSize);
 
-            AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Re-parsed node descriptor: ndType={nodeDesc.ndType}, ndNRecs={nodeDesc.ndNRecs}, ndFLink={nodeDesc.ndFLink}, ndBLink={nodeDesc.ndBLink}");
+            AaruLogging.Debug(MODULE_NAME,
+                              $"ReadAndValidateCatalog: Re-parsed node descriptor: ndType={nodeDesc.ndType}, ndNRecs={nodeDesc.ndNRecs}, ndFLink={nodeDesc.ndFLink}, ndBLink={nodeDesc.ndBLink}");
 
             if(nodeDesc.ndType != NodeType.ndHdrNode) return ErrorNumber.InvalidArgument;
         }
@@ -623,7 +684,8 @@ public sealed partial class AppleHFS
         BTHdrRed bthdr =
             Marshal.ByteArrayToStructureBigEndian<BTHdrRed>(headerSector, startOffset + nodeDescSize, btHdrSize);
 
-        AaruLogging.Debug(MODULE_NAME, $"ReadAndValidateCatalog: Parsed BTHdrRed from offset {startOffset + nodeDescSize}: bthDepth={bthdr.bthDepth}, bthRoot={bthdr.bthRoot}, bthNRecs={bthdr.bthNRecs}, bthFNode={bthdr.bthFNode}, bthLNode={bthdr.bthLNode}, bthNodeSize={bthdr.bthNodeSize}, bthKeyLen={bthdr.bthKeyLen}");
+        AaruLogging.Debug(MODULE_NAME,
+                          $"ReadAndValidateCatalog: Parsed BTHdrRed from offset {startOffset + nodeDescSize}: bthDepth={bthdr.bthDepth}, bthRoot={bthdr.bthRoot}, bthNRecs={bthdr.bthNRecs}, bthFNode={bthdr.bthFNode}, bthLNode={bthdr.bthLNode}, bthNodeSize={bthdr.bthNodeSize}, bthKeyLen={bthdr.bthKeyLen}");
 
         // Verify B-Tree consistency
         // According to Inside Macintosh, depth must be at least 1 and tree must have records
