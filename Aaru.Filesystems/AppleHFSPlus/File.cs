@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -278,6 +279,102 @@ public sealed partial class AppleHFSPlus
         AaruLogging.Debug(MODULE_NAME, "ReadFile: Read {0} bytes, new offset={1}", bytesProcessed, myNode.Offset);
 
         return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize path
+        string normalizedPath = string.IsNullOrEmpty(path) ? "/" : path;
+
+        // Root directory cannot be a symlink
+        if(string.Equals(normalizedPath, "/", StringComparison.OrdinalIgnoreCase)) return ErrorNumber.InvalidArgument;
+
+        // Get the file entry
+        ErrorNumber err = GetFileEntryForPath(normalizedPath, out CatalogEntry entry);
+
+        if(err != ErrorNumber.NoError) return err;
+
+        // Must be a file, not a directory
+        if(entry is not FileEntry fileEntry) return ErrorNumber.InvalidArgument;
+
+        // Check if it's a symbolic link
+        // Symlinks have:
+        // 1. File type in fileMode = S_IFLNK (0xA000 in octal, 0xA in the upper nibble of fileMode >> 12)
+        // 2. File type 'slnk' (0x736C6E6B)
+        // 3. Creator code 'rhap' (0x72686170)
+
+        // Check file type from permissions
+        if((fileEntry.permissions.fileMode & 0xF000) != 0xA000) return ErrorNumber.InvalidArgument;
+
+        // Check Finder info file type and creator
+        if(fileEntry.FinderInfo.fdType != 0x736C6E6B) // 'slnk'
+            return ErrorNumber.InvalidArgument;
+
+        if(fileEntry.FinderInfo.fdCreator != 0x72686170) // 'rhap'
+            return ErrorNumber.InvalidArgument;
+
+        // The symlink target is stored in the data fork
+        if(fileEntry.DataForkLogicalSize == 0 || fileEntry.DataForkLogicalSize > 4096)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "ReadLink: Invalid symlink data fork size: {0}",
+                              fileEntry.DataForkLogicalSize);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Open the file and read the data fork
+        ErrorNumber openErr = OpenFile(normalizedPath, out IFileNode node);
+
+        if(openErr != ErrorNumber.NoError) return openErr;
+
+        var buffer = new byte[fileEntry.DataForkLogicalSize];
+
+        ErrorNumber readErr = ReadFile(node, (long)fileEntry.DataForkLogicalSize, buffer, out long bytesRead);
+
+        _ = CloseFile(node);
+
+        if(readErr != ErrorNumber.NoError) return readErr;
+
+        if(bytesRead != (long)fileEntry.DataForkLogicalSize)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "ReadLink: Failed to read full symlink data. Expected {0}, got {1}",
+                              fileEntry.DataForkLogicalSize,
+                              bytesRead);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // The path is UTF-8 encoded with no null bytes
+        // Validate it's valid UTF-8
+        try
+        {
+            dest = Encoding.UTF8.GetString(buffer, 0, (int)bytesRead);
+
+            // Verify no null bytes in the middle (should not exist in valid symlinks)
+            if(dest.Contains('\0'))
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadLink: Symlink path contains null bytes");
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: Read symlink {0} -> {1}", normalizedPath, dest);
+
+            return ErrorNumber.NoError;
+        }
+        catch(DecoderFallbackException)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: Symlink path is not valid UTF-8");
+
+            return ErrorNumber.InvalidArgument;
+        }
     }
 
     /// <inheritdoc />
@@ -575,6 +672,91 @@ public sealed partial class AppleHFSPlus
             return ErrorNumber.InvalidArgument;
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Gets a catalog entry (file or directory) by path</summary>
+    /// <param name="path">Path to the entry</param>
+    /// <param name="entry">The catalog entry if found</param>
+    /// <returns>Error number</returns>
+    private ErrorNumber GetFileEntryForPath(string path, out CatalogEntry entry)
+    {
+        entry = null;
+
+        // Normalize path
+        string normalizedPath = string.IsNullOrEmpty(path) ? "/" : path;
+
+        // Root directory case
+        if(string.Equals(normalizedPath, "/", StringComparison.OrdinalIgnoreCase))
+            return ErrorNumber.InvalidArgument; // Root is a directory, not accessible via this method
+
+        // Parse path components
+        string cutPath = normalizedPath.StartsWith("/", StringComparison.Ordinal)
+                             ? normalizedPath[1..]
+                             : normalizedPath;
+
+        string[] pieces = cutPath.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
+
+        if(pieces.Length == 0) return ErrorNumber.NoSuchFile;
+
+        // Start from root directory
+        Dictionary<string, CatalogEntry> currentDirectory = _rootDirectoryCache;
+
+        // Traverse through all but the last path component
+        for(var p = 0; p < pieces.Length - 1; p++)
+        {
+            string component = pieces[p];
+
+            // Convert colons back to slashes for catalog lookup
+            component = component.Replace(":", "/");
+
+            // Look for the component in current directory
+            CatalogEntry foundEntry = null;
+
+            if(currentDirectory != null)
+            {
+                foreach(KeyValuePair<string, CatalogEntry> catalogEntry in currentDirectory)
+                {
+                    if(string.Equals(catalogEntry.Key, component, StringComparison.OrdinalIgnoreCase))
+                    {
+                        foundEntry = catalogEntry.Value;
+
+                        break;
+                    }
+                }
+            }
+
+            if(foundEntry == null) return ErrorNumber.NoSuchFile;
+
+            // Check if it's a directory
+            if(foundEntry.Type != (int)BTreeRecordType.kHFSPlusFolderRecord) return ErrorNumber.NotDirectory;
+
+            // Load next directory level
+            ErrorNumber cacheErr = CacheDirectoryIfNeeded(foundEntry.CNID);
+
+            if(cacheErr != ErrorNumber.NoError) return cacheErr;
+
+            currentDirectory = GetDirectoryEntries(foundEntry.CNID);
+
+            if(currentDirectory == null) return ErrorNumber.NoSuchFile;
+        }
+
+        // Now look for the final component
+        string lastComponent = pieces[^1];
+
+        // Convert colons back to slashes for catalog lookup
+        lastComponent = lastComponent.Replace(":", "/");
+
+        if(currentDirectory == null) return ErrorNumber.NoSuchFile;
+
+        foreach(KeyValuePair<string, CatalogEntry> catalogEntry in currentDirectory)
+        {
+            if(!string.Equals(catalogEntry.Key, lastComponent, StringComparison.OrdinalIgnoreCase)) continue;
+            entry = catalogEntry.Value;
+
+            return ErrorNumber.NoError;
+        }
+
+        return ErrorNumber.NoSuchFile;
     }
 
     /// <summary>Gets all extents for a file's data fork, including overflow extents</summary>
