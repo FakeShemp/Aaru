@@ -372,12 +372,12 @@ public sealed partial class BeFS
         // Also print raw hex of data_stream area to diagnose
         // Offset calculation: 4(magic1) + 8(inode_num) + 4(uid) + 4(gid) + 4(mode) + 4(flags) + 8(create_time) +
         //                     8(last_modified_time) + 8(parent) + 8(attributes) + 4(type) + 4(node_size) + 4(etc) = 88 bytes
-        const int DATA_STREAM_OFFSET = 88;
-        const int DATA_STREAM_SIZE   = 144; // Size of data_stream struct
+        const int dataStreamOffset = 88;
+        const int dataStreamSize   = 144; // Size of data_stream struct
 
-        if(inodeData.Length >= DATA_STREAM_OFFSET + DATA_STREAM_SIZE)
+        if(inodeData.Length >= dataStreamOffset + dataStreamSize)
         {
-            var hexDump = BitConverter.ToString(inodeData, DATA_STREAM_OFFSET, Math.Min(32, DATA_STREAM_SIZE));
+            var hexDump = BitConverter.ToString(inodeData, dataStreamOffset, Math.Min(32, dataStreamSize));
             AaruLogging.Debug(MODULE_NAME, "  Raw data stream first 32 bytes: {0}", hexDump);
         }
 
@@ -429,6 +429,39 @@ public sealed partial class BeFS
         AaruLogging.Debug(MODULE_NAME,
                           "Root directory B+tree parsed successfully. Cached {0} entries",
                           _rootDirectoryCache.Count);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Unmounts the filesystem and cleans up all resources</summary>
+    /// <remarks>
+    ///     Clears cached data structures and resets the mounted flag.
+    ///     After unmounting, the filesystem instance cannot be used for further operations.
+    /// </remarks>
+    /// <returns>Error code indicating success or failure</returns>
+    /// <inheritdoc />
+    public ErrorNumber Unmount()
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "Unmounting filesystem...");
+
+        // Clear cached root directory entries
+        _rootDirectoryCache.Clear();
+
+        // Clear superblock data
+        _superblock = default(SuperBlock);
+
+        // Clear plugin reference
+        _imagePlugin = null;
+
+        // Clear encoding reference
+        _encoding = null;
+
+        // Reset mounted flag
+        _mounted = false;
+
+        AaruLogging.Debug(MODULE_NAME, "Filesystem unmounted successfully");
 
         return ErrorNumber.NoError;
     }
