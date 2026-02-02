@@ -173,14 +173,15 @@ public sealed partial class BeFS
 
         if(statError != ErrorNumber.NoError) return statError;
 
-        // Convert i-node address to block_run
-        var ag          = (uint)(fileInfo.Inode >> 32);
-        var blockOffset = (uint)(fileInfo.Inode & 0xFFFFFFFF);
+        // Convert i-node address to block_run using ag_shift
+        // The i-node address is a block address, not split into upper/lower 32 bits
+        var ag    = (uint)(fileInfo.Inode >> _superblock.ag_shift);
+        var start = (uint)(fileInfo.Inode - (ag << _superblock.ag_shift));
 
         var inodeBlockRun = new block_run
         {
             allocation_group = ag,
-            start            = (ushort)blockOffset,
+            start            = (ushort)start,
             len              = 1
         };
 
@@ -390,8 +391,9 @@ public sealed partial class BeFS
 
         // Add all attribute names from the directory (skip if already in list from small data)
         foreach(string attrName in attrEntries.Keys)
-            if(!xattrs.Contains(attrName))
-                xattrs.Add(attrName);
+        {
+            if(!xattrs.Contains(attrName)) xattrs.Add(attrName);
+        }
 
         AaruLogging.Debug(MODULE_NAME, "ListAttributeDirectoryAttributes: found {0} attributes", attrEntries.Count);
 

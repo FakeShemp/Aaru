@@ -85,8 +85,13 @@ public sealed partial class BeFS
     private ErrorNumber ReadDataStreamDirect(data_stream dataStream, long position, int length, out byte[] buffer)
     {
         buffer = null;
-        uint sectorSize           = _imagePlugin.Info.SectorSize;
-        var  partitionStartSector = (long)_partition.Start;
+        uint sectorSize = _imagePlugin.Info.SectorSize;
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "ReadDataStreamDirect: position={0}, length={1}, max_direct_range={2}",
+                          position,
+                          length,
+                          dataStream.max_direct_range);
 
         buffer = new byte[length];
         var  bytesRead         = 0;
@@ -94,24 +99,61 @@ public sealed partial class BeFS
 
         for(var i = 0; i < NUM_DIRECT_BLOCKS && bytesRead < length; i++)
         {
-            if(dataStream.direct[i].len == 0) break;
+            if(dataStream.direct[i].len == 0)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Direct block {0}: empty, stopping", i);
 
+                break;
+            }
+
+            // blockStart = (AG * blocks_per_ag) + start_block_in_ag
+            // blocks_per_ag = 1 << ag_shift, so we can use bit shift
             long blockStart = ((long)dataStream.direct[i].allocation_group << _superblock.ag_shift) +
                               dataStream.direct[i].start;
 
             long blockLen  = dataStream.direct[i].len;
             long blockSize = blockLen * _superblock.block_size;
 
+            // Verify ag_shift calculation
+            long blocks_per_ag    = 1L << _superblock.ag_shift;
+            long blockStart_check = dataStream.direct[i].allocation_group * blocks_per_ag + dataStream.direct[i].start;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "Direct block {0}: AG={1}, start={2}, len={3}, ag_shift={4}, blocks_per_ag={5}, blockStart={6} (verify:{7}), blockSize={8}",
+                              i,
+                              dataStream.direct[i].allocation_group,
+                              dataStream.direct[i].start,
+                              blockLen,
+                              _superblock.ag_shift,
+                              blocks_per_ag,
+                              blockStart,
+                              blockStart_check,
+                              blockSize);
+
             if(position >= currentByteOffset && position < currentByteOffset + blockSize)
             {
                 long offsetInBlock = position - currentByteOffset;
                 long bytesToRead   = Math.Min(blockSize - offsetInBlock, length - bytesRead);
 
-                long blockByteAddr       = blockStart * _superblock.block_size;
-                long startingSector      = blockByteAddr / sectorSize + partitionStartSector;
-                var  offsetInFirstSector = (int)(blockByteAddr % sectorSize + offsetInBlock);
+                // blockStart is the absolute block number within the filesystem
+                // Convert to byte address (multiply by block_size), then add partition offset in bytes
+                long blockByteAddr       = blockStart             * _superblock.block_size;
+                long partitionByteOffset = (long)_partition.Start * sectorSize;
+                long absoluteByteAddr    = blockByteAddr + partitionByteOffset;
+                long startingSector      = absoluteByteAddr / sectorSize;
+                var  offsetInFirstSector = (int)(absoluteByteAddr % sectorSize + offsetInBlock);
 
                 var sectorsToRead = (int)((offsetInFirstSector + bytesToRead + sectorSize - 1) / sectorSize);
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Reading block {0}: byte_addr=0x{1:X8}, part_offset=0x{2:X8}, absolute_byte=0x{3:X8}, sector={4}, offset={5}, sectors={6}",
+                                  blockStart,
+                                  blockByteAddr,
+                                  partitionByteOffset,
+                                  absoluteByteAddr,
+                                  startingSector,
+                                  offsetInFirstSector,
+                                  sectorsToRead);
 
                 ErrorNumber errno = _imagePlugin.ReadSectors((ulong)startingSector,
                                                              false,

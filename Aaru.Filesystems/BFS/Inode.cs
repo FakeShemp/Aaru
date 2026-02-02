@@ -60,10 +60,23 @@ public sealed partial class BeFS
         long absoluteByteAddress = byteAddressInFS + partitionByteOffset;
         long sectorAddress       = absoluteByteAddress / sectorSize;
 
+        var sectorsToRead = (uint)((_superblock.inode_size + sectorSize - 1) / sectorSize);
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "ReadInode: AG={0}, start={1}, blockAddress={2}, byte_addr_fs=0x{3:X8}, part_offset=0x{4:X8}, absolute_byte=0x{5:X8}, sector={6}, sectors_to_read={7}",
+                          inodeAddr.allocation_group,
+                          inodeAddr.start,
+                          blockAddress,
+                          byteAddressInFS,
+                          partitionByteOffset,
+                          absoluteByteAddress,
+                          sectorAddress,
+                          sectorsToRead);
+
         // Read the i-node block
         ErrorNumber errno = _imagePlugin.ReadSectors((ulong)sectorAddress,
                                                      false,
-                                                     (uint)((_superblock.inode_size + sectorSize - 1) / sectorSize),
+                                                     sectorsToRead,
                                                      out byte[] inodeData,
                                                      out SectorStatus[] _);
 
