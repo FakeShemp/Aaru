@@ -231,12 +231,9 @@ public sealed partial class AppleHFS
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        // Normalize path
+        // Normalize path - accept both '/' and ':' as path separators
+        // readdir returns paths with ':' for display, we split on '/' first then convert ':' in components
         string normalizedPath = string.IsNullOrEmpty(path) ? "/" : path;
-
-        // Convert colons back to forward slashes for internal path matching
-        // Mac OS filenames use colons for the path separator, so convert them back to our internal format
-        normalizedPath = normalizedPath.Replace(":", "/");
 
         // Root directory case
         if(string.Equals(normalizedPath, "/", StringComparison.OrdinalIgnoreCase))
@@ -278,10 +275,9 @@ public sealed partial class AppleHFS
         for(var p = 0; p < pieces.Length - 1; p++)
         {
             string component = pieces[p];
-
-            // Replace '/' with ':' in names for HFS path matching
-            // HFS uses ':' as path separator, so '/' in the search must be converted
-            component = component.Replace("/", ":");
+            
+            // Convert colons to slashes in component (readdir returns display names with colons)
+            component = component.Replace(":", "/");
 
             // Look for the component in current directory
             KeyValuePair<string, CatalogEntry> foundEntry = default;
@@ -323,10 +319,9 @@ public sealed partial class AppleHFS
 
         // Now look for the final component
         string lastComponent = pieces[pieces.Length - 1];
-
-        // Replace '/' with ':' in names for HFS path matching
-        // HFS uses ':' as path separator, so '/' in the search must be converted
-        lastComponent = lastComponent.Replace("/", ":");
+        
+        // Convert colons to slashes in component (readdir returns display names with colons)
+        lastComponent = lastComponent.Replace(":", "/");
 
         KeyValuePair<string, CatalogEntry> finalEntry = default;
         var                                foundFinal = false;
