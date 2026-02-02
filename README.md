@@ -176,6 +176,7 @@ Fully supported file-systems (identify and extraction)
 * Apple DOS file system
 * Apple Lisa file system
 * Apple Hierarchical File System (HFS)
+* Apple Hierarchical File System+ (HFS+)
 * Apple Macintosh File System (MFS)
 * CD-i file system
 * Commodore 1540/1541/1571/1581 filesystems
@@ -198,7 +199,6 @@ Supported file systems for identification and information only
 * Amiga Fast File System, with international characters, directory cache and multi-user patches
 * Amiga Original File System, with international characters, directory cache and multi-user patches
 * Apple File System (preliminary detection until on-disk layout is stable)
-* Apple Hierarchical File System+ (HFS+)
 * Apple ProDOS / SOS file system
 * AtheOS file system
 * BeOS filesystem
