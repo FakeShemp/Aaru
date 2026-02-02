@@ -117,6 +117,53 @@ public sealed partial class AppleHFSPlus
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber Unmount()
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Clear all cached directory entries
+        _rootDirectoryCache?.Clear();
+        _rootDirectoryCache = null;
+
+        if(_directoryCaches != null)
+        {
+            foreach(Dictionary<string, CatalogEntry> cache in _directoryCaches.Values) cache?.Clear();
+
+            _directoryCaches.Clear();
+        }
+
+        _directoryCaches = null;
+
+        // Clear root folder data
+        _rootFolder = default(HFSPlusCatalogFolder);
+
+        // Clear B-Tree header
+        _catalogBTreeHeader = default(BTHeaderRec);
+
+        // Clear extents file header
+        _extentsFileHeader = default(BTHeaderRec);
+
+        // Clear volume header
+        _volumeHeader = default(VolumeHeader);
+
+        // Clear filesystem info
+        _fileSystemInfo = null;
+
+        // Clear metadata
+        Metadata = null;
+
+        // Clear image plugin reference
+        _imagePlugin = null;
+
+        // Mark filesystem as unmounted
+        _mounted = false;
+
+        AaruLogging.Debug(MODULE_NAME, "Filesystem unmounted successfully");
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Reads and parses the Volume Header from offset 0x0400</summary>
     /// <returns>ErrorNumber indicating success or failure</returns>
     ErrorNumber ReadVolumeHeader()
