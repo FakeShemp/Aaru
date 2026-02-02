@@ -41,8 +41,6 @@ public sealed partial class AppleHFSPlus
     /// <inheritdoc />
     public ErrorNumber Unmount() => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();

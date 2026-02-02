@@ -39,6 +39,24 @@ namespace Aaru.Filesystems;
 public sealed partial class AppleHFSPlus
 {
     /// <inheritdoc />
+    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
+    {
+        attributes = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Get file/directory info using Stat
+        ErrorNumber statErr = Stat(path, out FileEntryInfo stat);
+
+        if(statErr != ErrorNumber.NoError) return statErr;
+
+        // Set attributes based on stat information
+        attributes = stat.Attributes;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {
         stat = null;
