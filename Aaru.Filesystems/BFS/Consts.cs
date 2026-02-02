@@ -36,6 +36,8 @@ namespace Aaru.Filesystems;
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public sealed partial class BeFS
 {
+    const string MODULE_NAME = "BeFS plugin";
+
     // Little endian constants (that is, as read by .NET :p)
     const uint BEFS_MAGIC1 = 0x42465331;
     const uint BEFS_MAGIC2 = 0xDD121031;
@@ -51,6 +53,7 @@ public sealed partial class BeFS
     const uint BEFS_DIRTY = 0x44495254;
 
     const int INODE_MAGIC       = 0x3BBE0AD9;
+    const int BTREE_MAGIC       = 0x69F6C2E8;
     const int NUM_DIRECT_BLOCKS = 12;
 
     const string FS_TYPE = "befs";

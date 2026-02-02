@@ -29,14 +29,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
-using System.Text;
-using Aaru.CommonTypes.AaruMetadata;
-using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -46,17 +41,6 @@ namespace Aaru.Filesystems;
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public sealed partial class BeFS
 {
-    /// <inheritdoc />
-    public FileSystem                                                Metadata         { get; }
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; }
-    /// <inheritdoc />
-    public Dictionary<string, string>                                Namespaces       { get; }
-
-    /// <inheritdoc />
-    public ErrorNumber Mount(IMediaImage imagePlugin, Partition partition, Encoding encoding, Dictionary<string, string> options,
-                             string      @namespace) => throw new NotImplementedException();
-
     /// <inheritdoc />
     public ErrorNumber Unmount() => throw new NotImplementedException();
 
@@ -85,7 +69,8 @@ public sealed partial class BeFS
     public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) => throw new NotImplementedException();
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
+        throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber OpenDir(string path, out IDirNode node) => throw new NotImplementedException();

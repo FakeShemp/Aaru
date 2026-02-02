@@ -116,7 +116,7 @@ public sealed partial class BeFS
         public block_run   attributes;
         public uint        type;
         public int         node_size;
-        public ulong       etc;
+        public uint        etc;
         public data_stream data;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public int[] pad;
@@ -164,7 +164,7 @@ public sealed partial class BeFS
     [SwapEndian]
     partial struct bt_header
     {
-        public long magic;
+        public int  magic;
         public int  node_size;
         public int  max_number_of_levels;
         public int  data_type;
