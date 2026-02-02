@@ -157,9 +157,47 @@ public sealed partial class BeFS
             if(magic is BEFS_MAGIC1 or BEFS_CIGAM1)
             {
                 _littleEndian = magic == BEFS_CIGAM1;
-                sbSector      = new byte[0x200];
-                Array.Copy(sbSector, 0x200, sbSector, 0, 0x200);
-                AaruLogging.Debug(MODULE_NAME, "Superblock found at sector 0, offset 0x220 (boot sector present)");
+
+                // The superblock is at offset 0x220 - 0x20 = 0x200 in the boot sector
+                // (0x220 is where magic1 field is, which is at offset 0x20 in the superblock structure)
+                const int SUPERBLOCK_OFFSET_IN_BOOT_SECTOR = 0x200;
+
+                errno = _imagePlugin.ReadSector(1 + _partition.Start, false, out byte[] nextSector, out _);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME, "Error reading sector 1 for superblock: {0}", errno);
+
+                    return errno;
+                }
+
+                // Extract the superblock starting from offset 0x200 in sector 0 and continuing into sector 1
+                int remainingInFirstSector = sbSector.Length        - SUPERBLOCK_OFFSET_IN_BOOT_SECTOR;
+                int totalNeeded            = remainingInFirstSector + nextSector.Length;
+                var combinedSbSector       = new byte[totalNeeded];
+
+                // Copy from offset 0x200 in sector 0 to position 0 in combined buffer
+                Array.Copy(sbSector, SUPERBLOCK_OFFSET_IN_BOOT_SECTOR, combinedSbSector, 0, remainingInFirstSector);
+
+                // Copy all of sector 1 after that
+                Array.Copy(nextSector, 0, combinedSbSector, remainingInFirstSector, nextSector.Length);
+
+                sbSector = combinedSbSector;
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Superblock found at sector 0, offset 0x220 (boot sector present). Superblock starts at offset 0x200. Extracted {0} + {1} = {2} bytes",
+                                  remainingInFirstSector,
+                                  nextSector.Length,
+                                  totalNeeded);
+
+                // Debug: Show what we extracted
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Combined buffer first 64 bytes: {0}",
+                                  BitConverter.ToString(combinedSbSector, 0, Math.Min(64, combinedSbSector.Length)));
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Magic at buffer offset 0x20: 0x{0:X8}",
+                                  BigEndianBitConverter.ToUInt32(combinedSbSector, 0x20));
             }
             else
             {
