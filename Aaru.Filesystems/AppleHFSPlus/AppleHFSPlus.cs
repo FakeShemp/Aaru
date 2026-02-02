@@ -44,8 +44,11 @@ public sealed partial class AppleHFSPlus : IReadOnlyFilesystem
     /// <summary>Catalog B-Tree header information</summary>
     BTHeaderRec _catalogBTreeHeader;
 
-    /// <summary>Cached directory entries by CNID, each entry keyed by filename</summary>
+    /// <summary>Media image plugin reference</summary>
     Dictionary<uint, Dictionary<string, CatalogEntry>> _directoryCaches;
+
+    /// <summary>Extents Overflow File B-Tree header information</summary>
+    BTHeaderRec _extentsFileHeader;
 
     /// <summary>Media image plugin reference</summary>
     IMediaImage _imagePlugin;
