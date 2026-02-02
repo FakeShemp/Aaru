@@ -1,0 +1,96 @@
+// /***************************************************************************
+// Aaru Data Preservation Suite
+// ----------------------------------------------------------------------------
+//
+// Filename       : Structs.cs
+// Author(s)      : Natalia Portillo <claunia@claunia.com>
+//
+// Component      : Apple Hierarchical File System Plus plugin.
+//
+// --[ License ] --------------------------------------------------------------
+//
+//     This library is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU Lesser General Public License as
+//     published by the Free Software Foundation; either version 2.1 of the
+//     License, or (at your option) any later version.
+//
+//     This library is distributed in the hope that it will be useful, but
+//     WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//     Lesser General Public License for more details.
+//
+//     You should have received a copy of the GNU Lesser General Public
+//     License along with this library; if not, see <http://www.gnu.org/licenses/>.
+//
+// ----------------------------------------------------------------------------
+// Copyright © 2011-2026 Natalia Portillo
+// ****************************************************************************/
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
+using Partition = Aaru.CommonTypes.Partition;
+
+namespace Aaru.Filesystems;
+
+// Information from Apple TechNote 1150: https://developer.apple.com/legacy/library/technotes/tn/tn1150.html
+/// <inheritdoc />
+/// <summary>Implements detection of Apple Hierarchical File System Plus (HFS+)</summary>
+public sealed partial class AppleHFSPlus
+{
+    /// <inheritdoc />
+    public FileSystem Metadata { get; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; }
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; }
+
+    /// <inheritdoc />
+    public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
+                             Dictionary<string, string> options,     string    @namespace) =>
+        throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber Unmount() => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
+        throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename) => throw new NotImplementedException();
+}
