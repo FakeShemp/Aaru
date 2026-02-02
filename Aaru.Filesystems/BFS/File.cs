@@ -43,6 +43,77 @@ namespace Aaru.Filesystems;
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public sealed partial class BeFS
 {
+    /// <summary>Reads the target path of a symbolic link</summary>
+    /// <remarks>
+    ///     In BeFS, symbolic links store the target path as a null-terminated string in the file's data stream.
+    ///     The symlink i-node's data stream contains the full target path, which can be relative or absolute.
+    /// </remarks>
+    /// <param name="path">Path to the symbolic link</param>
+    /// <param name="dest">Output containing the target path of the symlink</param>
+    /// <returns>Error code indicating success or failure</returns>
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Get file metadata
+        ErrorNumber statError = Stat(path, out FileEntryInfo fileInfo);
+
+        if(statError != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error getting file stat: {0}", statError);
+
+            return statError;
+        }
+
+        // Verify it's a symbolic link
+        if(!fileInfo.Attributes.HasFlag(FileAttributes.Symlink))
+        {
+            AaruLogging.Debug(MODULE_NAME, "Path is not a symbolic link");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Get the i-node for the symlink
+        ErrorNumber inodeError = GetInodeForPath(path, out bfs_inode inode);
+
+        if(inodeError != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error getting i-node: {0}", inodeError);
+
+            return inodeError;
+        }
+
+        // Read the symlink target from the data stream
+        // The target is stored as a null-terminated string
+        if(inode.data.size <= 0 || inode.data.size > 4096)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Invalid symlink data size: {0}", inode.data.size);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        ErrorNumber readError = ReadFromDataStream(inode.data, 0, (int)inode.data.size, out byte[] linkData);
+
+        if(readError != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error reading symlink data: {0}", readError);
+
+            return readError;
+        }
+
+        // Convert the data to a string, stopping at the first null terminator
+        dest = _encoding.GetString(linkData).TrimEnd('\0');
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink successful: target='{0}'", dest);
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Gets the file attributes for a given path</summary>
     /// <remarks>
     ///     Determines the file attributes (directory, file, symlink, etc.) based on the i-node

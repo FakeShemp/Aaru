@@ -40,8 +40,4 @@ public sealed partial class BeFS
 {
     /// <inheritdoc />
     public ErrorNumber Unmount() => throw new NotImplementedException();
-
-
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
 }
