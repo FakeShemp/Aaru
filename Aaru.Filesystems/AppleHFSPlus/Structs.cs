@@ -28,6 +28,9 @@
 
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Attributes;
+using HFSCatalogNodeID = uint;
+
+// ReSharper disable UseSymbolAlias
 
 namespace Aaru.Filesystems;
 
@@ -48,7 +51,7 @@ public sealed partial class AppleHFSPlus
         /// <summary>0x002, 4 for HFS+, 5 for HFSX</summary>
         public ushort version;
         /// <summary>0x004, Volume attributes</summary>
-        public uint attributes;
+        public VolumeAttributes attributes;
         /// <summary>
         ///     0x008, Implementation that last mounted the volume. Reserved by Apple: "8.10" Mac OS 8.1 to 9.2.2 "10.0" Mac
         ///     OS X "HFSJ" Journaled implementation "fsck" /sbin/fsck
@@ -104,206 +107,334 @@ public sealed partial class AppleHFSPlus
         /// <summary>0x06C, finderInfo[7], second part of Mac OS X volume ID</summary>
         public uint drFndrInfo7;
 
-        // HFSPlusForkData     allocationFile;
         /// <summary>0x070</summary>
-        public ulong allocationFile_logicalSize;
-        /// <summary>0x078</summary>
-        public uint allocationFile_clumpSize;
-        /// <summary>0x07C</summary>
-        public uint allocationFile_totalBlocks;
-        /// <summary>0x080</summary>
-        public uint allocationFile_extents_startBlock0;
-        /// <summary>0x084</summary>
-        public uint allocationFile_extents_blockCount0;
-        /// <summary>0x088</summary>
-        public uint allocationFile_extents_startBlock1;
-        /// <summary>0x08C</summary>
-        public uint allocationFile_extents_blockCount1;
-        /// <summary>0x090</summary>
-        public uint allocationFile_extents_startBlock2;
-        /// <summary>0x094</summary>
-        public uint allocationFile_extents_blockCount2;
-        /// <summary>0x098</summary>
-        public uint allocationFile_extents_startBlock3;
-        /// <summary>0x09C</summary>
-        public uint allocationFile_extents_blockCount3;
-        /// <summary>0x0A0</summary>
-        public uint allocationFile_extents_startBlock4;
-        /// <summary>0x0A4</summary>
-        public uint allocationFile_extents_blockCount4;
-        /// <summary>0x0A8</summary>
-        public uint allocationFile_extents_startBlock5;
-        /// <summary>0x0AC</summary>
-        public uint allocationFile_extents_blockCount5;
-        /// <summary>0x0B0</summary>
-        public uint allocationFile_extents_startBlock6;
-        /// <summary>0x0B4</summary>
-        public uint allocationFile_extents_blockCount6;
-        /// <summary>0x0B8</summary>
-        public uint allocationFile_extents_startBlock7;
-        /// <summary>0x0BC</summary>
-        public uint allocationFile_extents_blockCount7;
-
-        // HFSPlusForkData     extentsFile;
+        public HFSPlusForkData allocationFile;
         /// <summary>0x0C0</summary>
-        public ulong extentsFile_logicalSize;
-        /// <summary>0x0C8</summary>
-        public uint extentsFile_clumpSize;
-        /// <summary>0x0CC</summary>
-        public uint extentsFile_totalBlocks;
-        /// <summary>0x0D0</summary>
-        public uint extentsFile_extents_startBlock0;
-        /// <summary>0x0D4</summary>
-        public uint extentsFile_extents_blockCount0;
-        /// <summary>0x0D8</summary>
-        public uint extentsFile_extents_startBlock1;
-        /// <summary>0x0DC</summary>
-        public uint extentsFile_extents_blockCount1;
-        /// <summary>0x0E0</summary>
-        public uint extentsFile_extents_startBlock2;
-        /// <summary>0x0E4</summary>
-        public uint extentsFile_extents_blockCount2;
-        /// <summary>0x0E8</summary>
-        public uint extentsFile_extents_startBlock3;
-        /// <summary>0x0EC</summary>
-        public uint extentsFile_extents_blockCount3;
-        /// <summary>0x0F0</summary>
-        public uint extentsFile_extents_startBlock4;
-        /// <summary>0x0F4</summary>
-        public uint extentsFile_extents_blockCount4;
-        /// <summary>0x0F8</summary>
-        public uint extentsFile_extents_startBlock5;
-        /// <summary>0x0FC</summary>
-        public uint extentsFile_extents_blockCount5;
-        /// <summary>0x100</summary>
-        public uint extentsFile_extents_startBlock6;
-        /// <summary>0x104</summary>
-        public uint extentsFile_extents_blockCount6;
-        /// <summary>0x108</summary>
-        public uint extentsFile_extents_startBlock7;
-        /// <summary>0x10C</summary>
-        public uint extentsFile_extents_blockCount7;
-
-        // HFSPlusForkData     catalogFile;
+        public HFSPlusForkData extentsFile;
         /// <summary>0x110</summary>
-        public ulong catalogFile_logicalSize;
-        /// <summary>0x118</summary>
-        public uint catalogFile_clumpSize;
-        /// <summary>0x11C</summary>
-        public uint catalogFile_totalBlocks;
-        /// <summary>0x120</summary>
-        public uint catalogFile_extents_startBlock0;
-        /// <summary>0x124</summary>
-        public uint catalogFile_extents_blockCount0;
-        /// <summary>0x128</summary>
-        public uint catalogFile_extents_startBlock1;
-        /// <summary>0x12C</summary>
-        public uint catalogFile_extents_blockCount1;
-        /// <summary>0x130</summary>
-        public uint catalogFile_extents_startBlock2;
-        /// <summary>0x134</summary>
-        public uint catalogFile_extents_blockCount2;
-        /// <summary>0x138</summary>
-        public uint catalogFile_extents_startBlock3;
-        /// <summary>0x13C</summary>
-        public uint catalogFile_extents_blockCount3;
-        /// <summary>0x140</summary>
-        public uint catalogFile_extents_startBlock4;
-        /// <summary>0x144</summary>
-        public uint catalogFile_extents_blockCount4;
-        /// <summary>0x148</summary>
-        public uint catalogFile_extents_startBlock5;
-        /// <summary>0x14C</summary>
-        public uint catalogFile_extents_blockCount5;
-        /// <summary>0x150</summary>
-        public uint catalogFile_extents_startBlock6;
-        /// <summary>0x154</summary>
-        public uint catalogFile_extents_blockCount6;
-        /// <summary>0x158</summary>
-        public uint catalogFile_extents_startBlock7;
-        /// <summary>0x15C</summary>
-        public uint catalogFile_extents_blockCount7;
-
-        // HFSPlusForkData     attributesFile;
+        public HFSPlusForkData catalogFile;
         /// <summary>0x160</summary>
-        public ulong attributesFile_logicalSize;
-        /// <summary>0x168</summary>
-        public uint attributesFile_clumpSize;
-        /// <summary>0x16C</summary>
-        public uint attributesFile_totalBlocks;
-        /// <summary>0x170</summary>
-        public uint attributesFile_extents_startBlock0;
-        /// <summary>0x174</summary>
-        public uint attributesFile_extents_blockCount0;
-        /// <summary>0x178</summary>
-        public uint attributesFile_extents_startBlock1;
-        /// <summary>0x17C</summary>
-        public uint attributesFile_extents_blockCount1;
-        /// <summary>0x180</summary>
-        public uint attributesFile_extents_startBlock2;
-        /// <summary>0x184</summary>
-        public uint attributesFile_extents_blockCount2;
-        /// <summary>0x188</summary>
-        public uint attributesFile_extents_startBlock3;
-        /// <summary>0x18C</summary>
-        public uint attributesFile_extents_blockCount3;
-        /// <summary>0x190</summary>
-        public uint attributesFile_extents_startBlock4;
-        /// <summary>0x194</summary>
-        public uint attributesFile_extents_blockCount4;
-        /// <summary>0x198</summary>
-        public uint attributesFile_extents_startBlock5;
-        /// <summary>0x19C</summary>
-        public uint attributesFile_extents_blockCount5;
-        /// <summary>0x1A0</summary>
-        public uint attributesFile_extents_startBlock6;
-        /// <summary>0x1A4</summary>
-        public uint attributesFile_extents_blockCount6;
-        /// <summary>0x1A8</summary>
-        public uint attributesFile_extents_startBlock7;
-        /// <summary>0x1AC</summary>
-        public uint attributesFile_extents_blockCount7;
-
-        // HFSPlusForkData     startupFile;
+        public HFSPlusForkData attributesFile;
         /// <summary>0x1B0</summary>
-        public ulong startupFile_logicalSize;
-        /// <summary>0x1B8</summary>
-        public uint startupFile_clumpSize;
-        /// <summary>0x1BC</summary>
-        public uint startupFile_totalBlocks;
-        /// <summary>0x1C0</summary>
-        public uint startupFile_extents_startBlock0;
-        /// <summary>0x1C4</summary>
-        public uint startupFile_extents_blockCount0;
-        /// <summary>0x1C8</summary>
-        public uint startupFile_extents_startBlock1;
-        /// <summary>0x1D0</summary>
-        public uint startupFile_extents_blockCount1;
-        /// <summary>0x1D4</summary>
-        public uint startupFile_extents_startBlock2;
-        /// <summary>0x1D8</summary>
-        public uint startupFile_extents_blockCount2;
-        /// <summary>0x1DC</summary>
-        public uint startupFile_extents_startBlock3;
-        /// <summary>0x1E0</summary>
-        public uint startupFile_extents_blockCount3;
-        /// <summary>0x1E4</summary>
-        public uint startupFile_extents_startBlock4;
-        /// <summary>0x1E8</summary>
-        public uint startupFile_extents_blockCount4;
-        /// <summary>0x1EC</summary>
-        public uint startupFile_extents_startBlock5;
-        /// <summary>0x1F0</summary>
-        public uint startupFile_extents_blockCount5;
-        /// <summary>0x1F4</summary>
-        public uint startupFile_extents_startBlock6;
-        /// <summary>0x1F8</summary>
-        public uint startupFile_extents_blockCount6;
-        /// <summary>0x1FC</summary>
-        public uint startupFile_extents_startBlock7;
-        /// <summary>0x200</summary>
-        public uint startupFile_extents_blockCount7;
+        public HFSPlusForkData startupFile;
     }
 
 #endregion
+
+    /// <summary>
+    ///     HFS+ stores most strings in a fully decomposed form known as Canonical Decomposition, a Unicode
+    ///     normalization form. This structure represents a Unicode string with a 16-bit length prefix and up to 255
+    ///     UTF-16 code units.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Unicode)]
+    [SwapEndian]
+    partial struct HFSUniStr255
+    {
+        /// <summary>Number of UTF-16 code units in the string.</summary>
+        public ushort length;
+        /// <summary>UTF-16 encoded Unicode characters (big-endian).</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 510)]
+        public byte[] unicode;
+    }
+
+    /// <summary>
+    ///     BSD-style file permissions, used by Mac OS X for access control. Contains the owner and group IDs,
+    ///     administrative and owner flags, file mode, and a union value that can represent iNode number, link count,
+    ///     or raw device number depending on the file type.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusBSDInfo
+    {
+        /// <summary>User ID of the file's owner.</summary>
+        public uint ownerID;
+        /// <summary>Group ID of the file.</summary>
+        public uint groupID;
+        /// <summary>Super-user changeable flags (UF_NODUMP, UF_IMMUTABLE, UF_APPEND, UF_OPAQUE).</summary>
+        public byte adminFlags;
+        /// <summary>Owner changeable flags (SF_ARCHIVED, SF_IMMUTABLE, SF_APPEND).</summary>
+        public byte ownerFlags;
+        /// <summary>File type and permissions (similar to stat st_mode).</summary>
+        public short fileMode;
+        /// <summary>
+        ///     can be iNodeNum, linkCount, or rawDevice
+        /// </summary>
+        public uint special;
+    }
+
+    /// <summary>
+    ///     Fork data structure that describes the size and location of a fork (either data or resource). In HFS+,
+    ///     each file can have two forks, a data fork and a resource fork, each described by this structure.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusForkData
+    {
+        /// <summary>Size in bytes of the valid data in the fork.</summary>
+        public ulong logicalSize;
+        /// <summary>Clump size for allocating additional space to the fork.</summary>
+        public uint clumpSize;
+        /// <summary>Total number of allocation blocks used by all extents in this fork.</summary>
+        public uint totalBlocks;
+        /// <summary>First 8 extent descriptors for this fork.</summary>
+        public HFSPlusExtentRecord extents;
+    }
+
+    /// <summary>
+    ///     An extent record contains an array of 8 extent descriptors. The extents in a record are ordered by the
+    ///     relative position of the data within the fork.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusExtentRecord
+    {
+        /// <summary>Array of 8 extent descriptors.</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public HFSPlusExtentDescriptor[] extentDescriptors;
+    }
+
+    /// <summary>
+    ///     An extent descriptor represents a contiguous region of allocation blocks in the volume. It contains the
+    ///     first allocation block and the number of allocation blocks in the extent.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusExtentDescriptor
+    {
+        /// <summary>First allocation block in this extent.</summary>
+        public uint startBlock;
+        /// <summary>Number of allocation blocks in this extent.</summary>
+        public uint blockCount;
+    }
+
+    /// <summary>
+    ///     B-tree node descriptor. Each node in a B-tree begins with this descriptor, which contains links to
+    ///     related nodes and information about the node itself.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct BTNodeDescriptor
+    {
+        /// <summary>Node number of the next node of this kind, or 0 if this is the last node.</summary>
+        public uint fLink;
+        /// <summary>Node number of the previous node of this kind, or 0 if this is the first node.</summary>
+        public uint bLink;
+        /// <summary>Kind of node (leaf, index, header, or map).</summary>
+        public BTNodeKind kind;
+        /// <summary>Level of this node in the B-tree hierarchy (0 for leaf nodes).</summary>
+        public byte height;
+        /// <summary>Number of records contained in this node.</summary>
+        public ushort numRecords;
+        /// <summary>Reserved; set to zero.</summary>
+        public ushort reserved;
+    }
+
+    /// <summary>
+    ///     B-tree header record. This record is always the first record in the header node (node 0) of a B-tree.
+    ///     It contains general information about the B-tree such as its size, depth, and the location of the
+    ///     first and last leaf nodes.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct BTHeaderRec
+    {
+        /// <summary>Current depth of the B-tree.</summary>
+        public ushort treeDepth;
+        /// <summary>Node number of the root node.</summary>
+        public uint rootNode;
+        /// <summary>Number of data records in all leaf nodes.</summary>
+        public uint leafRecords;
+        /// <summary>Node number of the first leaf node.</summary>
+        public uint firstLeafNode;
+        /// <summary>Node number of the last leaf node.</summary>
+        public uint lastLeafNode;
+        /// <summary>Size of a node in bytes.</summary>
+        public ushort nodeSize;
+        /// <summary>Maximum length of a key in an index or leaf node.</summary>
+        public ushort maxKeyLength;
+        /// <summary>Total number of nodes in the B-tree (free and used).</summary>
+        public uint totalNodes;
+        /// <summary>Number of unused nodes in the B-tree.</summary>
+        public uint freeNodes;
+        /// <summary>Reserved; set to zero.</summary>
+        public ushort reserved1;
+        /// <summary>Clump size for the B-tree file (misaligned).</summary>
+        public uint clumpSize;
+        /// <summary>Type of B-tree (0 for HFS catalog/extents, 128 for user, 255 for reserved).</summary>
+        public BTreeTypes btreeType;
+        /// <summary>Key comparison type (case-folding for HFSX).</summary>
+        public byte keyCompareType;
+        /// <summary>Persistent attributes of the B-tree (long aligned).</summary>
+        public BTreeAttributes attributes;
+        /// <summary>Reserved; set to zero.</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public uint reserved3;
+    }
+
+    /// <summary>
+    ///     Catalog file key. Used to search for records in the catalog B-tree. The key consists of the parent
+    ///     folder's CNID and the name of the file or folder.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusCatalogKey
+    {
+        /// <summary>Length of the key data in bytes (not including this field).</summary>
+        public ushort keyLength;
+        /// <summary>Catalog node ID (CNID) of the parent folder.</summary>
+        HFSCatalogNodeID parentID;
+        /// <summary>Name of the file or folder.</summary>
+        HFSUniStr255 nodeName;
+    }
+
+    /// <summary>
+    ///     Catalog folder record. Stores information about a folder in the catalog file, including timestamps,
+    ///     permissions, Finder info, and the number of items contained in the folder.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusCatalogFolder
+    {
+        /// <summary>Type of catalog record (folder, file, folder thread, or file thread).</summary>
+        public BTreeRecordType recordType;
+        /// <summary>Catalog folder flags.</summary>
+        public BTCatalogFlags flags;
+        /// <summary>Number of files and folders directly contained in this folder.</summary>
+        public uint valence;
+        /// <summary>Catalog node ID (CNID) of this folder.</summary>
+        HFSCatalogNodeID folderID;
+        /// <summary>Date and time the folder was created.</summary>
+        public uint createDate;
+        /// <summary>Date and time the folder's content was last modified.</summary>
+        public uint contentModDate;
+        /// <summary>Date and time the folder's attributes were last modified.</summary>
+        public uint attributeModDate;
+        /// <summary>Date and time the folder was last accessed.</summary>
+        public uint accessDate;
+        /// <summary>Date and time the folder was last backed up.</summary>
+        public uint backupDate;
+        /// <summary>BSD-style permissions for Mac OS X.</summary>
+        HFSPlusBSDInfo permissions;
+        /// <summary>Finder information for the folder.</summary>
+        AppleCommon.DInfo userInfo;
+        /// <summary>Extended Finder information for the folder.</summary>
+        AppleCommon.DXInfo finderInfo;
+        /// <summary>Hint for the text encoding to use for the folder name.</summary>
+        public uint textEncoding;
+        /// <summary>Reserved; set to zero.</summary>
+        public uint reserved;
+    }
+
+    /// <summary>
+    ///     Catalog file record. Stores information about a file in the catalog file, including timestamps,
+    ///     permissions, Finder info, and the data and resource fork information.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusCatalogFile
+    {
+        /// <summary>Type of catalog record (folder, file, folder thread, or file thread).</summary>
+        public BTreeRecordType recordType;
+        /// <summary>Catalog file flags.</summary>
+        public BTCatalogFlags flags;
+        /// <summary>Reserved; set to zero.</summary>
+        public uint reserved1;
+        /// <summary>Catalog node ID (CNID) of this file.</summary>
+        HFSCatalogNodeID fileID;
+        /// <summary>Date and time the file was created.</summary>
+        public uint createDate;
+        /// <summary>Date and time the file's content was last modified.</summary>
+        public uint contentModDate;
+        /// <summary>Date and time the file's attributes were last modified.</summary>
+        public uint attributeModDate;
+        /// <summary>Date and time the file was last accessed.</summary>
+        public uint accessDate;
+        /// <summary>Date and time the file was last backed up.</summary>
+        public uint backupDate;
+        /// <summary>BSD-style permissions for Mac OS X.</summary>
+        HFSPlusBSDInfo permissions;
+        /// <summary>Finder information for the file.</summary>
+        AppleCommon.FInfo userInfo;
+        /// <summary>Extended Finder information for the file.</summary>
+        AppleCommon.FXInfo finderInfo;
+        /// <summary>Hint for the text encoding to use for the file name.</summary>
+        public uint textEncoding;
+        /// <summary>Reserved; set to zero.</summary>
+        public uint reserved2;
+
+        /// <summary>Information about the file's data fork.</summary>
+        HFSPlusForkData dataFork;
+        /// <summary>Information about the file's resource fork.</summary>
+        HFSPlusForkData resourceFork;
+    }
+
+    /// <summary>
+    ///     Catalog thread record. Provides a link from a file or folder's CNID back to its parent directory and name.
+    ///     Thread records allow efficient lookup of a file or folder by CNID alone.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusCatalogThread
+    {
+        /// <summary>Type of catalog record (folder thread or file thread).</summary>
+        public BTreeRecordType recordType;
+        /// <summary>Reserved; set to zero.</summary>
+        public short reserved;
+        /// <summary>Catalog node ID (CNID) of the parent folder.</summary>
+        HFSCatalogNodeID parentID;
+        /// <summary>Name of the file or folder.</summary>
+        HFSUniStr255 nodeName;
+    }
+
+    /// <summary>
+    ///     Extents overflow file key. Used to locate additional extents for a fork when the fork's data
+    ///     extends beyond the 8 extents stored in the catalog record.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusExtentKey
+    {
+        /// <summary>Length of the key data in bytes (not including this field).</summary>
+        public ushort keyLength;
+        /// <summary>Fork type: 0x00 for data fork, 0xFF for resource fork.</summary>
+        public byte forkType;
+        /// <summary>Padding; set to zero.</summary>
+        public byte pad;
+        /// <summary>Catalog node ID (CNID) of the file.</summary>
+        HFSCatalogNodeID fileID;
+        /// <summary>Start block of this extent record within the fork.</summary>
+        public uint startBlock;
+    }
+
+    /// <summary>
+    ///     Attribute fork data record. Used in the attributes file to store large attribute data
+    ///     that cannot fit inline. Contains a complete fork data structure.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusAttrForkData
+    {
+        /// <summary>Type of attribute record (kHFSPlusAttrForkData).</summary>
+        public BTAttributeRecordType recordType;
+        /// <summary>Reserved; set to zero.</summary>
+        public uint reserved;
+        /// <summary>Fork data describing the attribute's extents.</summary>
+        HFSPlusForkData theFork;
+    }
+
+    /// <summary>
+    ///     Attribute extents record. Used in the attributes file to store overflow extents for
+    ///     attribute data when more than 8 extents are needed.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusAttrExtents
+    {
+        /// <summary>Type of attribute record (kHFSPlusAttrExtents).</summary>
+        public BTAttributeRecordType recordType;
+        /// <summary>Reserved; set to zero.</summary>
+        public uint reserved;
+        /// <summary>Additional extent descriptors for the attribute.</summary>
+        HFSPlusExtentRecord extents;
+    }
 }
