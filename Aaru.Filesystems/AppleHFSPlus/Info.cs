@@ -184,27 +184,35 @@ public sealed partial class AppleHFSPlus
         {
             sb.AppendFormat(Localization.Filesystem_version_is_0, vh.version).AppendLine();
 
-            if((vh.attributes & 0x80) == 0x80) sb.AppendLine(Localization.Volume_is_locked_by_hardware);
+            if(vh.attributes.HasFlag(VolumeAttributes.kHFSVolumeHardwareLockBit))
+                sb.AppendLine(Localization.Volume_is_locked_by_hardware);
 
-            if((vh.attributes & 0x100) == 0x100) sb.AppendLine(Localization.Volume_is_unmounted);
+            if(vh.attributes.HasFlag(VolumeAttributes.kHFSVolumeUnmountedBit))
+                sb.AppendLine(Localization.Volume_is_unmounted);
 
-            if((vh.attributes & 0x200) == 0x200) sb.AppendLine(Localization.There_are_bad_blocks_in_the_extents_file);
+            if(vh.attributes.HasFlag(VolumeAttributes.kHFSVolumeSparedBlocksBit))
+                sb.AppendLine(Localization.There_are_bad_blocks_in_the_extents_file);
 
-            if((vh.attributes & 0x400) == 0x400) sb.AppendLine(Localization.Volume_does_not_need_cache);
+            if(vh.attributes.HasFlag(VolumeAttributes.kHFSVolumeNoCacheRequiredBit))
+                sb.AppendLine(Localization.Volume_does_not_need_cache);
 
-            if((vh.attributes & 0x800) == 0x800) sb.AppendLine(Localization.Volume_state_is_inconsistent);
+            if(vh.attributes.HasFlag(VolumeAttributes.kHFSBootVolumeInconsistentBit))
+                sb.AppendLine(Localization.Volume_state_is_inconsistent);
 
-            if((vh.attributes & 0x1000) == 0x1000) sb.AppendLine(Localization.There_are_reused_CNIDs);
+            if(vh.attributes.HasFlag(VolumeAttributes.kHFSCatalogNodeIDsReusedBit))
+                sb.AppendLine(Localization.There_are_reused_CNIDs);
 
-            if((vh.attributes & 0x2000) == 0x2000) sb.AppendLine(Localization.Volume_is_journaled);
+            if(vh.attributes.HasFlag(VolumeAttributes.kHFSVolumeJournaledBit))
+                sb.AppendLine(Localization.Volume_is_journaled);
 
-            if((vh.attributes & 0x8000) == 0x8000) sb.AppendLine(Localization.Volume_is_locked_by_software);
+            if(vh.attributes.HasFlag(VolumeAttributes.kHFSVolumeSoftwareLockBit))
+                sb.AppendLine(Localization.Volume_is_locked_by_software);
 
             sb.AppendFormat(Localization.Implementation_that_last_mounted_the_volume_0,
                             Encoding.ASCII.GetString(vh.lastMountedVersion))
               .AppendLine();
 
-            if((vh.attributes & 0x2000) == 0x2000)
+            if(vh.attributes.HasFlag(VolumeAttributes.kHFSVolumeJournaledBit))
                 sb.AppendFormat(Localization.Journal_starts_at_allocation_block_0, vh.journalInfoBlock).AppendLine();
 
             sb.AppendFormat(Localization.Creation_date_0, DateHandlers.MacToDateTime(vh.createDate)).AppendLine();
@@ -238,11 +246,11 @@ public sealed partial class AppleHFSPlus
             sb.AppendFormat(Localization.Data_fork_clump_size_0_bytes, vh.dataClumpSize).AppendLine();
             sb.AppendFormat(Localization.Next_unused_CNID_0, vh.nextCatalogID).AppendLine();
             sb.AppendFormat(Localization.Volume_has_been_mounted_writable_0_times, vh.writeCount).AppendLine();
-            sb.AppendFormat(Localization.Allocation_File_is_0_bytes, vh.allocationFile_logicalSize).AppendLine();
-            sb.AppendFormat(Localization.Extents_File_is_0_bytes, vh.extentsFile_logicalSize).AppendLine();
-            sb.AppendFormat(Localization.Catalog_File_is_0_bytes, vh.catalogFile_logicalSize).AppendLine();
-            sb.AppendFormat(Localization.Attributes_File_is_0_bytes, vh.attributesFile_logicalSize).AppendLine();
-            sb.AppendFormat(Localization.Startup_File_is_0_bytes, vh.startupFile_logicalSize).AppendLine();
+            sb.AppendFormat(Localization.Allocation_File_is_0_bytes, vh.allocationFile.logicalSize).AppendLine();
+            sb.AppendFormat(Localization.Extents_File_is_0_bytes, vh.extentsFile.logicalSize).AppendLine();
+            sb.AppendFormat(Localization.Catalog_File_is_0_bytes, vh.catalogFile.logicalSize).AppendLine();
+            sb.AppendFormat(Localization.Attributes_File_is_0_bytes, vh.attributesFile.logicalSize).AppendLine();
+            sb.AppendFormat(Localization.Startup_File_is_0_bytes, vh.startupFile.logicalSize).AppendLine();
             sb.AppendLine(Localization.Finder_info);
             sb.AppendFormat(Localization.CNID_of_bootable_system_directory_0,        vh.drFndrInfo0).AppendLine();
             sb.AppendFormat(Localization.CNID_of_first_run_application_directory_0,  vh.drFndrInfo1).AppendLine();
@@ -263,7 +271,9 @@ public sealed partial class AppleHFSPlus
 
             if(vh.createDate > 0) metadata.CreationDate = DateHandlers.MacToDateTime(vh.createDate);
 
-            metadata.Dirty        = (vh.attributes & 0x100) != 0x100;
+            metadata.Dirty = vh.attributes.HasFlag(VolumeAttributes.kHFSBootVolumeInconsistentBit) ||
+                             !vh.attributes.HasFlag(VolumeAttributes.kHFSVolumeUnmountedBit);
+
             metadata.Files        = vh.fileCount;
             metadata.FreeClusters = vh.freeBlocks;
 
