@@ -27,6 +27,8 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
@@ -36,6 +38,43 @@ namespace Aaru.Filesystems;
 /// <summary>Implements detection of Apple Hierarchical File System Plus (HFS+)</summary>
 public sealed partial class AppleHFSPlus : IReadOnlyFilesystem
 {
+    /// <summary>Module name for debugging</summary>
+    const string MODULE_NAME = "HFS+ plugin";
+
+    /// <summary>Catalog B-Tree header information</summary>
+    BTHeaderRec _catalogBTreeHeader;
+
+    /// <summary>Cached directory entries by CNID, each entry keyed by filename</summary>
+    Dictionary<uint, Dictionary<string, CatalogEntry>> _directoryCaches;
+
+    /// <summary>Media image plugin reference</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Whether the filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Partition start sector</summary>
+    ulong _partitionStart;
+
+    /// <summary>Cached root folder entries</summary>
+    Dictionary<string, CatalogEntry> _rootDirectoryCache;
+
+    /// <summary>Cached root folder metadata</summary>
+    HFSPlusCatalogFolder _rootFolder;
+
+    /// <summary>Device sector size</summary>
+    uint _sectorSize;
+
+    /// <summary>HFS+ Volume Header</summary>
+    VolumeHeader _volumeHeader;
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
+
 #region IFilesystem Members
 
     /// <inheritdoc />

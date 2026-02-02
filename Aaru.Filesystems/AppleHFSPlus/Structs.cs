@@ -34,7 +34,6 @@ using HFSCatalogNodeID = uint;
 
 namespace Aaru.Filesystems;
 
-// Information from Apple TechNote 1150: https://developer.apple.com/legacy/library/technotes/tn/tn1150.html
 /// <inheritdoc />
 /// <summary>Implements detection of Apple Hierarchical File System Plus (HFS+)</summary>
 public sealed partial class AppleHFSPlus
@@ -268,7 +267,7 @@ public sealed partial class AppleHFSPlus
         public BTreeAttributes attributes;
         /// <summary>Reserved; set to zero.</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public uint reserved3;
+        public uint[] reserved3;
     }
 
     /// <summary>
@@ -282,9 +281,9 @@ public sealed partial class AppleHFSPlus
         /// <summary>Length of the key data in bytes (not including this field).</summary>
         public ushort keyLength;
         /// <summary>Catalog node ID (CNID) of the parent folder.</summary>
-        HFSCatalogNodeID parentID;
+        public HFSCatalogNodeID parentID;
         /// <summary>Name of the file or folder.</summary>
-        HFSUniStr255 nodeName;
+        public HFSUniStr255 nodeName;
     }
 
     /// <summary>
@@ -302,7 +301,7 @@ public sealed partial class AppleHFSPlus
         /// <summary>Number of files and folders directly contained in this folder.</summary>
         public uint valence;
         /// <summary>Catalog node ID (CNID) of this folder.</summary>
-        HFSCatalogNodeID folderID;
+        public HFSCatalogNodeID folderID;
         /// <summary>Date and time the folder was created.</summary>
         public uint createDate;
         /// <summary>Date and time the folder's content was last modified.</summary>
@@ -314,11 +313,11 @@ public sealed partial class AppleHFSPlus
         /// <summary>Date and time the folder was last backed up.</summary>
         public uint backupDate;
         /// <summary>BSD-style permissions for Mac OS X.</summary>
-        HFSPlusBSDInfo permissions;
+        public HFSPlusBSDInfo permissions;
         /// <summary>Finder information for the folder.</summary>
-        AppleCommon.DInfo userInfo;
+        public AppleCommon.DInfo userInfo;
         /// <summary>Extended Finder information for the folder.</summary>
-        AppleCommon.DXInfo finderInfo;
+        public AppleCommon.DXInfo finderInfo;
         /// <summary>Hint for the text encoding to use for the folder name.</summary>
         public uint textEncoding;
         /// <summary>Reserved; set to zero.</summary>
@@ -340,7 +339,7 @@ public sealed partial class AppleHFSPlus
         /// <summary>Reserved; set to zero.</summary>
         public uint reserved1;
         /// <summary>Catalog node ID (CNID) of this file.</summary>
-        HFSCatalogNodeID fileID;
+        public HFSCatalogNodeID fileID;
         /// <summary>Date and time the file was created.</summary>
         public uint createDate;
         /// <summary>Date and time the file's content was last modified.</summary>
@@ -352,20 +351,20 @@ public sealed partial class AppleHFSPlus
         /// <summary>Date and time the file was last backed up.</summary>
         public uint backupDate;
         /// <summary>BSD-style permissions for Mac OS X.</summary>
-        HFSPlusBSDInfo permissions;
+        public HFSPlusBSDInfo permissions;
         /// <summary>Finder information for the file.</summary>
-        AppleCommon.FInfo userInfo;
+        public AppleCommon.FInfo userInfo;
         /// <summary>Extended Finder information for the file.</summary>
-        AppleCommon.FXInfo finderInfo;
+        public AppleCommon.FXInfo finderInfo;
         /// <summary>Hint for the text encoding to use for the file name.</summary>
         public uint textEncoding;
         /// <summary>Reserved; set to zero.</summary>
         public uint reserved2;
 
         /// <summary>Information about the file's data fork.</summary>
-        HFSPlusForkData dataFork;
+        public HFSPlusForkData dataFork;
         /// <summary>Information about the file's resource fork.</summary>
-        HFSPlusForkData resourceFork;
+        public HFSPlusForkData resourceFork;
     }
 
     /// <summary>
@@ -381,9 +380,9 @@ public sealed partial class AppleHFSPlus
         /// <summary>Reserved; set to zero.</summary>
         public short reserved;
         /// <summary>Catalog node ID (CNID) of the parent folder.</summary>
-        HFSCatalogNodeID parentID;
+        public HFSCatalogNodeID parentID;
         /// <summary>Name of the file or folder.</summary>
-        HFSUniStr255 nodeName;
+        public HFSUniStr255 nodeName;
     }
 
     /// <summary>
@@ -401,7 +400,7 @@ public sealed partial class AppleHFSPlus
         /// <summary>Padding; set to zero.</summary>
         public byte pad;
         /// <summary>Catalog node ID (CNID) of the file.</summary>
-        HFSCatalogNodeID fileID;
+        public HFSCatalogNodeID fileID;
         /// <summary>Start block of this extent record within the fork.</summary>
         public uint startBlock;
     }
@@ -419,7 +418,7 @@ public sealed partial class AppleHFSPlus
         /// <summary>Reserved; set to zero.</summary>
         public uint reserved;
         /// <summary>Fork data describing the attribute's extents.</summary>
-        HFSPlusForkData theFork;
+        public HFSPlusForkData theFork;
     }
 
     /// <summary>
@@ -435,6 +434,6 @@ public sealed partial class AppleHFSPlus
         /// <summary>Reserved; set to zero.</summary>
         public uint reserved;
         /// <summary>Additional extent descriptors for the attribute.</summary>
-        HFSPlusExtentRecord extents;
+        public HFSPlusExtentRecord extents;
     }
 }
