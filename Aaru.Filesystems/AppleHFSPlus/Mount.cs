@@ -34,6 +34,7 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
 using Partition = Aaru.CommonTypes.Partition;
@@ -528,5 +529,21 @@ public sealed partial class AppleHFSPlus
         // Create volume serial from Finder info fields
         if(_volumeHeader.drFndrInfo6 != 0 && _volumeHeader.drFndrInfo7 != 0)
             Metadata.VolumeSerial = $"{_volumeHeader.drFndrInfo6:X8}{_volumeHeader.drFndrInfo7:X8}";
+
+        // Create FileSystemInfo for StatFs
+        _fileSystemInfo = new FileSystemInfo
+        {
+            Type           = Metadata.Type,
+            Blocks         = _volumeHeader.totalBlocks,
+            Files          = _volumeHeader.fileCount,
+            FreeBlocks     = _volumeHeader.freeBlocks,
+            FilenameLength = 255, // HFS+ supports up to 255 character UTF-16 names
+            PluginId       = Id,
+            Id = new FileSystemId
+            {
+                IsLong   = true,
+                Serial64 = (ulong)_volumeHeader.drFndrInfo6 << 32 | _volumeHeader.drFndrInfo7
+            }
+        };
     }
 }

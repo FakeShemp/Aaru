@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
@@ -43,12 +44,14 @@ public sealed partial class AppleHFSPlus : IReadOnlyFilesystem
 
     /// <summary>Catalog B-Tree header information</summary>
     BTHeaderRec _catalogBTreeHeader;
-
-    /// <summary>Media image plugin reference</summary>
+    /// <summary>Cached directory entries by CNID, each entry keyed by filename</summary>
     Dictionary<uint, Dictionary<string, CatalogEntry>> _directoryCaches;
 
     /// <summary>Extents Overflow File B-Tree header information</summary>
     BTHeaderRec _extentsFileHeader;
+
+    /// <summary>Filesystem information</summary>
+    FileSystemInfo _fileSystemInfo;
 
     /// <summary>Media image plugin reference</summary>
     IMediaImage _imagePlugin;

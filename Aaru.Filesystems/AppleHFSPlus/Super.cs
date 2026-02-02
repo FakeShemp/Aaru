@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Structs.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Apple Hierarchical File System Plus plugin.
@@ -26,31 +26,24 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 // Information from Apple TechNote 1150: https://developer.apple.com/legacy/library/technotes/tn/tn1150.html
-/// <inheritdoc />
 /// <summary>Implements detection of Apple Hierarchical File System Plus (HFS+)</summary>
 public sealed partial class AppleHFSPlus
 {
     /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+        stat = _fileSystemInfo;
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        return ErrorNumber.NoError;
+    }
 }
