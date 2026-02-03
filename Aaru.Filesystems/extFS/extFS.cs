@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 using Partition = Aaru.CommonTypes.Partition;
 
@@ -43,7 +44,7 @@ public sealed partial class extFS : IReadOnlyFilesystem
     const string MODULE_NAME = "extFS plugin";
 
     /// <summary>Cached root directory entries (filename to inode number)</summary>
-    readonly Dictionary<string, uint> _rootDirectoryCache = new();
+    readonly Dictionary<string, uint> _rootDirectoryCache = [];
 
     /// <summary>The encoding used for filenames</summary>
     Encoding _encoding;
@@ -59,6 +60,12 @@ public sealed partial class extFS : IReadOnlyFilesystem
 
     /// <summary>The cached superblock</summary>
     ext_super_block _superblock;
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
 #region IFilesystem Members
 

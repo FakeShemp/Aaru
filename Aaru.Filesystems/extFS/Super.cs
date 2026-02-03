@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Linux extended filesystem plugin.
@@ -26,11 +26,9 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
@@ -39,13 +37,32 @@ namespace Aaru.Filesystems;
 public sealed partial class extFS
 {
     /// <inheritdoc />
-    public FileSystem Metadata { get; private set; }
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; }
-    /// <inheritdoc />
-    public Dictionary<string, string> Namespaces { get; }
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+        AaruLogging.Debug(MODULE_NAME, "StatFs: returning filesystem statistics");
+
+        stat = new FileSystemInfo
+        {
+            Blocks         = _superblock.s_nzones,
+            FreeBlocks     = _superblock.s_freeblockscount,
+            FilenameLength = EXT_NAME_LEN,
+            Type           = FS_TYPE,
+            Files          = _superblock.s_ninodes,
+            FreeFiles      = _superblock.s_freeinodescount,
+            PluginId       = Id
+        };
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "StatFs complete: totalBlocks={0}, freeBlocks={1}, inodes={2}, freeInodes={3}",
+                          _superblock.s_nzones,
+                          _superblock.s_freeblockscount,
+                          _superblock.s_ninodes,
+                          _superblock.s_freeinodescount);
+
+        return ErrorNumber.NoError;
+    }
 }
