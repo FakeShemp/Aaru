@@ -32,6 +32,7 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Partition = Aaru.CommonTypes.Partition;
+using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
 
@@ -88,21 +89,10 @@ public sealed partial class extFS
 
         if(errno != ErrorNumber.NoError) return;
 
-        var sbSector = new byte[512];
-        Array.Copy(sblock, sbOff, sbSector, 0, 512);
+        var sbSector = new byte[Marshal.SizeOf<ext_super_block>()];
+        Array.Copy(sblock, sbOff, sbSector, 0, sbSector.Length);
 
-        var extSb = new ext_super_block
-        {
-            s_ninodes         = BitConverter.ToUInt32(sbSector, 0x000),
-            s_nzones          = BitConverter.ToUInt32(sbSector, 0x004),
-            s_firstfreeblock  = BitConverter.ToUInt32(sbSector, 0x008),
-            s_freeblockscount = BitConverter.ToUInt32(sbSector, 0x00C),
-            s_firstfreeinode  = BitConverter.ToUInt32(sbSector, 0x010),
-            s_freeinodescount = BitConverter.ToUInt32(sbSector, 0x014),
-            s_firstdatazone   = BitConverter.ToUInt32(sbSector, 0x018),
-            s_log_zone_size   = BitConverter.ToUInt32(sbSector, 0x01C),
-            s_max_size        = BitConverter.ToUInt32(sbSector, 0x020)
-        };
+        ext_super_block extSb = Marshal.ByteArrayToStructureLittleEndian<ext_super_block>(sbSector);
 
         sb.AppendLine(Localization.ext_filesystem);
         sb.AppendFormat(Localization._0_zones_in_volume,     extSb.s_nzones);
