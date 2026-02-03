@@ -42,6 +42,107 @@ namespace Aaru.Filesystems;
 public sealed partial class Xia
 {
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Get file metadata to verify it's a symlink
+        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: Stat failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Verify it's a symbolic link
+        if(!stat.Attributes.HasFlag(FileAttributes.Symlink))
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: path is not a symbolic link");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Get the inode number
+        errno = GetInodeNumber(path, out uint inodeNum);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: GetInodeNumber failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Read the inode
+        errno = ReadInode(inodeNum, out Inode inode);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: ReadInode failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Validate symlink size
+        if(inode.i_size <= 0 || inode.i_size > XIAFS_NAME_LEN)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: invalid symlink size {0}", inode.i_size);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Read the symlink target from the file data
+        // The target path is stored in the data zones, just like file content
+        var linkData = new byte[inode.i_size];
+
+        uint bytesRead     = 0;
+        uint currentOffset = 0;
+
+        while(bytesRead < inode.i_size)
+        {
+            uint zoneSize     = _superblock.s_zone_size;
+            var  zoneNum      = currentOffset / zoneSize;
+            var  offsetInZone = (int)(currentOffset % zoneSize);
+
+            errno = MapZone(inode, zoneNum, out uint physicalZone);
+
+            if(errno != ErrorNumber.NoError || physicalZone == 0)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadLink: MapZone failed for zone {0}", zoneNum);
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            errno = ReadZone(physicalZone, out byte[] zoneData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadLink: ReadZone failed for zone {0}", physicalZone);
+
+                return errno;
+            }
+
+            uint bytesToCopy = Math.Min(zoneSize - (uint)offsetInZone, inode.i_size - bytesRead);
+            Array.Copy(zoneData, offsetInZone, linkData, bytesRead, bytesToCopy);
+
+            bytesRead     += bytesToCopy;
+            currentOffset += bytesToCopy;
+        }
+
+        // Convert to string, stopping at null terminator
+        dest = _encoding.GetString(linkData).TrimEnd('\0');
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: target='{0}'", dest);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
         node = null;
