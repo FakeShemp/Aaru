@@ -28,7 +28,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Logging;
 
@@ -38,6 +40,138 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class extFS
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize path
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath is "" or ".") normalizedPath = "/";
+
+        // Root directory
+        if(normalizedPath == "/" || string.Equals(normalizedPath, "/", StringComparison.OrdinalIgnoreCase))
+        {
+            if(_rootDirectoryCache.Count == 0) return ErrorNumber.NoSuchFile;
+
+            node = new ExtDirNode
+            {
+                Path     = "/",
+                Position = 0,
+                Entries  = _rootDirectoryCache.Keys.ToArray()
+            };
+
+            return ErrorNumber.NoError;
+        }
+
+        // Subdirectory traversal
+        string pathWithoutLeadingSlash = normalizedPath.StartsWith("/", StringComparison.Ordinal)
+                                             ? normalizedPath[1..]
+                                             : normalizedPath;
+
+        string[] pathComponents = pathWithoutLeadingSlash.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries)
+                                                         .Where(static c => c != "." && c != "..")
+                                                         .ToArray();
+
+        if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
+
+        AaruLogging.Debug(MODULE_NAME, "Traversing path with {0} components", pathComponents.Length);
+
+        // Start from root directory
+        Dictionary<string, uint> currentEntries = _rootDirectoryCache;
+
+        // Traverse each path component
+        foreach(string component in pathComponents)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Navigating to component '{0}'", component);
+
+            // Find the component in current directory
+            if(!currentEntries.TryGetValue(component, out uint childInodeNum))
+            {
+                AaruLogging.Debug(MODULE_NAME, "Component '{0}' not found in directory", component);
+
+                return ErrorNumber.NoSuchFile;
+            }
+
+            // Read the child inode
+            ErrorNumber errno = ReadInode(childInodeNum, out ext_inode childInode);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error reading child inode: {0}", errno);
+
+                return errno;
+            }
+
+            // Check if it's a directory (S_IFDIR = 0x4000)
+            if((childInode.i_mode & 0xF000) != 0x4000)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Component '{0}' is not a directory", component);
+
+                return ErrorNumber.NotDirectory;
+            }
+
+            // Read directory entries from child inode
+            errno = ReadDirectoryEntries(childInode, out Dictionary<string, uint> childEntries);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error reading child directory entries: {0}", errno);
+
+                return errno;
+            }
+
+            currentEntries = childEntries;
+        }
+
+        // Create directory node with found entries
+        node = new ExtDirNode
+        {
+            Path     = normalizedPath,
+            Position = 0,
+            Entries  = currentEntries.Keys.ToArray()
+        };
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "Successfully opened directory '{0}' with {1} entries",
+                          normalizedPath,
+                          currentEntries.Count);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(node is not ExtDirNode extDirNode) return ErrorNumber.InvalidArgument;
+
+        extDirNode.Position = -1;
+        extDirNode.Entries  = null;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not ExtDirNode extDirNode) return ErrorNumber.InvalidArgument;
+
+        if(extDirNode.Position < 0) return ErrorNumber.InvalidArgument;
+
+        if(extDirNode.Position >= extDirNode.Entries.Length) return ErrorNumber.NoError;
+
+        filename = extDirNode.Entries[extDirNode.Position++];
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Reads directory entries from an inode's data blocks</summary>
     /// <param name="inode">The directory inode</param>
     /// <param name="entries">Dictionary of filename to inode number</param>
