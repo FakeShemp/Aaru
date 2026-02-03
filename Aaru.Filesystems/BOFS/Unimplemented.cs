@@ -52,11 +52,6 @@ public sealed partial class BOFS
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
