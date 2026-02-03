@@ -27,7 +27,10 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -37,6 +40,26 @@ namespace Aaru.Filesystems;
 // ReSharper disable once InconsistentNaming
 public sealed partial class extFS : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "extFS plugin";
+
+    /// <summary>Cached root directory entries (filename to inode number)</summary>
+    readonly Dictionary<string, uint> _rootDirectoryCache = new();
+
+    /// <summary>The encoding used for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>The image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Whether the filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>The partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>The cached superblock</summary>
+    ext_super_block _superblock;
+
 #region IFilesystem Members
 
     /// <inheritdoc />
