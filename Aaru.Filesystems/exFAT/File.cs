@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 
@@ -38,6 +39,118 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class exFAT
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber errno = GetFileEntry(path, out CompleteDirectoryEntry entry);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(entry.IsDirectory) return ErrorNumber.IsDirectory;
+
+        node = new ExFatFileNode
+        {
+            Path         = path,
+            Length       = (long)entry.DataLength,
+            Offset       = 0,
+            FirstCluster = entry.FirstCluster,
+            IsContiguous = entry.IsContiguous
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not ExFatFileNode myNode) return ErrorNumber.InvalidArgument;
+
+        myNode.Offset = -1;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(buffer is null || buffer.Length < length) return ErrorNumber.InvalidArgument;
+
+        if(node is not ExFatFileNode myNode) return ErrorNumber.InvalidArgument;
+
+        if(myNode.Offset < 0) return ErrorNumber.InvalidArgument;
+
+        if(length < 0) return ErrorNumber.InvalidArgument;
+
+        // End of file reached
+        if(myNode.Offset >= myNode.Length) return ErrorNumber.NoError;
+
+        // Adjust length if it would read past end of file
+        if(myNode.Offset + length > myNode.Length) length = myNode.Length - myNode.Offset;
+
+        if(length == 0) return ErrorNumber.NoError;
+
+        // Calculate which clusters we need to read
+        long firstCluster    = myNode.Offset / _bytesPerCluster;
+        long offsetInCluster = myNode.Offset % _bytesPerCluster;
+        long bytesToRead     = length;
+        long sizeInClusters  = (bytesToRead + offsetInCluster + _bytesPerCluster - 1) / _bytesPerCluster;
+
+        long bufferOffset = 0;
+
+        for(long i = 0; i < sizeInClusters; i++)
+        {
+            // Get the cluster number for this position
+            uint clusterNumber;
+
+            if(myNode.IsContiguous)
+            {
+                // For contiguous files, clusters are sequential starting from FirstCluster
+                clusterNumber = (uint)(myNode.FirstCluster + firstCluster + i);
+            }
+            else
+            {
+                // For non-contiguous files, follow the FAT chain
+                clusterNumber = GetClusterAtPosition(myNode.FirstCluster, (uint)(firstCluster + i));
+
+                if(clusterNumber < 2 || clusterNumber > _clusterCount + 1) return ErrorNumber.InvalidArgument;
+            }
+
+            // Calculate sector for this cluster
+            ulong sector = _clusterHeapOffset + (ulong)(clusterNumber - 2) * _sectorsPerCluster;
+
+            // Read the cluster
+            ErrorNumber errno = _image.ReadSectors(sector, false, _sectorsPerCluster, out byte[] clusterData, out _);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // Calculate how much to copy from this cluster
+            long clusterOffset        = i == 0 ? offsetInCluster : 0;
+            long bytesFromThisCluster = _bytesPerCluster - clusterOffset;
+
+            if(bytesFromThisCluster > bytesToRead - bufferOffset) bytesFromThisCluster = bytesToRead - bufferOffset;
+
+            // Copy data to buffer
+            Array.Copy(clusterData, clusterOffset, buffer, bufferOffset, bytesFromThisCluster);
+            bufferOffset += bytesFromThisCluster;
+        }
+
+        read          =  bufferOffset;
+        myNode.Offset += read;
+
+        return ErrorNumber.NoError;
+    }
+
+
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out CommonTypes.Structs.FileAttributes attributes)
     {

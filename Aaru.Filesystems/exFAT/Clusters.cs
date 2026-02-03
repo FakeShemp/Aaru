@@ -95,4 +95,32 @@ public sealed partial class exFAT
 
         return ms.ToArray();
     }
+
+    /// <summary>Gets the cluster number at a specific position in the FAT chain.</summary>
+    /// <param name="firstCluster">First cluster of the chain.</param>
+    /// <param name="position">Position in the chain (0-based).</param>
+    /// <returns>Cluster number at the position, or 0 if invalid.</returns>
+    uint GetClusterAtPosition(uint firstCluster, uint position)
+    {
+        if(firstCluster < 2 || firstCluster > _clusterCount + 1) return 0;
+
+        uint currentCluster = firstCluster;
+
+        for(uint i = 0; i < position; i++)
+        {
+            if(currentCluster < 2 || currentCluster > _clusterCount + 1) return 0;
+
+            uint nextCluster = _fatEntries[currentCluster];
+
+            // End of chain markers
+            if(nextCluster >= 0xFFFFFFF8) return 0;
+
+            // Bad cluster marker
+            if(nextCluster == 0xFFFFFFF7) return 0;
+
+            currentCluster = nextCluster;
+        }
+
+        return currentCluster;
+    }
 }

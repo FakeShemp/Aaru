@@ -81,4 +81,26 @@ public sealed partial class exFAT
     }
 
 #endregion
+
+#region Nested type: ExFatFileNode
+
+    sealed class ExFatFileNode : IFileNode
+    {
+        /// <summary>First cluster of the file.</summary>
+        internal uint FirstCluster;
+
+        /// <summary>Whether the file allocation is contiguous (NoFatChain).</summary>
+        internal bool IsContiguous;
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+    }
+
+#endregion
 }
