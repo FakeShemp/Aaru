@@ -34,9 +34,5 @@ namespace Aaru.Filesystems;
 public sealed partial class BOFS
 {
     /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
-
-
-    /// <inheritdoc />
     public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
 }

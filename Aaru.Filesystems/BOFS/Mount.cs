@@ -327,4 +327,26 @@ public sealed partial class BOFS
 
         return ErrorNumber.NoError;
     }
+
+    /// <inheritdoc />
+    public ErrorNumber Unmount()
+    {
+        AaruLogging.Debug(MODULE_NAME, "Unmounting volume");
+
+        // Clear the root directory cache
+        _rootDirectoryCache.Clear();
+
+        // Clear instance fields
+        _imagePlugin = null;
+        _partition   = default(Partition);
+        _encoding    = null;
+        _track0      = default(Track0);
+
+        // Clear metadata
+        Metadata = null;
+
+        AaruLogging.Debug(MODULE_NAME, "Volume unmounted successfully");
+
+        return ErrorNumber.NoError;
+    }
 }
