@@ -32,7 +32,7 @@ using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
-// Information from https://www.sans.org/reading-room/whitepapers/forensics/reverse-engineering-microsoft-exfat-file-system-33274
+// Information from https://github.com/MicrosoftDocs/win32/blob/docs/desktop-src/FileIO/exfat-specification.md
 /// <inheritdoc />
 /// <summary>Implements detection of the exFAT filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
