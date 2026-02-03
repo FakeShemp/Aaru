@@ -38,7 +38,7 @@ namespace Aaru.Filesystems;
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 
 // ReSharper disable once InconsistentNaming
-public sealed partial class exFAT : IFilesystem
+public sealed partial class exFAT : IReadOnlyFilesystem
 {
 #region IFilesystem Members
 
