@@ -33,6 +33,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
 
@@ -182,7 +183,6 @@ public sealed partial class extFS
 
         if(inode.i_size == 0) return ErrorNumber.NoError;
 
-        uint blockSize = 1024u << (int)_superblock.s_log_zone_size;
         uint bytesRead = 0;
 
         // Process all blocks containing directory data
@@ -197,7 +197,7 @@ public sealed partial class extFS
             {
                 AaruLogging.Debug(MODULE_NAME, "Error mapping block {0}: {1}", blockNum, errno);
                 blockNum++;
-                bytesRead += blockSize;
+                bytesRead += EXT_BLOCK_SIZE;
 
                 continue;
             }
@@ -206,7 +206,7 @@ public sealed partial class extFS
             if(physicalBlock == 0)
             {
                 blockNum++;
-                bytesRead += blockSize;
+                bytesRead += EXT_BLOCK_SIZE;
 
                 continue;
             }
@@ -218,17 +218,17 @@ public sealed partial class extFS
             {
                 AaruLogging.Debug(MODULE_NAME, "Error reading block {0}: {1}", physicalBlock, errno);
                 blockNum++;
-                bytesRead += blockSize;
+                bytesRead += EXT_BLOCK_SIZE;
 
                 continue;
             }
 
             // Parse directory entries in this block
-            uint validBytes = Math.Min(blockSize, inode.i_size - bytesRead);
+            uint validBytes = Math.Min(EXT_BLOCK_SIZE, inode.i_size - bytesRead);
             ParseDirectoryBlock(blockData, validBytes, entries);
 
             blockNum++;
-            bytesRead += blockSize;
+            bytesRead += EXT_BLOCK_SIZE;
         }
 
         return ErrorNumber.NoError;
@@ -240,22 +240,19 @@ public sealed partial class extFS
     /// <param name="entries">Dictionary to add entries to</param>
     void ParseDirectoryBlock(byte[] blockData, uint validBytes, Dictionary<string, uint> entries)
     {
+        // Minimum directory entry is 8 bytes (inode + rec_len + name_len) + at least 1 byte name
+        const int minEntrySize = 8;
         uint offset = 0;
 
         while(offset < validBytes)
         {
-            // Directory entry structure:
-            // - 4 bytes: inode number
-            // - 2 bytes: record length (rec_len)
-            // - 2 bytes: name length (name_len)
-            // - N bytes: name
-
-            if(offset + 8 > validBytes) // Minimum entry size
+            if(offset + minEntrySize > validBytes)
                 break;
 
-            var inoNum  = BitConverter.ToUInt32(blockData, (int)offset);
-            var recLen  = BitConverter.ToUInt16(blockData, (int)(offset + 4));
-            var nameLen = BitConverter.ToUInt16(blockData, (int)(offset + 6));
+            // Read the fixed header fields manually since entries are variable-length on disk
+            uint   inoNum  = BitConverter.ToUInt32(blockData, (int)offset);
+            ushort recLen  = BitConverter.ToUInt16(blockData, (int)(offset + 4));
+            ushort nameLen = BitConverter.ToUInt16(blockData, (int)(offset + 6));
 
             // Validate record length (from Linux kernel validation)
             // rec_len must be at least 8 and be a multiple of 8
@@ -289,9 +286,9 @@ public sealed partial class extFS
 
             if(inoNum != 0 && nameLen > 0)
             {
-                // Extract filename
+                // Extract filename (starts at offset + 8)
                 var nameBytes = new byte[nameLen];
-                Array.Copy(blockData, offset + 8, nameBytes, 0, nameLen);
+                Array.Copy(blockData, (int)(offset + 8), nameBytes, 0, nameLen);
                 string filename = StringHandlers.CToString(nameBytes, _encoding);
 
                 // Skip "." and ".." entries

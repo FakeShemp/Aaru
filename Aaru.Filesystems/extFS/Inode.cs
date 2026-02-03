@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.Logging;
+using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
 
@@ -39,13 +40,10 @@ namespace Aaru.Filesystems;
 public sealed partial class extFS
 {
     /// <summary>ext inode size in bytes</summary>
-    const int EXT_INODE_SIZE = 32;
-
-    /// <summary>ext block size (always 1024)</summary>
-    const int EXT_BLOCK_SIZE = 1024;
+    static readonly int EXT_INODE_SIZE = Marshal.SizeOf<ext_inode>();
 
     /// <summary>Number of inodes per block</summary>
-    const int EXT_INODES_PER_BLOCK = EXT_BLOCK_SIZE / EXT_INODE_SIZE;
+    static readonly int EXT_INODES_PER_BLOCK = (int)EXT_BLOCK_SIZE / EXT_INODE_SIZE;
 
     /// <summary>Reads an inode from disk</summary>
     /// <param name="inodeNumber">The inode number to read</param>
@@ -65,7 +63,7 @@ public sealed partial class extFS
         // Calculate the block containing this inode
         // Inode table starts at block 2 (after boot block and superblock)
         // From Linux kernel: block = 2 + (ino-1) / EXT_INODES_PER_BLOCK
-        uint inodeBlock = 2 + (inodeNumber - 1) / EXT_INODES_PER_BLOCK;
+        uint inodeBlock = (uint)(2 + (inodeNumber - 1) / EXT_INODES_PER_BLOCK);
 
         AaruLogging.Debug(MODULE_NAME,
                           "Reading inode {0} from block {1} (inodes per block: {2})",
@@ -84,24 +82,12 @@ public sealed partial class extFS
         }
 
         // Calculate offset within the block
-        uint inodeOffset = (inodeNumber - 1) % EXT_INODES_PER_BLOCK * EXT_INODE_SIZE;
+        int inodeOffset = (int)((inodeNumber - 1) % (uint)EXT_INODES_PER_BLOCK) * EXT_INODE_SIZE;
 
         AaruLogging.Debug(MODULE_NAME, "Inode offset within block: {0}", inodeOffset);
 
-        // Parse the inode structure
-        inode = new ext_inode
-        {
-            i_mode   = BitConverter.ToUInt16(blockData, (int)inodeOffset),
-            i_uid    = BitConverter.ToUInt16(blockData, (int)(inodeOffset + 2)),
-            i_size   = BitConverter.ToUInt32(blockData, (int)(inodeOffset + 4)),
-            i_time   = BitConverter.ToUInt32(blockData, (int)(inodeOffset + 8)),
-            i_gid    = BitConverter.ToUInt16(blockData, (int)(inodeOffset + 12)),
-            i_nlinks = BitConverter.ToUInt16(blockData, (int)(inodeOffset + 14)),
-            i_zone   = new uint[12]
-        };
-
-        // Read zone pointers (12 x 4 bytes = 48 bytes starting at offset 16)
-        for(var i = 0; i < 12; i++) inode.i_zone[i] = BitConverter.ToUInt32(blockData, (int)(inodeOffset + 16 + i * 4));
+        // Parse the inode structure using marshalling
+        inode = Marshal.ByteArrayToStructureLittleEndian<ext_inode>(blockData, inodeOffset, EXT_INODE_SIZE);
 
         AaruLogging.Debug(MODULE_NAME,
                           "Inode {0}: mode=0x{1:X4}, size={2}, nlinks={3}",

@@ -39,6 +39,12 @@ public sealed partial class extFS
     /// <summary>ext superblock magic</summary>
     const ushort EXT_MAGIC = 0x137D;
 
+    /// <summary>ext block size is always 1024 bytes</summary>
+    const uint EXT_BLOCK_SIZE = 1024;
+
+    /// <summary>Number of addresses per indirect block (1024/4)</summary>
+    const uint EXT_ADDR_PER_BLOCK = 256;
+
     const int EXT_NAME_LEN = 255;
     const int EXT_ROOT_INO = 1;
 

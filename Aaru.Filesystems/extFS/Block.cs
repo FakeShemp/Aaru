@@ -44,18 +44,15 @@ public sealed partial class extFS
     {
         blockData = null;
 
-        // Calculate block size (1024 << log_zone_size)
-        uint blockSize = 1024u << (int)_superblock.s_log_zone_size;
-
         // Calculate the byte offset within the partition
-        ulong byteOffset = (ulong)blockNumber * blockSize;
+        ulong byteOffset = (ulong)blockNumber * EXT_BLOCK_SIZE;
 
         // Convert to sector address
         ulong sectorAddress  = byteOffset / _imagePlugin.Info.SectorSize;
         var   offsetInSector = (int)(byteOffset % _imagePlugin.Info.SectorSize);
 
         // Calculate how many sectors to read
-        uint sectorsToRead = (blockSize + (uint)offsetInSector + _imagePlugin.Info.SectorSize - 1) /
+        uint sectorsToRead = (EXT_BLOCK_SIZE + (uint)offsetInSector + _imagePlugin.Info.SectorSize - 1) /
                              _imagePlugin.Info.SectorSize;
 
         ErrorNumber errno = _imagePlugin.ReadSectors(_partition.Start + sectorAddress,
@@ -66,8 +63,8 @@ public sealed partial class extFS
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        blockData = new byte[blockSize];
-        Array.Copy(sectorData, offsetInSector, blockData, 0, blockSize);
+        blockData = new byte[EXT_BLOCK_SIZE];
+        Array.Copy(sectorData, offsetInSector, blockData, 0, EXT_BLOCK_SIZE);
 
         return ErrorNumber.NoError;
     }
@@ -88,14 +85,13 @@ public sealed partial class extFS
     {
         physicalBlock = 0;
 
-        uint addressesPerBlock = (1024u << (int)_superblock.s_log_zone_size) / 4; // 4 bytes per block pointer
 
         // Check bounds: max blocks = 9 + 256 + 256*256 + 256*256*256
         uint maxBlocks =
             9                                     +
-            addressesPerBlock                     +
-            addressesPerBlock * addressesPerBlock +
-            addressesPerBlock * addressesPerBlock * addressesPerBlock;
+            EXT_ADDR_PER_BLOCK                     +
+            EXT_ADDR_PER_BLOCK * EXT_ADDR_PER_BLOCK +
+            EXT_ADDR_PER_BLOCK * EXT_ADDR_PER_BLOCK * EXT_ADDR_PER_BLOCK;
 
         if(logicalBlock >= maxBlocks)
         {
@@ -115,7 +111,7 @@ public sealed partial class extFS
         uint block = logicalBlock - 9;
 
         // Single indirect block
-        if(block < addressesPerBlock)
+        if(block < EXT_ADDR_PER_BLOCK)
         {
             uint indirectBlock = inode.i_zone[9];
 
@@ -135,10 +131,10 @@ public sealed partial class extFS
             return ErrorNumber.NoError;
         }
 
-        block -= addressesPerBlock;
+        block -= EXT_ADDR_PER_BLOCK;
 
         // Double indirect block
-        if(block < addressesPerBlock * addressesPerBlock)
+        if(block < EXT_ADDR_PER_BLOCK * EXT_ADDR_PER_BLOCK)
         {
             uint dindirectBlock = inode.i_zone[10];
 
@@ -154,7 +150,7 @@ public sealed partial class extFS
 
             if(err != ErrorNumber.NoError) return err;
 
-            uint indirectIndex = block / addressesPerBlock;
+            uint indirectIndex = block / EXT_ADDR_PER_BLOCK;
             var  indirectAddr  = BitConverter.ToUInt32(dindirectData, (int)(indirectIndex * 4));
 
             if(indirectAddr == 0)
@@ -169,13 +165,13 @@ public sealed partial class extFS
 
             if(err != ErrorNumber.NoError) return err;
 
-            uint blockIndex = block % addressesPerBlock;
+            uint blockIndex = block % EXT_ADDR_PER_BLOCK;
             physicalBlock = BitConverter.ToUInt32(indirectData2, (int)(blockIndex * 4));
 
             return ErrorNumber.NoError;
         }
 
-        block -= addressesPerBlock * addressesPerBlock;
+        block -= EXT_ADDR_PER_BLOCK * EXT_ADDR_PER_BLOCK;
 
         // Triple indirect block
         uint tindirectBlock = inode.i_zone[11];
@@ -192,7 +188,7 @@ public sealed partial class extFS
 
         if(errno3 != ErrorNumber.NoError) return errno3;
 
-        uint dindirectIndex = block / (addressesPerBlock * addressesPerBlock);
+        uint dindirectIndex = block / (EXT_ADDR_PER_BLOCK * EXT_ADDR_PER_BLOCK);
         var  dindirectAddr  = BitConverter.ToUInt32(tindirectData, (int)(dindirectIndex * 4));
 
         if(dindirectAddr == 0)
@@ -207,7 +203,7 @@ public sealed partial class extFS
 
         if(errno3 != ErrorNumber.NoError) return errno3;
 
-        uint indirectIndex2 = block / addressesPerBlock % addressesPerBlock;
+        uint indirectIndex2 = block / EXT_ADDR_PER_BLOCK % EXT_ADDR_PER_BLOCK;
         var  indirectAddr2  = BitConverter.ToUInt32(dindirectData2, (int)(indirectIndex2 * 4));
 
         if(indirectAddr2 == 0)
@@ -222,7 +218,7 @@ public sealed partial class extFS
 
         if(errno3 != ErrorNumber.NoError) return errno3;
 
-        uint blockIndex2 = block % addressesPerBlock;
+        uint blockIndex2 = block % EXT_ADDR_PER_BLOCK;
         physicalBlock = BitConverter.ToUInt32(indirectData3, (int)(blockIndex2 * 4));
 
         return ErrorNumber.NoError;

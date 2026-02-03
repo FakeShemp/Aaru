@@ -108,8 +108,9 @@ public sealed partial class extFS
         public uint next;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     struct ext_dir_entry {
-        public uint  inode;
+        public uint   inode;
         public ushort rec_len;
         public ushort name_len;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = EXT_NAME_LEN)]
