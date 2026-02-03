@@ -41,6 +41,23 @@ namespace Aaru.Filesystems;
 public sealed partial class Xia
 {
     /// <inheritdoc />
+    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
+    {
+        attributes = FileAttributes.None;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Use Stat to get file info including attributes
+        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        attributes = stat.Attributes;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {
         stat = null;
