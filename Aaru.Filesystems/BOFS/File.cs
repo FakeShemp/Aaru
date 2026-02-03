@@ -26,7 +26,9 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 
@@ -34,6 +36,153 @@ namespace Aaru.Filesystems;
 
 public sealed partial class BOFS
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(string.IsNullOrEmpty(path) || path == "/") return ErrorNumber.NotSupported;
+
+        // Use helper to lookup the entry
+        ErrorNumber lookupErr = LookupEntry(path, out FileEntry entry);
+
+        if(lookupErr != ErrorNumber.NoError) return ErrorNumber.NoSuchFile;
+
+        // Check if it's a file, not a directory
+        if(entry.FileType == DIR_TYPE) return ErrorNumber.NotSupported;
+
+        var fileNode = new BOFSFileNode
+        {
+            Path   = path,
+            Length = entry.LogicalSize,
+            Offset = 0,
+            Entry  = entry
+        };
+
+        // Check if file is contiguous (high bit set) or fragmented
+        if((entry.FirstAllocList & 0x80000000) != 0)
+        {
+            // Contiguous file
+            fileNode.ContiguousSector = entry.FirstAllocList & 0x7FFFFFFF;
+            fileNode.Fat              = null;
+        }
+        else
+        {
+            // Fragmented file - read FAT
+            fileNode.ContiguousSector = -1;
+
+            // Read the FAT block (512 bytes)
+            const int bofsLogicalSectorSize           = 512;
+            ulong     fatByteOffset                   = (ulong)entry.FirstAllocList * bofsLogicalSectorSize;
+            ulong     deviceSectorOffsetFromPartition = fatByteOffset               / _imagePlugin.Info.SectorSize;
+            ulong     offsetInDeviceSector            = fatByteOffset               % _imagePlugin.Info.SectorSize;
+            ulong     absoluteDeviceSector            = _partition.Start + deviceSectorOffsetFromPartition;
+
+            ErrorNumber errno = _imagePlugin.ReadSectors(absoluteDeviceSector, false, 1, out byte[] sectorData, out _);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if(sectorData.Length < (int)(offsetInDeviceSector + bofsLogicalSectorSize))
+                return ErrorNumber.InvalidArgument;
+
+            var fatBuffer = new byte[bofsLogicalSectorSize];
+            Array.Copy(sectorData, (int)offsetInDeviceSector, fatBuffer, 0, bofsLogicalSectorSize);
+
+            // Parse FAT as array of uint32
+            fileNode.Fat = new uint[bofsLogicalSectorSize / sizeof(uint)];
+
+            for(var i = 0; i < fileNode.Fat.Length; i++)
+                fileNode.Fat[i] = BigEndianBitConverter.ToUInt32(fatBuffer, i * sizeof(uint));
+        }
+
+        node = fileNode;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not BOFSFileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        // Nothing to clean up - no caching
+        fileNode.Offset = 0;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(node is not BOFSFileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        // Directories cannot be read as files
+        if(fileNode.Entry.FileType == DIR_TYPE) return ErrorNumber.IsDirectory;
+
+        if(fileNode.Offset < 0 || fileNode.Offset > fileNode.Length) return ErrorNumber.InvalidArgument;
+
+        if(buffer == null) return ErrorNumber.InvalidArgument;
+
+        // Clamp read length to file size and buffer size
+        long toRead                                           = length;
+        if(fileNode.Offset + toRead > fileNode.Length) toRead = fileNode.Length - fileNode.Offset;
+
+        if(toRead <= 0) return ErrorNumber.NoError;
+
+        if(toRead > buffer.Length) toRead = buffer.Length;
+
+        const int bofsLogicalSectorSize = 512;
+
+        // Read data using logical_to_physical logic
+        long bytesRead     = 0;
+        long currentOffset = fileNode.Offset;
+
+        while(bytesRead < toRead)
+        {
+            // Calculate how much to read in this iteration
+            long remaining = toRead - bytesRead;
+
+            // Get physical location and max readable length from this extent
+            ErrorNumber getPhysErr = GetPhysicalLocation(fileNode,
+                                                         currentOffset,
+                                                         remaining,
+                                                         out long physicalByteOffset,
+                                                         out long maxReadLength);
+
+            if(getPhysErr != ErrorNumber.NoError) return getPhysErr;
+
+            // Read from physical location
+            var   absoluteByteOffset   = (ulong)physicalByteOffset;
+            ulong deviceSectorOffset   = absoluteByteOffset / _imagePlugin.Info.SectorSize;
+            ulong offsetInDeviceSector = absoluteByteOffset % _imagePlugin.Info.SectorSize;
+            ulong absoluteDeviceSector = _partition.Start + deviceSectorOffset;
+
+            ulong bytesNeeded = offsetInDeviceSector + (ulong)maxReadLength;
+            var sectorsToRead = (uint)((bytesNeeded + _imagePlugin.Info.SectorSize - 1) / _imagePlugin.Info.SectorSize);
+
+            ErrorNumber errno =
+                _imagePlugin.ReadSectors(absoluteDeviceSector, false, sectorsToRead, out byte[] sectorData, out _);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if(sectorData.Length < (int)(offsetInDeviceSector + (ulong)maxReadLength))
+                return ErrorNumber.InvalidArgument;
+
+            // Copy data to buffer
+            Array.Copy(sectorData, (int)offsetInDeviceSector, buffer, bytesRead, maxReadLength);
+
+            bytesRead     += maxReadLength;
+            currentOffset += maxReadLength;
+        }
+
+        read            =  bytesRead;
+        fileNode.Offset += bytesRead;
+
+        return ErrorNumber.NoError;
+    }
+
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
     {
@@ -94,6 +243,67 @@ public sealed partial class BOFS
         return lookupErr != ErrorNumber.NoError ? ErrorNumber.NoSuchFile : PopulateStat(entry, out stat);
     }
 
+    /// <summary>Get physical byte offset and max readable length for a logical file offset</summary>
+    private ErrorNumber GetPhysicalLocation(BOFSFileNode file,               long logicalOffset, long requestedLength,
+                                            out long     physicalByteOffset, out long maxReadLength)
+    {
+        physicalByteOffset = 0;
+        maxReadLength      = 0;
+
+        const int bofsLogicalSectorSize = 512;
+
+        if(file.Fat == null)
+        {
+            // Contiguous file
+            physicalByteOffset = file.ContiguousSector * bofsLogicalSectorSize + logicalOffset;
+            maxReadLength      = requestedLength;
+
+            return ErrorNumber.NoError;
+        }
+
+        // Fragmented file - search FAT for the extent containing logicalOffset
+        long currentOffset = 0;
+
+        // FAT starts at index 2, entries are pairs of (start_sector, size_in_sectors)
+        // Maximum 63 extents (indices 2-127, but we check i < 63 which gives us indices up to 126)
+        for(var i = 0; i < 63; i++)
+        {
+            int startIndex = 2 + i * 2;
+            int sizeIndex  = 2 + i * 2 + 1;
+
+            // Bounds check
+            if(startIndex >= file.Fat.Length || sizeIndex >= file.Fat.Length) return ErrorNumber.InvalidArgument;
+
+            uint startSector = file.Fat[startIndex];
+            uint sizeSectors = file.Fat[sizeIndex];
+
+            // Check for end of FAT
+            if(startSector == 0xFFFFFFFF) return ErrorNumber.InvalidArgument;
+
+            long extentSizeBytes = (long)sizeSectors * bofsLogicalSectorSize;
+
+            // Check if logicalOffset is in this extent
+            if(logicalOffset < currentOffset + extentSizeBytes)
+            {
+                // Found the extent
+                long offsetInExtent = logicalOffset - currentOffset;
+                physicalByteOffset = (long)startSector * bofsLogicalSectorSize + offsetInExtent;
+
+                // Max readable is from this point to end of extent
+                maxReadLength = extentSizeBytes - offsetInExtent;
+
+                // But don't exceed requested length
+                if(maxReadLength > requestedLength) maxReadLength = requestedLength;
+
+                return ErrorNumber.NoError;
+            }
+
+            currentOffset += extentSizeBytes;
+        }
+
+        return ErrorNumber.InvalidArgument;
+    }
+
     private ErrorNumber PopulateStat(FileEntry entry, out FileEntryInfo stat)
     {
         stat = new FileEntryInfo
@@ -121,5 +331,26 @@ public sealed partial class BOFS
         if(entry.ModificationDate != 0) stat.LastWriteTimeUtc = DateHandlers.UnixToDateTime(entry.ModificationDate);
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>File node for tracking open file state</summary>
+    private sealed class BOFSFileNode : IFileNode
+    {
+        /// <summary>File entry data</summary>
+        public FileEntry Entry { get; set; }
+
+        /// <summary>FAT (File Allocation Table) if fragmented, null if contiguous</summary>
+        public uint[] Fat { get; set; }
+
+        /// <summary>Contiguous sector if not fragmented, -1 otherwise</summary>
+        public long ContiguousSector { get; set; }
+        /// <inheritdoc />
+        public string Path { get; set; }
+
+        /// <inheritdoc />
+        public long Length { get; set; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
     }
 }
