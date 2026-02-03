@@ -39,6 +39,37 @@ namespace Aaru.Filesystems;
 public sealed partial class exFAT
 {
     /// <inheritdoc />
+    public ErrorNumber GetAttributes(string path, out CommonTypes.Structs.FileAttributes attributes)
+    {
+        attributes = new CommonTypes.Structs.FileAttributes();
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber errno = GetFileEntry(path, out CompleteDirectoryEntry entry);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(entry.IsDirectory)
+            attributes |= CommonTypes.Structs.FileAttributes.Directory;
+        else
+            attributes |= CommonTypes.Structs.FileAttributes.File;
+
+        if(entry.FileEntry.FileAttributes.HasFlag(FileAttributes.ReadOnly))
+            attributes |= CommonTypes.Structs.FileAttributes.ReadOnly;
+
+        if(entry.FileEntry.FileAttributes.HasFlag(FileAttributes.Hidden))
+            attributes |= CommonTypes.Structs.FileAttributes.Hidden;
+
+        if(entry.FileEntry.FileAttributes.HasFlag(FileAttributes.System))
+            attributes |= CommonTypes.Structs.FileAttributes.System;
+
+        if(entry.FileEntry.FileAttributes.HasFlag(FileAttributes.Archive))
+            attributes |= CommonTypes.Structs.FileAttributes.Archive;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {
         stat = null;

@@ -39,10 +39,6 @@ public sealed partial class exFAT
     /// <inheritdoc />
     public ErrorNumber Unmount() => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out CommonTypes.Structs.FileAttributes attributes) =>
-        throw new NotImplementedException();
-
 
     /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
