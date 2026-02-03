@@ -46,4 +46,23 @@ public sealed partial class extFS
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>File node for reading file contents with streaming support</summary>
+    sealed class ExtFileNode : IFileNode
+    {
+        /// <summary>The inode number</summary>
+        internal uint InodeNum { get; init; }
+
+        /// <summary>The file's inode containing metadata and block pointers</summary>
+        internal ext_inode Inode { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 }
