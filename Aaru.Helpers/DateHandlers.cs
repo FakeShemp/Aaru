@@ -412,4 +412,62 @@ public static class DateHandlers
             return new DateTime(1970, 1, 1, 0, 0, 0);
         }
     }
+
+    /// <summary>Converts an exFAT timestamp to a .NET DateTime</summary>
+    /// <param name="timestamp">Packed exFAT timestamp (32-bit)</param>
+    /// <param name="tenMsIncrement">10ms increment (0-199), optional</param>
+    /// <param name="utcOffset">UTC offset byte, optional</param>
+    /// <returns>.NET DateTime, or null if timestamp is invalid</returns>
+    /// <remarks>
+    ///     exFAT timestamp format (32-bit):
+    ///     Bits 0-4: DoubleSeconds (0-29, representing 0-58 seconds in 2-second increments)
+    ///     Bits 5-10: Minute (0-59)
+    ///     Bits 11-15: Hour (0-23)
+    ///     Bits 16-20: Day (1-31)
+    ///     Bits 21-24: Month (1-12)
+    ///     Bits 25-31: Year (0-127, relative to 1980)
+    ///     UTC offset format:
+    ///     Bit 7: OffsetValid (1 = valid, 0 = invalid)
+    ///     Bits 0-6: OffsetFromUtc (signed, in 15-minute increments)
+    /// </remarks>
+    public static DateTime? ExFatToDateTime(uint timestamp, byte tenMsIncrement = 0, byte utcOffset = 0)
+    {
+        if(timestamp == 0) return null;
+
+        var doubleSeconds = (int)(timestamp       & 0x1F);
+        var minute        = (int)(timestamp >> 5  & 0x3F);
+        var hour          = (int)(timestamp >> 11 & 0x1F);
+        var day           = (int)(timestamp >> 16 & 0x1F);
+        var month         = (int)(timestamp >> 21 & 0x0F);
+        var year          = (int)(timestamp >> 25 & 0x7F);
+
+        if(day < 1 || day > 31 || month < 1 || month > 12) return null;
+
+        try
+        {
+            var dt = new DateTime(1980 + year, month, day, hour, minute, doubleSeconds * 2, DateTimeKind.Local);
+
+            // Add 10ms increments (0-199 represents 0-1990 milliseconds)
+            if(tenMsIncrement is > 0 and < 200) dt = dt.AddMilliseconds(tenMsIncrement * 10);
+
+            // Handle UTC offset if valid (bit 7 set)
+            if((utcOffset & 0x80) != 0)
+            {
+                // Offset is valid - extract 7-bit signed value
+                int offsetQuarters = utcOffset & 0x7F;
+
+                // Convert from 7-bit two's complement to signed integer
+                if(offsetQuarters > 63) offsetQuarters -= 128;
+
+                // Offset is in 15-minute increments, convert to UTC
+                dt = dt.AddMinutes(-offsetQuarters * 15);
+            }
+
+            return dt;
+        }
+        catch(ArgumentOutOfRangeException)
+        {
+            return null;
+        }
+    }
 }
