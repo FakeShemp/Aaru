@@ -98,6 +98,26 @@ public sealed partial class Xia
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber Unmount()
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "Unmounting volume");
+
+        _rootDirectoryCache.Clear();
+        _mounted     = false;
+        _imagePlugin = null;
+        _partition   = default(Partition);
+        _superblock  = default(SuperBlock);
+        _encoding    = null;
+        Metadata     = null;
+
+        AaruLogging.Debug(MODULE_NAME, "Volume unmounted successfully");
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Reads and validates the filesystem superblock</summary>
     /// <returns>Error code indicating success or failure</returns>
     ErrorNumber ReadSuperblock()

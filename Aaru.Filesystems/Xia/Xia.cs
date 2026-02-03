@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 using Partition = Aaru.CommonTypes.Partition;
 
@@ -42,6 +43,13 @@ namespace Aaru.Filesystems;
 public sealed partial class Xia : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "Xia plugin";
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
     /// <summary>Cache of root directory entries (filenames and their inode numbers)</summary>
     readonly Dictionary<string, uint> _rootDirectoryCache = [];
