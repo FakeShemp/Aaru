@@ -97,38 +97,4 @@ public sealed partial class exFAT : IReadOnlyFilesystem
     };
 
 #endregion
-
-#region Nested type: CompleteDirectoryEntry
-
-    /// <summary>Represents a complete directory entry set with file entry, stream extension, and file name.</summary>
-    sealed class CompleteDirectoryEntry
-    {
-        /// <summary>Data length in bytes.</summary>
-        public ulong DataLength;
-        /// <summary>The File directory entry.</summary>
-        public FileDirectoryEntry FileEntry;
-
-        /// <summary>The complete file name assembled from File Name directory entries.</summary>
-        public string FileName;
-
-        /// <summary>First cluster of the file data.</summary>
-        public uint FirstCluster;
-
-        /// <summary>Whether the allocation is contiguous (NoFatChain).</summary>
-        public bool IsContiguous;
-
-        /// <summary>Whether this entry is a directory.</summary>
-        public bool IsDirectory;
-
-        /// <summary>The Stream Extension directory entry.</summary>
-        public StreamExtensionDirectoryEntry StreamEntry;
-
-        /// <summary>Valid data length in bytes.</summary>
-        public ulong ValidDataLength;
-
-        /// <inheritdoc />
-        public override string ToString() => FileName ?? string.Empty;
-    }
-
-#endregion
 }

@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Internal.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Microsoft exFAT filesystem plugin.
@@ -26,10 +26,7 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
@@ -37,25 +34,51 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class exFAT
 {
-    /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
+#region Nested type: CompleteDirectoryEntry
 
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out CommonTypes.Structs.FileAttributes attributes) =>
-        throw new NotImplementedException();
+    /// <summary>Represents a complete directory entry set with file entry, stream extension, and file name.</summary>
+    sealed class CompleteDirectoryEntry
+    {
+        /// <summary>Data length in bytes.</summary>
+        public ulong DataLength;
 
+        /// <summary>The File directory entry.</summary>
+        public FileDirectoryEntry FileEntry;
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
+        /// <summary>The complete file name assembled from File Name directory entries.</summary>
+        public string FileName;
 
+        /// <summary>First cluster of the file data.</summary>
+        public uint FirstCluster;
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+        /// <summary>Whether the allocation is contiguous (NoFatChain).</summary>
+        public bool IsContiguous;
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+        /// <summary>Whether this entry is a directory.</summary>
+        public bool IsDirectory;
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        /// <summary>The Stream Extension directory entry.</summary>
+        public StreamExtensionDirectoryEntry StreamEntry;
+
+        /// <summary>Valid data length in bytes.</summary>
+        public ulong ValidDataLength;
+
+        /// <inheritdoc />
+        public override string ToString() => FileName ?? string.Empty;
+    }
+
+#endregion
+
+#region Nested type: ExFatDirNode
+
+    sealed class ExFatDirNode : IDirNode
+    {
+        internal CompleteDirectoryEntry[] Entries;
+        internal int                      Position;
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
+
+#endregion
 }
