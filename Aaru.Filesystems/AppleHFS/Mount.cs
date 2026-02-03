@@ -280,9 +280,24 @@ public sealed partial class AppleHFS
                 }
             }
         }
+
+        // If still not found, assume kRootCnid (2) is the root
+        // This handles cases where the root directory record doesn't exist but files with parentID=2 do
+        if(_rootDirectory.dirDirID == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, $"Root directory record not found, assuming CNID={kRootCnid} is the root");
+
+            _rootDirectory = new CdrDirRec
+            {
+                dirDirID = kRootCnid,
+                dirVal   = 0 // Unknown valence, will be populated by CacheRootDirectoryEntries
+            };
+        }
         else
+        {
             AaruLogging.Debug(MODULE_NAME,
                               $"Root directory already found: CNID={_rootDirectory.dirDirID}, entries={_rootDirectory.dirVal}");
+        }
 
         // Cache root directory entries
         errno = CacheRootDirectoryEntries();
@@ -407,8 +422,8 @@ public sealed partial class AppleHFS
         HfsOffsetToDeviceSector(firstAllocBlockSector512, out ulong startDeviceSector, out uint startByteOffset);
 
         // Read enough data to cover the full extent
-        var sectorsToRead = (startByteOffset + firstExtent.xdrNumABlks * _mdb.drAlBlkSiz + _sectorSize - 1) /
-                            _sectorSize;
+        uint sectorsToRead = (startByteOffset + firstExtent.xdrNumABlks * _mdb.drAlBlkSiz + _sectorSize - 1) /
+                             _sectorSize;
 
         ErrorNumber errno =
             _imagePlugin.ReadSectors(startDeviceSector, false, sectorsToRead, out byte[] catalogData, out _);
@@ -657,7 +672,7 @@ public sealed partial class AppleHFS
             // Re-read from the correct location
             ulong sectorToRead  = bruteForceOffset / _sectorSize;
             var   newByteOffset = (uint)(bruteForceOffset % _sectorSize);
-            var   sectorCount   = (_sectorSize - newByteOffset + 512 + _sectorSize - 1) / _sectorSize;
+            uint  sectorCount   = (_sectorSize - newByteOffset + 512 + _sectorSize - 1) / _sectorSize;
 
             AaruLogging.Debug(MODULE_NAME,
                               $"ReadAndValidateCatalog: Re-reading sector {sectorToRead}, count={sectorCount}, byteOffset={newByteOffset}");
