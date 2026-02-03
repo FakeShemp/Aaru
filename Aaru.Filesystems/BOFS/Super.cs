@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : BeOS old filesystem plugin.
@@ -26,39 +26,26 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class BOFS
 {
     /// <inheritdoc />
-    public FileSystem Metadata { get; set; }
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = new FileSystemInfo
+        {
+            Blocks         = (ulong)_track0.TotalSectors,
+            FilenameLength = 64,
+            FreeBlocks     = _track0.TotalSectors > 0 ? (ulong)(_track0.TotalSectors - _track0.SectorsUsed) : 0,
+            FreeFiles      = 0, // BOFS doesn't track available inodes
+            PluginId       = Id,
+            Type           = FS_TYPE
+        };
 
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
-
-    /// <inheritdoc />
-    public Dictionary<string, string> Namespaces { get; } = [];
-
-    /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
-
-
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        return ErrorNumber.NoError;
+    }
 }
