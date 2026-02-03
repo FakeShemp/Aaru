@@ -33,8 +33,7 @@ namespace Aaru.Filesystems;
 
 public sealed partial class BOFS
 {
-    const int FILE_TYPE = -1; // 0xFFFFFFFF
-    const int DIR_TYPE  = 0;
+    const int DIR_TYPE = -1; // SDIR - subdirectory marker
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
