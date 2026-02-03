@@ -207,6 +207,7 @@ Fully supported file-systems (identify and extraction)
 * Microsoft 12-bit File Allocation Table (FAT12), including Atari ST extensions
 * Microsoft 16-bit File Allocation Table (FAT16)
 * Microsoft 32-bit File Allocation Table (FAT32), including FAT+ extension
+* Microsoft Extended File Allocation Table (exFAT)
 * U.C.S.D Pascal file system
 * Universal Disk Format (UDF)
 * Xbox filesystems
@@ -243,7 +244,6 @@ Supported file systems for identification and information only
 * Linux extended file system 4
 * Locus file system
 * MicroDOS file system
-* Microsoft Extended File Allocation Table (exFAT)
 * Microsoft/IBM High Performance File System (HPFS)
 * Microsoft New Technology File System (NTFS)
 * Microsoft Resilient File System (ReFS)
