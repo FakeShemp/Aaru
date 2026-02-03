@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Xia filesystem plugin.
@@ -26,10 +26,9 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
@@ -38,12 +37,32 @@ namespace Aaru.Filesystems;
 public sealed partial class Xia
 {
     /// <inheritdoc />
-    public FileSystem Metadata { get; private set; }
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
-    /// <inheritdoc />
-    public Dictionary<string, string> Namespaces { get; } = [];
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
-    /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "StatFs: returning filesystem statistics");
+
+        stat = new FileSystemInfo
+        {
+            Blocks         = _superblock.s_nzones,
+            FreeBlocks     = _superblock.s_nzones - _superblock.s_ndatazones,
+            FilenameLength = XIAFS_NAME_LEN,
+            Type           = FS_TYPE,
+            Files          = _superblock.s_ninodes,
+            FreeFiles      = 0,
+            PluginId       = Id
+        };
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "StatFs complete: totalZones={0}, dataZones={1}, inodes={2}, zoneSize={3}",
+                          _superblock.s_nzones,
+                          _superblock.s_ndatazones,
+                          _superblock.s_ninodes,
+                          _superblock.s_zone_size);
+
+        return ErrorNumber.NoError;
+    }
 }
