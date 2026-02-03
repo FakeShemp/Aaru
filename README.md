@@ -211,6 +211,7 @@ Fully supported file-systems (identify and extraction)
 * U.C.S.D Pascal file system
 * Universal Disk Format (UDF)
 * Xbox filesystems
+* Xia filesystem
 
 Supported file systems for identification and information only
 ==============================================================
@@ -269,7 +270,6 @@ Supported file systems for identification and information only
 * Veritas file system
 * VMware file system (VMFS)
 * Xenix file system
-* Xia filesystem
 * Zettabyte File System (ZFS)
 
 Supported checksums
