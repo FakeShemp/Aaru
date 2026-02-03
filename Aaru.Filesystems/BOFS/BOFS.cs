@@ -27,6 +27,9 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using System.Text;
+using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
@@ -34,10 +37,28 @@ namespace Aaru.Filesystems;
 public sealed partial class BOFS : IReadOnlyFilesystem
 {
     const string FS_TYPE = "beofs";
+
+    /// <summary>Cache of root directory entries (filenames and their metadata)</summary>
+    private readonly Dictionary<string, FileEntry> _rootDirectoryCache = [];
+
+    /// <summary>The encoding to use for text data</summary>
+    private Encoding _encoding;
+
+    /// <summary>The media image plugin used to read from the device</summary>
+    private IMediaImage _imagePlugin;
+
+    /// <summary>The partition being mounted</summary>
+    private Partition _partition;
+
+    /// <summary>The filesystem superblock containing metadata about the volume</summary>
+    private Track0 _track0;
+
     /// <inheritdoc />
     public string Name => Localization.Be_old_filesystem;
+
     /// <inheritdoc />
     public Guid Id => new("0841FD46-2C3C-4C96-8524-315909E4C652");
+
     /// <inheritdoc />
     public string Author => Authors.NataliaPortillo;
 }

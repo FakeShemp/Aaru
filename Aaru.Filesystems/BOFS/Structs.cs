@@ -33,8 +33,8 @@ namespace Aaru.Filesystems;
 
 public sealed partial class BOFS
 {
-    const int FILE_TYPE = 1;
-    const int DIR_TYPE  = 2;
+    const int FILE_TYPE = -1; // 0xFFFFFFFF
+    const int DIR_TYPE  = 0;
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
