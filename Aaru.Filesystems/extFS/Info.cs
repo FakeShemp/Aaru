@@ -95,19 +95,22 @@ public sealed partial class extFS
         ext_super_block extSb = Marshal.ByteArrayToStructureLittleEndian<ext_super_block>(sbSector);
 
         sb.AppendLine(Localization.ext_filesystem);
-        sb.AppendFormat(Localization._0_zones_in_volume,     extSb.s_nzones);
-        sb.AppendFormat(Localization._0_free_blocks_1_bytes, extSb.s_freeblockscount, extSb.s_freeblockscount * 1024);
+        sb.AppendFormat(Localization._0_zones_in_volume, extSb.s_nzones).AppendLine();
+
+        sb.AppendFormat(Localization._0_free_blocks_1_bytes, extSb.s_freeblockscount, extSb.s_freeblockscount * 1024)
+          .AppendLine();
 
         sb.AppendFormat(Localization._0_inodes_in_volume_1_free_2,
                         extSb.s_ninodes,
                         extSb.s_freeinodescount,
-                        extSb.s_freeinodescount * 100 / extSb.s_ninodes);
+                        extSb.s_freeinodescount * 100 / extSb.s_ninodes)
+          .AppendLine();
 
-        sb.AppendFormat(Localization.First_free_inode_is_0, extSb.s_firstfreeinode);
-        sb.AppendFormat(Localization.First_free_block_is_0, extSb.s_firstfreeblock);
-        sb.AppendFormat(Localization.First_data_zone_is_0,  extSb.s_firstdatazone);
-        sb.AppendFormat(Localization.Log_zone_size_0,       extSb.s_log_zone_size);
-        sb.AppendFormat(Localization.Max_zone_size_0,       extSb.s_max_size);
+        sb.AppendFormat(Localization.First_free_inode_is_0, extSb.s_firstfreeinode).AppendLine();
+        sb.AppendFormat(Localization.First_free_block_is_0, extSb.s_firstfreeblock).AppendLine();
+        sb.AppendFormat(Localization.First_data_zone_is_0,  extSb.s_firstdatazone).AppendLine();
+        sb.AppendFormat(Localization.Log_zone_size_0,       extSb.s_log_zone_size).AppendLine();
+        sb.AppendFormat(Localization.Max_zone_size_0,       extSb.s_max_size).AppendLine();
 
         metadata = new FileSystem
         {
