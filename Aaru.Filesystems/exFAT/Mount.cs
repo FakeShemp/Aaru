@@ -157,5 +157,20 @@ public sealed partial class exFAT
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber Unmount()
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        _mounted            = false;
+        _image              = null;
+        _fatEntries         = null;
+        _rootDirectoryCache = null;
+        _directoryCache     = null;
+        _statfs             = null;
+
+        return ErrorNumber.NoError;
+    }
+
 #endregion
 }
