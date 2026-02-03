@@ -42,6 +42,85 @@ namespace Aaru.Filesystems;
 public sealed partial class extFS
 {
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Get file metadata to verify it's a symlink
+        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: Stat failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Verify it's a symbolic link
+        if(!stat.Attributes.HasFlag(FileAttributes.Symlink))
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: path is not a symbolic link");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Get the inode number
+        errno = GetInodeNumber(path, out uint inodeNum);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: GetInodeNumber failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Read the inode
+        errno = ReadInode(inodeNum, out ext_inode inode);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: ReadInode failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Symlink target is stored in block 0 of the inode's data
+        // From Linux: bh = ext_bread(inode, 0, 0);
+        uint physicalBlock = inode.i_zone[0];
+
+        if(physicalBlock == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: symlink has no data block");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        errno = ReadBlock(physicalBlock, out byte[] blockData);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: ReadBlock failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Read the symlink target (null-terminated string, max 1023 bytes per Linux code)
+        var maxLen = (int)Math.Min(inode.i_size, EXT_BLOCK_SIZE - 1);
+        dest = StringHandlers.CToString(blockData, _encoding);
+
+        // Truncate to actual size if needed
+        if(dest.Length > maxLen) dest = dest[..maxLen];
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: target='{0}'", dest);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
         node = null;
