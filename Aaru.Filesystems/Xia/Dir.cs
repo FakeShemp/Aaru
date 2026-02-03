@@ -346,7 +346,8 @@ public sealed partial class Xia
                 Array.Copy(zoneData, offset + 7, nameBytes, 0, nameLen);
                 string filename = StringHandlers.CToString(nameBytes, _encoding);
 
-                if(!string.IsNullOrWhiteSpace(filename))
+                // Skip "." and ".." entries
+                if(!string.IsNullOrWhiteSpace(filename) && filename != "." && filename != "..")
                 {
                     entries[filename] = inoNum;
 
