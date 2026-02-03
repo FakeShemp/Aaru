@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
@@ -39,19 +40,64 @@ public sealed partial class BOFS
     {
         xattrs = [];
 
-        if(string.IsNullOrEmpty(path) || path == "/")
+        if(string.IsNullOrEmpty(path) || path == "/") return ErrorNumber.NoError;
+
+        string trimmedPath = path.TrimStart('/');
+        int    lastSlash   = trimmedPath.LastIndexOf('/');
+        string fileName;
+
+        if(lastSlash < 0)
         {
-            // Root directory - no xattrs
-            return ErrorNumber.NoError;
+            // Root level file
+            fileName = trimmedPath;
+
+            lock(_rootDirectoryCache)
+            {
+                if(!_rootDirectoryCache.TryGetValue(fileName, out FileEntry entry)) return ErrorNumber.NoSuchFile;
+
+                if(entry.FileType != 0 && entry.FileType != -1)
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "ListXAttr: Adding xattr for {0}, FileType=0x{1:X8}",
+                                      path,
+                                      entry.FileType);
+
+                    xattrs.Add("com.be.filetype");
+                }
+            }
         }
+        else
+        {
+            // Subdirectory file - use LookupEntry
+            try
+            {
+                ErrorNumber lookupErr = LookupEntry(path, out FileEntry entry);
 
-        // Use helper to lookup the entry
-        ErrorNumber lookupErr = LookupEntry(path, out FileEntry entry);
+                AaruLogging.Debug(MODULE_NAME,
+                                  "ListXAttr subdir: path={0}, lookupErr={1}, FileType=0x{2:X8}",
+                                  path,
+                                  lookupErr,
+                                  entry.FileType);
 
-        if(lookupErr != ErrorNumber.NoError) return ErrorNumber.NoSuchFile;
+                if(lookupErr != ErrorNumber.NoError) return ErrorNumber.NoSuchFile;
 
-        // Expose FileType as xattr only if it's not 0 or -1
-        if(entry.FileType != 0 && entry.FileType != -1) xattrs.Add("com.be.filetype");
+                if(entry.FileType != 0 && entry.FileType != -1)
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "ListXAttr: Adding xattr for {0}, FileType=0x{1:X8}",
+                                      path,
+                                      entry.FileType);
+
+                    xattrs.Add("com.be.filetype");
+                }
+            }
+            catch(Exception ex)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ListXAttr subdir exception for {0}: {1}", path, ex);
+
+                return ErrorNumber.NoSuchFile;
+            }
+        }
 
         return ErrorNumber.NoError;
     }
@@ -62,28 +108,59 @@ public sealed partial class BOFS
         if(string.IsNullOrEmpty(path) || path == "/" || xattr != "com.be.filetype")
             return ErrorNumber.NoSuchExtendedAttribute;
 
-        // Use helper to lookup the entry
-        ErrorNumber lookupErr = LookupEntry(path, out FileEntry entry);
+        string trimmedPath = path.TrimStart('/');
+        int    lastSlash   = trimmedPath.LastIndexOf('/');
+        string fileName;
 
-        if(lookupErr != ErrorNumber.NoError) return ErrorNumber.NoSuchFile;
-
-        // Don't expose FileType if it's 0 or -1
-        if(entry.FileType == 0 || entry.FileType == -1) return ErrorNumber.NoSuchExtendedAttribute;
-
-        // FileType is 4 bytes (int), export as-is without endian conversion
-        byte[] fileTypeBytes = BitConverter.GetBytes(entry.FileType);
-
-        if(buf == null)
+        if(lastSlash < 0)
         {
-            buf = fileTypeBytes;
+            // Root level file
+            fileName = trimmedPath;
+
+            lock(_rootDirectoryCache)
+            {
+                if(!_rootDirectoryCache.TryGetValue(fileName, out FileEntry entry)) return ErrorNumber.NoSuchFile;
+
+                if(entry.FileType == 0 || entry.FileType == -1) return ErrorNumber.NoSuchExtendedAttribute;
+
+                byte[] fileTypeBytes = BitConverter.GetBytes(entry.FileType);
+
+                if(buf == null || buf.Length < fileTypeBytes.Length) buf = new byte[fileTypeBytes.Length];
+
+                Array.Copy(fileTypeBytes, buf, fileTypeBytes.Length);
+
+                return ErrorNumber.NoError;
+            }
+        }
+
+        // Subdirectory file - use LookupEntry
+        try
+        {
+            ErrorNumber lookupErr = LookupEntry(path, out FileEntry entry);
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "GetXattr subdir: path={0}, lookupErr={1}, FileType=0x{2:X8}",
+                              path,
+                              lookupErr,
+                              entry.FileType);
+
+            if(lookupErr != ErrorNumber.NoError) return ErrorNumber.NoSuchFile;
+
+            if(entry.FileType == 0 || entry.FileType == -1) return ErrorNumber.NoSuchExtendedAttribute;
+
+            byte[] fileTypeBytes = BitConverter.GetBytes(entry.FileType);
+
+            if(buf == null || buf.Length < fileTypeBytes.Length) buf = new byte[fileTypeBytes.Length];
+
+            Array.Copy(fileTypeBytes, buf, fileTypeBytes.Length);
 
             return ErrorNumber.NoError;
         }
+        catch(Exception ex)
+        {
+            AaruLogging.Debug(MODULE_NAME, "GetXattr subdir exception for {0}: {1}", path, ex);
 
-        if(buf.Length < fileTypeBytes.Length) return ErrorNumber.InvalidArgument;
-
-        Array.Copy(fileTypeBytes, buf, fileTypeBytes.Length);
-
-        return ErrorNumber.NoError;
+            return ErrorNumber.NoSuchFile;
+        }
     }
 }

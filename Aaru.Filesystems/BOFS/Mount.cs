@@ -309,7 +309,7 @@ public sealed partial class BOFS
                 _rootDirectoryCache[filename] = entry;
 
                 AaruLogging.Debug(MODULE_NAME,
-                                  "Cached root entry: {0} (Type: 0x{1:X8}, Size: {2})",
+                                  "Cached root entry: {0} (FileType: 0x{1:X8}, Size: {2})",
                                   filename,
                                   entry.FileType,
                                   entry.LogicalSize);
