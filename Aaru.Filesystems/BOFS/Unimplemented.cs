@@ -27,8 +27,6 @@
 // ****************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 
@@ -36,15 +34,6 @@ namespace Aaru.Filesystems;
 
 public sealed partial class BOFS
 {
-    /// <inheritdoc />
-    public FileSystem Metadata { get; set; }
-
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
-
-    /// <inheritdoc />
-    public Dictionary<string, string> Namespaces { get; } = [];
-
     /// <inheritdoc />
     public ErrorNumber Unmount() => throw new NotImplementedException();
 

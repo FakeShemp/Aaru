@@ -29,15 +29,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Aaru.CommonTypes;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class BOFS : IReadOnlyFilesystem
 {
     const string FS_TYPE = "beofs";
-
     /// <summary>Cache of root directory entries (filenames and their metadata)</summary>
     private readonly Dictionary<string, FileEntry> _rootDirectoryCache = [];
 
@@ -52,6 +52,15 @@ public sealed partial class BOFS : IReadOnlyFilesystem
 
     /// <summary>The filesystem superblock containing metadata about the volume</summary>
     private Track0 _track0;
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; set; }
+
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
     /// <inheritdoc />
     public string Name => Localization.Be_old_filesystem;
