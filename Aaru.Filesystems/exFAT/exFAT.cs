@@ -27,8 +27,11 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 
 namespace Aaru.Filesystems;
 
@@ -40,7 +43,38 @@ namespace Aaru.Filesystems;
 // ReSharper disable once InconsistentNaming
 public sealed partial class exFAT : IReadOnlyFilesystem
 {
-#region IFilesystem Members
+    const string MODULE_NAME = "exFAT plugin";
+
+    // Cached data
+    uint[]                                                         _fatEntries;
+    Dictionary<string, CompleteDirectoryEntry>                     _rootDirectoryCache;
+    Dictionary<string, Dictionary<string, CompleteDirectoryEntry>> _directoryCache;
+
+    // File system parameters
+    IMediaImage    _image;
+    bool           _mounted;
+    uint           _bytesPerSector;
+    uint           _sectorsPerCluster;
+    uint           _bytesPerCluster;
+    ulong          _fatFirstSector;
+    ulong          _clusterHeapOffset;
+    uint           _clusterCount;
+    uint           _firstClusterOfRootDirectory;
+    FileSystemInfo _statfs;
+    bool           _useFirstFat;
+    bool           _debug;
+
+    static Dictionary<string, string> GetDefaultOptions() => new()
+    {
+        {
+            "debug", false.ToString()
+        }
+    };
+
+#region IReadOnlyFilesystem Members
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
 
     /// <inheritdoc />
     public string Name => Localization.exFAT_Name;
@@ -50,6 +84,51 @@ public sealed partial class exFAT : IReadOnlyFilesystem
 
     /// <inheritdoc />
     public string Author => Authors.NataliaPortillo;
+
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces => new()
+    {
+        {
+            "exfat", "exFAT default namespace"
+        }
+    };
+
+#endregion
+
+#region Nested type: CompleteDirectoryEntry
+
+    /// <summary>Represents a complete directory entry set with file entry, stream extension, and file name.</summary>
+    sealed class CompleteDirectoryEntry
+    {
+        /// <summary>Data length in bytes.</summary>
+        public ulong DataLength;
+        /// <summary>The File directory entry.</summary>
+        public FileDirectoryEntry FileEntry;
+
+        /// <summary>The complete file name assembled from File Name directory entries.</summary>
+        public string FileName;
+
+        /// <summary>First cluster of the file data.</summary>
+        public uint FirstCluster;
+
+        /// <summary>Whether the allocation is contiguous (NoFatChain).</summary>
+        public bool IsContiguous;
+
+        /// <summary>Whether this entry is a directory.</summary>
+        public bool IsDirectory;
+
+        /// <summary>The Stream Extension directory entry.</summary>
+        public StreamExtensionDirectoryEntry StreamEntry;
+
+        /// <summary>Valid data length in bytes.</summary>
+        public ulong ValidDataLength;
+
+        /// <inheritdoc />
+        public override string ToString() => FileName ?? string.Empty;
+    }
 
 #endregion
 }
