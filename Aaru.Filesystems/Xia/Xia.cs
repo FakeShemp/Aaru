@@ -27,8 +27,11 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -38,6 +41,26 @@ namespace Aaru.Filesystems;
 [SuppressMessage("ReSharper", "UnusedType.Local")]
 public sealed partial class Xia : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "Xia plugin";
+
+    /// <summary>Cache of root directory entries (filenames and their inode numbers)</summary>
+    readonly Dictionary<string, uint> _rootDirectoryCache = [];
+
+    /// <summary>The encoding to use for text data</summary>
+    Encoding _encoding;
+
+    /// <summary>The media image plugin used to read from the device</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Indicates if the filesystem is currently mounted</summary>
+    bool _mounted;
+
+    /// <summary>The partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>The filesystem superblock</summary>
+    SuperBlock _superblock;
+
 #region IFilesystem Members
 
     /// <inheritdoc />
