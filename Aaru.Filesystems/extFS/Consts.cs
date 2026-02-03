@@ -40,5 +40,8 @@ public sealed partial class extFS
     /// <summary>ext superblock magic</summary>
     const ushort EXT_MAGIC = 0x137D;
 
+    const int EXT_NAME_LEN = 255;
+    const int EXT_ROOT_INO = 1;
+
     const string FS_TYPE = "ext";
 }

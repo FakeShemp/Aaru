@@ -92,38 +92,38 @@ public sealed partial class extFS
         var sbSector = new byte[512];
         Array.Copy(sblock, sbOff, sbSector, 0, 512);
 
-        var extSb = new SuperBlock
+        var extSb = new ext_super_block
         {
-            inodes        = BitConverter.ToUInt32(sbSector, 0x000),
-            zones         = BitConverter.ToUInt32(sbSector, 0x004),
-            firstfreeblk  = BitConverter.ToUInt32(sbSector, 0x008),
-            freecountblk  = BitConverter.ToUInt32(sbSector, 0x00C),
-            firstfreeind  = BitConverter.ToUInt32(sbSector, 0x010),
-            freecountind  = BitConverter.ToUInt32(sbSector, 0x014),
-            firstdatazone = BitConverter.ToUInt32(sbSector, 0x018),
-            logzonesize   = BitConverter.ToUInt32(sbSector, 0x01C),
-            maxsize       = BitConverter.ToUInt32(sbSector, 0x020)
+            s_ninodes         = BitConverter.ToUInt32(sbSector, 0x000),
+            s_nzones          = BitConverter.ToUInt32(sbSector, 0x004),
+            s_firstfreeblock  = BitConverter.ToUInt32(sbSector, 0x008),
+            s_freeblockscount = BitConverter.ToUInt32(sbSector, 0x00C),
+            s_firstfreeinode  = BitConverter.ToUInt32(sbSector, 0x010),
+            s_freeinodescount = BitConverter.ToUInt32(sbSector, 0x014),
+            s_firstdatazone   = BitConverter.ToUInt32(sbSector, 0x018),
+            s_log_zone_size   = BitConverter.ToUInt32(sbSector, 0x01C),
+            s_max_size        = BitConverter.ToUInt32(sbSector, 0x020)
         };
 
         sb.AppendLine(Localization.ext_filesystem);
-        sb.AppendFormat(Localization._0_zones_in_volume,     extSb.zones);
-        sb.AppendFormat(Localization._0_free_blocks_1_bytes, extSb.freecountblk, extSb.freecountblk * 1024);
+        sb.AppendFormat(Localization._0_zones_in_volume,     extSb.s_nzones);
+        sb.AppendFormat(Localization._0_free_blocks_1_bytes, extSb.s_freeblockscount, extSb.s_freeblockscount * 1024);
 
         sb.AppendFormat(Localization._0_inodes_in_volume_1_free_2,
-                        extSb.inodes,
-                        extSb.freecountind,
-                        extSb.freecountind * 100 / extSb.inodes);
+                        extSb.s_ninodes,
+                        extSb.s_freeinodescount,
+                        extSb.s_freeinodescount * 100 / extSb.s_ninodes);
 
-        sb.AppendFormat(Localization.First_free_inode_is_0, extSb.firstfreeind);
-        sb.AppendFormat(Localization.First_free_block_is_0, extSb.firstfreeblk);
-        sb.AppendFormat(Localization.First_data_zone_is_0,  extSb.firstdatazone);
-        sb.AppendFormat(Localization.Log_zone_size_0,       extSb.logzonesize);
-        sb.AppendFormat(Localization.Max_zone_size_0,       extSb.maxsize);
+        sb.AppendFormat(Localization.First_free_inode_is_0, extSb.s_firstfreeinode);
+        sb.AppendFormat(Localization.First_free_block_is_0, extSb.s_firstfreeblock);
+        sb.AppendFormat(Localization.First_data_zone_is_0,  extSb.s_firstdatazone);
+        sb.AppendFormat(Localization.Log_zone_size_0,       extSb.s_log_zone_size);
+        sb.AppendFormat(Localization.Max_zone_size_0,       extSb.s_max_size);
 
         metadata = new FileSystem
         {
             Type         = FS_TYPE,
-            FreeClusters = extSb.freecountblk,
+            FreeClusters = extSb.s_freeblockscount,
             ClusterSize  = 1024,
             Clusters     = (partition.End - partition.Start + 1) * imagePlugin.Info.SectorSize / 1024
         };

@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace Aaru.Filesystems;
 
@@ -42,40 +43,77 @@ public sealed partial class extFS
     /// <summary>ext superblock</summary>
 #pragma warning disable CS0649
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    struct SuperBlock
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct ext_super_block
     {
         /// <summary>0x000, inodes on volume</summary>
-        public uint inodes;
+        public uint s_ninodes;
         /// <summary>0x004, zones on volume</summary>
-        public uint zones;
+        public uint s_nzones;
         /// <summary>0x008, first free block</summary>
-        public uint firstfreeblk;
+        public uint s_firstfreeblock;
         /// <summary>0x00C, free blocks count</summary>
-        public uint freecountblk;
+        public uint s_freeblockscount;
         /// <summary>0x010, first free inode</summary>
-        public uint firstfreeind;
+        public uint s_firstfreeinode;
         /// <summary>0x014, free inodes count</summary>
-        public uint freecountind;
+        public uint s_freeinodescount;
         /// <summary>0x018, first data zone</summary>
-        public uint firstdatazone;
+        public uint s_firstdatazone;
         /// <summary>0x01C, log zone size</summary>
-        public uint logzonesize;
+        public uint s_log_zone_size;
         /// <summary>0x020, max zone size</summary>
-        public uint maxsize;
+        public uint s_max_size;
         /// <summary>0x024, reserved</summary>
-        public uint reserved1;
+        public uint s_reserved1;
         /// <summary>0x028, reserved</summary>
-        public uint reserved2;
+        public uint s_reserved2;
         /// <summary>0x02C, reserved</summary>
-        public uint reserved3;
+        public uint s_reserved3;
         /// <summary>0x030, reserved</summary>
-        public uint reserved4;
+        public uint s_reserved4;
         /// <summary>0x034, reserved</summary>
-        public uint reserved5;
+        public uint s_reserved5;
         /// <summary>0x038, 0x137D (little endian)</summary>
-        public ushort magic;
+        public ushort s_magic;
     }
 #pragma warning restore CS0649
 
 #endregion
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct ext_inode {
+        public ushort i_mode;
+        public ushort i_uid;
+        public uint  i_size;
+        public uint  i_time;
+        public ushort i_gid;
+        public ushort i_nlinks;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
+        public uint[]  i_zone;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct ext_free_inode {
+        public uint count;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 14)]
+        public uint[] free;
+        public uint next;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct ext_free_block {
+        public uint count;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 254)]
+        public uint[] free;
+        public uint next;
+    }
+
+    struct ext_dir_entry {
+        public uint  inode;
+        public ushort rec_len;
+        public ushort name_len;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = EXT_NAME_LEN)]
+        public byte[] name;
+    }
 }
