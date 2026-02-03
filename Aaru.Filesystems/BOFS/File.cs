@@ -56,40 +56,38 @@ public sealed partial class BOFS
             return ErrorNumber.NoError;
         }
 
-        // Look up file in root directory cache
-        lock(_rootDirectoryCache)
+        // Use helper to lookup the entry
+        ErrorNumber lookupErr = LookupEntry(path, out FileEntry entry);
+
+        return lookupErr != ErrorNumber.NoError ? ErrorNumber.NoSuchFile : PopulateStat(entry, out stat);
+    }
+
+    private ErrorNumber PopulateStat(FileEntry entry, out FileEntryInfo stat)
+    {
+        stat = new FileEntryInfo
         {
-            if(!_rootDirectoryCache.TryGetValue(path.TrimStart('/'), out FileEntry entry))
-                return ErrorNumber.NoSuchFile;
+            Inode  = (ulong)entry.RecordId,
+            Links  = 1,
+            Length = entry.LogicalSize,
+            Blocks = entry.PhysicalSize > 0
+                         ? (long)((ulong)(entry.PhysicalSize + _track0.BytesPerSector - 1) /
+                                  (ulong)_track0.BytesPerSector)
+                         : 0,
+            BlockSize = _track0.BytesPerSector,
+            Mode      = (uint)entry.Mode
+        };
 
-            var stat_info = new FileEntryInfo
-            {
-                Inode  = (ulong)entry.RecordId,
-                Links  = 1,
-                Length = entry.LogicalSize,
-                Blocks = entry.PhysicalSize > 0
-                             ? (long)((ulong)(entry.PhysicalSize + _track0.BytesPerSector - 1) /
-                                      (ulong)_track0.BytesPerSector)
-                             : 0,
-                BlockSize = _track0.BytesPerSector,
-                Mode      = (uint)entry.Mode
-            };
+        // Set attributes based on FileType
+        if(entry.FileType == DIR_TYPE)
+            stat.Attributes |= FileAttributes.Directory;
+        else
+            stat.Attributes |= FileAttributes.File;
 
-            // Set attributes based on FileType
-            if(entry.FileType == DIR_TYPE)
-                stat_info.Attributes |= FileAttributes.Directory;
-            else
-                stat_info.Attributes |= FileAttributes.File;
+        // Convert BeOS timestamps (seconds since 1970) to .NET DateTime
+        if(entry.CreationDate != 0) stat.CreationTimeUtc = DateHandlers.UnixToDateTime(entry.CreationDate);
 
-            // Convert BeOS timestamps (seconds since 1970) to .NET DateTime
-            if(entry.CreationDate != 0) stat_info.CreationTimeUtc = DateHandlers.UnixToDateTime(entry.CreationDate);
+        if(entry.ModificationDate != 0) stat.LastWriteTimeUtc = DateHandlers.UnixToDateTime(entry.ModificationDate);
 
-            if(entry.ModificationDate != 0)
-                stat_info.LastWriteTimeUtc = DateHandlers.UnixToDateTime(entry.ModificationDate);
-
-            stat = stat_info;
-
-            return ErrorNumber.NoError;
-        }
+        return ErrorNumber.NoError;
     }
 }

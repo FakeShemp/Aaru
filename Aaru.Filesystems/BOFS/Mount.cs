@@ -282,17 +282,6 @@ public sealed partial class BOFS
                 // Skip empty entries (filename starts with null byte)
                 if(entry.FileName == null || entry.FileName.Length == 0 || entry.FileName[0] == 0) continue;
 
-                // Skip entries with unreasonable sizes (likely garbage)
-                if(entry.LogicalSize < 0 || entry.LogicalSize > _track0.TotalSectors * _track0.BytesPerSector)
-                {
-                    AaruLogging.Debug(MODULE_NAME,
-                                      "  Skipping: Unreasonable size {0} (max: {1})",
-                                      entry.LogicalSize,
-                                      _track0.TotalSectors * _track0.BytesPerSector);
-
-                    continue;
-                }
-
                 string filename = StringHandlers.CToString(entry.FileName, _encoding);
 
                 if(string.IsNullOrWhiteSpace(filename))
@@ -300,6 +289,21 @@ public sealed partial class BOFS
                     AaruLogging.Debug(MODULE_NAME, "  Skipping: Filename is null or whitespace");
 
                     continue;
+                }
+
+                // For files, validate size; for directories, don't
+                if(entry.FileType != DIR_TYPE)
+                {
+                    // Skip entries with unreasonable sizes (likely garbage)
+                    if(entry.LogicalSize < 0 || entry.LogicalSize > _track0.TotalSectors * _track0.BytesPerSector)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "  Skipping: Unreasonable size {0} (max: {1})",
+                                          entry.LogicalSize,
+                                          _track0.TotalSectors * _track0.BytesPerSector);
+
+                        continue;
+                    }
                 }
 
                 _rootDirectoryCache[filename] = entry;

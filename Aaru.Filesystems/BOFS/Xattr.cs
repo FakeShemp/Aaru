@@ -45,16 +45,15 @@ public sealed partial class BOFS
             return ErrorNumber.NoError;
         }
 
-        lock(_rootDirectoryCache)
-        {
-            if(!_rootDirectoryCache.TryGetValue(path.TrimStart('/'), out FileEntry entry))
-                return ErrorNumber.NoSuchFile;
+        // Use helper to lookup the entry
+        ErrorNumber lookupErr = LookupEntry(path, out FileEntry entry);
 
-            // Expose FileType as xattr only if it's not 0 or -1
-            if(entry.FileType != 0 && entry.FileType != -1) xattrs.Add("com.be.filetype");
+        if(lookupErr != ErrorNumber.NoError) return ErrorNumber.NoSuchFile;
 
-            return ErrorNumber.NoError;
-        }
+        // Expose FileType as xattr only if it's not 0 or -1
+        if(entry.FileType != 0 && entry.FileType != -1) xattrs.Add("com.be.filetype");
+
+        return ErrorNumber.NoError;
     }
 
     /// <inheritdoc />
@@ -63,29 +62,28 @@ public sealed partial class BOFS
         if(string.IsNullOrEmpty(path) || path == "/" || xattr != "com.be.filetype")
             return ErrorNumber.NoSuchExtendedAttribute;
 
-        lock(_rootDirectoryCache)
+        // Use helper to lookup the entry
+        ErrorNumber lookupErr = LookupEntry(path, out FileEntry entry);
+
+        if(lookupErr != ErrorNumber.NoError) return ErrorNumber.NoSuchFile;
+
+        // Don't expose FileType if it's 0 or -1
+        if(entry.FileType == 0 || entry.FileType == -1) return ErrorNumber.NoSuchExtendedAttribute;
+
+        // FileType is 4 bytes (int), export as-is without endian conversion
+        byte[] fileTypeBytes = BitConverter.GetBytes(entry.FileType);
+
+        if(buf == null)
         {
-            if(!_rootDirectoryCache.TryGetValue(path.TrimStart('/'), out FileEntry entry))
-                return ErrorNumber.NoSuchFile;
-
-            // Don't expose FileType if it's 0 or -1
-            if(entry.FileType == 0 || entry.FileType == -1) return ErrorNumber.NoSuchExtendedAttribute;
-
-            // FileType is 4 bytes (int), export as-is without endian conversion
-            byte[] fileTypeBytes = BitConverter.GetBytes(entry.FileType);
-
-            if(buf == null)
-            {
-                buf = fileTypeBytes;
-
-                return ErrorNumber.NoError;
-            }
-
-            if(buf.Length < fileTypeBytes.Length) return ErrorNumber.InvalidArgument;
-
-            Array.Copy(fileTypeBytes, buf, fileTypeBytes.Length);
+            buf = fileTypeBytes;
 
             return ErrorNumber.NoError;
         }
+
+        if(buf.Length < fileTypeBytes.Length) return ErrorNumber.InvalidArgument;
+
+        Array.Copy(fileTypeBytes, buf, fileTypeBytes.Length);
+
+        return ErrorNumber.NoError;
     }
 }
