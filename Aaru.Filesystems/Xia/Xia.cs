@@ -34,10 +34,9 @@ namespace Aaru.Filesystems;
 
 // Information from the Linux kernel
 /// <inheritdoc />
-/// <summary>Implements detection for the Xia filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 [SuppressMessage("ReSharper", "UnusedType.Local")]
-public sealed partial class Xia : IFilesystem
+public sealed partial class Xia : IReadOnlyFilesystem
 {
 #region IFilesystem Members
 
