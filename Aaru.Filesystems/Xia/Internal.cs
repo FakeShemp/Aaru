@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Internal.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Xia filesystem plugin.
@@ -26,11 +26,7 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
-using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Structs;
+using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
@@ -38,19 +34,39 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class Xia
 {
-    /// <inheritdoc />
-    public FileSystem Metadata { get; private set; }
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
-    /// <inheritdoc />
-    public Dictionary<string, string> Namespaces { get; } = [];
+    /// <summary>Directory node for enumerating directory contents</summary>
+    sealed class XiaDirNode : IDirNode
+    {
+        /// <summary>Current position in the directory enumeration (entry index)</summary>
+        internal int Position { get; set; }
 
-    /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
+        /// <summary>Array of directory entry names in this directory</summary>
+        internal string[] Entries { get; set; }
 
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+    /// <summary>File node for reading file contents with streaming support</summary>
+    /// <remarks>
+    ///     Tracks the current read position and inode data without caching entire file contents.
+    ///     Supports efficient streaming reads of any file size.
+    /// </remarks>
+    sealed class XiaFileNode : IFileNode
+    {
+        /// <summary>The inode number</summary>
+        internal uint InodeNum { get; init; }
+
+        /// <summary>The file's inode containing metadata and zone pointers</summary>
+        internal Inode Inode { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 }

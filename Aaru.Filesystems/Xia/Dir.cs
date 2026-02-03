@@ -358,17 +358,4 @@ public sealed partial class Xia
             offset += recLen;
         }
     }
-
-    /// <summary>Directory node for enumerating directory contents</summary>
-    sealed class XiaDirNode : IDirNode
-    {
-        /// <summary>Current position in the directory enumeration (entry index)</summary>
-        internal int Position { get; set; }
-
-        /// <summary>Array of directory entry names in this directory</summary>
-        internal string[] Entries { get; set; }
-
-        /// <inheritdoc />
-        public string Path { get; init; }
-    }
 }

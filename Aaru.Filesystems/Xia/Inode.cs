@@ -27,6 +27,8 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
@@ -90,6 +92,67 @@ public sealed partial class Xia
                           inode.i_mode,
                           inode.i_size,
                           inode.i_nlinks);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Gets the inode number for a path</summary>
+    /// <param name="path">The file path</param>
+    /// <param name="inodeNum">The inode number</param>
+    /// <returns>Error code indicating success or failure</returns>
+    ErrorNumber GetInodeNumber(string path, out uint inodeNum)
+    {
+        inodeNum = 0;
+
+        // Normalize path
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath is "" or ".") normalizedPath = "/";
+
+        if(normalizedPath == "/")
+        {
+            inodeNum = XIAFS_ROOT_INO;
+
+            return ErrorNumber.NoError;
+        }
+
+        // Parse path
+        string pathWithoutLeadingSlash = normalizedPath.StartsWith("/", StringComparison.Ordinal)
+                                             ? normalizedPath[1..]
+                                             : normalizedPath;
+
+        string[] pathComponents = pathWithoutLeadingSlash.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries)
+                                                         .Where(static c => c != "." && c != "..")
+                                                         .ToArray();
+
+        if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
+
+        // Navigate to target
+        Dictionary<string, uint> currentEntries = _rootDirectoryCache;
+
+        for(var i = 0; i < pathComponents.Length - 1; i++)
+        {
+            string component = pathComponents[i];
+
+            if(!currentEntries.TryGetValue(component, out uint childInodeNum)) return ErrorNumber.NoSuchFile;
+
+            ErrorNumber errno = ReadInode(childInodeNum, out Inode childInode);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if((childInode.i_mode & 0xF000) != 0x4000) return ErrorNumber.NotDirectory;
+
+            errno = ReadDirectoryEntries(childInode, out Dictionary<string, uint> childEntries);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            currentEntries = childEntries;
+        }
+
+        // Get the target inode number
+        string targetName = pathComponents[^1];
+
+        if(!currentEntries.TryGetValue(targetName, out inodeNum)) return ErrorNumber.NoSuchFile;
 
         return ErrorNumber.NoError;
     }
