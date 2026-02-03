@@ -204,6 +204,7 @@ Fully supported file-systems (identify and extraction)
 * CP/M file system
 * High Sierra Format
 * ISO9660, including Apple, Amiga, Rock Ridge, Joliet and Romeo extensions
+* Linux extended file system
 * Microsoft 12-bit File Allocation Table (FAT12), including Atari ST extensions
 * Microsoft 16-bit File Allocation Table (FAT16)
 * Microsoft 32-bit File Allocation Table (FAT32), including FAT+ extension
@@ -239,7 +240,6 @@ Supported file systems for identification and information only
 * High Performance Optical File System (HPOFS)
 * HP Logical Interchange Format
 * IBM Journaling File System (JFS)
-* Linux extended file system
 * Linux extended file system 2
 * Linux extended file system 3
 * Linux extended file system 4
