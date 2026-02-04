@@ -30,18 +30,27 @@
 // ReSharper disable UnusedMember.Local
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
 /// <summary>
-///     Implements detection for the MicroDOS filesystem. Information from http://www.owg.ru/mkt/BK/MKDOS.TXT Thanks
+///     Implements the MicroDOS filesystem. Information from http://www.owg.ru/mkt/BK/MKDOS.TXT Thanks
 ///     to tarlabnor for translating it
 /// </summary>
-public sealed partial class MicroDOS : IFilesystem
+public sealed partial class MicroDOS : IReadOnlyFilesystem
 {
 #region IFilesystem Members
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
     /// <inheritdoc />
     public string Name => Localization.MicroDOS_Name;

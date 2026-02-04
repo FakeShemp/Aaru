@@ -34,10 +34,6 @@ using System.Runtime.InteropServices;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>
-///     Implements detection for the MicroDOS filesystem. Information from http://www.owg.ru/mkt/BK/MKDOS.TXT Thanks
-///     to tarlabnor for translating it
-/// </summary>
 public sealed partial class MicroDOS
 {
 #region Nested type: Block0
