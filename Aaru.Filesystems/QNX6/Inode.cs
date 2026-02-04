@@ -27,6 +27,8 @@
 // ****************************************************************************/
 
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
+using Aaru.Helpers;
 using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
@@ -93,5 +95,41 @@ public sealed partial class QNX6
                           inode.di_status);
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Converts a QNX6 inode entry to a FileEntryInfo structure</summary>
+    /// <param name="inode">The QNX6 inode entry</param>
+    /// <returns>The FileEntryInfo structure</returns>
+    FileEntryInfo InodeToFileEntryInfo(qnx6_inode_entry inode)
+    {
+        var info = new FileEntryInfo
+        {
+            Attributes          = FileAttributes.None,
+            BlockSize           = _blockSize,
+            Length              = (long)inode.di_size,
+            UID                 = inode.di_uid,
+            GID                 = inode.di_gid,
+            Mode                = inode.di_mode,
+            CreationTimeUtc     = DateHandlers.UnixUnsignedToDateTime(inode.di_ftime),
+            LastWriteTimeUtc    = DateHandlers.UnixUnsignedToDateTime(inode.di_mtime),
+            AccessTimeUtc       = DateHandlers.UnixUnsignedToDateTime(inode.di_atime),
+            StatusChangeTimeUtc = DateHandlers.UnixUnsignedToDateTime(inode.di_ctime)
+        };
+
+        // Convert UNIX mode to FileAttributes
+        // S_IFMT = 0xF000 (file type mask)
+        info.Attributes = (inode.di_mode & 0xF000) switch
+                          {
+                              0x4000 => FileAttributes.Directory,   // S_IFDIR
+                              0x8000 => FileAttributes.File,        // S_IFREG
+                              0xA000 => FileAttributes.Symlink,     // S_IFLNK
+                              0x2000 => FileAttributes.CharDevice,  // S_IFCHR
+                              0x6000 => FileAttributes.BlockDevice, // S_IFBLK
+                              0x1000 => FileAttributes.FIFO,        // S_IFIFO
+                              0xC000 => FileAttributes.Socket,      // S_IFSOCK
+                              _      => FileAttributes.File
+                          };
+
+        return info;
     }
 }
