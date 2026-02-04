@@ -27,19 +27,27 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 // Information from the Linux kernel
 /// <inheritdoc />
-/// <summary>Implements detection of the UNIX boot filesystem</summary>
-public sealed partial class BFS : IFilesystem
+/// <summary>Implements the UNIX boot filesystem</summary>
+public sealed partial class BFS : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "BFS plugin";
 
 #region IFilesystem Members
 
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
     /// <inheritdoc />
     public string Name => Localization.BFS_Name;
 

@@ -34,7 +34,6 @@ namespace Aaru.Filesystems;
 
 // Information from the Linux kernel
 /// <inheritdoc />
-/// <summary>Implements detection of the UNIX boot filesystem</summary>
 public sealed partial class BFS
 {
 #region Nested type: SuperBlock
