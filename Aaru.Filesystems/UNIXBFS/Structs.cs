@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace Aaru.Filesystems;
 
@@ -37,6 +38,7 @@ public sealed partial class BFS
 {
 #region Nested type: SuperBlock
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     struct SuperBlock
     {
@@ -55,9 +57,11 @@ public sealed partial class BFS
         /// <summary>0x18, unknown :p</summary>
         public int s_bto;
         /// <summary>0x1C, 6 bytes, filesystem name</summary>
-        public string s_fsname;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+        public byte[] s_fsname;
         /// <summary>0x22, 6 bytes, volume name</summary>
-        public string s_volume;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+        public byte[] s_volume;
     }
 
 #endregion

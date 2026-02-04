@@ -34,6 +34,7 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Logging;
 using Partition = Aaru.CommonTypes.Partition;
+using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
 
@@ -71,23 +72,10 @@ public sealed partial class BFS
 
         if(errno != ErrorNumber.NoError) return;
 
-        var sbStrings = new byte[6];
+        SuperBlock bfsSb = Marshal.ByteArrayToStructureLittleEndian<SuperBlock>(bfsSbSector);
 
-        var bfsSb = new SuperBlock
-        {
-            s_magic = BitConverter.ToUInt32(bfsSbSector, 0x00),
-            s_start = BitConverter.ToUInt32(bfsSbSector, 0x04),
-            s_end   = BitConverter.ToUInt32(bfsSbSector, 0x08),
-            s_from  = BitConverter.ToUInt32(bfsSbSector, 0x0C),
-            s_to    = BitConverter.ToUInt32(bfsSbSector, 0x10),
-            s_bfrom = BitConverter.ToInt32(bfsSbSector, 0x14),
-            s_bto   = BitConverter.ToInt32(bfsSbSector, 0x18)
-        };
-
-        Array.Copy(bfsSbSector, 0x1C, sbStrings, 0, 6);
-        bfsSb.s_fsname = StringHandlers.CToString(sbStrings, encoding);
-        Array.Copy(bfsSbSector, 0x22, sbStrings, 0, 6);
-        bfsSb.s_volume = StringHandlers.CToString(sbStrings, encoding);
+        string fsName  = StringHandlers.CToString(bfsSb.s_fsname, encoding);
+        string volName = StringHandlers.CToString(bfsSb.s_volume, encoding);
 
         AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_magic: 0x{0:X8}", bfsSb.s_magic);
         AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_start: 0x{0:X8}", bfsSb.s_start);
@@ -96,8 +84,8 @@ public sealed partial class BFS
         AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_to: 0x{0:X8}",    bfsSb.s_to);
         AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_bfrom: 0x{0:X8}", bfsSb.s_bfrom);
         AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_bto: 0x{0:X8}",   bfsSb.s_bto);
-        AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_fsname: 0x{0}",   bfsSb.s_fsname);
-        AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_volume: 0x{0}",   bfsSb.s_volume);
+        AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_fsname: 0x{0}",   fsName);
+        AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_volume: 0x{0}",   volName);
 
         sb.AppendLine(Localization.UNIX_Boot_Filesystem);
 
@@ -107,13 +95,13 @@ public sealed partial class BFS
                         bfsSb.s_end - bfsSb.s_start)
           .AppendLine();
 
-        sb.AppendFormat(Localization.Filesystem_name_0, bfsSb.s_fsname).AppendLine();
-        sb.AppendFormat(Localization.Volume_name_0,     bfsSb.s_volume).AppendLine();
+        sb.AppendFormat(Localization.Filesystem_name_0, fsName).AppendLine();
+        sb.AppendFormat(Localization.Volume_name_0,     volName).AppendLine();
 
         metadata = new FileSystem
         {
             Type        = FS_TYPE,
-            VolumeName  = bfsSb.s_volume,
+            VolumeName  = volName,
             ClusterSize = imagePlugin.Info.SectorSize,
             Clusters    = partition.End - partition.Start + 1
         };
