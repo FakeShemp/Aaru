@@ -31,8 +31,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -43,6 +45,38 @@ namespace Aaru.Filesystems;
 /// </summary>
 public sealed partial class MicroDOS : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "MicroDOS plugin";
+
+    /// <summary>Block size in bytes</summary>
+    const int BLOCK_SIZE = 512;
+
+    /// <summary>Directory entry size in bytes</summary>
+    const int DIR_ENTRY_SIZE = 24;
+
+    /// <summary>Offset of first directory entry in block 0</summary>
+    const int DIR_START_OFFSET = 320;
+
+    /// <summary>Subdirectory marker (first byte of filename = 0x7F)</summary>
+    const byte SUBDIR_MARKER = 0x7F;
+
+    /// <summary>Cached root directory entries (filename -> DirectoryEntry)</summary>
+    readonly Dictionary<string, DirectoryEntry> _rootDirectoryCache = new();
+
+    /// <summary>Cached superblock (block 0)</summary>
+    Block0 _block0;
+
+    /// <summary>Encoding used for filenames (KOI8-R)</summary>
+    Encoding _encoding;
+
+    /// <summary>Image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Whether filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Partition being mounted</summary>
+    Partition _partition;
+
 #region IFilesystem Members
 
     /// <inheritdoc />
