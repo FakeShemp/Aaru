@@ -28,8 +28,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -37,6 +39,38 @@ namespace Aaru.Filesystems;
 /// <summary>Implements QNX 6 filesystem</summary>
 public sealed partial class QNX6 : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "QNX6 plugin";
+
+    /// <summary>Block offset from partition start (includes boot blocks and superblock area)</summary>
+    uint _blockOffset;
+
+    /// <summary>Block size in bytes</summary>
+    uint _blockSize;
+
+    /// <summary>Encoding used for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>Image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Whether this is an Audi MMI filesystem</summary>
+    bool _isAudiMmi;
+
+    /// <summary>Whether the filesystem is little-endian (false = big-endian)</summary>
+    bool _littleEndian;
+
+    /// <summary>Whether filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>Cached root directory entries (filename -> inode entry)</summary>
+    readonly Dictionary<string, qnx6_inode_entry> _rootDirectoryCache = new();
+
+    /// <summary>Cached superblock</summary>
+    qnx6_super_block _superblock;
+
 #region IFilesystem Members
 
     /// <inheritdoc />

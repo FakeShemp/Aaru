@@ -28,26 +28,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements QNX 6 filesystem</summary>
 public sealed partial class QNX6
 {
-    /// <inheritdoc />
-    public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
-                             Dictionary<string, string> options,     string    @namespace) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
-
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
 

@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -37,20 +38,21 @@ public sealed partial class QNX6
 
     /// <summary>QNX6 root node structure (used in superblock for inode, bitmap, longfile trees)</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct qnx6_root_node
+    [SwapEndian]
+    partial struct qnx6_root_node
     {
         /// <summary>Size of the tree</summary>
-        public readonly ulong size;
+        public ulong size;
         /// <summary>Block pointers (16 direct pointers)</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly uint[] ptr;
+        public uint[] ptr;
         /// <summary>Number of indirect levels</summary>
-        public readonly byte levels;
+        public byte levels;
         /// <summary>Mode</summary>
-        public readonly byte mode;
+        public byte mode;
         /// <summary>Spare bytes</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-        public readonly byte[] spare;
+        public byte[] spare;
     }
 
 #endregion
@@ -59,47 +61,48 @@ public sealed partial class QNX6
 
     /// <summary>QNX6 superblock structure</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct qnx6_super_block
+    [SwapEndian]
+    partial struct qnx6_super_block
     {
         /// <summary>Magic number (0x68191122)</summary>
-        public readonly uint sb_magic;
+        public uint sb_magic;
         /// <summary>Superblock checksum</summary>
-        public readonly uint sb_checksum;
+        public uint sb_checksum;
         /// <summary>Volume serial number</summary>
-        public readonly ulong sb_serial;
+        public ulong sb_serial;
         /// <summary>Creation time</summary>
-        public readonly uint sb_ctime;
+        public uint sb_ctime;
         /// <summary>Last access time</summary>
-        public readonly uint sb_atime;
+        public uint sb_atime;
         /// <summary>Flags</summary>
-        public readonly uint sb_flags;
+        public uint sb_flags;
         /// <summary>Filesystem version 1</summary>
-        public readonly ushort sb_version1;
+        public ushort sb_version1;
         /// <summary>Filesystem version 2</summary>
-        public readonly ushort sb_version2;
+        public ushort sb_version2;
         /// <summary>Volume ID (16 bytes)</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] sb_volumeid;
+        public byte[] sb_volumeid;
         /// <summary>Block size in bytes</summary>
-        public readonly uint sb_blocksize;
+        public uint sb_blocksize;
         /// <summary>Total number of inodes</summary>
-        public readonly uint sb_num_inodes;
+        public uint sb_num_inodes;
         /// <summary>Number of free inodes</summary>
-        public readonly uint sb_free_inodes;
+        public uint sb_free_inodes;
         /// <summary>Total number of blocks</summary>
-        public readonly uint sb_num_blocks;
+        public uint sb_num_blocks;
         /// <summary>Number of free blocks</summary>
-        public readonly uint sb_free_blocks;
+        public uint sb_free_blocks;
         /// <summary>Allocation group</summary>
-        public readonly uint sb_allocgroup;
+        public uint sb_allocgroup;
         /// <summary>Inode tree root</summary>
-        public readonly qnx6_root_node Inode;
+        public qnx6_root_node Inode;
         /// <summary>Bitmap tree root</summary>
-        public readonly qnx6_root_node Bitmap;
+        public qnx6_root_node Bitmap;
         /// <summary>Long filename tree root</summary>
-        public readonly qnx6_root_node Longfile;
+        public qnx6_root_node Longfile;
         /// <summary>Unknown tree root</summary>
-        public readonly qnx6_root_node Unknown;
+        public qnx6_root_node Unknown;
     }
 
 #endregion
@@ -108,41 +111,42 @@ public sealed partial class QNX6
 
     /// <summary>Audi MMI 3G superblock structure (different layout from plain QNX6)</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct qnx6_mmi_super_block
+    [SwapEndian]
+    partial struct qnx6_mmi_super_block
     {
         /// <summary>Magic number</summary>
-        public readonly uint sb_magic;
+        public uint sb_magic;
         /// <summary>Superblock checksum</summary>
-        public readonly uint sb_checksum;
+        public uint sb_checksum;
         /// <summary>Volume serial number</summary>
-        public readonly ulong sb_serial;
+        public ulong sb_serial;
         /// <summary>Spare bytes</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
-        public readonly byte[] sb_spare0;
+        public byte[] sb_spare0;
         /// <summary>ID (12 bytes)</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
-        public readonly byte[] sb_id;
+        public byte[] sb_id;
         /// <summary>Block size in bytes</summary>
-        public readonly uint sb_blocksize;
+        public uint sb_blocksize;
         /// <summary>Total number of inodes</summary>
-        public readonly uint sb_num_inodes;
+        public uint sb_num_inodes;
         /// <summary>Number of free inodes</summary>
-        public readonly uint sb_free_inodes;
+        public uint sb_free_inodes;
         /// <summary>Total number of blocks</summary>
-        public readonly uint sb_num_blocks;
+        public uint sb_num_blocks;
         /// <summary>Number of free blocks</summary>
-        public readonly uint sb_free_blocks;
+        public uint sb_free_blocks;
         /// <summary>Spare bytes</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public readonly byte[] sb_spare1;
+        public byte[] sb_spare1;
         /// <summary>Inode tree root</summary>
-        public readonly qnx6_root_node Inode;
+        public qnx6_root_node Inode;
         /// <summary>Bitmap tree root</summary>
-        public readonly qnx6_root_node Bitmap;
+        public qnx6_root_node Bitmap;
         /// <summary>Long filename tree root</summary>
-        public readonly qnx6_root_node Longfile;
+        public qnx6_root_node Longfile;
         /// <summary>Unknown tree root</summary>
-        public readonly qnx6_root_node Unknown;
+        public qnx6_root_node Unknown;
     }
 
 #endregion
@@ -151,39 +155,40 @@ public sealed partial class QNX6
 
     /// <summary>QNX6 inode entry (128 bytes each)</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct qnx6_inode_entry
+    [SwapEndian]
+    partial struct qnx6_inode_entry
     {
         /// <summary>File size</summary>
-        public readonly ulong di_size;
+        public ulong di_size;
         /// <summary>User ID</summary>
-        public readonly uint di_uid;
+        public uint di_uid;
         /// <summary>Group ID</summary>
-        public readonly uint di_gid;
+        public uint di_gid;
         /// <summary>File time (creation)</summary>
-        public readonly uint di_ftime;
+        public uint di_ftime;
         /// <summary>Modification time</summary>
-        public readonly uint di_mtime;
+        public uint di_mtime;
         /// <summary>Access time</summary>
-        public readonly uint di_atime;
+        public uint di_atime;
         /// <summary>Change time</summary>
-        public readonly uint di_ctime;
+        public uint di_ctime;
         /// <summary>File mode (permissions)</summary>
-        public readonly ushort di_mode;
+        public ushort di_mode;
         /// <summary>Extended mode</summary>
-        public readonly ushort di_ext_mode;
+        public ushort di_ext_mode;
         /// <summary>Block pointers (16 direct pointers)</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly uint[] di_block_ptr;
+        public uint[] di_block_ptr;
         /// <summary>Number of indirect levels</summary>
-        public readonly byte di_filelevels;
+        public byte di_filelevels;
         /// <summary>File status (0x01=directory, 0x02=deleted, 0x03=normal)</summary>
-        public readonly byte di_status;
+        public byte di_status;
         /// <summary>Unknown bytes</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public readonly byte[] di_unknown2;
+        public byte[] di_unknown2;
         /// <summary>Zero padding</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-        public readonly uint[] di_zero2;
+        public uint[] di_zero2;
     }
 
 #endregion
@@ -192,15 +197,16 @@ public sealed partial class QNX6
 
     /// <summary>QNX6 directory entry (32 bytes max, short filename)</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct qnx6_dir_entry
+    [SwapEndian]
+    partial struct qnx6_dir_entry
     {
         /// <summary>Inode number</summary>
-        public readonly uint de_inode;
+        public uint de_inode;
         /// <summary>Filename length</summary>
-        public readonly byte de_size;
+        public byte de_size;
         /// <summary>Filename (max 27 characters)</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 27)]
-        public readonly byte[] de_fname;
+        public byte[] de_fname;
     }
 
 #endregion
@@ -209,19 +215,20 @@ public sealed partial class QNX6
 
     /// <summary>QNX6 long directory entry (for filenames longer than 27 chars)</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct qnx6_long_dir_entry
+    [SwapEndian]
+    partial struct qnx6_long_dir_entry
     {
         /// <summary>Inode number</summary>
-        public readonly uint de_inode;
+        public uint de_inode;
         /// <summary>Size indicator (0xFF for long entries)</summary>
-        public readonly byte de_size;
+        public byte de_size;
         /// <summary>Unknown bytes</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public readonly byte[] de_unknown;
+        public byte[] de_unknown;
         /// <summary>Long filename inode number (in longfile tree)</summary>
-        public readonly uint de_long_inode;
+        public uint de_long_inode;
         /// <summary>Checksum</summary>
-        public readonly uint de_checksum;
+        public uint de_checksum;
     }
 
 #endregion
@@ -230,13 +237,14 @@ public sealed partial class QNX6
 
     /// <summary>QNX6 long filename structure (stored in longfile tree)</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct qnx6_long_filename
+    [SwapEndian]
+    partial struct qnx6_long_filename
     {
         /// <summary>Filename length</summary>
-        public readonly ushort lf_size;
+        public ushort lf_size;
         /// <summary>Filename (max 510 characters)</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 510)]
-        public readonly byte[] lf_fname;
+        public byte[] lf_fname;
     }
 
 #endregion
