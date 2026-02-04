@@ -106,4 +106,148 @@ public sealed partial class AtheOS
     }
 
 #endregion
+
+#region Nested type: BlockRun
+
+    /// <summary>Block run - a pointer to a contiguous range of blocks</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct BlockRun
+    {
+        /// <summary>Allocation group number</summary>
+        public readonly int group;
+        /// <summary>Start block within the allocation group</summary>
+        public readonly ushort start;
+        /// <summary>Number of contiguous blocks</summary>
+        public readonly ushort len;
+    }
+
+#endregion
+
+#region Nested type: DataStream
+
+    /// <summary>Data stream of an AFS file</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct DataStream
+    {
+        /// <summary>Direct block runs (12 entries)</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
+        public readonly BlockRun[] direct;
+        /// <summary>Maximum number of bytes in direct range</summary>
+        public readonly long max_direct_range;
+        /// <summary>Indirect block run</summary>
+        public readonly BlockRun indirect;
+        /// <summary>Maximum number of bytes in direct and indirect ranges</summary>
+        public readonly long max_indirect_range;
+        /// <summary>Double indirect block run</summary>
+        public readonly BlockRun double_indirect;
+        /// <summary>Maximum number of bytes in all ranges</summary>
+        public readonly long max_double_indirect_range;
+        /// <summary>Size of the data stream in bytes</summary>
+        public readonly long size;
+    }
+
+#endregion
+
+#region Nested type: Inode
+
+    /// <summary>AFS inode structure</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Inode
+    {
+        /// <summary>0x000, Magic number (0x64358428)</summary>
+        public readonly uint magic1;
+        /// <summary>0x004, Block run pointing to this inode</summary>
+        public readonly BlockRun inode_num;
+        /// <summary>0x00C, User ID of owner</summary>
+        public readonly int uid;
+        /// <summary>0x010, Group ID of owner</summary>
+        public readonly int gid;
+        /// <summary>0x014, File mode (permissions and type)</summary>
+        public readonly int mode;
+        /// <summary>0x018, Inode flags</summary>
+        public readonly int flags;
+        /// <summary>0x01C, Number of hard links</summary>
+        public readonly int link_count;
+        /// <summary>0x020, Creation time in microseconds since epoch</summary>
+        public readonly long create_time;
+        /// <summary>0x028, Last modification time in microseconds since epoch</summary>
+        public readonly long modified_time;
+        /// <summary>0x030, Block run of parent directory</summary>
+        public readonly BlockRun parent;
+        /// <summary>0x038, Block run of attribute directory</summary>
+        public readonly BlockRun attrib_dir;
+        /// <summary>0x040, Index type (for index files only)</summary>
+        public readonly uint index_type;
+        /// <summary>0x044, Size of this inode structure</summary>
+        public readonly int inode_size;
+        /// <summary>0x048, Pointer to VNode (in-memory only, not on disk)</summary>
+        public readonly long vnode_ptr;
+        /// <summary>0x050, Data stream</summary>
+        public readonly DataStream data;
+        /// <summary>Padding</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public readonly int[] pad;
+        /// <summary>Start of small data (extended attributes stored in inode)</summary>
+        public readonly int small_data_start;
+    }
+
+#endregion
+
+#region Nested type: SmallData
+
+    /// <summary>Small data entry (extended attribute stored in inode)</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct SmallData
+    {
+        /// <summary>Attribute type</summary>
+        public readonly uint type;
+        /// <summary>Size of the attribute name</summary>
+        public readonly ushort name_size;
+        /// <summary>Size of the attribute data</summary>
+        public readonly ushort data_size;
+    }
+
+#endregion
+
+#region Nested type: BTreeHeader
+
+    /// <summary>B+tree header</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct BTreeHeader
+    {
+        /// <summary>Magic number (0x65768995)</summary>
+        public readonly uint magic;
+        /// <summary>Block number of root node</summary>
+        public readonly long root;
+        /// <summary>Depth of the tree</summary>
+        public readonly int tree_depth;
+        /// <summary>Block number of last node</summary>
+        public readonly long last_node;
+        /// <summary>Block number of first free node in freelist</summary>
+        public readonly long first_free;
+    }
+
+#endregion
+
+#region Nested type: BNode
+
+    /// <summary>B+tree node</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct BNode
+    {
+        /// <summary>Block number of left sibling</summary>
+        public readonly long left;
+        /// <summary>Block number of right sibling</summary>
+        public readonly long right;
+        /// <summary>Block number of overflow node (for keys >= last key)</summary>
+        public readonly long overflow;
+        /// <summary>Number of keys in this node</summary>
+        public readonly int key_count;
+        /// <summary>Total size of all keys in bytes</summary>
+        public readonly int total_key_size;
+
+        // Followed by variable-length key data, key indices, and values
+    }
+
+#endregion
 }
