@@ -26,6 +26,10 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
+using System.Linq;
+using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Logging;
 
@@ -34,6 +38,58 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class MicroDOS
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize path
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath is "" or ".") normalizedPath = "/";
+
+        // MicroDOS only has a root directory - no subdirectories
+        if(normalizedPath != "/" && !string.Equals(normalizedPath, "/", StringComparison.OrdinalIgnoreCase))
+            return ErrorNumber.NotDirectory;
+
+        node = new MicroDosDirNode
+        {
+            Path     = "/",
+            Position = 0,
+            Entries  = _rootDirectoryCache.Keys.ToArray()
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(node is not MicroDosDirNode) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not MicroDosDirNode microDosDirNode) return ErrorNumber.InvalidArgument;
+
+        if(microDosDirNode.Position < 0) return ErrorNumber.InvalidArgument;
+
+        if(microDosDirNode.Position >= microDosDirNode.Entries.Length) return ErrorNumber.NoError;
+
+        filename = microDosDirNode.Entries[microDosDirNode.Position++];
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Processes a single directory entry and adds it to cache if valid</summary>
     /// <param name="entry">The directory entry to process</param>
     /// <param name="entriesRead">Counter for entries read (incremented for valid entries)</param>

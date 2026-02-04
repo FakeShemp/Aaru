@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Internal.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : MicroDOS filesystem plugin
@@ -26,34 +26,39 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
 public sealed partial class MicroDOS
 {
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
+    /// <summary>Directory node for enumerating directory contents</summary>
+    sealed class MicroDosDirNode : IDirNode
+    {
+        /// <summary>Current position in the directory enumeration (entry index)</summary>
+        internal int Position { get; set; }
 
+        /// <summary>Array of directory entry names in this directory</summary>
+        internal string[] Entries { get; init; }
 
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
+    /// <summary>File node for reading file contents with streaming support</summary>
+    sealed class MicroDosFileNode : IFileNode
+    {
+        /// <summary>The file's directory entry</summary>
+        internal DirectoryEntry Entry { get; init; }
 
+        /// <inheritdoc />
+        public long Offset { get; set; }
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+        /// <inheritdoc />
+        public long Length { get; init; }
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 }
