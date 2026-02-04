@@ -27,6 +27,8 @@
 // ****************************************************************************/
 
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
+using Aaru.Helpers;
 using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
@@ -69,5 +71,42 @@ public sealed partial class BFS
                     : Marshal.ByteArrayToStructureBigEndian<Inode>(blockData, (int)offset, 64);
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Converts a BFS inode to a FileEntryInfo structure</summary>
+    /// <param name="inode">The BFS inode</param>
+    /// <returns>The FileEntryInfo structure</returns>
+    FileEntryInfo InodeToFileEntryInfo(Inode inode)
+    {
+        // Calculate file size: (i_eoffset + 1) - (i_sblock * BFS_BSIZE)
+        // But only if i_sblock != 0 (empty files have sblock = 0)
+        long fileSize = 0;
+
+        if(inode.i_sblock != 0) fileSize = inode.i_eoffset + 1 - inode.i_sblock * BFS_BSIZE;
+
+        var info = new FileEntryInfo
+        {
+            Attributes          = FileAttributes.None,
+            BlockSize           = BFS_BSIZE,
+            Blocks              = inode.i_sblock == 0 ? 0 : inode.i_eblock - inode.i_sblock + 1,
+            Length              = fileSize,
+            Links               = inode.i_nlink,
+            UID                 = inode.i_uid,
+            GID                 = inode.i_gid,
+            Mode                = (ushort)(inode.i_mode & 0xFFF), // Only lower 12 bits are valid
+            AccessTimeUtc       = DateHandlers.UnixUnsignedToDateTime(inode.i_atime),
+            LastWriteTimeUtc    = DateHandlers.UnixUnsignedToDateTime(inode.i_mtime),
+            StatusChangeTimeUtc = DateHandlers.UnixUnsignedToDateTime(inode.i_ctime)
+        };
+
+        // Determine file type from i_vtype (BFS doesn't use S_IFMT in i_mode reliably)
+        info.Attributes = inode.i_vtype switch
+                          {
+                              BFS_VDIR => FileAttributes.Directory,
+                              BFS_VREG => FileAttributes.File,
+                              _        => FileAttributes.File
+                          };
+
+        return info;
     }
 }
