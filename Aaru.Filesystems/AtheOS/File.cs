@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -39,6 +40,128 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class AtheOS
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: path='{0}'", path);
+
+        // Get the inode for the path
+        ErrorNumber errno = GetInodeForPath(path, out Inode inode, out byte[] _);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error getting inode for path: {0}", errno);
+
+            return errno;
+        }
+
+        // Validate inode magic
+        if(inode.magic1 != INODE_MAGIC)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Invalid i-node magic: 0x{0:X8}", inode.magic1);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Check if it's a regular file
+        int fileType = inode.mode & 0xF000;
+
+        if(fileType == 0x4000) // S_IFDIR
+        {
+            AaruLogging.Debug(MODULE_NAME, "Cannot open directory as file");
+
+            return ErrorNumber.IsDirectory;
+        }
+
+        // Create file node
+        node = new AtheosFileNode
+        {
+            Path       = path,
+            Inode      = inode,
+            DataStream = inode.data,
+            Length     = inode.data.size,
+            Offset     = 0
+        };
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile successful: path='{0}', size={1}", path, inode.data.size);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not AtheosFileNode atheosNode) return ErrorNumber.InvalidArgument;
+
+        AaruLogging.Debug(MODULE_NAME, "CloseFile: path='{0}'", atheosNode.Path);
+
+        // Reset the node
+        atheosNode.Offset = -1;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not AtheosFileNode atheosNode) return ErrorNumber.InvalidArgument;
+
+        if(atheosNode.Offset < 0) return ErrorNumber.InvalidArgument;
+
+        if(buffer == null || buffer.Length < length) return ErrorNumber.InvalidArgument;
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "ReadFile: path='{0}', offset={1}, length={2}",
+                          atheosNode.Path,
+                          atheosNode.Offset,
+                          length);
+
+        // Check if we're at or past EOF
+        if(atheosNode.Offset >= atheosNode.Length)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadFile: at EOF");
+
+            return ErrorNumber.NoError;
+        }
+
+        // Adjust length if it would read past EOF
+        long bytesToRead = length;
+
+        if(atheosNode.Offset + bytesToRead > atheosNode.Length) bytesToRead = atheosNode.Length - atheosNode.Offset;
+
+        if(bytesToRead <= 0) return ErrorNumber.NoError;
+
+        // Read from the data stream
+        ErrorNumber errno = ReadFromDataStream(atheosNode.DataStream,
+                                               atheosNode.Offset,
+                                               (int)bytesToRead,
+                                               out byte[] readBuffer);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error reading from data stream: {0}", errno);
+
+            return errno;
+        }
+
+        // Copy to output buffer
+        Array.Copy(readBuffer, 0, buffer, 0, bytesToRead);
+        read              =  bytesToRead;
+        atheosNode.Offset += bytesToRead;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile successful: read {0} bytes, new offset={1}", read, atheosNode.Offset);
+
+        return ErrorNumber.NoError;
+    }
+
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
     {
