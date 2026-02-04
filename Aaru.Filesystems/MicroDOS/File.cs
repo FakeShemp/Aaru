@@ -28,6 +28,7 @@
 
 using System;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Logging;
 
@@ -36,6 +37,141 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class MicroDOS
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(string.IsNullOrEmpty(path) || path == "/") return ErrorNumber.IsDirectory;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: path='{0}'", path);
+
+        // Get file stat to verify it exists and is a regular file
+        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: Stat failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Check it's not a directory
+        if(stat.Attributes.HasFlag(FileAttributes.Directory))
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: path is a directory");
+
+            return ErrorNumber.IsDirectory;
+        }
+
+        // Remove leading slash for lookup
+        string filename = path.StartsWith("/", StringComparison.Ordinal) ? path[1..] : path;
+
+        // Look up the file in the root directory cache
+        if(!_rootDirectoryCache.TryGetValue(filename, out DirectoryEntry entry))
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: File '{0}' not found", filename);
+
+            return ErrorNumber.NoSuchFile;
+        }
+
+        node = new MicroDosFileNode
+        {
+            Path   = path,
+            Length = entry.length,
+            Offset = 0,
+            Entry  = entry
+        };
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: success, size={0}", entry.length);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not MicroDosFileNode) return ErrorNumber.InvalidArgument;
+
+        // Nothing to clean up - no caching
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not MicroDosFileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        if(buffer == null) return ErrorNumber.InvalidArgument;
+
+        if(fileNode.Offset < 0 || fileNode.Offset >= fileNode.Length) return ErrorNumber.InvalidArgument;
+
+        // Clamp read length to remaining file size and buffer size
+        long toRead = length;
+
+        if(fileNode.Offset + toRead > fileNode.Length) toRead = fileNode.Length - fileNode.Offset;
+
+        if(toRead <= 0) return ErrorNumber.NoError;
+
+        if(toRead > buffer.Length) toRead = buffer.Length;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: offset={0}, length={1}, toRead={2}", fileNode.Offset, length, toRead);
+
+        // MicroDOS files are stored contiguously starting at blockNo
+        long bytesRead     = 0;
+        long currentOffset = fileNode.Offset;
+
+        while(bytesRead < toRead)
+        {
+            // Calculate which block contains the current offset
+            var blockNum      = (uint)(currentOffset / BLOCK_SIZE);
+            var offsetInBlock = (int)(currentOffset  % BLOCK_SIZE);
+
+            // Physical block = starting block + logical block number
+            uint physicalBlock = (uint)(fileNode.Entry.blockNo + blockNum);
+
+            // Read the block
+            ErrorNumber errno = _imagePlugin.ReadSector(_partition.Start + physicalBlock,
+                                                        false,
+                                                        out byte[] blockData,
+                                                        out _);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadFile: ReadSector failed for block {0}: {1}", physicalBlock, errno);
+
+                return errno;
+            }
+
+            // Copy data from block to buffer
+            long bytesToCopy = Math.Min(BLOCK_SIZE - offsetInBlock, toRead - bytesRead);
+
+            if(offsetInBlock + bytesToCopy > blockData.Length)
+                bytesToCopy = blockData.Length - offsetInBlock;
+
+            if(bytesToCopy <= 0)
+                break;
+
+            Array.Copy(blockData, offsetInBlock, buffer, bytesRead, bytesToCopy);
+
+            bytesRead     += bytesToCopy;
+            currentOffset += bytesToCopy;
+        }
+
+        read            =  bytesRead;
+        fileNode.Offset += bytesRead;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: read {0} bytes, new offset={1}", read, fileNode.Offset);
+
+        return ErrorNumber.NoError;
+    }
+
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
     {
