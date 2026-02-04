@@ -55,29 +55,29 @@ public sealed partial class QNX4
 
         if(sector.Length < 512) return false;
 
-        Superblock qnxSb = Marshal.ByteArrayToStructureLittleEndian<Superblock>(sector);
+        qnx4_super_block qnxSb = Marshal.ByteArrayToStructureLittleEndian<qnx4_super_block>(sector);
 
         // Check root directory name
-        if(!_rootDirFname.SequenceEqual(qnxSb.rootDir.di_fname)) return false;
+        if(!_rootDirFname.SequenceEqual(qnxSb.RootDir.di_fname)) return false;
 
         // Check sizes are multiple of blocks
-        if(qnxSb.rootDir.di_size % 512 != 0 ||
-           qnxSb.inode.di_size   % 512 != 0 ||
-           qnxSb.boot.di_size    % 512 != 0 ||
-           qnxSb.altBoot.di_size % 512 != 0)
+        if(qnxSb.RootDir.di_size % 512 != 0 ||
+           qnxSb.Inode.di_size   % 512 != 0 ||
+           qnxSb.Boot.di_size    % 512 != 0 ||
+           qnxSb.AltBoot.di_size % 512 != 0)
             return false;
 
         // Check extents are not past device
-        if(qnxSb.rootDir.di_first_xtnt.Block + partition.Start >= partition.End ||
-           qnxSb.inode.di_first_xtnt.Block   + partition.Start >= partition.End ||
-           qnxSb.boot.di_first_xtnt.Block    + partition.Start >= partition.End ||
-           qnxSb.altBoot.di_first_xtnt.Block + partition.Start >= partition.End)
+        if(qnxSb.RootDir.di_first_xtnt.xtnt_blk + partition.Start >= partition.End ||
+           qnxSb.Inode.di_first_xtnt.xtnt_blk   + partition.Start >= partition.End ||
+           qnxSb.Boot.di_first_xtnt.xtnt_blk    + partition.Start >= partition.End ||
+           qnxSb.AltBoot.di_first_xtnt.xtnt_blk + partition.Start >= partition.End)
             return false;
 
         // Check inodes are in use
-        return (qnxSb.rootDir.di_status & 0x01) == 0x01 &&
-               (qnxSb.inode.di_status   & 0x01) == 0x01 &&
-               (qnxSb.boot.di_status    & 0x01) == 0x01;
+        return (qnxSb.RootDir.di_status & 0x01) == 0x01 &&
+               (qnxSb.Inode.di_status   & 0x01) == 0x01 &&
+               (qnxSb.Boot.di_status    & 0x01) == 0x01;
 
         // All hail filesystems without identification marks
     }
@@ -94,87 +94,87 @@ public sealed partial class QNX4
 
         if(sector.Length < 512) return;
 
-        Superblock qnxSb = Marshal.ByteArrayToStructureLittleEndian<Superblock>(sector);
+        qnx4_super_block qnxSb = Marshal.ByteArrayToStructureLittleEndian<qnx4_super_block>(sector);
 
         // Too much useless information
         /*
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_fname = {0}", CurrentEncoding.GetString(qnxSb.rootDir.di_fname));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_size = {0}", qnxSb.rootDir.di_size);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_first_xtnt.block = {0}", qnxSb.rootDir.di_first_xtnt.block);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_first_xtnt.length = {0}", qnxSb.rootDir.di_first_xtnt.length);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_xblk = {0}", qnxSb.rootDir.di_xblk);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_ftime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.rootDir.di_ftime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_mtime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.rootDir.di_mtime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_atime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.rootDir.di_atime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_ctime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.rootDir.di_ctime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_num_xtnts = {0}", qnxSb.rootDir.di_num_xtnts);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_mode = {0}", Convert.ToString(qnxSb.rootDir.di_mode, 8));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_uid = {0}", qnxSb.rootDir.di_uid);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_gid = {0}", qnxSb.rootDir.di_gid);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_nlink = {0}", qnxSb.rootDir.di_nlink);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_zero = {0}", qnxSb.rootDir.di_zero);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_type = {0}", qnxSb.rootDir.di_type);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.rootDir.di_status = {0}", qnxSb.rootDir.di_status);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_fname = {0}", CurrentEncoding.GetString(qnxSb.RootDir.di_fname));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_size = {0}", qnxSb.RootDir.di_size);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_first_xtnt.xtnt_blk = {0}", qnxSb.RootDir.di_first_xtnt.xtnt_blk);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_first_xtnt.xtnt_size = {0}", qnxSb.RootDir.di_first_xtnt.xtnt_size);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_xblk = {0}", qnxSb.RootDir.di_xblk);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_ftime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.RootDir.di_ftime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_mtime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.RootDir.di_mtime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_atime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.RootDir.di_atime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_ctime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.RootDir.di_ctime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_num_xtnts = {0}", qnxSb.RootDir.di_num_xtnts);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_mode = {0}", Convert.ToString(qnxSb.RootDir.di_mode, 8));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_uid = {0}", qnxSb.RootDir.di_uid);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_gid = {0}", qnxSb.RootDir.di_gid);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_nlink = {0}", qnxSb.RootDir.di_nlink);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_zero = {0}", qnxSb.RootDir.di_zero);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_type = {0}", qnxSb.RootDir.di_type);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.RootDir.di_status = {0}", qnxSb.RootDir.di_status);
 
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_fname = {0}", CurrentEncoding.GetString(qnxSb.inode.di_fname));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_size = {0}", qnxSb.inode.di_size);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_first_xtnt.block = {0}", qnxSb.inode.di_first_xtnt.block);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_first_xtnt.length = {0}", qnxSb.inode.di_first_xtnt.length);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_xblk = {0}", qnxSb.inode.di_xblk);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_ftime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.inode.di_ftime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_mtime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.inode.di_mtime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_atime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.inode.di_atime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_ctime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.inode.di_ctime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_num_xtnts = {0}", qnxSb.inode.di_num_xtnts);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_mode = {0}", Convert.ToString(qnxSb.inode.di_mode, 8));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_uid = {0}", qnxSb.inode.di_uid);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_gid = {0}", qnxSb.inode.di_gid);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_nlink = {0}", qnxSb.inode.di_nlink);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_zero = {0}", qnxSb.inode.di_zero);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_type = {0}", qnxSb.inode.di_type);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.inode.di_status = {0}", qnxSb.inode.di_status);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_fname = {0}", CurrentEncoding.GetString(qnxSb.Inode.di_fname));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_size = {0}", qnxSb.Inode.di_size);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_first_xtnt.xtnt_blk = {0}", qnxSb.Inode.di_first_xtnt.xtnt_blk);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_first_xtnt.xtnt_size = {0}", qnxSb.Inode.di_first_xtnt.xtnt_size);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_xblk = {0}", qnxSb.Inode.di_xblk);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_ftime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.Inode.di_ftime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_mtime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.Inode.di_mtime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_atime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.Inode.di_atime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_ctime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.Inode.di_ctime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_num_xtnts = {0}", qnxSb.Inode.di_num_xtnts);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_mode = {0}", Convert.ToString(qnxSb.Inode.di_mode, 8));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_uid = {0}", qnxSb.Inode.di_uid);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_gid = {0}", qnxSb.Inode.di_gid);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_nlink = {0}", qnxSb.Inode.di_nlink);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_zero = {0}", qnxSb.Inode.di_zero);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_type = {0}", qnxSb.Inode.di_type);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Inode.di_status = {0}", qnxSb.Inode.di_status);
 
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_fname = {0}", CurrentEncoding.GetString(qnxSb.boot.di_fname));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_size = {0}", qnxSb.boot.di_size);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_first_xtnt.block = {0}", qnxSb.boot.di_first_xtnt.block);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_first_xtnt.length = {0}", qnxSb.boot.di_first_xtnt.length);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_xblk = {0}", qnxSb.boot.di_xblk);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_ftime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.boot.di_ftime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_mtime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.boot.di_mtime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_atime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.boot.di_atime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_ctime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.boot.di_ctime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_num_xtnts = {0}", qnxSb.boot.di_num_xtnts);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_mode = {0}", Convert.ToString(qnxSb.boot.di_mode, 8));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_uid = {0}", qnxSb.boot.di_uid);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_gid = {0}", qnxSb.boot.di_gid);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_nlink = {0}", qnxSb.boot.di_nlink);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_zero = {0}", qnxSb.boot.di_zero);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_type = {0}", qnxSb.boot.di_type);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.boot.di_status = {0}", qnxSb.boot.di_status);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_fname = {0}", CurrentEncoding.GetString(qnxSb.Boot.di_fname));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_size = {0}", qnxSb.Boot.di_size);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_first_xtnt.xtnt_blk = {0}", qnxSb.Boot.di_first_xtnt.xtnt_blk);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_first_xtnt.xtnt_size = {0}", qnxSb.Boot.di_first_xtnt.xtnt_size);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_xblk = {0}", qnxSb.Boot.di_xblk);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_ftime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.Boot.di_ftime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_mtime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.Boot.di_mtime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_atime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.Boot.di_atime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_ctime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.Boot.di_ctime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_num_xtnts = {0}", qnxSb.Boot.di_num_xtnts);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_mode = {0}", Convert.ToString(qnxSb.Boot.di_mode, 8));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_uid = {0}", qnxSb.Boot.di_uid);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_gid = {0}", qnxSb.Boot.di_gid);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_nlink = {0}", qnxSb.Boot.di_nlink);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_zero = {0}", qnxSb.Boot.di_zero);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_type = {0}", qnxSb.Boot.di_type);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.Boot.di_status = {0}", qnxSb.Boot.di_status);
 
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_fname = {0}", CurrentEncoding.GetString(qnxSb.altBoot.di_fname));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_size = {0}", qnxSb.altBoot.di_size);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_first_xtnt.block = {0}", qnxSb.altBoot.di_first_xtnt.block);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_first_xtnt.length = {0}", qnxSb.altBoot.di_first_xtnt.length);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_xblk = {0}", qnxSb.altBoot.di_xblk);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_ftime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.altBoot.di_ftime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_mtime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.altBoot.di_mtime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_atime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.altBoot.di_atime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_ctime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.altBoot.di_ctime));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_num_xtnts = {0}", qnxSb.altBoot.di_num_xtnts);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_mode = {0}", Convert.ToString(qnxSb.altBoot.di_mode, 8));
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_uid = {0}", qnxSb.altBoot.di_uid);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_gid = {0}", qnxSb.altBoot.di_gid);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_nlink = {0}", qnxSb.altBoot.di_nlink);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_zero = {0}", qnxSb.altBoot.di_zero);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_type = {0}", qnxSb.altBoot.di_type);
-        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.altBoot.di_status = {0}", qnxSb.altBoot.di_status);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_fname = {0}", CurrentEncoding.GetString(qnxSb.AltBoot.di_fname));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_size = {0}", qnxSb.AltBoot.di_size);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_first_xtnt.xtnt_blk = {0}", qnxSb.AltBoot.di_first_xtnt.xtnt_blk);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_first_xtnt.xtnt_size = {0}", qnxSb.AltBoot.di_first_xtnt.xtnt_size);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_xblk = {0}", qnxSb.AltBoot.di_xblk);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_ftime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.AltBoot.di_ftime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_mtime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.AltBoot.di_mtime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_atime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.AltBoot.di_atime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_ctime = {0}", DateHandlers.UNIXUnsignedToDateTime(qnxSb.AltBoot.di_ctime));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_num_xtnts = {0}", qnxSb.AltBoot.di_num_xtnts);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_mode = {0}", Convert.ToString(qnxSb.AltBoot.di_mode, 8));
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_uid = {0}", qnxSb.AltBoot.di_uid);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_gid = {0}", qnxSb.AltBoot.di_gid);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_nlink = {0}", qnxSb.AltBoot.di_nlink);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_zero = {0}", qnxSb.AltBoot.di_zero);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_type = {0}", qnxSb.AltBoot.di_type);
+        AaruLogging.DebugWriteLine(MODULE_NAME, "qnxSb.AltBoot.di_status = {0}", qnxSb.AltBoot.di_status);
         */
 
         information = Localization.QNX4_filesystem +
                       "\n"                         +
                       string.Format(Localization.Created_on_0,
-                                    DateHandlers.UnixUnsignedToDateTime(qnxSb.rootDir.di_ftime)) +
+                                    DateHandlers.UnixUnsignedToDateTime(qnxSb.RootDir.di_ftime)) +
                       "\n";
 
         metadata = new FileSystem
@@ -182,11 +182,11 @@ public sealed partial class QNX4
             Type             = FS_TYPE,
             Clusters         = partition.Length,
             ClusterSize      = 512,
-            CreationDate     = DateHandlers.UnixUnsignedToDateTime(qnxSb.rootDir.di_ftime),
-            ModificationDate = DateHandlers.UnixUnsignedToDateTime(qnxSb.rootDir.di_mtime)
+            CreationDate     = DateHandlers.UnixUnsignedToDateTime(qnxSb.RootDir.di_ftime),
+            ModificationDate = DateHandlers.UnixUnsignedToDateTime(qnxSb.RootDir.di_mtime)
         };
 
-        metadata.Bootable |= qnxSb.boot.di_size != 0 || qnxSb.altBoot.di_size != 0;
+        metadata.Bootable |= qnxSb.Boot.di_size != 0 || qnxSb.AltBoot.di_size != 0;
     }
 
 #endregion
