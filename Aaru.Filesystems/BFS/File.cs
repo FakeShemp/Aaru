@@ -206,7 +206,7 @@ public sealed partial class BeFS
                                              ? normalizedPath[1..]
                                              : normalizedPath;
 
-        string[] pathComponents = pathWithoutLeadingSlash.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries)
+        string[] pathComponents = pathWithoutLeadingSlash.Split('/', StringSplitOptions.RemoveEmptyEntries)
                                                          .Where(static c => c != "." && c != "..")
                                                          .ToArray();
 
