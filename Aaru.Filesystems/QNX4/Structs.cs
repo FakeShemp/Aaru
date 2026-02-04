@@ -32,7 +32,6 @@ using System.Runtime.InteropServices;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of QNX 4 filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedType.Local")]
 public sealed partial class QNX4
 {

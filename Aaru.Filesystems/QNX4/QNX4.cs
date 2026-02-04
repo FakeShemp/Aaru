@@ -27,20 +27,29 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of QNX 4 filesystem</summary>
+/// <summary>Implements the QNX 4 filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedType.Local")]
-public sealed partial class QNX4 : IFilesystem
+public sealed partial class QNX4 : IReadOnlyFilesystem
 {
     // ReSharper disable once UnusedMember.Local
     const string MODULE_NAME = "QNX4 plugin";
 
 #region IFilesystem Members
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
     /// <inheritdoc />
     public string Name => Localization.QNX4_Name;
