@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Internal.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Atheos filesystem plugin.
@@ -26,42 +26,42 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
 public sealed partial class AtheOS
 {
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
+    /// <summary>Directory node for enumerating directory contents</summary>
+    public sealed class AtheosDirNode : IDirNode
+    {
+        /// <summary>Current position in the directory enumeration (entry index)</summary>
+        internal int Position { get; set; }
 
-    /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
+        /// <summary>Array of directory entry names in this directory</summary>
+        internal string[] Entries { get; set; }
 
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+    /// <summary>File node for reading file contents with streaming support</summary>
+    sealed class AtheosFileNode : IFileNode
+    {
+        /// <summary>The file's i-node containing metadata</summary>
+        internal Inode Inode { get; set; }
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
+        /// <summary>The file's data stream for reading file blocks</summary>
+        internal DataStream DataStream { get; set; }
 
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+        /// <summary>Current read position in the file</summary>
+        public long Offset { get; set; }
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+        /// <summary>Total file size in bytes</summary>
+        public long Length { get; set; }
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        /// <summary>Path to the file</summary>
+        public string Path { get; init; }
+    }
 }
