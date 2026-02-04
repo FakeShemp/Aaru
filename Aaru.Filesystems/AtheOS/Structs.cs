@@ -62,7 +62,7 @@ public sealed partial class AtheOS
         public readonly uint magic2;
         /// <summary>0x048, Blocks per allocation group</summary>
         public readonly int blocks_per_ag;
-        /// <summary>0x04C, 1 &lt;&lt; ag_shift == blocks_per_ag</summary>
+        /// <summary>0x04C, 1 &lt;&lt; ag_shift == blocks_per_ag * block_size (byte size of AG)</summary>
         public readonly int ag_shift;
         /// <summary>0x050, Allocation groups in volume</summary>
         public readonly int num_ags;

@@ -29,8 +29,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -39,6 +41,26 @@ namespace Aaru.Filesystems;
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public sealed partial class AtheOS : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "AtheOS plugin";
+
+    /// <summary>The media image plugin used to read from the device</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>The partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>The encoding to use for text data</summary>
+    Encoding _encoding;
+
+    /// <summary>The filesystem superblock containing metadata about the volume</summary>
+    SuperBlock _superblock;
+
+    /// <summary>Indicates if the filesystem is currently mounted</summary>
+    bool _mounted;
+
+    /// <summary>Cache of root directory entries mapped from filename to i-node number</summary>
+    readonly Dictionary<string, long> _rootDirectoryCache = new();
+
 #region IFilesystem Members
 
     /// <inheritdoc />
