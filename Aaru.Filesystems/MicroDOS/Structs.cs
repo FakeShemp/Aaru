@@ -87,7 +87,7 @@ public sealed partial class MicroDOS
         /// <summary>Directory number (0 - root)</summary>
         public readonly byte directory;
         /// <summary>File name 14. symbols in ASCII KOI8</summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 14)]
         public readonly byte[] filename;
         /// <summary>Block number</summary>
         public readonly ushort blockNo;
