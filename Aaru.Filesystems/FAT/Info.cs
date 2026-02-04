@@ -229,11 +229,11 @@ public sealed partial class FAT
             // NTFS
             case "NTFS    " when bootable == 0xAA55 && numberOfFats == 0 && fatSectors == 0:
                 return false;
-
-            // QNX4
-            case "FQNX4FS ":
-                return false;
         }
+
+        // QNX4
+        if(oemString.Contains("QNX4FS"))
+            return false;
 
         // HPFS
         if(16 + partition.Start <= partition.End)
