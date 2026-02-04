@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Dir.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : UnixWare boot filesystem plugin.
@@ -27,43 +27,66 @@
 // ****************************************************************************/
 
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
-// Information from the Linux kernel
 /// <inheritdoc />
-/// <summary>Implements the UNIX boot filesystem</summary>
 public sealed partial class BFS
 {
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
+    public ErrorNumber OpenDir(string path, out IDirNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize path
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath is "" or ".") normalizedPath = "/";
+
+        // BFS only has a root directory - no subdirectories
+        if(normalizedPath != "/" && !string.Equals(normalizedPath, "/", StringComparison.OrdinalIgnoreCase))
+            return ErrorNumber.NotDirectory;
+
+        if(_rootDirectoryCache.Count == 0) return ErrorNumber.NoSuchFile;
+
+        node = new BfsDirNode
+        {
+            Path     = "/",
+            Position = 0,
+            Entries  = _rootDirectoryCache.Keys.ToArray()
+        };
+
+        return ErrorNumber.NoError;
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(node is not BfsDirNode) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
 
     /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
 
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
+        if(node is not BfsDirNode bfsDirNode) return ErrorNumber.InvalidArgument;
 
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+        if(bfsDirNode.Position < 0) return ErrorNumber.InvalidArgument;
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+        if(bfsDirNode.Position >= bfsDirNode.Entries.Length) return ErrorNumber.NoError;
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+        filename = bfsDirNode.Entries[bfsDirNode.Position++];
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        return ErrorNumber.NoError;
+    }
 }
