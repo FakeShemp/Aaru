@@ -33,7 +33,8 @@ namespace Aaru.Filesystems;
 /// <summary>Implements detection of the UNIX boot filesystem</summary>
 public sealed partial class BFS
 {
-    const uint BFS_MAGIC = 0x1BADFACE;
+    const uint BFS_MAGIC    = 0x1BADFACE;
+    const uint BFS_MAGIC_BE = 0xCEFAAD1B;
 
     const string FS_TYPE = "bfs";
 }

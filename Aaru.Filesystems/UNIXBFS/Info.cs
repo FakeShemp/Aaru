@@ -56,7 +56,7 @@ public sealed partial class BFS
 
         var magic = BitConverter.ToUInt32(tmp, 0);
 
-        return magic == BFS_MAGIC;
+        return magic is BFS_MAGIC or BFS_MAGIC_BE;
     }
 
     /// <inheritdoc />
@@ -72,7 +72,17 @@ public sealed partial class BFS
 
         if(errno != ErrorNumber.NoError) return;
 
-        SuperBlock bfsSb = Marshal.ByteArrayToStructureLittleEndian<SuperBlock>(bfsSbSector);
+        SuperBlock bfsSb;
+
+        // Check endianness
+        var magic = BitConverter.ToUInt32(bfsSbSector, 0);
+
+        if(magic == BFS_MAGIC)
+            bfsSb = Marshal.ByteArrayToStructureLittleEndian<SuperBlock>(bfsSbSector);
+        else if(magic == BFS_MAGIC_BE)
+            bfsSb = Marshal.ByteArrayToStructureBigEndian<SuperBlock>(bfsSbSector);
+        else
+            return;
 
         string fsName  = StringHandlers.CToString(bfsSb.s_fsname, encoding);
         string volName = StringHandlers.CToString(bfsSb.s_volume, encoding);

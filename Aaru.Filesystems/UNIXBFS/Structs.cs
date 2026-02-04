@@ -28,6 +28,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -39,8 +40,9 @@ public sealed partial class BFS
 #region Nested type: SuperBlock
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    struct SuperBlock
+    partial struct SuperBlock
     {
         /// <summary>0x00, 0x1BADFACE</summary>
         public uint s_magic;
