@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Internal.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : QNX6 filesystem plugin.
@@ -26,42 +26,43 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
 public sealed partial class QNX6
 {
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
+    /// <summary>Directory node for enumerating directory contents</summary>
+    sealed class QNX6DirNode : IDirNode
+    {
+        /// <summary>Current position in the directory enumeration (entry index)</summary>
+        internal int Position { get; set; }
 
-    /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
+        /// <summary>Array of directory entry names in this directory</summary>
+        internal string[] Entries { get; init; }
 
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+    /// <summary>File node for reading file contents with streaming support</summary>
+    /// <remarks>
+    ///     Tracks the current read position and inode data without caching entire file contents.
+    ///     Supports efficient streaming reads of any file size.
+    /// </remarks>
+    sealed class QNX6FileNode : IFileNode
+    {
+        /// <summary>The file's inode entry containing metadata and block pointers</summary>
+        internal qnx6_inode_entry Inode { get; init; }
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
+        /// <inheritdoc />
+        public long Offset { get; set; }
 
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+        /// <inheritdoc />
+        public long Length { get; init; }
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 }
