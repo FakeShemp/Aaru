@@ -41,6 +41,77 @@ namespace Aaru.Filesystems;
 public sealed partial class AtheOS
 {
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Get the inode for the path
+        ErrorNumber errno = GetInodeForPath(path, out Inode inode, out byte[] _);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error getting inode for path: {0}", errno);
+
+            return errno;
+        }
+
+        // Validate inode magic
+        if(inode.magic1 != INODE_MAGIC)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Invalid i-node magic: 0x{0:X8}", inode.magic1);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Check if it's a symbolic link (S_IFLNK = 0xA000)
+        int fileType = inode.mode & 0xF000;
+
+        if(fileType != 0xA000)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Path is not a symbolic link (mode=0x{0:X})", inode.mode);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Read the symlink target from the data stream
+        if(inode.data.size <= 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Symlink has empty data stream");
+            dest = "";
+
+            return ErrorNumber.NoError;
+        }
+
+        // Limit symlink size to reasonable value
+        if(inode.data.size > 4096)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Symlink data size too large: {0}", inode.data.size);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        errno = ReadFromDataStream(inode.data, 0, (int)inode.data.size, out byte[] linkData);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error reading symlink data: {0}", errno);
+
+            return errno;
+        }
+
+        // Convert to string, stopping at null terminator if present
+        dest = _encoding.GetString(linkData).TrimEnd('\0');
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink successful: target='{0}'", dest);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
         node = null;
