@@ -45,4 +45,24 @@ public sealed partial class QNX4
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>File node for reading file contents with streaming support</summary>
+    /// <remarks>
+    ///     Tracks the current read position and inode data without caching entire file contents.
+    ///     Supports efficient streaming reads of any file size.
+    /// </remarks>
+    sealed class QNX4FileNode : IFileNode
+    {
+        /// <summary>The file's inode entry containing metadata and extent pointers</summary>
+        internal qnx4_inode_entry Inode { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 }
