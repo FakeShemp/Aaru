@@ -41,10 +41,6 @@ public sealed partial class BFS
     /// <inheritdoc />
     public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
 
-
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
-
     /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
 
