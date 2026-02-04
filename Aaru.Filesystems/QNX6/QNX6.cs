@@ -41,6 +41,9 @@ public sealed partial class QNX6 : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "QNX6 plugin";
 
+    /// <summary>Cached root directory entries (filename -> inode entry)</summary>
+    readonly Dictionary<string, qnx6_inode_entry> _rootDirectoryCache = new();
+
     /// <summary>Block offset from partition start (includes boot blocks and superblock area)</summary>
     uint _blockOffset;
 
@@ -64,9 +67,6 @@ public sealed partial class QNX6 : IReadOnlyFilesystem
 
     /// <summary>Partition being mounted</summary>
     Partition _partition;
-
-    /// <summary>Cached root directory entries (filename -> inode entry)</summary>
-    readonly Dictionary<string, qnx6_inode_entry> _rootDirectoryCache = new();
 
     /// <summary>Cached superblock</summary>
     qnx6_super_block _superblock;

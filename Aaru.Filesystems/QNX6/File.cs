@@ -30,6 +30,7 @@ using System;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Helpers;
 using Aaru.Logging;
 
 namespace Aaru.Filesystems;
@@ -37,6 +38,94 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class QNX6
 {
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Get file metadata to verify it's a symlink
+        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: Stat failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Verify it's a symbolic link
+        if(!stat.Attributes.HasFlag(FileAttributes.Symlink))
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: path is not a symbolic link");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Resolve the path to get the inode entry
+        errno = ResolvePath(path, out qnx6_inode_entry inode, out _);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: ResolvePath failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Validate symlink size
+        if(inode.di_size == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: symlink has zero size");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Read the symlink target from the file data blocks
+        var  linkData      = new byte[inode.di_size];
+        uint bytesRead     = 0;
+        uint currentOffset = 0;
+
+        while(bytesRead < inode.di_size)
+        {
+            uint blockNum      = currentOffset / _blockSize;
+            var  offsetInBlock = (int)(currentOffset % _blockSize);
+
+            errno = MapBlock(inode, blockNum, out uint physicalBlock);
+
+            if(errno != ErrorNumber.NoError || physicalBlock == 0)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadLink: MapBlock failed for block {0}", blockNum);
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            errno = ReadBlock(physicalBlock, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadLink: ReadBlock failed for block {0}", physicalBlock);
+
+                return errno;
+            }
+
+            uint bytesToCopy = Math.Min((uint)(_blockSize - offsetInBlock), (uint)(inode.di_size - bytesRead));
+            Array.Copy(blockData, offsetInBlock, linkData, bytesRead, bytesToCopy);
+
+            bytesRead     += bytesToCopy;
+            currentOffset += bytesToCopy;
+        }
+
+        // Convert to string, stopping at null terminator
+        dest = StringHandlers.CToString(linkData, _encoding);
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: target='{0}'", dest);
+
+        return ErrorNumber.NoError;
+    }
+
     /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
