@@ -67,54 +67,27 @@ public sealed partial class QNX4
             return ErrorNumber.NoError;
         }
 
-        // Subdirectory traversal
-        string pathWithoutLeadingSlash = normalizedPath.StartsWith("/", StringComparison.Ordinal)
-                                             ? normalizedPath[1..]
-                                             : normalizedPath;
+        // Resolve the path to get the target entry
+        ErrorNumber errno = ResolvePath(normalizedPath, out qnx4_inode_entry targetEntry, out _);
 
-        string[] pathComponents = pathWithoutLeadingSlash.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries)
-                                                         .Where(static c => c != "." && c != "..")
-                                                         .ToArray();
+        if(errno != ErrorNumber.NoError) return errno;
 
-        if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
-
-        AaruLogging.Debug(MODULE_NAME, "OpenDir: Traversing path with {0} components", pathComponents.Length);
-
-        // Start from root directory
-        Dictionary<string, qnx4_inode_entry> currentEntries = _rootDirectoryCache;
-
-        // Traverse each path component
-        foreach(string component in pathComponents)
+        // Check if it's a directory (S_IFDIR = 0x4000)
+        if((targetEntry.di_mode & 0xF000) != 0x4000)
         {
-            AaruLogging.Debug(MODULE_NAME, "OpenDir: Navigating to component '{0}'", component);
+            AaruLogging.Debug(MODULE_NAME, "OpenDir: Path is not a directory");
 
-            // Find the component in current directory
-            if(!currentEntries.TryGetValue(component, out qnx4_inode_entry childEntry))
-            {
-                AaruLogging.Debug(MODULE_NAME, "OpenDir: Component '{0}' not found in directory", component);
+            return ErrorNumber.NotDirectory;
+        }
 
-                return ErrorNumber.NoSuchFile;
-            }
+        // Read directory entries from target inode
+        errno = ReadDirectoryEntries(targetEntry, out Dictionary<string, qnx4_inode_entry> entries);
 
-            // Check if it's a directory (S_IFDIR = 0x4000)
-            if((childEntry.di_mode & 0xF000) != 0x4000)
-            {
-                AaruLogging.Debug(MODULE_NAME, "OpenDir: Component '{0}' is not a directory", component);
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenDir: Error reading directory entries: {0}", errno);
 
-                return ErrorNumber.NotDirectory;
-            }
-
-            // Read directory entries from child inode
-            ErrorNumber errno = ReadDirectoryEntries(childEntry, out Dictionary<string, qnx4_inode_entry> childEntries);
-
-            if(errno != ErrorNumber.NoError)
-            {
-                AaruLogging.Debug(MODULE_NAME, "OpenDir: Error reading child directory entries: {0}", errno);
-
-                return errno;
-            }
-
-            currentEntries = childEntries;
+            return errno;
         }
 
         // Create directory node with found entries
@@ -122,13 +95,13 @@ public sealed partial class QNX4
         {
             Path     = normalizedPath,
             Position = 0,
-            Entries  = currentEntries.Keys.ToArray()
+            Entries  = entries.Keys.ToArray()
         };
 
         AaruLogging.Debug(MODULE_NAME,
                           "OpenDir: Successfully opened directory '{0}' with {1} entries",
                           normalizedPath,
-                          currentEntries.Count);
+                          entries.Count);
 
         return ErrorNumber.NoError;
     }
@@ -155,6 +128,78 @@ public sealed partial class QNX4
         if(qnx4DirNode.Position >= qnx4DirNode.Entries.Length) return ErrorNumber.NoError;
 
         filename = qnx4DirNode.Entries[qnx4DirNode.Position++];
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Resolves a path to its target inode entry</summary>
+    /// <param name="path">The path to resolve (must be normalized, not root)</param>
+    /// <param name="entry">The resolved inode entry</param>
+    /// <param name="parentEntries">The directory entries of the parent directory containing the target</param>
+    /// <returns>Error code indicating success or failure</returns>
+    ErrorNumber ResolvePath(string                                   path, out qnx4_inode_entry entry,
+                            out Dictionary<string, qnx4_inode_entry> parentEntries)
+    {
+        entry         = default(qnx4_inode_entry);
+        parentEntries = null;
+
+        string pathWithoutLeadingSlash = path.StartsWith("/", StringComparison.Ordinal) ? path[1..] : path;
+
+        string[] pathComponents = pathWithoutLeadingSlash.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries)
+                                                         .Where(static c => c != "." && c != "..")
+                                                         .ToArray();
+
+        if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
+
+        AaruLogging.Debug(MODULE_NAME, "ResolvePath: Traversing path with {0} components", pathComponents.Length);
+
+        // Start from root directory
+        Dictionary<string, qnx4_inode_entry> currentEntries = _rootDirectoryCache;
+        string                               targetName     = pathComponents[^1];
+
+        // Traverse all but the last component
+        for(var i = 0; i < pathComponents.Length - 1; i++)
+        {
+            string component = pathComponents[i];
+
+            AaruLogging.Debug(MODULE_NAME, "ResolvePath: Navigating to component '{0}'", component);
+
+            if(!currentEntries.TryGetValue(component, out qnx4_inode_entry childEntry))
+            {
+                AaruLogging.Debug(MODULE_NAME, "ResolvePath: Component '{0}' not found", component);
+
+                return ErrorNumber.NoSuchFile;
+            }
+
+            // Check if it's a directory (S_IFDIR = 0x4000)
+            if((childEntry.di_mode & 0xF000) != 0x4000)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ResolvePath: Component '{0}' is not a directory", component);
+
+                return ErrorNumber.NotDirectory;
+            }
+
+            ErrorNumber errno = ReadDirectoryEntries(childEntry, out Dictionary<string, qnx4_inode_entry> childEntries);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ResolvePath: Error reading child directory: {0}", errno);
+
+                return errno;
+            }
+
+            currentEntries = childEntries;
+        }
+
+        // Find the target in the current directory
+        if(!currentEntries.TryGetValue(targetName, out entry))
+        {
+            AaruLogging.Debug(MODULE_NAME, "ResolvePath: Target '{0}' not found", targetName);
+
+            return ErrorNumber.NoSuchFile;
+        }
+
+        parentEntries = currentEntries;
 
         return ErrorNumber.NoError;
     }

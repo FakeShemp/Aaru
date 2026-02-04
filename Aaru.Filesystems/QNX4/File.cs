@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : File.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : QNX4 filesystem plugin.
@@ -27,10 +27,9 @@
 // ****************************************************************************/
 
 using System;
-using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
@@ -38,27 +37,34 @@ namespace Aaru.Filesystems;
 public sealed partial class QNX4
 {
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
+    public ErrorNumber Stat(string path, out FileEntryInfo stat)
+    {
+        stat = null;
 
-    /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
+        AaruLogging.Debug(MODULE_NAME, "Stat: path='{0}'", path);
 
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+        // Normalize path
+        string normalizedPath = path ?? "/";
 
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+        if(normalizedPath is "" or ".") normalizedPath = "/";
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+        // Root directory handling
+        if(normalizedPath == "/" || string.Equals(normalizedPath, "/", StringComparison.OrdinalIgnoreCase))
+        {
+            stat = InodeToFileEntryInfo(_superblock.RootDir);
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+            return ErrorNumber.NoError;
+        }
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        // Resolve the path to get the target entry
+        ErrorNumber errno = ResolvePath(normalizedPath, out qnx4_inode_entry targetEntry, out _);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        stat = InodeToFileEntryInfo(targetEntry);
+
+        return ErrorNumber.NoError;
+    }
 }
