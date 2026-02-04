@@ -1780,6 +1780,39 @@
     <data name="QNX4_filesystem" xml:space="preserve">
     <value>Sistema de ficheros QNX4</value>
   </data>
+    <data name="Root_directory_size_0_bytes" xml:space="preserve">
+    <value>Tamaño del directorio raíz: {0} bytes</value>
+  </data>
+    <data name="Root_directory_extents_0" xml:space="preserve">
+    <value>Extensiones del directorio raíz: {0}</value>
+  </data>
+    <data name="Root_directory_starts_at_block_0" xml:space="preserve">
+    <value>El directorio raíz comienza en el bloque {0}</value>
+  </data>
+    <data name="Inode_bitmap_size_0_bytes" xml:space="preserve">
+    <value>Tamaño del mapa de bits de inodos: {0} bytes</value>
+  </data>
+    <data name="Inode_bitmap_starts_at_block_0" xml:space="preserve">
+    <value>El mapa de bits de inodos comienza en el bloque {0}</value>
+  </data>
+    <data name="Boot_image_size_0_bytes" xml:space="preserve">
+    <value>Tamaño de la imagen de arranque: {0} bytes</value>
+  </data>
+    <data name="Boot_image_starts_at_block_0" xml:space="preserve">
+    <value>La imagen de arranque comienza en el bloque {0}</value>
+  </data>
+    <data name="Alternate_boot_image_size_0_bytes" xml:space="preserve">
+    <value>Tamaño de la imagen de arranque alternativa: {0} bytes</value>
+  </data>
+    <data name="Alternate_boot_image_starts_at_block_0" xml:space="preserve">
+    <value>La imagen de arranque alternativa comienza en el bloque {0}</value>
+  </data>
+    <data name="Last_modified_on_0" xml:space="preserve">
+    <value>Última modificación: {0}</value>
+  </data>
+    <data name="Last_accessed_on_0" xml:space="preserve">
+    <value>Último acceso: {0}</value>
+  </data>
     <data name="QNX4_Name" xml:space="preserve">
     <value>Extensión QNX4</value>
   </data>

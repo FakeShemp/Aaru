@@ -3211,6 +3211,39 @@
     <data name="QNX4_filesystem" xml:space="preserve">
     <value>QNX4 filesystem</value>
   </data>
+    <data name="Root_directory_size_0_bytes" xml:space="preserve">
+    <value>Root directory size: {0} bytes</value>
+  </data>
+    <data name="Root_directory_extents_0" xml:space="preserve">
+    <value>Root directory extents: {0}</value>
+  </data>
+    <data name="Root_directory_starts_at_block_0" xml:space="preserve">
+    <value>Root directory starts at block {0}</value>
+  </data>
+    <data name="Inode_bitmap_size_0_bytes" xml:space="preserve">
+    <value>Inode bitmap size: {0} bytes</value>
+  </data>
+    <data name="Inode_bitmap_starts_at_block_0" xml:space="preserve">
+    <value>Inode bitmap starts at block {0}</value>
+  </data>
+    <data name="Boot_image_size_0_bytes" xml:space="preserve">
+    <value>Boot image size: {0} bytes</value>
+  </data>
+    <data name="Boot_image_starts_at_block_0" xml:space="preserve">
+    <value>Boot image starts at block {0}</value>
+  </data>
+    <data name="Alternate_boot_image_size_0_bytes" xml:space="preserve">
+    <value>Alternate boot image size: {0} bytes</value>
+  </data>
+    <data name="Alternate_boot_image_starts_at_block_0" xml:space="preserve">
+    <value>Alternate boot image starts at block {0}</value>
+  </data>
+    <data name="Last_modified_on_0" xml:space="preserve">
+    <value>Last modified on {0}</value>
+  </data>
+    <data name="Last_accessed_on_0" xml:space="preserve">
+    <value>Last accessed on {0}</value>
+  </data>
     <data name="Created_on_0" xml:space="preserve">
     <value>Created on {0}</value>
   </data>

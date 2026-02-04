@@ -6411,6 +6411,72 @@ namespace Aaru.Filesystems {
             }
         }
         
+        internal static string Root_directory_size_0_bytes {
+            get {
+                return ResourceManager.GetString("Root_directory_size_0_bytes", resourceCulture);
+            }
+        }
+        
+        internal static string Root_directory_extents_0 {
+            get {
+                return ResourceManager.GetString("Root_directory_extents_0", resourceCulture);
+            }
+        }
+        
+        internal static string Root_directory_starts_at_block_0 {
+            get {
+                return ResourceManager.GetString("Root_directory_starts_at_block_0", resourceCulture);
+            }
+        }
+        
+        internal static string Inode_bitmap_size_0_bytes {
+            get {
+                return ResourceManager.GetString("Inode_bitmap_size_0_bytes", resourceCulture);
+            }
+        }
+        
+        internal static string Inode_bitmap_starts_at_block_0 {
+            get {
+                return ResourceManager.GetString("Inode_bitmap_starts_at_block_0", resourceCulture);
+            }
+        }
+        
+        internal static string Boot_image_size_0_bytes {
+            get {
+                return ResourceManager.GetString("Boot_image_size_0_bytes", resourceCulture);
+            }
+        }
+        
+        internal static string Boot_image_starts_at_block_0 {
+            get {
+                return ResourceManager.GetString("Boot_image_starts_at_block_0", resourceCulture);
+            }
+        }
+        
+        internal static string Alternate_boot_image_size_0_bytes {
+            get {
+                return ResourceManager.GetString("Alternate_boot_image_size_0_bytes", resourceCulture);
+            }
+        }
+        
+        internal static string Alternate_boot_image_starts_at_block_0 {
+            get {
+                return ResourceManager.GetString("Alternate_boot_image_starts_at_block_0", resourceCulture);
+            }
+        }
+        
+        internal static string Last_modified_on_0 {
+            get {
+                return ResourceManager.GetString("Last_modified_on_0", resourceCulture);
+            }
+        }
+        
+        internal static string Last_accessed_on_0 {
+            get {
+                return ResourceManager.GetString("Last_accessed_on_0", resourceCulture);
+            }
+        }
+        
         internal static string Created_on_0 {
             get {
                 return ResourceManager.GetString("Created_on_0", resourceCulture);
