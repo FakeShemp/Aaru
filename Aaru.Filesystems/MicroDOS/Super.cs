@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : MicroDOS filesystem plugin
@@ -26,9 +26,9 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
@@ -36,12 +36,30 @@ namespace Aaru.Filesystems;
 public sealed partial class MicroDOS
 {
     /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        AaruLogging.Debug(MODULE_NAME, "StatFs: returning filesystem statistics");
+
+        stat = new FileSystemInfo
+        {
+            Blocks         = _block0.blocks,
+            FreeBlocks     = (ulong)(_block0.blocks - _block0.usedBlocks),
+            Files          = _block0.files,
+            FilenameLength = 14,
+            Type           = FS_TYPE,
+            PluginId       = Id
+        };
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "StatFs complete: blocks={0}, freeBlocks={1}, files={2}",
+                          _block0.blocks,
+                          _block0.blocks - _block0.usedBlocks,
+                          _block0.files);
+
+        return ErrorNumber.NoError;
+    }
 }
