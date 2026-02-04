@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : QNX4 filesystem plugin.
@@ -26,9 +26,9 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
@@ -36,15 +36,24 @@ namespace Aaru.Filesystems;
 public sealed partial class QNX4
 {
     /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+        AaruLogging.Debug(MODULE_NAME, "StatFs: returning filesystem statistics");
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        stat = new FileSystemInfo
+        {
+            Blocks         = _partition.Length,
+            FilenameLength = QNX4_NAME_MAX,
+            Type           = FS_TYPE,
+            PluginId       = Id
+        };
+
+        AaruLogging.Debug(MODULE_NAME, "StatFs complete: totalBlocks={0}", _partition.Length);
+
+        return ErrorNumber.NoError;
+    }
 }
