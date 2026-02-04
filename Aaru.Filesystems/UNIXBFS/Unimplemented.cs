@@ -28,11 +28,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -41,14 +39,6 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the UNIX boot filesystem</summary>
 public sealed partial class BFS
 {
-    /// <inheritdoc />
-    public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
-                             Dictionary<string, string> options,     string    @namespace) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
-
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
 

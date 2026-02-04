@@ -28,8 +28,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -39,6 +41,36 @@ namespace Aaru.Filesystems;
 public sealed partial class BFS : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "BFS plugin";
+
+    /// <summary>Maximum last inode number</summary>
+    const int BFS_MAX_LASTI = 513;
+
+    /// <summary>Cached inodes (inode number -> inode)</summary>
+    readonly Dictionary<uint, Inode> _inodeCache = new();
+
+    /// <summary>Cached root directory entries (filename -> inode number)</summary>
+    readonly Dictionary<string, ushort> _rootDirectoryCache = new();
+
+    /// <summary>Encoding used for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>Image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Last valid inode number</summary>
+    uint _lastInode;
+
+    /// <summary>Whether the filesystem is little-endian</summary>
+    bool _littleEndian = true;
+
+    /// <summary>Whether filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>Cached superblock</summary>
+    SuperBlock _superblock;
 
 #region IFilesystem Members
 
