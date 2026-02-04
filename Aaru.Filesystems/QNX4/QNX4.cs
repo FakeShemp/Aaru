@@ -29,8 +29,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -41,6 +43,24 @@ public sealed partial class QNX4 : IReadOnlyFilesystem
 {
     // ReSharper disable once UnusedMember.Local
     const string MODULE_NAME = "QNX4 plugin";
+
+    /// <summary>Cached root directory entries (filename -> directory entry)</summary>
+    readonly Dictionary<string, qnx4_inode_entry> _rootDirectoryCache = new();
+
+    /// <summary>Encoding used for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>Image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Whether filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>Cached superblock</summary>
+    qnx4_super_block _superblock;
 
 #region IFilesystem Members
 
