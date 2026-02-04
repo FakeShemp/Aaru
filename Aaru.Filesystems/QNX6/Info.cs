@@ -36,7 +36,6 @@ using Partition = Aaru.CommonTypes.Partition;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of QNX 6 filesystem</summary>
 public sealed partial class QNX6
 {
 #region IFilesystem Members

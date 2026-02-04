@@ -31,7 +31,6 @@ using System.Runtime.InteropServices;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of QNX 6 filesystem</summary>
 public sealed partial class QNX6
 {
 #region Nested type: qnx6_root_node

@@ -29,7 +29,6 @@
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of QNX 6 filesystem</summary>
 public sealed partial class QNX6
 {
     const uint QNX6_SUPER_BLOCK_SIZE = 0x1000;

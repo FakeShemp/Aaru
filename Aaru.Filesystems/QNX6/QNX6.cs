@@ -27,15 +27,26 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of QNX 6 filesystem</summary>
-public sealed partial class QNX6 : IFilesystem
+/// <summary>Implements QNX 6 filesystem</summary>
+public sealed partial class QNX6 : IReadOnlyFilesystem
 {
 #region IFilesystem Members
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
     /// <inheritdoc />
     public string Name => Localization.QNX6_Name;
