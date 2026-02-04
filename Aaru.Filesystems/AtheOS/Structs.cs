@@ -32,7 +32,6 @@ using System.Runtime.InteropServices;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection for the AtheOS filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public sealed partial class AtheOS
 {

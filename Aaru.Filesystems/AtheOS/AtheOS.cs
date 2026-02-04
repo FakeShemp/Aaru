@@ -27,17 +27,28 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection for the AtheOS filesystem</summary>
+/// <summary>Implements the AtheOS filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
-public sealed partial class AtheOS : IFilesystem
+public sealed partial class AtheOS : IReadOnlyFilesystem
 {
 #region IFilesystem Members
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
     /// <inheritdoc />
     public string Name => Localization.AtheOS_Name;
