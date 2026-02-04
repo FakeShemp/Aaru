@@ -29,7 +29,6 @@
 using System;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
@@ -38,9 +37,6 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the UNIX boot filesystem</summary>
 public sealed partial class BFS
 {
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
-
     /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
 
