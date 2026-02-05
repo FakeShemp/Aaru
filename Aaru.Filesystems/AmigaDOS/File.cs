@@ -28,6 +28,7 @@
 
 using System;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -37,6 +38,196 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class AmigaDOSPlugin
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: path='{0}'", path);
+
+        // Find the file block
+        ErrorNumber error = GetBlockForPath(path, out uint blockNum);
+
+        if(error != ErrorNumber.NoError) return error;
+
+        // Read the header block
+        error = ReadBlock(blockNum, out byte[] blockData);
+
+        if(error != ErrorNumber.NoError) return error;
+
+        // Validate block type (should be T_SHORT/T_HEADER = 2)
+        var type = BigEndianBitConverter.ToUInt32(blockData, 0x00);
+
+        if(type != TYPE_HEADER) return ErrorNumber.InvalidArgument;
+
+        // Get secondary type
+        int secTypeOffset = blockData.Length - 4;
+        var secType       = BigEndianBitConverter.ToUInt32(blockData, secTypeOffset);
+
+        // Check if it's a file (ST_FILE = -3 or ST_LFILE = -4)
+        var signedSecType = (int)secType;
+
+        if(secType > 0x7FFFFFFF) signedSecType = (int)(secType - 0x100000000);
+
+        if(signedSecType != -3 && signedSecType != -4) return ErrorNumber.IsDirectory;
+
+        // Get file size from BLK_BYTE_SIZE (SizeBlock - 47)
+        int byteSizeOffset = blockData.Length - 47 * 4;
+        var fileSize       = BigEndianBitConverter.ToUInt32(blockData, byteSizeOffset);
+
+        // Calculate the size of the data block pointer table
+        // SizeBlock in longs = blockData.Length / 4
+        int sizeBlock = blockData.Length / 4;
+
+        // BLK_TABLE_END = SizeBlock - 51
+        int tableEnd = sizeBlock - 51;
+
+        // Create file node
+        node = new AmigaDOSFileNode
+        {
+            Path                  = path,
+            Length                = fileSize,
+            Offset                = 0,
+            HeaderBlock           = blockNum,
+            FileSize              = fileSize,
+            CurrentExtensionBlock = blockNum,
+            CurrentFileKey        = tableEnd, // Start at end of table (data blocks listed in reverse order)
+            CurrentByteInBlock    = 0
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not AmigaDOSFileNode) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(buffer is null || buffer.Length < length) return ErrorNumber.InvalidArgument;
+
+        if(node is not AmigaDOSFileNode myNode) return ErrorNumber.InvalidArgument;
+
+        // Can't read past end of file
+        if(myNode.Offset >= myNode.Length) return ErrorNumber.NoError;
+
+        // Limit read to remaining file size
+        if(length > myNode.Length - myNode.Offset) length = myNode.Length - myNode.Offset;
+
+        // Calculate block sizes based on filesystem type
+        var sizeBlock       = (int)(_blockSize / 4); // Size in longs
+        int tableEnd        = sizeBlock - 51;        // BLK_TABLE_END
+        int extensionOffset = sizeBlock - 2;         // BLK_EXTENSION
+
+        // Read the current extension block
+        ErrorNumber error = ReadBlock(myNode.CurrentExtensionBlock, out byte[] extensionData);
+
+        if(error != ErrorNumber.NoError) return error;
+
+        long bytesRemaining = length;
+        var  bufferOffset   = 0;
+
+        while(bytesRemaining > 0)
+        {
+            // Do we need to read the next extension block?
+            if(myNode.CurrentFileKey < BLK_TABLE_START)
+            {
+                // Read next extension block pointer from BLK_EXTENSION
+                var nextExtension = BigEndianBitConverter.ToUInt32(extensionData, extensionOffset * 4);
+
+                if(nextExtension == 0) break; // No more data
+
+                myNode.CurrentExtensionBlock = nextExtension;
+                myNode.CurrentFileKey        = tableEnd; // Reset to end of table
+
+                error = ReadBlock(nextExtension, out extensionData);
+
+                if(error != ErrorNumber.NoError) return error;
+            }
+
+            // Get the data block pointer from the table
+            var dataBlockNum = BigEndianBitConverter.ToUInt32(extensionData, myNode.CurrentFileKey * 4);
+
+            if(dataBlockNum == 0) break; // No more data
+
+            // Read the data block
+            error = ReadBlock(dataBlockNum, out byte[] dataBlock);
+
+            if(error != ErrorNumber.NoError) return error;
+
+            // Calculate how much data is in this block and where it starts
+            int dataOffset;
+            int dataInBlock;
+
+            if(_isFfs)
+            {
+                // FFS: data starts at beginning of block
+                dataOffset  = myNode.CurrentByteInBlock;
+                dataInBlock = (int)_blockSize - myNode.CurrentByteInBlock;
+            }
+            else
+            {
+                // OFS: data has a header, actual data size is in the header
+                var ofsDataSize = BigEndianBitConverter.ToUInt32(dataBlock, 12); // BLK_DATA_SIZE = 3
+
+                dataOffset  = OFS_DATA_HEADER_SIZE + myNode.CurrentByteInBlock;
+                dataInBlock = (int)ofsDataSize     - myNode.CurrentByteInBlock;
+            }
+
+            // Limit to what we actually need
+            if(dataInBlock > bytesRemaining) dataInBlock = (int)bytesRemaining;
+
+            // Copy data to buffer
+            Array.Copy(dataBlock, dataOffset, buffer, bufferOffset, dataInBlock);
+
+            bufferOffset   += dataInBlock;
+            bytesRemaining -= dataInBlock;
+            myNode.Offset  += dataInBlock;
+
+            // Update position within block
+            if(_isFfs)
+            {
+                if(myNode.CurrentByteInBlock + dataInBlock >= _blockSize)
+                {
+                    myNode.CurrentByteInBlock = 0;
+                    myNode.CurrentFileKey--;
+                }
+                else
+                    myNode.CurrentByteInBlock += dataInBlock;
+            }
+            else
+            {
+                // For OFS, check against the actual data size in this block
+                var ofsDataSize = BigEndianBitConverter.ToUInt32(dataBlock, 12);
+
+                if(myNode.CurrentByteInBlock + dataInBlock >= ofsDataSize)
+                {
+                    myNode.CurrentByteInBlock = 0;
+                    myNode.CurrentFileKey--;
+                }
+                else
+                    myNode.CurrentByteInBlock += dataInBlock;
+            }
+        }
+
+        read = bufferOffset;
+
+        return ErrorNumber.NoError;
+    }
+
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
     {
@@ -73,11 +264,6 @@ public sealed partial class AmigaDOSPlugin
         // Root directory
         if(normalizedPath == "/" || string.Equals(normalizedPath, "/", StringComparison.OrdinalIgnoreCase))
         {
-            // Read root block
-            ErrorNumber errno = ReadBlock(_rootBlockSector, out byte[] rootBlockData);
-
-            if(errno != ErrorNumber.NoError) return errno;
-
             stat = new FileEntryInfo
             {
                 Attributes       = FileAttributes.Directory,

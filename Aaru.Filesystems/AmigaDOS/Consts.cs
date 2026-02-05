@@ -35,6 +35,8 @@ public sealed partial class AmigaDOSPlugin
     const uint MUFS_MASK = 0x6D754600;
 
     const uint TYPE_HEADER  = 2;
+    const uint TYPE_DATA    = 8;
+    const uint TYPE_LIST    = 16;
     const uint SUBTYPE_ROOT = 1;
     const uint SUBTYPE_DIR  = 2;
     const int  SUBTYPE_FILE = -3;
@@ -44,6 +46,12 @@ public sealed partial class AmigaDOSPlugin
 
     /// <summary>Maximum comment length</summary>
     const int MAX_COMMENT_LENGTH = 79;
+
+    /// <summary>OFS data block header size in bytes</summary>
+    const int OFS_DATA_HEADER_SIZE = 24;
+
+    /// <summary>Block table start offset (in longs)</summary>
+    const int BLK_TABLE_START = 6;
 
     const string FS_TYPE_OFS  = "aofs";
     const string FS_TYPE_FFS  = "affs";

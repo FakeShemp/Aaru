@@ -52,6 +52,18 @@ public sealed partial class AmigaDOSPlugin
         /// <summary>Block number of the file header</summary>
         internal uint HeaderBlock { get; set; }
 
+        /// <summary>Current extension block number</summary>
+        internal uint CurrentExtensionBlock { get; set; }
+
+        /// <summary>Current position in the data block pointer table (counting down from end)</summary>
+        internal int CurrentFileKey { get; set; }
+
+        /// <summary>Bytes remaining in current data block</summary>
+        internal int CurrentByteInBlock { get; set; }
+
+        /// <summary>File size in bytes</summary>
+        internal uint FileSize { get; set; }
+
         /// <summary>Current read position in the file</summary>
         public long Offset { get; set; }
 
