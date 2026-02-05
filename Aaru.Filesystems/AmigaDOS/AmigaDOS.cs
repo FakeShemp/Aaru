@@ -28,8 +28,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -38,6 +40,57 @@ namespace Aaru.Filesystems;
 public sealed partial class AmigaDOSPlugin : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "AmigaDOS plugin";
+
+    /// <summary>Block size in bytes</summary>
+    uint _blockSize;
+
+    /// <summary>The boot block</summary>
+    BootBlock _bootBlock;
+
+    /// <summary>Indicates if the boot block checksum is valid</summary>
+    bool _bootBlockValid;
+
+    /// <summary>The encoding to use for text data</summary>
+    Encoding _encoding;
+
+    /// <summary>Indicates if directory cache is enabled</summary>
+    bool _hasDirCache;
+
+    /// <summary>Indicates if long filenames are supported (OFS2/FFS2)</summary>
+    bool _hasLongNames;
+
+    /// <summary>The media image plugin used to read from the device</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Indicates if this is a Fast File System (vs OFS)</summary>
+    bool _isFfs;
+
+    /// <summary>Indicates if international mode is enabled</summary>
+    bool _isIntl;
+
+    /// <summary>Indicates if this is a multi-user filesystem (MuFS)</summary>
+    bool _isMuFs;
+
+    /// <summary>Indicates if the filesystem is currently mounted</summary>
+    bool _mounted;
+
+    /// <summary>The partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>The root block</summary>
+    RootBlock _rootBlock;
+
+    /// <summary>Root block sector number (relative to partition start)</summary>
+    uint _rootBlockSector;
+
+    /// <summary>Cache of root directory entries mapped from filename to block number</summary>
+    Dictionary<string, uint> _rootDirectoryCache;
+
+    /// <summary>Sectors per block</summary>
+    uint _sectorsPerBlock;
+
+    /// <summary>Total blocks in filesystem</summary>
+    uint _totalBlocks;
 
 #region IFilesystem Members
 

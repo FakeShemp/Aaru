@@ -1,8 +1,8 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Consts.cs
+// Filename       : Block.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Amiga Fast File System plugin.
@@ -26,27 +26,27 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using Aaru.CommonTypes.Enums;
+
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
 public sealed partial class AmigaDOSPlugin
 {
-    const uint FFS_MASK  = 0x444F5300;
-    const uint MUFS_MASK = 0x6D754600;
+    /// <summary>Reads a block from the filesystem</summary>
+    /// <param name="block">Block number (relative to filesystem start)</param>
+    /// <param name="data">Output block data</param>
+    /// <returns>Error code</returns>
+    ErrorNumber ReadBlock(uint block, out byte[] data)
+    {
+        data = null;
 
-    const uint TYPE_HEADER  = 2;
-    const uint SUBTYPE_ROOT = 1;
-    const uint SUBTYPE_DIR  = 2;
-    const int  SUBTYPE_FILE = -3;
+        ulong sectorAddress = _partition.Start + (ulong)block * _sectorsPerBlock;
 
-    /// <summary>Maximum filename length for AmigaDOS</summary>
-    const int MAX_NAME_LENGTH = 30;
+        if(sectorAddress >= _partition.End) return ErrorNumber.InvalidArgument;
 
-    /// <summary>Maximum comment length</summary>
-    const int MAX_COMMENT_LENGTH = 79;
+        ErrorNumber errno = _imagePlugin.ReadSectors(sectorAddress, false, _sectorsPerBlock, out data, out _);
 
-    const string FS_TYPE_OFS  = "aofs";
-    const string FS_TYPE_FFS  = "affs";
-    const string FS_TYPE_OFS2 = "aofs2";
-    const string FS_TYPE_FFS2 = "affs2";
+        return errno;
+    }
 }
