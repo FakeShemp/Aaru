@@ -695,7 +695,7 @@
     <value>Texto</value>
   </data>
     <data name="Directory_0" xml:space="preserve">
-        <value>[slateblue1]Directorio: [green]{0}[/]</value>
+        <value>[slateblue1]Directorio: [green]{0}[/][/]</value>
     </data>
     <data name="Directory_abbreviation" xml:space="preserve">
         <value>[green]&lt;DIR&gt;[/]</value>
