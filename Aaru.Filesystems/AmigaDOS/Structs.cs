@@ -32,7 +32,6 @@ using Aaru.CommonTypes.Attributes;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of Amiga Fast File System (AFFS)</summary>
 public sealed partial class AmigaDOSPlugin
 {
 #region Nested type: BootBlock

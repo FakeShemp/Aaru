@@ -40,7 +40,6 @@ using Partition = Aaru.CommonTypes.Partition;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of Amiga Fast File System (AFFS)</summary>
 public sealed partial class AmigaDOSPlugin
 {
 #region IFilesystem Members

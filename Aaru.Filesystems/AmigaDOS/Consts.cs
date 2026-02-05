@@ -29,7 +29,6 @@
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of Amiga Fast File System (AFFS)</summary>
 public sealed partial class AmigaDOSPlugin
 {
     const uint FFS_MASK  = 0x444F5300;

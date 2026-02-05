@@ -27,17 +27,26 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of Amiga Fast File System (AFFS)</summary>
-public sealed partial class AmigaDOSPlugin : IFilesystem
+/// <summary>Implements Amiga Fast File System (AFFS)</summary>
+public sealed partial class AmigaDOSPlugin : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "AmigaDOS plugin";
 
 #region IFilesystem Members
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
     /// <inheritdoc />
     public string Name => Localization.AmigaDOSPlugin_Name;
