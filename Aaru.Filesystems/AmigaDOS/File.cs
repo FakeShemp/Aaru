@@ -39,6 +39,54 @@ namespace Aaru.Filesystems;
 public sealed partial class AmigaDOSPlugin
 {
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Find the file block
+        ErrorNumber error = GetBlockForPath(path, out uint blockNum);
+
+        if(error != ErrorNumber.NoError) return error;
+
+        // Read the header block
+        error = ReadBlock(blockNum, out byte[] blockData);
+
+        if(error != ErrorNumber.NoError) return error;
+
+        // Validate block type (should be T_SHORT/T_HEADER = 2)
+        var type = BigEndianBitConverter.ToUInt32(blockData, 0x00);
+
+        if(type != TYPE_HEADER) return ErrorNumber.InvalidArgument;
+
+        // Get secondary type
+        int secTypeOffset = blockData.Length - 4;
+        var secType       = BigEndianBitConverter.ToUInt32(blockData, secTypeOffset);
+
+        // Check if it's a soft link (ST_LSOFT = 3)
+        if(secType != 3) return ErrorNumber.InvalidArgument;
+
+        // Symbolic link target path is stored starting at BLK_SYMBOLICNAME_START (offset 6 in longs = 24 bytes)
+        // and ending at BLK_SYMBOLICNAME_END (SizeBlock - 51 in longs)
+        int sizeBlock         = blockData.Length / 4;
+        int symbolicNameStart = 6                * 4; // BLK_SYMBOLICNAME_START = 6, convert to bytes
+        int symbolicNameEnd   = (sizeBlock - 51) * 4; // BLK_SYMBOLICNAME_END = SizeBlock - 51
+
+        // Find the null terminator within the symbolic name area
+        var actualLength = 0;
+
+        for(int i = symbolicNameStart; i < symbolicNameEnd && blockData[i] != 0; i++) actualLength++;
+
+        // Extract the symbolic link target
+        dest = _encoding.GetString(blockData, symbolicNameStart, actualLength);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
         node = null;
