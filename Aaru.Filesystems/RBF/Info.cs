@@ -216,11 +216,11 @@ public sealed partial class RBF
             sb.AppendFormat(Localization._0_blocks_in_volume,  LSNToUInt32(rbfSb.dd_tot)).AppendLine();
             sb.AppendFormat(Localization._0_tracks,            rbfSb.dd_tks).AppendLine();
             sb.AppendFormat(Localization._0_sectors_per_track, rbfSb.dd_spt).AppendLine();
-            sb.AppendFormat(Localization._0_bytes_per_sector,  256 << rbfSb.dd_lsnsize).AppendLine();
 
-            sb.AppendFormat(Localization._0_sectors_per_cluster_1_bytes,
-                            rbfSb.dd_bit,
-                            rbfSb.dd_bit * (256 << rbfSb.dd_lsnsize))
+            uint lsnSize = (uint)(rbfSb.dd_lsnsize == 0 ? 256 : rbfSb.dd_lsnsize);
+            sb.AppendFormat(Localization._0_bytes_per_sector, lsnSize).AppendLine();
+
+            sb.AppendFormat(Localization._0_sectors_per_cluster_1_bytes, rbfSb.dd_bit, rbfSb.dd_bit * lsnSize)
               .AppendLine();
 
             // TODO: Convert to flags?
@@ -273,7 +273,7 @@ public sealed partial class RBF
             {
                 Type         = FS_TYPE,
                 Bootable     = LSNToUInt32(rbfSb.dd_bt) > 0 && rbfSb.dd_bsz > 0,
-                ClusterSize  = (uint)(rbfSb.dd_bit * (256 << rbfSb.dd_lsnsize)),
+                ClusterSize  = rbfSb.dd_bit * lsnSize,
                 Clusters     = LSNToUInt32(rbfSb.dd_tot),
                 CreationDate = DateHandlers.Os9ToDateTime(rbfSb.dd_dat),
                 VolumeName   = StringHandlers.CToString(rbfSb.dd_nam, encoding),

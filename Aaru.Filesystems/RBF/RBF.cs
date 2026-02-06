@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
@@ -38,6 +39,33 @@ namespace Aaru.Filesystems;
 public sealed partial class RBF : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "RBF plugin";
+    uint         _bitmapLsn; // LSN of allocation bitmap
+    Encoding     _encoding;
+
+    // Cached superblock data
+    IdSector _idSector;
+    ulong    _idSectorLocation; // Location of ID sector (0, 4, or 15)
+
+    // Instance fields for mounted filesystem state
+    IMediaImage _imagePlugin;
+
+    // Filesystem type flags
+    bool _isOs9000;
+    bool _littleEndian;
+
+    // Calculated filesystem parameters
+    uint        _lsnSize; // Logical sector size in bytes
+    bool        _mounted;
+    NewIdSector _newIdSector;
+    ulong       _partitionStart;
+
+    // Root directory cache
+    Dictionary<string, CachedDirectoryEntry> _rootDirectoryCache;
+    FileDescriptor                           _rootDirectoryFd;
+    uint                                     _rootDirLsn; // LSN of root directory FD
+    uint                                     _sectorSize;
+    uint                                     _sectorsPerCluster;
+    uint                                     _totalSectors; // Total sectors on disk
 
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }

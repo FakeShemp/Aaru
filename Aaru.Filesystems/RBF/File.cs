@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : File.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Random Block File filesystem plugin
@@ -26,41 +26,35 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
+using System.Collections.Generic;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
 public sealed partial class RBF
 {
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
+    /// <summary>Reads an RBF filename from directory entry (MSB of last char set)</summary>
+    static string ReadRbfFilename(byte[] nameBytes)
+    {
+        if(nameBytes == null || nameBytes.Length == 0) return null;
 
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+        var chars = new List<char>();
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
+        foreach(byte b in nameBytes)
+        {
+            if(b == 0) break;
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+            // Check if MSB is set (indicates last character)
+            if((b & 0x80) != 0)
+            {
+                chars.Add((char)(b & 0x7F));
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+                break;
+            }
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+            chars.Add((char)b);
+        }
 
-    /// <inheritdoc />
-    public ErrorNumber OpenDir(string path, out IDirNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseDir(IDirNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadDir(IDirNode node, out string filename) => throw new NotImplementedException();
+        return chars.Count > 0 ? new string(chars.ToArray()) : null;
+    }
 }

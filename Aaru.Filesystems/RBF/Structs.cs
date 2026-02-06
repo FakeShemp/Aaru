@@ -39,7 +39,7 @@ public sealed partial class RBF
     /// <summary>Identification sector. Wherever the sector this resides on, becomes LSN 0.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct IdSector
+    internal partial struct IdSector
     {
         /// <summary>Sectors on disk</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
@@ -101,7 +101,7 @@ public sealed partial class RBF
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct NewIdSector
+    internal partial struct NewIdSector
     {
         /// <summary>Magic number</summary>
         public uint rid_sync;
@@ -160,7 +160,7 @@ public sealed partial class RBF
     /// <summary>File Descriptor (FD) - describes a file or directory (256 bytes total, one sector)</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct FileDescriptor
+    internal partial struct FileDescriptor
     {
         /// <summary>FD.ATT ($00) - File attributes (1 byte)</summary>
         public byte fd_att;
@@ -188,7 +188,7 @@ public sealed partial class RBF
     /// <summary>File Descriptor for OS-9000</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct NewFileDescriptor
+    internal partial struct NewFileDescriptor
     {
         /// <summary>File attributes</summary>
         public byte fd_att;
@@ -216,7 +216,7 @@ public sealed partial class RBF
     /// <summary>Directory entry structure (32 bytes total)</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct DirectoryEntry
+    internal partial struct DirectoryEntry
     {
         /// <summary>Filename (28 bytes, MSB of last char set for termination)</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 28)]
@@ -235,7 +235,7 @@ public sealed partial class RBF
     /// <summary>Directory entry for OS-9000 (32 bytes)</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct NewDirectoryEntry
+    internal partial struct NewDirectoryEntry
     {
         /// <summary>Filename (up to 28 characters, null terminated)</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 28)]
@@ -251,7 +251,7 @@ public sealed partial class RBF
     /// <summary>Segment descriptor - describes a contiguous block of disk space (5 bytes)</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct Segment
+    internal partial struct Segment
     {
         /// <summary>Physical sector number (LSN) of segment start (3 bytes)</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
@@ -267,7 +267,7 @@ public sealed partial class RBF
     /// <summary>Segment descriptor for OS-9000 (8 bytes)</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct NewSegment
+    internal partial struct NewSegment
     {
         /// <summary>Physical sector number (LSN) of segment start</summary>
         public uint seg_lsn;
@@ -282,7 +282,7 @@ public sealed partial class RBF
     /// <summary>Path descriptor options structure</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct PathDescriptor
+    internal partial struct PathDescriptor
     {
         /// <summary>Device type</summary>
         public byte pd_dtp;
@@ -325,7 +325,7 @@ public sealed partial class RBF
     /// <summary>Extended file descriptor with additional OS-9 Level II fields</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct ExtendedFileDescriptor
+    internal partial struct ExtendedFileDescriptor
     {
         /// <summary>File attributes</summary>
         public byte fd_att;
