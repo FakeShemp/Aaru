@@ -42,6 +42,77 @@ public sealed partial class SFS
     static readonly DateTime _amigaEpoch = new(1978, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize the path
+        string normalizedPath = path ?? "";
+
+        if(normalizedPath == "" || normalizedPath == "." || normalizedPath == "/") return ErrorNumber.InvalidArgument;
+
+        // Get file stat to validate it's a symlink
+        ErrorNumber errno = Stat(normalizedPath, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Verify it's a symbolic link
+        if(!stat.Attributes.HasFlag(FileAttributes.Symlink)) return ErrorNumber.InvalidArgument;
+
+        // Get the object node for this path
+        errno = GetObjectNodeForPath(normalizedPath, out uint objectNode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Find the object container for this node
+        errno = FindObjectNode(objectNode, out uint objectBlock);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        errno = ReadBlock(objectBlock, out byte[] objectData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Find the object in the container
+        errno = FindObjectInContainer(objectData, objectNode, out int objectOffset);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read the softlink block pointer (data field at offset 12)
+        // For soft links, the data field points to a SOFTLINK_ID block
+        var softLinkBlock = BigEndianBitConverter.ToUInt32(objectData, objectOffset + 12);
+
+        if(softLinkBlock == 0) return ErrorNumber.InvalidArgument;
+
+        // Read the soft link block
+        errno = ReadBlock(softLinkBlock, out byte[] linkData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Validate block ID
+        var blockId = BigEndianBitConverter.ToUInt32(linkData, 0);
+
+        if(blockId != SOFTLINK_ID) return ErrorNumber.InvalidArgument;
+
+        // SoftLink structure: header (12) + parent (4) + next (4) + previous (4) = 24 bytes
+        // Followed by null-terminated path string
+        const int stringOffset = 24;
+
+        // Read null-terminated string
+        var pathBytes = new List<byte>();
+
+        for(int i = stringOffset; i < linkData.Length && linkData[i] != 0; i++) pathBytes.Add(linkData[i]);
+
+        if(pathBytes.Count == 0) return ErrorNumber.InvalidArgument;
+
+        dest = _encoding.GetString(pathBytes.ToArray());
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
         node = null;
