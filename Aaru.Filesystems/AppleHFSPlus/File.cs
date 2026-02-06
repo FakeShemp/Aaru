@@ -135,14 +135,19 @@ public sealed partial class AppleHFSPlus
         // Must be a file, not a directory
         if(finalEntry is not FileEntry fileEntry) return ErrorNumber.IsDirectory;
 
-        // Open the data fork
+        // Check if file is compressed
+        bool isCompressed = IsFileCompressed(fileEntry, out _, out ulong uncompressedSize);
+
+        // Open the data fork (or decompressed version if compressed)
         node = new HfsPlusFileNode
         {
-            Path       = normalizedPath,
-            Length     = (long)fileEntry.DataForkLogicalSize,
-            Offset     = 0,
-            FileEntry  = fileEntry,
-            AllExtents = null // Will be lazily loaded on first read
+            Path             = normalizedPath,
+            Length           = isCompressed ? (long)uncompressedSize : (long)fileEntry.DataForkLogicalSize,
+            Offset           = 0,
+            FileEntry        = fileEntry,
+            AllExtents       = null, // Will be lazily loaded on first read
+            IsCompressed     = isCompressed,
+            DecompressedData = null // Will be lazily decompressed on first read
         };
 
         return ErrorNumber.NoError;
@@ -156,8 +161,9 @@ public sealed partial class AppleHFSPlus
         if(node is not HfsPlusFileNode myNode) return ErrorNumber.InvalidArgument;
 
         // Clear references
-        myNode.FileEntry  = null;
-        myNode.AllExtents = null;
+        myNode.FileEntry        = null;
+        myNode.AllExtents       = null;
+        myNode.DecompressedData = null;
 
         return ErrorNumber.NoError;
     }
@@ -178,6 +184,45 @@ public sealed partial class AppleHFSPlus
 
         if(length <= 0) return ErrorNumber.NoError;
 
+        // Handle compressed files transparently
+        if(myNode.IsCompressed)
+        {
+            // Lazy decompress on first read
+            if(myNode.DecompressedData == null)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "ReadFile: Decompressing file CNID={0} on first read",
+                                  myNode.FileEntry.CNID);
+
+                ErrorNumber decompErr = DecompressFile(myNode.FileEntry, out byte[] decompressedData);
+
+                if(decompErr != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "ReadFile: Failed to decompress file CNID={0}: {1}",
+                                      myNode.FileEntry.CNID,
+                                      decompErr);
+
+                    return decompErr;
+                }
+
+                myNode.DecompressedData = decompressedData;
+            }
+
+            // Read from decompressed data
+            var toRead = (int)Math.Min(length, myNode.DecompressedData.Length - myNode.Offset);
+
+            if(toRead > 0)
+            {
+                Array.Copy(myNode.DecompressedData, (int)myNode.Offset, buffer, 0, toRead);
+                myNode.Offset += toRead;
+                read          =  toRead;
+            }
+
+            return ErrorNumber.NoError;
+        }
+
+        // Handle uncompressed files (existing code)
         // Lazy load extents if not already loaded
         if(myNode.AllExtents == null)
         {

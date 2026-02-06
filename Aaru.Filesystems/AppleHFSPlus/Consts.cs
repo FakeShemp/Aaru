@@ -70,4 +70,16 @@ public sealed partial class AppleHFSPlus
     const byte kHFSBinaryCompare = 0;
     /// <summary>B-tree comparison type: Case-folding comparison (case-insensitive, HFS+ and HFSX).</summary>
     const byte kHFSCaseFolding = 0xCF;
+
+    /// <summary>Compression magic for decmpfs header</summary>
+    const uint DECMPFS_MAGIC = 0x636D7066; // "cmpf"
+
+    /// <summary>Maximum inline compression size (compressed data stored in xattr)</summary>
+    const int DECMPFS_INLINE_MAX = 3802; // Max size for inline compressed data
+
+    /// <summary>Resource fork compression header size</summary>
+    const int DECMPFS_RESOURCE_HEADER_SIZE = 0x100; // 256 bytes
+
+    /// <summary>Extended attribute name for compression metadata</summary>
+    const string DECMPFS_XATTR_NAME = "com.apple.decmpfs";
 }

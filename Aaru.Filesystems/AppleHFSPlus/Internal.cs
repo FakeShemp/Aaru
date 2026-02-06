@@ -63,13 +63,19 @@ public sealed partial class AppleHFSPlus
         /// <summary>All extents for this fork (lazy-loaded)</summary>
         internal List<HFSPlusExtentDescriptor> AllExtents { get; set; }
 
+        /// <summary>Whether this file is compressed</summary>
+        internal bool IsCompressed { get; set; }
+
+        /// <summary>Decompressed data (cached for compressed files)</summary>
+        internal byte[] DecompressedData { get; set; }
+
         /// <summary>Current offset in file for reads</summary>
         public long Offset { get; set; }
 
         /// <summary>Path to this file</summary>
         public string Path { get; init; }
 
-        /// <summary>Total length of data fork in bytes</summary>
+        /// <summary>Total length of data fork in bytes (uncompressed size for compressed files)</summary>
         public long Length { get; init; }
     }
 

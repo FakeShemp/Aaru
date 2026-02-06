@@ -523,4 +523,40 @@ public sealed partial class AppleHFSPlus
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 127)]
         public ushort[] attrName;
     }
+
+#region Compression Support
+
+    /// <summary>
+    ///     HFS+ compression header stored in the com.apple.decmpfs extended attribute.
+    ///     This header describes how the file is compressed.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct DecmpfsHeader
+    {
+        /// <summary>Compression magic number (0x636D7066 = "cmpf").</summary>
+        public uint magic;
+        /// <summary>Compression type/algorithm.</summary>
+        public uint compressionType;
+        /// <summary>Uncompressed file size in bytes.</summary>
+        public ulong uncompressedSize;
+    }
+
+    /// <summary>
+    ///     Resource fork compression header for types 8, 9, and 10.
+    ///     Follows the DecmpfsHeader in the resource fork.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct DecmpfsResourceHeader
+    {
+        /// <summary>Header size (always 0x100 = 256 bytes).</summary>
+        public uint headerSize;
+        /// <summary>Total size including header.</summary>
+        public uint totalSize;
+        /// <summary>Size of compressed data.</summary>
+        public uint dataSize;
+        /// <summary>Flags.</summary>
+        public uint flags;
+    }
+
+#endregion
 }

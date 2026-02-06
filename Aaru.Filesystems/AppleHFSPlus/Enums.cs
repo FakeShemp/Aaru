@@ -105,14 +105,41 @@ public sealed partial class AppleHFSPlus
         kHFSThreadExistsMask = 0x0002
     }
 
-    /// <summary>Attribute record type. Identifies the type of record in the attributes B-tree.</summary>
+    /// <summary>B-Tree attribute record types</summary>
     enum BTAttributeRecordType : uint
     {
-        /// <summary>Inline data attribute record containing attribute data stored directly in the record.</summary>
+        /// <summary>Inline data (small attributes)</summary>
         kHFSPlusAttrInlineData = 0x10,
-        /// <summary>Fork data attribute record containing a fork data structure for larger attributes.</summary>
+        /// <summary>Fork data (extent-based attributes)</summary>
         kHFSPlusAttrForkData = 0x20,
-        /// <summary>Extents attribute record containing overflow extents for large attributes.</summary>
+        /// <summary>Overflow extents for large attributes</summary>
         kHFSPlusAttrExtents = 0x30
+    }
+
+    /// <summary>HFS+ compression types for decmpfs</summary>
+    enum HFSCompressionType : uint
+    {
+        /// <summary>Uncompressed (inline data in xattr)</summary>
+        Uncompressed = 1,
+        /// <summary>Reserved/unknown</summary>
+        Reserved2 = 2,
+        /// <summary>Inline ZLIB compression (data in xattr)</summary>
+        ZlibInline = 3,
+        /// <summary>Inline LZVN compression (data in xattr)</summary>
+        LzvnInline = 4,
+        /// <summary>Reserved/unknown</summary>
+        Reserved5 = 5,
+        /// <summary>Reserved/unknown</summary>
+        Reserved6 = 6,
+        /// <summary>LZVN compression (data in resource fork)</summary>
+        LzvnResourceFork = 7,
+        /// <summary>ZLIB compression (data in resource fork)</summary>
+        ZlibResourceFork = 8,
+        /// <summary>LZVN compression with different format (data in resource fork)</summary>
+        Lzvn2ResourceFork = 9,
+        /// <summary>LZFSE compression (data in resource fork)</summary>
+        LzfseResourceFork = 10,
+        /// <summary>LZBITMAP compression (data in resource fork)</summary>
+        LzbitmapResourceFork = 11
     }
 }
