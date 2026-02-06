@@ -29,16 +29,12 @@
 using System;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
 public sealed partial class RBF
 {
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
-
     /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
 
