@@ -62,13 +62,4 @@ public sealed partial class ProDOSPlugin
     /// <inheritdoc />
     public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
         throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber OpenDir(string path, out IDirNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseDir(IDirNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadDir(IDirNode node, out string filename) => throw new NotImplementedException();
 }
