@@ -214,6 +214,7 @@ Fully supported file-systems (identify and extraction)
 * Microsoft 16-bit File Allocation Table (FAT16)
 * Microsoft 32-bit File Allocation Table (FAT32), including FAT+ extension
 * Microsoft Extended File Allocation Table (exFAT)
+* OS-9 Random Block File
 * QNX4 filesystems
 * QNX6 filesystems
 * U.C.S.D Pascal file system
@@ -257,7 +258,6 @@ Supported file systems for identification and information only
 * NEC PC-FX executable
 * NILFS2
 * Nintendo optical filesystems (GameCube and Wii)
-* OS-9 Random Block File
 * Professional File System
 * Reiser file systems
 * SGI Extent File System (EFS)
