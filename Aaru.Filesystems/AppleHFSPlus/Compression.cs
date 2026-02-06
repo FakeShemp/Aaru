@@ -102,11 +102,7 @@ public sealed partial class AppleHFSPlus
 
             case HFSCompressionType.LzvnInline:
                 // Type 4: LZVN compressed data stored inline in xattr
-                AaruLogging.Debug(MODULE_NAME,
-                                  "DecompressFile: LZVN inline decompression not yet implemented for CNID {0}",
-                                  fileEntry.CNID);
-
-                return ErrorNumber.NotSupported;
+                return DecompressType4(decmpfsData, uncompressedSize, out buf);
 
             case HFSCompressionType.LzvnResourceFork:
             case HFSCompressionType.ZlibResourceFork:
@@ -133,7 +129,7 @@ public sealed partial class AppleHFSPlus
         // Type 1: Uncompressed data follows the 16-byte header
         if(decmpfsData.Length < 16) return ErrorNumber.InvalidArgument;
 
-        var dataSize = decmpfsData.Length - 16;
+        int dataSize = decmpfsData.Length - 16;
 
         if(dataSize != (int)uncompressedSize)
         {
@@ -190,6 +186,49 @@ public sealed partial class AppleHFSPlus
         catch(Exception ex)
         {
             AaruLogging.Debug(MODULE_NAME, "DecompressType3: Exception - {0}", ex.Message);
+
+            return ErrorNumber.InvalidArgument;
+        }
+    }
+
+    /// <summary>Decompresses type 4 (LZVN inline)</summary>
+    private static ErrorNumber DecompressType4(byte[] decmpfsData, ulong uncompressedSize, out byte[] buf)
+    {
+        buf = null;
+
+        // Type 4: LZVN compressed data follows the 16-byte header
+        if(decmpfsData.Length < 16) return ErrorNumber.InvalidArgument;
+
+        int compressedSize = decmpfsData.Length - 16;
+
+        try
+        {
+            var compressedData = new byte[compressedSize];
+            Array.Copy(decmpfsData, 16, compressedData, 0, compressedSize);
+
+            buf = new byte[uncompressedSize];
+            int decompressedSize = LZVN.DecodeBuffer(compressedData, buf);
+
+            if(decompressedSize <= 0)
+            {
+                AaruLogging.Debug(MODULE_NAME, "DecompressType4: LZVN decompression failed");
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            if(decompressedSize != (int)uncompressedSize)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "DecompressType4: Decompressed size {0} != expected size {1}",
+                                  decompressedSize,
+                                  uncompressedSize);
+            }
+
+            return ErrorNumber.NoError;
+        }
+        catch(Exception ex)
+        {
+            AaruLogging.Debug(MODULE_NAME, "DecompressType4: Exception - {0}", ex.Message);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -264,11 +303,11 @@ public sealed partial class AppleHFSPlus
 
             case HFSCompressionType.LzvnResourceFork:
             case HFSCompressionType.Lzvn2ResourceFork:
-                AaruLogging.Debug(MODULE_NAME,
-                                  "DecompressResourceFork: LZVN resource fork decompression not yet implemented for CNID {0}",
-                                  fileEntry.CNID);
-
-                return ErrorNumber.NotSupported;
+                return DecompressLzvnResourceFork(resourceForkData,
+                                                  compressedDataOffset,
+                                                  (int)dataSize,
+                                                  uncompressedSize,
+                                                  out buf);
 
             default:
                 AaruLogging.Debug(MODULE_NAME,
@@ -357,6 +396,46 @@ public sealed partial class AppleHFSPlus
         catch(Exception ex)
         {
             AaruLogging.Debug(MODULE_NAME, "DecompressLzfseResourceFork: Exception - {0}", ex.Message);
+
+            return ErrorNumber.InvalidArgument;
+        }
+    }
+
+    /// <summary>Decompresses LZVN compressed data from resource fork (types 7 and 9)</summary>
+    private static ErrorNumber DecompressLzvnResourceFork(byte[] resourceForkData, int offset, int compressedSize,
+                                                          ulong  uncompressedSize, out byte[] buf)
+    {
+        buf = null;
+
+        try
+        {
+            var compressedData = new byte[compressedSize];
+            Array.Copy(resourceForkData, offset, compressedData, 0, compressedSize);
+
+            // Use Aaru.Compression.LZVN to decompress
+            buf = new byte[uncompressedSize];
+            int decompressedSize = LZVN.DecodeBuffer(compressedData, buf);
+
+            if(decompressedSize <= 0)
+            {
+                AaruLogging.Debug(MODULE_NAME, "DecompressLzvnResourceFork: LZVN decompression failed");
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            if(decompressedSize != (int)uncompressedSize)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "DecompressLzvnResourceFork: Decompressed size {0} != expected size {1}",
+                                  decompressedSize,
+                                  uncompressedSize);
+            }
+
+            return ErrorNumber.NoError;
+        }
+        catch(Exception ex)
+        {
+            AaruLogging.Debug(MODULE_NAME, "DecompressLzvnResourceFork: Exception - {0}", ex.Message);
 
             return ErrorNumber.InvalidArgument;
         }
