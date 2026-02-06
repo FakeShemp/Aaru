@@ -45,7 +45,9 @@ public sealed partial class ProDOSPlugin
     const byte SAPLING_FILE_TYPE = 0x02;
     /// <summary>A file that occupies between 257 and 32768 blocks</summary>
     const byte TREE_FILE_TYPE = 0x03;
-    const byte PASCAL_AREA_TYPE         = 0x04;
+    const byte PASCAL_AREA_TYPE = 0x04;
+    /// <summary>Extended file with resource fork</summary>
+    const byte EXTENDED_FILE_TYPE = 0x05;
     const byte SUBDIRECTORY_TYPE        = 0x0D;
     const byte SUBDIRECTORY_HEADER_TYPE = 0x0E;
     const byte ROOT_DIRECTORY_TYPE      = 0x0F;

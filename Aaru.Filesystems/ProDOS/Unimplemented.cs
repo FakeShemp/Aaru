@@ -39,9 +39,6 @@ namespace Aaru.Filesystems;
 public sealed partial class ProDOSPlugin
 {
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
 
     /// <inheritdoc />
@@ -50,8 +47,6 @@ public sealed partial class ProDOSPlugin
     /// <inheritdoc />
     public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
