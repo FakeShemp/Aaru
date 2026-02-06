@@ -28,8 +28,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -37,6 +39,47 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the Smart File System</summary>
 public sealed partial class SFS : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "SFS plugin";
+
+    /// <summary>Cache of root directory entries mapped from filename to object node</summary>
+    readonly Dictionary<string, uint> _rootDirectoryCache = new();
+
+    /// <summary>Log2 of block size for shift operations</summary>
+    int _blockShift;
+
+    /// <summary>Block size in bytes</summary>
+    uint _blockSize;
+
+    /// <summary>Whether the volume is case sensitive</summary>
+    bool _caseSensitive;
+
+    /// <summary>The encoding to use for text data</summary>
+    Encoding _encoding;
+
+    /// <summary>The media image plugin used to read from the device</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Indicates if the filesystem is currently mounted</summary>
+    bool _mounted;
+
+    /// <summary>Location of the object node tree root</summary>
+    uint _objectNodeRoot;
+
+    /// <summary>The partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>The filesystem root block</summary>
+    RootBlock _rootBlock;
+
+    /// <summary>The root info structure</summary>
+    RootInfo _rootInfo;
+
+    /// <summary>Location of the root object container</summary>
+    uint _rootObjectContainer;
+
+    /// <summary>Total number of blocks in the filesystem</summary>
+    uint _totalBlocks;
+
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
     /// <inheritdoc />

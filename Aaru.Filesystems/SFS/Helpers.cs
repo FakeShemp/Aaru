@@ -1,8 +1,8 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Consts.cs
+// Filename       : Helpers.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : SmartFileSystem plugin.
@@ -26,37 +26,41 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using Aaru.Helpers;
+
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
+/// <summary>Implements the Smart File System</summary>
 public sealed partial class SFS
 {
-    /// <summary>Identifier for SFS v1</summary>
-    const uint SFS_MAGIC = 0x53465300;
-    /// <summary>Identifier for SFS v2</summary>
-    const uint SFS2_MAGIC = 0x53465302;
+    /// <summary>Validates the checksum of a block</summary>
+    /// <param name="blockData">The block data to validate</param>
+    /// <returns>True if the checksum is valid, false otherwise</returns>
+    static bool ValidateChecksum(byte[] blockData)
+    {
+        // The checksum is validated by summing all 32-bit big-endian words in the block,
+        // starting with 1. If the result is 0, the checksum is valid.
+        uint sum = 1;
 
-    /// <summary>Object container block identifier ('OBJC')</summary>
-    const uint OBJECTCONTAINER_ID = 0x4F424A43;
-    /// <summary>Hash table block identifier ('HTAB')</summary>
-    const uint HASHTABLE_ID = 0x48544142;
-    /// <summary>Soft link block identifier ('SLNK')</summary>
-    const uint SOFTLINK_ID = 0x534C4E4B;
-    /// <summary>Node container block identifier ('NDC ')</summary>
-    const uint NODECONTAINER_ID = 0x4E444320;
-    /// <summary>Bitmap block identifier ('BITM')</summary>
-    const uint BITMAP_ID = 0x4249544D;
+        for(var i = 0; i < blockData.Length; i += 4)
+        {
+            var value = BigEndianBitConverter.ToUInt32(blockData, i);
+            sum += value;
+        }
 
-    /// <summary>Node number of the root directory object</summary>
-    const uint ROOTNODE = 1;
-    /// <summary>Node number of the recycled directory object</summary>
-    const uint RECYCLEDNODE = 2;
+        return sum == 0;
+    }
 
-    /// <summary>Expected structure version number</summary>
-    const ushort STRUCTURE_VERSION = 3;
+    /// <summary>Calculates the block shift (log2 of block size)</summary>
+    /// <param name="blockSize">The block size in bytes</param>
+    /// <returns>The shift value</returns>
+    static int CalculateBlockShift(uint blockSize)
+    {
+        var shift = 0;
 
-    /// <summary>Size of the fixed part of an Object structure (before name and comment)</summary>
-    const int OBJECT_SIZE = 25;
+        while(1u << shift < blockSize) shift++;
 
-    const string FS_TYPE = "sfs";
+        return shift;
+    }
 }
