@@ -91,13 +91,12 @@ public sealed partial class PascalPlugin
         if(volEntry.FirstBlock != 0) return false;
 
         // Last volume record block must be after first block, and before end of device
-        if(volEntry.LastBlock <= volEntry.FirstBlock ||
+        if(volEntry.LastBlock        <= volEntry.FirstBlock ||
            (ulong)volEntry.LastBlock > imagePlugin.Info.Sectors / _multiplier - 2)
             return false;
 
         // Volume record entry type must be volume or secure
-        if(volEntry.EntryType != PascalFileKind.Volume && volEntry.EntryType != PascalFileKind.Secure)
-            return false;
+        if(volEntry.EntryType != PascalFileKind.Volume && volEntry.EntryType != PascalFileKind.Secure) return false;
 
         // Volume name is max 7 characters
         if(volEntry.VolumeName?[0] > 7) return false;
@@ -143,6 +142,9 @@ public sealed partial class PascalPlugin
             if(!IsValidVolumeEntry(volEntry, imagePlugin)) return;
         }
 
+        // Detect machine type based on endianness and sector size
+        MachineType machineType = DetectMachineType(bigEndian, imagePlugin.Info.SectorSize);
+
         sbInformation.AppendFormat(Localization.Volume_record_spans_from_block_0_to_block_1,
                                    volEntry.FirstBlock,
                                    volEntry.LastBlock)
@@ -159,10 +161,11 @@ public sealed partial class PascalPlugin
            .AppendFormat(Localization.Volume_last_booted_on_0, DateHandlers.UcsdPascalToDateTime(volEntry.LastBoot))
            .AppendLine();
 
-        if(bigEndian)
-            sbInformation.AppendLine("Volume is big endian");
-        else
-            sbInformation.AppendLine("Volume is little endian");
+        // Report endianness
+        sbInformation.AppendLine(bigEndian ? "Volume is big endian" : "Volume is little endian");
+
+        // Report machine type
+        sbInformation.AppendFormat("Probable machine type: {0}", GetMachineTypeName(machineType)).AppendLine();
 
         information = sbInformation.ToString();
 
@@ -178,6 +181,54 @@ public sealed partial class PascalPlugin
             VolumeName  = StringHandlers.PascalToString(volEntry.VolumeName, encoding)
         };
     }
+
+    /// <summary>
+    ///     Detects the probable machine type based on endianness and sector size.
+    ///     Apple II (6502) uses 256-byte sectors, most others use 512-byte sectors.
+    /// </summary>
+    /// <param name="bigEndian">True if the volume is big endian</param>
+    /// <param name="sectorSize">Sector size in bytes</param>
+    /// <returns>The detected machine type</returns>
+    static MachineType DetectMachineType(bool bigEndian, uint sectorSize)
+    {
+        if(bigEndian)
+        {
+            // Big endian machines: Motorola 6800/6809, TI TMS9900, GA-16/440
+            // Without more information, we can only say it's a big-endian P-Code machine
+            return MachineType.PCodeBigEndian;
+        }
+
+        // Little endian machines
+        if(sectorSize == 256)
+        {
+            // 256-byte sectors strongly suggest Apple II (6502)
+            return MachineType.Mos6502;
+        }
+
+        // 512-byte sectors: could be PDP-11, Z80, 8080, or generic P-Code LE
+        // Without examining boot code, we can only say it's a little-endian P-Code machine
+        return MachineType.PCodeLittleEndian;
+    }
+
+    /// <summary>Gets a human-readable name for the machine type</summary>
+    /// <param name="machineType">The machine type</param>
+    /// <returns>Human-readable machine type name</returns>
+    static string GetMachineTypeName(MachineType machineType) => machineType switch
+                                                                 {
+                                                                     MachineType.Unknown => "Unknown",
+                                                                     MachineType.PCodeBigEndian =>
+                                                                         "P-Code (Big Endian) - possibly Motorola 6800/6809, TI TMS9900, or GA-16/440",
+                                                                     MachineType.PCodeLittleEndian =>
+                                                                         "P-Code (Little Endian) - possibly PDP-11, Z80, Intel 8080, or compatible",
+                                                                     MachineType.Pdp11 => "PDP-11 / LSI-11 / Terak",
+                                                                     MachineType.Intel8080 => "Intel 8080/8085",
+                                                                     MachineType.Z80 => "Zilog Z80",
+                                                                     MachineType.Mos6502 => "MOS 6502/65C02 (Apple II)",
+                                                                     MachineType.Motorola6800 => "Motorola 6800/6809",
+                                                                     MachineType.Ti9900 => "TI TMS9900 / TI-99/4",
+                                                                     MachineType.Ga440 => "GA-16/440",
+                                                                     _ => "Unknown"
+                                                                 };
 
 #endregion
 }

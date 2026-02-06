@@ -40,6 +40,35 @@ public sealed partial class PascalPlugin
 {
     const string FS_TYPE = "ucsd";
 
+#region Nested type: MachineType
+
+    /// <summary>UCSD Pascal machine/architecture type</summary>
+    enum MachineType
+    {
+        /// <summary>Unknown machine type</summary>
+        Unknown,
+        /// <summary>P-Code interpreter, big endian</summary>
+        PCodeBigEndian,
+        /// <summary>P-Code interpreter, little endian</summary>
+        PCodeLittleEndian,
+        /// <summary>PDP-11, LSI-11, Terak (little endian)</summary>
+        Pdp11,
+        /// <summary>Intel 8080/8085 (little endian)</summary>
+        Intel8080,
+        /// <summary>Zilog Z80 (little endian)</summary>
+        Z80,
+        /// <summary>MOS 6502/65C02, Apple II, KIM-1 (little endian)</summary>
+        Mos6502,
+        /// <summary>Motorola 6800/6809 (big endian)</summary>
+        Motorola6800,
+        /// <summary>TI TMS9900, TI-99/4 (big endian)</summary>
+        Ti9900,
+        /// <summary>GA-16/440 (big endian)</summary>
+        Ga440
+    }
+
+#endregion
+
 #region Nested type: PascalFileKind
 
     enum PascalFileKind : short
