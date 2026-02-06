@@ -7509,5 +7509,11 @@ namespace Aaru.Filesystems {
                 return ResourceManager.GetString("Root_mode_0", resourceCulture);
             }
         }
+        
+        internal static string Probable_machine_type_0 {
+            get {
+                return ResourceManager.GetString("Probable_machine_type_0", resourceCulture);
+            }
+        }
     }
 }

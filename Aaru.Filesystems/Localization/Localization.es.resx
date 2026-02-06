@@ -3746,4 +3746,13 @@
     <data name="Root_mode_0" xml:space="preserve">
         <value>Modo de la raíz: {0}</value>
     </data>
+    <data name="Volume_is_big_endian" xml:space="preserve">
+        <value>El volumen es big endian</value>
+    </data>
+    <data name="Volume_is_little_endian" xml:space="preserve">
+        <value>El volumen es little endian</value>
+    </data>
+    <data name="Probable_machine_type_0" xml:space="preserve">
+        <value>Tipo de máquina probable: {0}</value>
+    </data>
 </root>

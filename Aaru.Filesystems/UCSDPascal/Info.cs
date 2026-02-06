@@ -162,10 +162,10 @@ public sealed partial class PascalPlugin
            .AppendLine();
 
         // Report endianness
-        sbInformation.AppendLine(bigEndian ? "Volume is big endian" : "Volume is little endian");
+        sbInformation.AppendLine(bigEndian ? Localization.Volume_is_big_endian : Localization.Volume_is_little_endian);
 
         // Report machine type
-        sbInformation.AppendFormat("Probable machine type: {0}", GetMachineTypeName(machineType)).AppendLine();
+        sbInformation.AppendFormat(Localization.Probable_machine_type_0, GetMachineTypeName(machineType)).AppendLine();
 
         information = sbInformation.ToString();
 

@@ -3761,4 +3761,7 @@
     <data name="Root_mode_0" xml:space="preserve">
         <value>Root mode: {0}</value>
     </data>
+    <data name="Probable_machine_type_0" xml:space="preserve">
+        <value>Probable machine type: {0}</value>
+    </data>
 </root>
