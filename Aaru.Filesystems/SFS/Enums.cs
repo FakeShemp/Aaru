@@ -36,11 +36,38 @@ public sealed partial class SFS
 {
 #region Nested type: Flags
 
+    /// <summary>Root block flags</summary>
     [Flags]
     enum Flags : byte
     {
+        /// <summary>Files being deleted will first be moved to the Recycled directory</summary>
         RecycledFolder = 64,
-        CaseSensitive  = 128
+        /// <summary>Filesystem names are treated case insensitive</summary>
+        CaseSensitive = 128
+    }
+
+#endregion
+
+#region Nested type: ObjectBits
+
+    /// <summary>Object type bits</summary>
+    [Flags]
+    enum ObjectBits : byte
+    {
+        /// <summary>Object won't be returned by EXAMINE_NEXT or EXAMINE_ALL</summary>
+        Hidden = 1,
+        /// <summary>ACTION_DELETE_OBJECT will return an error for this object</summary>
+        Undeletable = 2,
+        /// <summary>Entries are added at the start of the directory without checking for room elsewhere</summary>
+        QuickDir = 4,
+        /// <summary>Ring list (partially implemented, not very useful)</summary>
+        RingList = 8,
+        /// <summary>Object is a hard link</summary>
+        HardLink = 32,
+        /// <summary>Object is a soft link (when set and HardLink is clear)</summary>
+        Link = 64,
+        /// <summary>Object is a directory</summary>
+        Directory = 128
     }
 
 #endregion
