@@ -346,6 +346,35 @@ public static class DateHandlers
     /// <returns>.NET DateTime</returns>
     public static DateTime UnixHrTimeToDateTime(ulong hrTimeStamp) => _unixEpoch.AddTicks((long)(hrTimeStamp / 100));
 
+    /// <summary>Converts a ProDOS timestamp to .NET DateTime</summary>
+    /// <param name="date">ProDOS date value</param>
+    /// <param name="time">ProDOS time value</param>
+    /// <returns>.NET DateTime</returns>
+    public static DateTime ProDosToDateTime(ushort date, ushort time)
+    {
+        try
+        {
+            var tempTimestamp = (uint)((date << 16) + time);
+            var year          = (int)((tempTimestamp & 0xFE000000) >> 25);
+            var month         = (int)((tempTimestamp & 0x1E00000)  >> 21);
+            var day           = (int)((tempTimestamp & 0x1F0000)   >> 16);
+            var hour          = (int)((tempTimestamp & 0x1F00)     >> 8);
+            var minute        = (int)(tempTimestamp & 0x3F);
+
+            year += 1900;
+
+            if(year < 1940) year += 100;
+
+            if(month < 1 || month > 12 || day < 1 || day > 31) return DateTime.MinValue;
+
+            return new DateTime(year, month, day, hour, minute, 0);
+        }
+        catch(ArgumentOutOfRangeException)
+        {
+            return DateTime.MinValue;
+        }
+    }
+
     /// <summary>Converts an OS-9 timestamp to .NET DateTime</summary>
     /// <param name="date">OS-9 timestamp</param>
     /// <returns>.NET DateTime</returns>
