@@ -31,6 +31,8 @@
 // ****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
@@ -58,7 +60,10 @@ public sealed partial class PascalPlugin
 
 #region Nested type: PascalFileEntry
 
-    struct PascalFileEntry
+    /// <summary>UCSD Pascal directory file entry (26 bytes)</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct PascalFileEntry
     {
         /// <summary>0x00, first block of file</summary>
         public short FirstBlock;
@@ -66,7 +71,8 @@ public sealed partial class PascalPlugin
         public short LastBlock;
         /// <summary>0x04, entry type</summary>
         public PascalFileKind EntryType;
-        /// <summary>0x06, file name</summary>
+        /// <summary>0x06, file name (Pascal string: first byte is length, followed by up to 15 characters)</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] Filename;
         /// <summary>0x16, bytes used in last block</summary>
         public short LastBytes;
@@ -100,23 +106,27 @@ public sealed partial class PascalPlugin
 
 #region Nested type: PascalVolumeEntry
 
-    struct PascalVolumeEntry
+    /// <summary>UCSD Pascal volume directory entry (26 bytes)</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct PascalVolumeEntry
     {
-        /// <summary>0x00, first block of volume entry</summary>
+        /// <summary>0x00, first block of volume entry (always 0)</summary>
         public short FirstBlock;
         /// <summary>0x02, last block of volume entry</summary>
         public short LastBlock;
-        /// <summary>0x04, entry type</summary>
+        /// <summary>0x04, entry type (Volume or Secure)</summary>
         public PascalFileKind EntryType;
-        /// <summary>0x06, volume name</summary>
+        /// <summary>0x06, volume name (Pascal string: first byte is length, followed by up to 7 characters)</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
         public byte[] VolumeName;
-        /// <summary>0x0E, block in volume</summary>
+        /// <summary>0x0E, blocks in volume</summary>
         public short Blocks;
         /// <summary>0x10, files in volume</summary>
         public short Files;
-        /// <summary>0x12, dummy</summary>
+        /// <summary>0x12, dummy/reserved</summary>
         public short Dummy;
-        /// <summary>0x14, last booted</summary>
+        /// <summary>0x14, last boot date</summary>
         public short LastBoot;
         /// <summary>0x16, tail to make record same size as <see cref="PascalFileEntry" /></summary>
         public int Tail;
