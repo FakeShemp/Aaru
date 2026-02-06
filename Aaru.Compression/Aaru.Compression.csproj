@@ -49,10 +49,11 @@
     <Compile Include="HaStream.cs"/>
     <Compile Include="Lh5Stream.cs"/>
     <Compile Include="LzdStream.cs"/>
-    <Compile Include="LZ4.cs" />
+    <Compile Include="LZ4.cs"/>
     <Compile Include="LZFSE.cs"/>
     <Compile Include="LZIP.cs"/>
     <Compile Include="LZMA.cs"/>
+    <Compile Include="LZVN.cs"/>
     <Compile Include="Native.cs"/>
     <Compile Include="Pak\CrushStream.cs"/>
     <Compile Include="Pak\DistillStream.cs"/>
