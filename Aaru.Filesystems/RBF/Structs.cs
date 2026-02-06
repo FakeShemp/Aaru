@@ -32,7 +32,6 @@ using Aaru.CommonTypes.Attributes;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Locus filesystem</summary>
 public sealed partial class RBF
 {
 #region Nested type: IdSector

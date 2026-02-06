@@ -1,8 +1,8 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Consts.cs
+// Filename       : Unsupported.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Random Block File filesystem plugin
@@ -26,14 +26,31 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
+using Aaru.CommonTypes.Enums;
+
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
+/// <summary>Implements the Random Block File filesystem</summary>
 public sealed partial class RBF
 {
-    /// <summary>Magic number for OS-9. Same for OS-9000?</summary>
-    const uint RBF_SYNC = 0x4372757A;
-    const uint RBF_CNYS = 0x7A757243;
+    /// <inheritdoc />
+    public ErrorNumber ListXAttr(string path, out List<string> xattrs)
+    {
+        xattrs = [];
 
-    const string FS_TYPE = "rbf";
+        return ErrorNumber.NotSupported;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => ErrorNumber.NotSupported;
+
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        return ErrorNumber.NotSupported;
+    }
 }

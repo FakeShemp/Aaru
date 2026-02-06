@@ -27,15 +27,24 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Locus filesystem</summary>
-public sealed partial class RBF : IFilesystem
+/// <summary>Implements the Random Block File filesystem</summary>
+public sealed partial class RBF : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "RBF plugin";
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
 #region IFilesystem Members
 
