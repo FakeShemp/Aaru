@@ -60,35 +60,35 @@ public sealed partial class ProDOSPlugin
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     struct VolumeDirectoryHeader
     {
-        /// <summary>Storage type (0xF0) and name length Offset 0x00, 1 byte</summary>
+        /// <summary>Storage type (0xF0) and name length. Offset 0x00, 1 byte</summary>
         public byte storage_type_name_length;
-        /// <summary>Volume name Offset 0x01, 15 bytes</summary>
+        /// <summary>Volume name. Offset 0x01, 15 bytes</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 15)]
         public byte[] volume_name;
-        /// <summary>Reserved Offset 0x10, 6 bytes</summary>
+        /// <summary>Reserved. Offset 0x10, 6 bytes</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
         public byte[] reserved;
-        /// <summary>GS/OS case bits for volume name Offset 0x16, 2 bytes</summary>
+        /// <summary>GS/OS case bits for volume name. Offset 0x16, 2 bytes</summary>
         public ushort case_bits;
-        /// <summary>Creation date Offset 0x18, 2 bytes</summary>
+        /// <summary>Creation date. Offset 0x18, 2 bytes</summary>
         public ushort creation_date;
-        /// <summary>Creation time Offset 0x1A, 2 bytes</summary>
+        /// <summary>Creation time. Offset 0x1A, 2 bytes</summary>
         public ushort creation_time;
-        /// <summary>Version Offset 0x1C, 1 byte</summary>
+        /// <summary>Version. Offset 0x1C, 1 byte</summary>
         public byte version;
-        /// <summary>Minimum version Offset 0x1D, 1 byte</summary>
+        /// <summary>Minimum version. Offset 0x1D, 1 byte</summary>
         public byte min_version;
-        /// <summary>Access flags Offset 0x1E, 1 byte</summary>
+        /// <summary>Access flags. Offset 0x1E, 1 byte</summary>
         public byte access;
-        /// <summary>Entry length (always 0x27) Offset 0x1F, 1 byte</summary>
+        /// <summary>Entry length (always 0x27). Offset 0x1F, 1 byte</summary>
         public byte entry_length;
-        /// <summary>Entries per block (always 0x0D) Offset 0x20, 1 byte</summary>
+        /// <summary>Entries per block (always 0x0D). Offset 0x20, 1 byte</summary>
         public byte entries_per_block;
-        /// <summary>Number of active entries Offset 0x21, 2 bytes</summary>
+        /// <summary>Number of active entries. Offset 0x21, 2 bytes</summary>
         public ushort entry_count;
-        /// <summary>Bitmap start block Offset 0x23, 2 bytes</summary>
+        /// <summary>Bitmap start block. Offset 0x23, 2 bytes</summary>
         public ushort bitmap_block;
-        /// <summary>Total blocks on volume Offset 0x25, 2 bytes</summary>
+        /// <summary>Total blocks on volume. Offset 0x25, 2 bytes</summary>
         public ushort total_blocks;
     }
 

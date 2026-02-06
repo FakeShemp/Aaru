@@ -31,8 +31,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -44,6 +46,26 @@ namespace Aaru.Filesystems;
 public sealed partial class ProDOSPlugin : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "ProDOS plugin";
+
+    // Instance fields for mounted filesystem state
+    IMediaImage _imagePlugin;
+    Partition   _partition;
+    Encoding    _encoding;
+    bool        _mounted;
+
+    // Volume directory header (superblock equivalent)
+    DirectoryBlockHeader  _rootDirBlockHeader;
+    VolumeDirectoryHeader _volumeHeader;
+    string                _volumeName;
+    DateTime              _creationTime;
+
+    // Filesystem parameters
+    uint   _multiplier;  // 2 for 256-byte sectors, 1 for 512-byte sectors
+    ushort _bitmapBlock; // Start of volume bitmap
+    ushort _totalBlocks; // Total blocks on volume
+
+    // Root directory cache
+    Dictionary<string, CachedEntry> _rootDirectoryCache;
 
 #region IFilesystem Members
 
