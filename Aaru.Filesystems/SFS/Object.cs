@@ -223,4 +223,35 @@ public sealed partial class SFS
             if(offset < 0) break;
         }
     }
+
+    /// <summary>Parses objects in a container and adds them to a dictionary</summary>
+    /// <param name="containerData">The container data</param>
+    /// <param name="entries">Dictionary to add entries to</param>
+    void ParseObjectContainerToDict(byte[] containerData, Dictionary<string, uint> entries)
+    {
+        // Start after the ObjectContainer header: header(12) + parent(4) + next(4) + previous(4) = 24 bytes
+        var offset    = 24;
+        int endOffset = (int)_blockSize - OBJECT_SIZE - 2;
+
+        while(offset < endOffset && offset < containerData.Length - 25)
+        {
+            // Check if there's a valid object (name[0] != 0)
+            int nameOffset = offset + 25;
+
+            if(nameOffset >= containerData.Length || containerData[nameOffset] == 0) break;
+
+            // Read object node number
+            var objectNode = BigEndianBitConverter.ToUInt32(containerData, offset + 4);
+
+            // Read name
+            string name = ReadObjectName(containerData, offset);
+
+            if(!string.IsNullOrEmpty(name) && !entries.ContainsKey(name)) entries[name] = objectNode;
+
+            // Move to next object
+            offset = GetNextObjectOffset(containerData, offset);
+
+            if(offset < 0) break;
+        }
+    }
 }
