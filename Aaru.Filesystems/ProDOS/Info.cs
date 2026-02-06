@@ -172,41 +172,40 @@ public sealed partial class ProDOSPlugin
             }
         }
 
-        var rootDirectoryKeyBlock = new RootDirectoryKeyBlock
-        {
-            header       = new RootDirectoryHeader(),
-            zero         = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x00),
-            next_pointer = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x02)
-        };
+        var rootDirectoryKeyBlock = new VolumeDirectoryHeader();
 
-        rootDirectoryKeyBlock.header.storage_type = (byte)((rootDirectoryKeyBlockBytes[0x04] & STORAGE_TYPE_MASK) >> 4);
+        // Skip the 4-byte directory block header (prev/next pointers)
+        rootDirectoryKeyBlock.storage_type_name_length = rootDirectoryKeyBlockBytes[0x04];
 
-        rootDirectoryKeyBlock.header.name_length = (byte)(rootDirectoryKeyBlockBytes[0x04] & NAME_LENGTH_MASK);
-        var temporal = new byte[rootDirectoryKeyBlock.header.name_length];
-        Array.Copy(rootDirectoryKeyBlockBytes, 0x05, temporal, 0, rootDirectoryKeyBlock.header.name_length);
-        rootDirectoryKeyBlock.header.volume_name = encoding.GetString(temporal);
-        rootDirectoryKeyBlock.header.reserved    = BitConverter.ToUInt64(rootDirectoryKeyBlockBytes, 0x14);
+        var nameLength = (byte)(rootDirectoryKeyBlock.storage_type_name_length & NAME_LENGTH_MASK);
+        var temporal   = new byte[nameLength];
+        Array.Copy(rootDirectoryKeyBlockBytes, 0x05, temporal, 0, nameLength);
+        string volumeName = encoding.GetString(temporal);
 
-        var tempTimestampLeft  = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x1C);
-        var tempTimestampRight = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x1E);
+        rootDirectoryKeyBlock.case_bits     = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x16);
+        rootDirectoryKeyBlock.creation_date = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x18);
+        rootDirectoryKeyBlock.creation_time = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x1A);
 
-        bool dateCorrect;
+        bool     dateCorrect;
+        DateTime creationTime = DateTime.MinValue;
 
         try
         {
-            var tempTimestamp = (uint)((tempTimestampLeft << 16) + tempTimestampRight);
-            var year          = (int)((tempTimestamp & YEAR_MASK)  >> 25);
-            var month         = (int)((tempTimestamp & MONTH_MASK) >> 21);
-            var day           = (int)((tempTimestamp & DAY_MASK)   >> 16);
-            var hour          = (int)((tempTimestamp & HOUR_MASK)  >> 8);
-            var minute        = (int)(tempTimestamp & MINUTE_MASK);
+            var tempTimestamp =
+                (uint)((rootDirectoryKeyBlock.creation_date << 16) + rootDirectoryKeyBlock.creation_time);
+
+            var year   = (int)((tempTimestamp & YEAR_MASK)  >> 25);
+            var month  = (int)((tempTimestamp & MONTH_MASK) >> 21);
+            var day    = (int)((tempTimestamp & DAY_MASK)   >> 16);
+            var hour   = (int)((tempTimestamp & HOUR_MASK)  >> 8);
+            var minute = (int)(tempTimestamp & MINUTE_MASK);
             year += 1900;
 
             if(year < 1940) year += 100;
 
-            AaruLogging.Debug(MODULE_NAME, "temp_timestamp_left = 0x{0:X4}",  tempTimestampLeft);
-            AaruLogging.Debug(MODULE_NAME, "temp_timestamp_right = 0x{0:X4}", tempTimestampRight);
-            AaruLogging.Debug(MODULE_NAME, "temp_timestamp = 0x{0:X8}",       tempTimestamp);
+            AaruLogging.Debug(MODULE_NAME, "creation_date = 0x{0:X4}",  rootDirectoryKeyBlock.creation_date);
+            AaruLogging.Debug(MODULE_NAME, "creation_time = 0x{0:X4}",  rootDirectoryKeyBlock.creation_time);
+            AaruLogging.Debug(MODULE_NAME, "temp_timestamp = 0x{0:X8}", tempTimestamp);
 
             AaruLogging.Debug(MODULE_NAME,
                               Localization.Datetime_field_year_0_month_1_day_2_hour_3_minute_4,
@@ -216,23 +215,23 @@ public sealed partial class ProDOSPlugin
                               hour,
                               minute);
 
-            rootDirectoryKeyBlock.header.creation_time = new DateTime(year, month, day, hour, minute, 0);
-            dateCorrect                                = true;
+            creationTime = new DateTime(year, month, day, hour, minute, 0);
+            dateCorrect  = true;
         }
         catch(ArgumentOutOfRangeException)
         {
             dateCorrect = false;
         }
 
-        rootDirectoryKeyBlock.header.version           = rootDirectoryKeyBlockBytes[0x20];
-        rootDirectoryKeyBlock.header.min_version       = rootDirectoryKeyBlockBytes[0x21];
-        rootDirectoryKeyBlock.header.access            = rootDirectoryKeyBlockBytes[0x22];
-        rootDirectoryKeyBlock.header.entry_length      = rootDirectoryKeyBlockBytes[0x23];
-        rootDirectoryKeyBlock.header.entries_per_block = rootDirectoryKeyBlockBytes[0x24];
+        rootDirectoryKeyBlock.version           = rootDirectoryKeyBlockBytes[0x1C];
+        rootDirectoryKeyBlock.min_version       = rootDirectoryKeyBlockBytes[0x1D];
+        rootDirectoryKeyBlock.access            = rootDirectoryKeyBlockBytes[0x1E];
+        rootDirectoryKeyBlock.entry_length      = rootDirectoryKeyBlockBytes[0x1F];
+        rootDirectoryKeyBlock.entries_per_block = rootDirectoryKeyBlockBytes[0x20];
 
-        rootDirectoryKeyBlock.header.file_count      = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x25);
-        rootDirectoryKeyBlock.header.bit_map_pointer = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x27);
-        rootDirectoryKeyBlock.header.total_blocks    = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x29);
+        rootDirectoryKeyBlock.entry_count  = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x21);
+        rootDirectoryKeyBlock.bitmap_block = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x23);
+        rootDirectoryKeyBlock.total_blocks = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x25);
 
         if(apmFromHddOnCd)
         {
@@ -240,87 +239,81 @@ public sealed partial class ProDOSPlugin
                          .AppendLine();
         }
 
-        if(rootDirectoryKeyBlock.header.version != VERSION1 || rootDirectoryKeyBlock.header.min_version != VERSION1)
+        if(rootDirectoryKeyBlock.version != VERSION1 || rootDirectoryKeyBlock.min_version != VERSION1)
         {
             sbInformation.AppendLine(Localization.Warning_Detected_unknown_ProDOS_version_ProDOS_filesystem);
             sbInformation.AppendLine(Localization.All_of_the_following_information_may_be_incorrect);
         }
 
-        if(rootDirectoryKeyBlock.header.version == VERSION1)
+        if(rootDirectoryKeyBlock.version == VERSION1)
             sbInformation.AppendLine(Localization.ProDOS_version_one_used_to_create_this_volume);
         else
         {
             sbInformation.AppendFormat(Localization.Unknown_ProDOS_version_with_field_0_used_to_create_this_volume,
-                                       rootDirectoryKeyBlock.header.version)
+                                       rootDirectoryKeyBlock.version)
                          .AppendLine();
         }
 
-        if(rootDirectoryKeyBlock.header.min_version == VERSION1)
+        if(rootDirectoryKeyBlock.min_version == VERSION1)
             sbInformation.AppendLine(Localization.ProDOS_version_one_at_least_required_for_reading_this_volume);
         else
         {
             sbInformation
                .AppendFormat(Localization
                                 .Unknown_ProDOS_version_with_field_0_is_at_least_required_for_reading_this_volume,
-                             rootDirectoryKeyBlock.header.min_version)
+                             rootDirectoryKeyBlock.min_version)
                .AppendLine();
         }
 
-        sbInformation.AppendFormat(Localization.Volume_name_is_0, rootDirectoryKeyBlock.header.volume_name)
-                     .AppendLine();
+        sbInformation.AppendFormat(Localization.Volume_name_is_0, volumeName).AppendLine();
 
         if(dateCorrect)
         {
-            sbInformation.AppendFormat(Localization.Volume_created_on_0, rootDirectoryKeyBlock.header.creation_time)
-                         .AppendLine();
+            sbInformation.AppendFormat(Localization.Volume_created_on_0, creationTime).AppendLine();
         }
 
-        sbInformation.AppendFormat(Localization._0_bytes_per_directory_entry, rootDirectoryKeyBlock.header.entry_length)
+        sbInformation.AppendFormat(Localization._0_bytes_per_directory_entry, rootDirectoryKeyBlock.entry_length)
                      .AppendLine();
 
-        sbInformation.AppendFormat(Localization._0_entries_per_directory_block,
-                                   rootDirectoryKeyBlock.header.entries_per_block)
+        sbInformation.AppendFormat(Localization._0_entries_per_directory_block, rootDirectoryKeyBlock.entries_per_block)
                      .AppendLine();
 
-        sbInformation.AppendFormat(Localization._0_files_in_root_directory, rootDirectoryKeyBlock.header.file_count)
+        sbInformation.AppendFormat(Localization._0_files_in_root_directory, rootDirectoryKeyBlock.entry_count)
                      .AppendLine();
 
-        sbInformation.AppendFormat(Localization._0_blocks_in_volume, rootDirectoryKeyBlock.header.total_blocks)
+        sbInformation.AppendFormat(Localization._0_blocks_in_volume, rootDirectoryKeyBlock.total_blocks).AppendLine();
+
+        sbInformation.AppendFormat(Localization.Bitmap_starts_at_block_0, rootDirectoryKeyBlock.bitmap_block)
                      .AppendLine();
 
-        sbInformation.AppendFormat(Localization.Bitmap_starts_at_block_0, rootDirectoryKeyBlock.header.bit_map_pointer)
-                     .AppendLine();
-
-        if((rootDirectoryKeyBlock.header.access & READ_ATTRIBUTE) == READ_ATTRIBUTE)
+        if((rootDirectoryKeyBlock.access & READ_ATTRIBUTE) == READ_ATTRIBUTE)
             sbInformation.AppendLine(Localization.Volume_can_be_read);
 
-        if((rootDirectoryKeyBlock.header.access & WRITE_ATTRIBUTE) == WRITE_ATTRIBUTE)
+        if((rootDirectoryKeyBlock.access & WRITE_ATTRIBUTE) == WRITE_ATTRIBUTE)
             sbInformation.AppendLine(Localization.Volume_can_be_written);
 
-        if((rootDirectoryKeyBlock.header.access & RENAME_ATTRIBUTE) == RENAME_ATTRIBUTE)
+        if((rootDirectoryKeyBlock.access & RENAME_ATTRIBUTE) == RENAME_ATTRIBUTE)
             sbInformation.AppendLine(Localization.Volume_can_be_renamed);
 
-        if((rootDirectoryKeyBlock.header.access & DESTROY_ATTRIBUTE) == DESTROY_ATTRIBUTE)
+        if((rootDirectoryKeyBlock.access & DESTROY_ATTRIBUTE) == DESTROY_ATTRIBUTE)
             sbInformation.AppendLine(Localization.Volume_can_be_destroyed);
 
-        if((rootDirectoryKeyBlock.header.access & BACKUP_ATTRIBUTE) == BACKUP_ATTRIBUTE)
+        if((rootDirectoryKeyBlock.access & BACKUP_ATTRIBUTE) == BACKUP_ATTRIBUTE)
             sbInformation.AppendLine(Localization.Volume_must_be_backed_up);
 
         // TODO: Fix mask
-        if((rootDirectoryKeyBlock.header.access & RESERVED_ATTRIBUTE_MASK) != 0)
+        if((rootDirectoryKeyBlock.access & RESERVED_ATTRIBUTE_MASK) != 0)
         {
-            AaruLogging.Debug(MODULE_NAME,
-                              Localization.Reserved_attributes_are_set_0,
-                              rootDirectoryKeyBlock.header.access);
+            AaruLogging.Debug(MODULE_NAME, Localization.Reserved_attributes_are_set_0, rootDirectoryKeyBlock.access);
         }
 
         information = sbInformation.ToString();
 
         metadata = new FileSystem
         {
-            VolumeName = rootDirectoryKeyBlock.header.volume_name,
-            Files      = rootDirectoryKeyBlock.header.file_count,
-            Clusters   = rootDirectoryKeyBlock.header.total_blocks,
+            VolumeName = volumeName,
+            Files      = rootDirectoryKeyBlock.entry_count,
+            Clusters   = rootDirectoryKeyBlock.total_blocks,
             Type       = FS_TYPE
         };
 
@@ -329,7 +322,7 @@ public sealed partial class ProDOSPlugin
 
         if(!dateCorrect) return;
 
-        metadata.CreationDate = rootDirectoryKeyBlock.header.creation_time;
+        metadata.CreationDate = creationTime;
     }
 
 #endregion
