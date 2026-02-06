@@ -35,9 +35,11 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.Helpers;
 using Aaru.Logging;
 using Claunia.Encoding;
 using Encoding = System.Text.Encoding;
+using Marshal = Aaru.Helpers.Marshal;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -171,66 +173,22 @@ public sealed partial class ProDOSPlugin
             }
         }
 
-        var rootDirectoryKeyBlock = new VolumeDirectoryHeader();
+        // Read volume directory header using marshalling (starts at offset 4, after block header)
+        VolumeDirectoryHeader rootDirectoryKeyBlock =
+            Marshal.ByteArrayToStructureLittleEndian<VolumeDirectoryHeader>(rootDirectoryKeyBlockBytes,
+                                                                            4,
+                                                                            System.Runtime.InteropServices.Marshal
+                                                                               .SizeOf<VolumeDirectoryHeader>());
 
-        // Skip the 4-byte directory block header (prev/next pointers)
-        rootDirectoryKeyBlock.storage_type_name_length = rootDirectoryKeyBlockBytes[0x04];
+        var    nameLength = (byte)(rootDirectoryKeyBlock.storage_type_name_length & NAME_LENGTH_MASK);
+        string volumeName = encoding.GetString(rootDirectoryKeyBlock.volume_name, 0, nameLength);
 
-        var nameLength = (byte)(rootDirectoryKeyBlock.storage_type_name_length & NAME_LENGTH_MASK);
-        var temporal   = new byte[nameLength];
-        Array.Copy(rootDirectoryKeyBlockBytes, 0x05, temporal, 0, nameLength);
-        string volumeName = encoding.GetString(temporal);
+        bool dateCorrect;
 
-        rootDirectoryKeyBlock.case_bits     = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x16);
-        rootDirectoryKeyBlock.creation_date = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x18);
-        rootDirectoryKeyBlock.creation_time = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x1A);
+        DateTime creationTime = DateHandlers.ProDosToDateTime(rootDirectoryKeyBlock.creation_date,
+                                                              rootDirectoryKeyBlock.creation_time);
 
-        bool     dateCorrect;
-        DateTime creationTime = DateTime.MinValue;
-
-        try
-        {
-            var tempTimestamp =
-                (uint)((rootDirectoryKeyBlock.creation_date << 16) + rootDirectoryKeyBlock.creation_time);
-
-            var year   = (int)((tempTimestamp & YEAR_MASK)  >> 25);
-            var month  = (int)((tempTimestamp & MONTH_MASK) >> 21);
-            var day    = (int)((tempTimestamp & DAY_MASK)   >> 16);
-            var hour   = (int)((tempTimestamp & HOUR_MASK)  >> 8);
-            var minute = (int)(tempTimestamp & MINUTE_MASK);
-            year += 1900;
-
-            if(year < 1940) year += 100;
-
-            AaruLogging.Debug(MODULE_NAME, "creation_date = 0x{0:X4}",  rootDirectoryKeyBlock.creation_date);
-            AaruLogging.Debug(MODULE_NAME, "creation_time = 0x{0:X4}",  rootDirectoryKeyBlock.creation_time);
-            AaruLogging.Debug(MODULE_NAME, "temp_timestamp = 0x{0:X8}", tempTimestamp);
-
-            AaruLogging.Debug(MODULE_NAME,
-                              Localization.Datetime_field_year_0_month_1_day_2_hour_3_minute_4,
-                              year,
-                              month,
-                              day,
-                              hour,
-                              minute);
-
-            creationTime = new DateTime(year, month, day, hour, minute, 0);
-            dateCorrect  = true;
-        }
-        catch(ArgumentOutOfRangeException)
-        {
-            dateCorrect = false;
-        }
-
-        rootDirectoryKeyBlock.version           = rootDirectoryKeyBlockBytes[0x1C];
-        rootDirectoryKeyBlock.min_version       = rootDirectoryKeyBlockBytes[0x1D];
-        rootDirectoryKeyBlock.access            = rootDirectoryKeyBlockBytes[0x1E];
-        rootDirectoryKeyBlock.entry_length      = rootDirectoryKeyBlockBytes[0x1F];
-        rootDirectoryKeyBlock.entries_per_block = rootDirectoryKeyBlockBytes[0x20];
-
-        rootDirectoryKeyBlock.entry_count  = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x21);
-        rootDirectoryKeyBlock.bitmap_block = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x23);
-        rootDirectoryKeyBlock.total_blocks = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x25);
+        dateCorrect = creationTime != DateTime.MinValue;
 
         if(apmFromHddOnCd)
         {
