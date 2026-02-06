@@ -199,6 +199,7 @@ Fully supported file-systems (identify and extraction)
 * Apple Hierarchical File System (HFS)
 * Apple Hierarchical File System+ (HFS+)
 * Apple Macintosh File System (MFS)
+* Apple ProDOS / SOS file system
 * AtheOS file system
 * BeOS filesystem
 * BeOS (old) filesystem
@@ -230,7 +231,6 @@ Supported file systems for identification and information only
 * Alexander Osipov DOS (AO-DOS for Electronika BK-0011) file system
 * Amiga Fast File System v2, untested
 * Apple File System (preliminary detection until on-disk layout is stable)
-* Apple ProDOS / SOS file system
 * BSD Fast File System (FFS) / Unix File System (UFS)
 * BSD Unix File System 2 (UFS2)
 * B-tree file system (btrfs)
