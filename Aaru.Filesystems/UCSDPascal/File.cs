@@ -66,6 +66,28 @@ public sealed partial class PascalPlugin
     }
 
     /// <summary>
+    ///     Calculates the accurate file size for a UCSD Pascal file entry.
+    ///     Size = (LastBlock - FirstBlock - 1) * BlockSize + LastBytes
+    ///     LastBytes ranges from 1-512; a value of 0 is treated as 512 (full block).
+    /// </summary>
+    /// <param name="entry">The file entry</param>
+    /// <returns>File size in bytes</returns>
+    long GetFileSize(PascalFileEntry entry)
+    {
+        // Handle edge case: if FirstBlock >= LastBlock, file is empty
+        if(entry.FirstBlock >= entry.LastBlock) return 0;
+
+        long blockSize = _device.Info.SectorSize * _multiplier;
+
+        // LastBytes should be 1-512; 0 is invalid but treated as 512 (full block used)
+        int lastBytes = entry.LastBytes;
+
+        if(lastBytes <= 0 || lastBytes > 512) lastBytes = 512;
+
+        return (entry.LastBlock - entry.FirstBlock - 1) * blockSize + lastBytes;
+    }
+
+    /// <summary>
     ///     Decodes UCSD Pascal text format to standard text format.
     ///     UCSD Pascal text files use:
     ///     - An optional 1KB header used by the text editor (skipped if present)
@@ -237,8 +259,8 @@ public sealed partial class PascalPlugin
 
             if(error != ErrorNumber.NoError) return error;
 
-            file = new byte[(entry.LastBlock - entry.FirstBlock - 1) * _device.Info.SectorSize * _multiplier +
-                            entry.LastBytes];
+            long fileSize = GetFileSize(entry);
+            file = new byte[fileSize];
 
             Array.Copy(tmp, 0, file, 0, file.Length);
 
@@ -333,12 +355,12 @@ public sealed partial class PascalPlugin
 
         stat = new FileEntryInfo
         {
-            Attributes = FileAttributes.File,
-            Blocks = entry.LastBlock - entry.FirstBlock,
-            BlockSize = _device.Info.SectorSize * _multiplier,
+            Attributes       = FileAttributes.File,
+            Blocks           = entry.LastBlock - entry.FirstBlock,
+            BlockSize        = _device.Info.SectorSize * _multiplier,
             LastWriteTimeUtc = DateHandlers.UcsdPascalToDateTime(entry.ModificationTime),
-            Length = (entry.LastBlock - entry.FirstBlock - 1) * _device.Info.SectorSize * _multiplier + entry.LastBytes,
-            Links = 1
+            Length           = GetFileSize(entry),
+            Links            = 1
         };
 
         return ErrorNumber.NoError;
