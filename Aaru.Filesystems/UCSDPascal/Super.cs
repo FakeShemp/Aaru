@@ -59,6 +59,9 @@ public sealed partial class PascalPlugin
 
         if(options.TryGetValue("debug", out string debugString)) bool.TryParse(debugString, out _debug);
 
+        if(options.TryGetValue("decode_text", out string decodeTextString))
+            bool.TryParse(decodeTextString, out _decodeText);
+
         if(_device.Info.Sectors < 3) return ErrorNumber.InvalidArgument;
 
         _multiplier = (uint)(imagePlugin.Info.SectorSize == 256 ? 2 : 1);
@@ -102,17 +105,19 @@ public sealed partial class PascalPlugin
         if(errno != ErrorNumber.NoError) return errno;
 
         const int entrySize = 26;
-        var       offset    = entrySize; // Skip first entry (volume entry)
+        int       offset    = entrySize; // Skip first entry (volume entry)
 
         _fileEntries = [];
 
         while(offset + entrySize <= _catalogBlocks.Length)
         {
             PascalFileEntry entry = _bigEndian
-                                        ? Marshal.ByteArrayToStructureBigEndian<PascalFileEntry>(_catalogBlocks, offset,
-                                             entrySize)
+                                        ? Marshal.ByteArrayToStructureBigEndian<PascalFileEntry>(_catalogBlocks,
+                                            offset,
+                                            entrySize)
                                         : Marshal.ByteArrayToStructureLittleEndian<PascalFileEntry>(_catalogBlocks,
-                                             offset, entrySize);
+                                            offset,
+                                            entrySize);
 
             if(entry.Filename?[0] <= 15 && entry.Filename?[0] > 0) _fileEntries.Add(entry);
 
@@ -147,13 +152,12 @@ public sealed partial class PascalPlugin
         if(volEntry.FirstBlock != 0) return false;
 
         // Last volume record block must be after first block, and before end of device
-        if(volEntry.LastBlock <= volEntry.FirstBlock ||
+        if(volEntry.LastBlock        <= volEntry.FirstBlock ||
            (ulong)volEntry.LastBlock > _device.Info.Sectors / _multiplier - 2)
             return false;
 
         // Volume record entry type must be volume or secure
-        if(volEntry.EntryType != PascalFileKind.Volume && volEntry.EntryType != PascalFileKind.Secure)
-            return false;
+        if(volEntry.EntryType != PascalFileKind.Volume && volEntry.EntryType != PascalFileKind.Secure) return false;
 
         // Volume name is max 7 characters
         if(volEntry.VolumeName?[0] > 7) return false;

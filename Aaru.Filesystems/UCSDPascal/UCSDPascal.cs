@@ -49,6 +49,7 @@ public sealed partial class PascalPlugin : IReadOnlyFilesystem
     byte[]                _bootBlocks;
     byte[]                _catalogBlocks;
     bool                  _debug;
+    bool                  _decodeText;
     IMediaImage           _device;
     Encoding              _encoding;
     List<PascalFileEntry> _fileEntries;
@@ -61,6 +62,9 @@ public sealed partial class PascalPlugin : IReadOnlyFilesystem
     {
         {
             "debug", false.ToString()
+        },
+        {
+            "decode_text", false.ToString()
         }
     };
 
@@ -98,7 +102,10 @@ public sealed partial class PascalPlugin : IReadOnlyFilesystem
     }
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions =>
+    [
+        ("decode_text", typeof(bool), "Decode UCSD Pascal text files to standard text format on read")
+    ];
 
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces => null;

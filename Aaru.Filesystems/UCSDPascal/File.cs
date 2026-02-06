@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System;
+using System.IO;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -39,6 +40,12 @@ namespace Aaru.Filesystems;
 // Information from Call-A.P.P.L.E. Pascal Disk Directory Structure
 public sealed partial class PascalPlugin
 {
+    /// <summary>DLE character used for space compression in UCSD Pascal text files</summary>
+    const byte DLE = 0x10;
+
+    /// <summary>Size of the optional text editor header in UCSD Pascal text files</summary>
+    const int TEXT_EDITOR_HEADER_SIZE = 1024;
+
     ErrorNumber GetFileEntry(string path, out PascalFileEntry entry)
     {
         entry = new PascalFileEntry();
@@ -56,6 +63,122 @@ public sealed partial class PascalPlugin
         }
 
         return ErrorNumber.NoSuchFile;
+    }
+
+    /// <summary>
+    ///     Decodes UCSD Pascal text format to standard text format.
+    ///     UCSD Pascal text files use:
+    ///     - An optional 1KB header used by the text editor (skipped if present)
+    ///     - DLE (0x10) followed by a byte for space compression (value - 32 = spaces to column)
+    ///     - CR (0x0D) as line terminator, converted to LF (0x0A)
+    ///     - NUL characters as padding (discarded)
+    /// </summary>
+    /// <param name="rawData">Raw UCSD Pascal text file data</param>
+    /// <returns>Decoded text as byte array</returns>
+    static byte[] DecodeUcsdText(byte[] rawData)
+    {
+        if(rawData == null || rawData.Length == 0) return rawData;
+
+        using var output = new MemoryStream();
+        var       offset = 0;
+
+        // Check if the file starts with a 1KB text editor header
+        // The header is binary data, so we detect it by checking if the first bytes are not text characters
+        if(rawData.Length >= TEXT_EDITOR_HEADER_SIZE && !IsTextBuffer(rawData, 0, Math.Min(16, rawData.Length)))
+            offset = TEXT_EDITOR_HEADER_SIZE;
+
+        var column   = 0;
+        var dleSeen  = false;
+        var nonWhite = false;
+
+        while(offset < rawData.Length)
+        {
+            byte c = rawData[offset++];
+
+            if(dleSeen)
+            {
+                dleSeen = false;
+
+                if(c < 32)
+                {
+                    // Invalid DLE sequence, treat DLE as normal character
+                    offset--;
+                    c = DLE;
+                }
+                else
+                {
+                    // DLE compression: value - 32 = target column position
+                    int targetColumn = c - 32;
+
+                    if(nonWhite)
+                    {
+                        // Insert spaces to reach target column
+                        for(int i = column; i < column + targetColumn; i++) output.WriteByte((byte)' ');
+                    }
+
+                    column += targetColumn;
+
+                    continue;
+                }
+            }
+
+            switch(c)
+            {
+                case 0x00:
+                    // NUL - padding, ignore
+                    break;
+
+                case 0x0D: // CR
+                case 0x0A: // LF
+                    output.WriteByte((byte)'\n');
+                    column   = 0;
+                    nonWhite = false;
+
+                    break;
+
+                case DLE:
+                    dleSeen = true;
+
+                    break;
+
+                default:
+                    if(!nonWhite)
+                    {
+                        // Output leading spaces
+                        for(var i = 0; i < column; i++) output.WriteByte((byte)' ');
+
+                        nonWhite = true;
+                    }
+
+                    output.WriteByte(c);
+                    column++;
+
+                    break;
+            }
+        }
+
+        return output.ToArray();
+    }
+
+    /// <summary>Checks if a buffer contains text characters (printable ASCII, whitespace, or DLE)</summary>
+    /// <param name="buffer">Buffer to check</param>
+    /// <param name="offset">Offset in buffer</param>
+    /// <param name="length">Number of bytes to check</param>
+    /// <returns>True if buffer appears to be text</returns>
+    static bool IsTextBuffer(byte[] buffer, int offset, int length)
+    {
+        // Skip trailing NUL padding
+        while(length > 0 && buffer[offset + length - 1] == 0) length--;
+
+        for(var i = 0; i < length; i++)
+        {
+            byte c = buffer[offset + i];
+
+            // Allow printable ASCII, whitespace, and DLE
+            if(c is not (>= 0x20 and <= 0x7E or 0x09 or 0x0A or 0x0D or DLE or 0x00)) return false;
+        }
+
+        return true;
     }
 
 #region IReadOnlyFilesystem Members
@@ -92,6 +215,7 @@ public sealed partial class PascalPlugin
         if(pathElements.Length != 1) return ErrorNumber.NotSupported;
 
         byte[] file;
+        var    isTextFile = false;
 
         if(_debug &&
            (string.Equals(path, "$",     StringComparison.InvariantCulture) ||
@@ -102,6 +226,8 @@ public sealed partial class PascalPlugin
             ErrorNumber error = GetFileEntry(path, out PascalFileEntry entry);
 
             if(error != ErrorNumber.NoError) return error;
+
+            isTextFile = entry.EntryType == PascalFileKind.Text;
 
             error = _device.ReadSectors((ulong)entry.FirstBlock * _multiplier,
                                         false,
@@ -115,6 +241,9 @@ public sealed partial class PascalPlugin
                             entry.LastBytes];
 
             Array.Copy(tmp, 0, file, 0, file.Length);
+
+            // Decode text file if option is enabled and file is a text file
+            if(_decodeText && isTextFile) file = DecodeUcsdText(file);
         }
 
         node = new PascalFileNode
@@ -208,7 +337,7 @@ public sealed partial class PascalPlugin
             Blocks = entry.LastBlock - entry.FirstBlock,
             BlockSize = _device.Info.SectorSize * _multiplier,
             LastWriteTimeUtc = DateHandlers.UcsdPascalToDateTime(entry.ModificationTime),
-            Length = (entry.LastBlock - entry.FirstBlock) * _device.Info.SectorSize * _multiplier + entry.LastBytes,
+            Length = (entry.LastBlock - entry.FirstBlock - 1) * _device.Info.SectorSize * _multiplier + entry.LastBytes,
             Links = 1
         };
 
