@@ -1129,6 +1129,12 @@
     <data name="Volume_last_booted_on_0" xml:space="preserve">
     <value>Volume last booted on {0}</value>
   </data>
+    <data name="Volume_is_big_endian" xml:space="preserve">
+    <value>Volume is big endian</value>
+  </data>
+    <data name="Volume_is_little_endian" xml:space="preserve">
+    <value>Volume is little endian</value>
+  </data>
     <data name="AcornADFS_Name" xml:space="preserve">
     <value>Acorn Advanced Disc Filing System</value>
   </data>

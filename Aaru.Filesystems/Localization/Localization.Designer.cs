@@ -2255,6 +2255,18 @@ namespace Aaru.Filesystems {
             }
         }
         
+        internal static string Volume_is_big_endian {
+            get {
+                return ResourceManager.GetString("Volume_is_big_endian", resourceCulture);
+            }
+        }
+        
+        internal static string Volume_is_little_endian {
+            get {
+                return ResourceManager.GetString("Volume_is_little_endian", resourceCulture);
+            }
+        }
+        
         internal static string AcornADFS_Name {
             get {
                 return ResourceManager.GetString("AcornADFS_Name", resourceCulture);

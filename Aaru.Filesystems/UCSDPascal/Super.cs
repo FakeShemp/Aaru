@@ -68,21 +68,18 @@ public sealed partial class PascalPlugin
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        // On Apple //, it's little endian
-        // TODO: Fix
-        //BigEndianBitConverter.IsLittleEndian =
-        //    multiplier == 2 ? !BitConverter.IsLittleEndian : BitConverter.IsLittleEndian;
+        // Try little endian first (Apple II), then big endian (other platforms)
+        _bigEndian = false;
 
-        _mountedVolEntry.FirstBlock = BigEndianBitConverter.ToInt16(_catalogBlocks, 0x00);
-        _mountedVolEntry.LastBlock  = BigEndianBitConverter.ToInt16(_catalogBlocks, 0x02);
-        _mountedVolEntry.EntryType  = (PascalFileKind)BigEndianBitConverter.ToInt16(_catalogBlocks, 0x04);
-        _mountedVolEntry.VolumeName = new byte[8];
-        Array.Copy(_catalogBlocks, 0x06, _mountedVolEntry.VolumeName, 0, 8);
-        _mountedVolEntry.Blocks   = BigEndianBitConverter.ToInt16(_catalogBlocks, 0x0E);
-        _mountedVolEntry.Files    = BigEndianBitConverter.ToInt16(_catalogBlocks, 0x10);
-        _mountedVolEntry.Dummy    = BigEndianBitConverter.ToInt16(_catalogBlocks, 0x12);
-        _mountedVolEntry.LastBoot = BigEndianBitConverter.ToInt16(_catalogBlocks, 0x14);
-        _mountedVolEntry.Tail     = BigEndianBitConverter.ToInt32(_catalogBlocks, 0x16);
+        if(!TryParseVolumeEntry(_catalogBlocks, false))
+        {
+            _bigEndian = true;
+
+            if(!TryParseVolumeEntry(_catalogBlocks, true)) return ErrorNumber.InvalidArgument;
+        }
+
+        // Parse the volume entry with the detected endianness
+        ParseVolumeEntry(_catalogBlocks, _bigEndian);
 
         if(_mountedVolEntry.FirstBlock       != 0                                                                     ||
            _mountedVolEntry.LastBlock        <= _mountedVolEntry.FirstBlock                                           ||
@@ -110,13 +107,25 @@ public sealed partial class PascalPlugin
         {
             var entry = new PascalFileEntry
             {
-                Filename         = new byte[16],
-                FirstBlock       = BigEndianBitConverter.ToInt16(_catalogBlocks, offset + 0x00),
-                LastBlock        = BigEndianBitConverter.ToInt16(_catalogBlocks, offset + 0x02),
-                EntryType        = (PascalFileKind)BigEndianBitConverter.ToInt16(_catalogBlocks, offset + 0x04),
-                LastBytes        = BigEndianBitConverter.ToInt16(_catalogBlocks, offset + 0x16),
-                ModificationTime = BigEndianBitConverter.ToInt16(_catalogBlocks, offset + 0x18)
+                Filename = new byte[16]
             };
+
+            if(_bigEndian)
+            {
+                entry.FirstBlock       = BigEndianBitConverter.ToInt16(_catalogBlocks, offset + 0x00);
+                entry.LastBlock        = BigEndianBitConverter.ToInt16(_catalogBlocks, offset + 0x02);
+                entry.EntryType        = (PascalFileKind)BigEndianBitConverter.ToInt16(_catalogBlocks, offset + 0x04);
+                entry.LastBytes        = BigEndianBitConverter.ToInt16(_catalogBlocks, offset + 0x16);
+                entry.ModificationTime = BigEndianBitConverter.ToInt16(_catalogBlocks, offset + 0x18);
+            }
+            else
+            {
+                entry.FirstBlock       = BitConverter.ToInt16(_catalogBlocks, offset + 0x00);
+                entry.LastBlock        = BitConverter.ToInt16(_catalogBlocks, offset + 0x02);
+                entry.EntryType        = (PascalFileKind)BitConverter.ToInt16(_catalogBlocks, offset + 0x04);
+                entry.LastBytes        = BitConverter.ToInt16(_catalogBlocks, offset + 0x16);
+                entry.ModificationTime = BitConverter.ToInt16(_catalogBlocks, offset + 0x18);
+            }
 
             Array.Copy(_catalogBlocks, offset + 0x06, entry.Filename, 0, 16);
 
@@ -142,6 +151,87 @@ public sealed partial class PascalPlugin
         _mounted = true;
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Tries to parse a volume entry with the specified endianness to check validity</summary>
+    /// <param name="data">Raw catalog data</param>
+    /// <param name="bigEndian">True for big endian, false for little endian</param>
+    /// <returns>True if the volume entry appears valid</returns>
+    bool TryParseVolumeEntry(byte[] data, bool bigEndian)
+    {
+        short firstBlock;
+        short lastBlock;
+        short entryType;
+        short blocks;
+        short files;
+
+        if(bigEndian)
+        {
+            firstBlock = BigEndianBitConverter.ToInt16(data, 0x00);
+            lastBlock  = BigEndianBitConverter.ToInt16(data, 0x02);
+            entryType  = BigEndianBitConverter.ToInt16(data, 0x04);
+            blocks     = BigEndianBitConverter.ToInt16(data, 0x0E);
+            files      = BigEndianBitConverter.ToInt16(data, 0x10);
+        }
+        else
+        {
+            firstBlock = BitConverter.ToInt16(data, 0x00);
+            lastBlock  = BitConverter.ToInt16(data, 0x02);
+            entryType  = BitConverter.ToInt16(data, 0x04);
+            blocks     = BitConverter.ToInt16(data, 0x0E);
+            files      = BitConverter.ToInt16(data, 0x10);
+        }
+
+        // First block is always 0
+        if(firstBlock != 0) return false;
+
+        // Last volume record block must be after first block, and before end of device
+        if(lastBlock <= firstBlock || (ulong)lastBlock > _device.Info.Sectors / _multiplier - 2) return false;
+
+        // Volume record entry type must be volume or secure
+        if((PascalFileKind)entryType != PascalFileKind.Volume && (PascalFileKind)entryType != PascalFileKind.Secure)
+            return false;
+
+        // Volume name is max 7 characters
+        if(data[0x06] > 7) return false;
+
+        // Volume blocks is equal to volume sectors
+        if(blocks < 0 || (ulong)blocks != _device.Info.Sectors / _multiplier) return false;
+
+        // There can be not less than zero files
+        return files >= 0;
+    }
+
+    /// <summary>Parses the volume entry with the specified endianness</summary>
+    /// <param name="data">Raw catalog data</param>
+    /// <param name="bigEndian">True for big endian, false for little endian</param>
+    void ParseVolumeEntry(byte[] data, bool bigEndian)
+    {
+        if(bigEndian)
+        {
+            _mountedVolEntry.FirstBlock = BigEndianBitConverter.ToInt16(data, 0x00);
+            _mountedVolEntry.LastBlock  = BigEndianBitConverter.ToInt16(data, 0x02);
+            _mountedVolEntry.EntryType  = (PascalFileKind)BigEndianBitConverter.ToInt16(data, 0x04);
+            _mountedVolEntry.Blocks     = BigEndianBitConverter.ToInt16(data, 0x0E);
+            _mountedVolEntry.Files      = BigEndianBitConverter.ToInt16(data, 0x10);
+            _mountedVolEntry.Dummy      = BigEndianBitConverter.ToInt16(data, 0x12);
+            _mountedVolEntry.LastBoot   = BigEndianBitConverter.ToInt16(data, 0x14);
+            _mountedVolEntry.Tail       = BigEndianBitConverter.ToInt32(data, 0x16);
+        }
+        else
+        {
+            _mountedVolEntry.FirstBlock = BitConverter.ToInt16(data, 0x00);
+            _mountedVolEntry.LastBlock  = BitConverter.ToInt16(data, 0x02);
+            _mountedVolEntry.EntryType  = (PascalFileKind)BitConverter.ToInt16(data, 0x04);
+            _mountedVolEntry.Blocks     = BitConverter.ToInt16(data, 0x0E);
+            _mountedVolEntry.Files      = BitConverter.ToInt16(data, 0x10);
+            _mountedVolEntry.Dummy      = BitConverter.ToInt16(data, 0x12);
+            _mountedVolEntry.LastBoot   = BitConverter.ToInt16(data, 0x14);
+            _mountedVolEntry.Tail       = BitConverter.ToInt32(data, 0x16);
+        }
+
+        _mountedVolEntry.VolumeName = new byte[8];
+        Array.Copy(data, 0x06, _mountedVolEntry.VolumeName, 0, 8);
     }
 
     /// <inheritdoc />

@@ -45,6 +45,7 @@ namespace Aaru.Filesystems;
 public sealed partial class PascalPlugin : IReadOnlyFilesystem
 {
     const string          MODULE_NAME = "U.C.S.D. Pascal Plugin";
+    bool                  _bigEndian;
     byte[]                _bootBlocks;
     byte[]                _catalogBlocks;
     bool                  _debug;
