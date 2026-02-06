@@ -29,7 +29,9 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
@@ -37,6 +39,181 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class ProDOSPlugin
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: path='{0}'", path);
+
+        // Get the entry for this path
+        ErrorNumber errno = GetEntryForPath(path, out CachedEntry entry);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error getting entry for path: {0}", errno);
+
+            return errno;
+        }
+
+        // Cannot open directories
+        if(entry.IsDirectory)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Cannot open directory as file");
+
+            return ErrorNumber.IsDirectory;
+        }
+
+        // Get file length - for extended files, we need to read the extended key block
+        long   fileLength;
+        byte   storageType = entry.StorageType;
+        ushort keyBlock    = entry.KeyBlock;
+
+        if(storageType == EXTENDED_FILE_TYPE)
+        {
+            errno = ReadBlock(entry.KeyBlock, out byte[] extBlock);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error reading extended key block: {0}", errno);
+
+                return errno;
+            }
+
+            ExtendedKeyBlock extKeyBlock = Marshal.ByteArrayToStructureLittleEndian<ExtendedKeyBlock>(extBlock);
+
+            // Data fork size
+            fileLength = extKeyBlock.data_fork.eof[0]      |
+                         extKeyBlock.data_fork.eof[1] << 8 |
+                         extKeyBlock.data_fork.eof[2] << 16;
+
+            // Use data fork's storage type and key block
+            storageType = (byte)(extKeyBlock.data_fork.storage_type >> 4);
+            keyBlock    = extKeyBlock.data_fork.key_block;
+        }
+        else
+            fileLength = entry.Eof;
+
+        // Create file node
+        var fileNode = new ProDosFileNode
+        {
+            Path   = path,
+            Entry  = entry,
+            Length = fileLength,
+            Offset = 0,
+
+            // Store effective storage type and key block (possibly from extended file's data fork)
+            EffectiveStorageType = storageType,
+            EffectiveKeyBlock    = keyBlock
+        };
+
+        // Pre-load index block(s) for sapling and tree files
+        errno = LoadIndexBlocks(fileNode);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error loading index blocks: {0}", errno);
+
+            return errno;
+        }
+
+        node = fileNode;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile successful: path='{0}', size={1}", path, fileLength);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not ProDosFileNode proDosNode) return ErrorNumber.InvalidArgument;
+
+        AaruLogging.Debug(MODULE_NAME, "CloseFile: path='{0}'", proDosNode.Path);
+
+        // Clear cached data
+        proDosNode.IndexBlock       = null;
+        proDosNode.MasterIndexBlock = null;
+        proDosNode.CachedBlockData  = null;
+        proDosNode.CachedBlockIndex = -1;
+        proDosNode.Offset           = -1;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not ProDosFileNode proDosNode) return ErrorNumber.InvalidArgument;
+
+        if(proDosNode.Offset < 0) return ErrorNumber.InvalidArgument;
+
+        if(buffer == null || buffer.Length < length) return ErrorNumber.InvalidArgument;
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "ReadFile: path='{0}', offset={1}, length={2}",
+                          proDosNode.Path,
+                          proDosNode.Offset,
+                          length);
+
+        // Check if at or past EOF
+        if(proDosNode.Offset >= proDosNode.Length)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadFile: at EOF");
+
+            return ErrorNumber.NoError;
+        }
+
+        // Adjust length if it would read past EOF
+        long bytesToRead = length;
+
+        if(proDosNode.Offset + bytesToRead > proDosNode.Length) bytesToRead = proDosNode.Length - proDosNode.Offset;
+
+        if(bytesToRead <= 0) return ErrorNumber.NoError;
+
+        // Read data block by block
+        long bufferOffset = 0;
+
+        while(bytesToRead > 0)
+        {
+            // Calculate which block we need
+            var blockIndex    = (int)(proDosNode.Offset / 512);
+            var offsetInBlock = (int)(proDosNode.Offset % 512);
+
+            // Get the data block
+            ErrorNumber errno = ReadFileBlock(proDosNode, blockIndex, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error reading file block {0}: {1}", blockIndex, errno);
+
+                return errno;
+            }
+
+            // Calculate how much to copy from this block
+            var bytesFromBlock = (int)Math.Min(bytesToRead, 512 - offsetInBlock);
+
+            // Copy to output buffer
+            Array.Copy(blockData, offsetInBlock, buffer, bufferOffset, bytesFromBlock);
+
+            bufferOffset      += bytesFromBlock;
+            proDosNode.Offset += bytesFromBlock;
+            bytesToRead       -= bytesFromBlock;
+            read              += bytesFromBlock;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile successful: read {0} bytes, new offset={1}", read, proDosNode.Offset);
+
+        return ErrorNumber.NoError;
+    }
+
+
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
     {
@@ -171,6 +348,158 @@ public sealed partial class ProDOSPlugin
             stat.Length = entry.Eof;
             stat.Blocks = entry.BlocksUsed;
         }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Loads index blocks for sapling and tree storage types</summary>
+    ErrorNumber LoadIndexBlocks(ProDosFileNode fileNode)
+    {
+        byte   storageType = fileNode.EffectiveStorageType;
+        ushort keyBlock    = fileNode.EffectiveKeyBlock;
+
+        switch(storageType)
+        {
+            case SEEDLING_FILE_TYPE:
+                // Seedling: key block is the single data block, no index needed
+                return ErrorNumber.NoError;
+
+            case SAPLING_FILE_TYPE:
+            {
+                // Sapling: key block is an indirect block containing up to 256 block pointers
+                ErrorNumber errno = ReadBlock(keyBlock, out byte[] indexBlock);
+
+                if(errno != ErrorNumber.NoError) return errno;
+
+                // Parse the indirect block (LSB in first 256 bytes, MSB in second 256 bytes)
+                fileNode.IndexBlock = new ushort[256];
+
+                for(var i = 0; i < 256; i++)
+                    fileNode.IndexBlock[i] = (ushort)(indexBlock[i] | indexBlock[256 + i] << 8);
+
+                return ErrorNumber.NoError;
+            }
+
+            case TREE_FILE_TYPE:
+            {
+                // Tree: key block is a master (double-indirect) block
+                ErrorNumber errno = ReadBlock(keyBlock, out byte[] masterBlock);
+
+                if(errno != ErrorNumber.NoError) return errno;
+
+                // Parse the master index block
+                fileNode.MasterIndexBlock = new ushort[256];
+
+                for(var i = 0; i < 256; i++)
+                    fileNode.MasterIndexBlock[i] = (ushort)(masterBlock[i] | masterBlock[256 + i] << 8);
+
+                return ErrorNumber.NoError;
+            }
+
+            default:
+                AaruLogging.Debug(MODULE_NAME, "Unknown storage type: 0x{0:X2}", storageType);
+
+                return ErrorNumber.InvalidArgument;
+        }
+    }
+
+    /// <summary>Reads a specific data block from a file</summary>
+    ErrorNumber ReadFileBlock(ProDosFileNode fileNode, int blockIndex, out byte[] blockData)
+    {
+        blockData = null;
+
+        // Check if this block is already cached
+        if(fileNode.CachedBlockIndex == blockIndex && fileNode.CachedBlockData != null)
+        {
+            blockData = fileNode.CachedBlockData;
+
+            return ErrorNumber.NoError;
+        }
+
+        byte storageType = fileNode.EffectiveStorageType;
+
+        ushort diskBlock;
+
+        switch(storageType)
+        {
+            case SEEDLING_FILE_TYPE:
+                // Seedling: key block is the single data block
+                if(blockIndex != 0) return ErrorNumber.InvalidArgument;
+
+                diskBlock = fileNode.EffectiveKeyBlock;
+
+                break;
+
+            case SAPLING_FILE_TYPE:
+                // Sapling: index block contains block pointers
+                if(blockIndex >= 256) return ErrorNumber.InvalidArgument;
+
+                diskBlock = fileNode.IndexBlock[blockIndex];
+
+                break;
+
+            case TREE_FILE_TYPE:
+            {
+                // Tree: master index -> index block -> data block
+                int masterIndex = blockIndex / 256;
+                int indexOffset = blockIndex % 256;
+
+                if(masterIndex >= 256) return ErrorNumber.InvalidArgument;
+
+                ushort indexBlockPtr = fileNode.MasterIndexBlock[masterIndex];
+
+                // Sparse block (index block pointer is 0)
+                if(indexBlockPtr == 0)
+                {
+                    blockData                 = new byte[512];
+                    fileNode.CachedBlockIndex = blockIndex;
+                    fileNode.CachedBlockData  = blockData;
+
+                    return ErrorNumber.NoError;
+                }
+
+                // Load the index block (cache it for subsequent reads in the same range)
+                if(fileNode.IndexBlock == null || fileNode.CachedIndexBlockNumber != masterIndex)
+                {
+                    ErrorNumber errno = ReadBlock(indexBlockPtr, out byte[] indexBlock);
+
+                    if(errno != ErrorNumber.NoError) return errno;
+
+                    fileNode.IndexBlock = new ushort[256];
+
+                    for(var i = 0; i < 256; i++)
+                        fileNode.IndexBlock[i] = (ushort)(indexBlock[i] | indexBlock[256 + i] << 8);
+
+                    fileNode.CachedIndexBlockNumber = masterIndex;
+                }
+
+                diskBlock = fileNode.IndexBlock[indexOffset];
+
+                break;
+            }
+
+            default:
+                return ErrorNumber.InvalidArgument;
+        }
+
+        // Sparse block (block pointer is 0 means unallocated = zeros)
+        if(diskBlock == 0)
+        {
+            blockData                 = new byte[512];
+            fileNode.CachedBlockIndex = blockIndex;
+            fileNode.CachedBlockData  = blockData;
+
+            return ErrorNumber.NoError;
+        }
+
+        // Read the actual data block
+        ErrorNumber readErrno = ReadBlock(diskBlock, out blockData);
+
+        if(readErrno != ErrorNumber.NoError) return readErrno;
+
+        // Cache the block
+        fileNode.CachedBlockIndex = blockIndex;
+        fileNode.CachedBlockData  = blockData;
 
         return ErrorNumber.NoError;
     }

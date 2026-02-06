@@ -99,13 +99,22 @@ public sealed partial class ProDOSPlugin
         /// <summary>Cached entry information</summary>
         internal CachedEntry Entry { get; init; }
 
+        /// <summary>Effective storage type (from data fork for extended files)</summary>
+        internal byte EffectiveStorageType { get; init; }
+
+        /// <summary>Effective key block (from data fork for extended files)</summary>
+        internal ushort EffectiveKeyBlock { get; init; }
+
         /// <summary>Cached index block for sapling/tree files</summary>
         internal ushort[] IndexBlock { get; set; }
 
         /// <summary>Cached master index block for tree files</summary>
         internal ushort[] MasterIndexBlock { get; set; }
 
-        /// <summary>Cached current segment for performance</summary>
+        /// <summary>Cached index block number for tree files (which index block is loaded)</summary>
+        internal int CachedIndexBlockNumber { get; set; } = -1;
+
+        /// <summary>Cached data block index</summary>
         internal int CachedBlockIndex { get; set; } = -1;
 
         /// <summary>Cached block data</summary>
