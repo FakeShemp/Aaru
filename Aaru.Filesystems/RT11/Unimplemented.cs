@@ -1,8 +1,8 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : RT11.cs
+// Filename       : Unimplemented.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : RT-11 file system plugin.
@@ -32,35 +32,51 @@
 
 using System;
 using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
+using System.Text;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
 // Information from http://www.trailing-edge.com/~shoppa/rt11fs/
 /// <inheritdoc />
-/// <summary>Implements the DEC RT-11 filesystem</summary>
-public sealed partial class RT11 : IReadOnlyFilesystem
+public sealed partial class RT11
 {
-#region IFilesystem Members
+    /// <inheritdoc />
+    public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
+                             Dictionary<string, string> options,     string    @namespace) =>
+        throw new NotImplementedException();
 
     /// <inheritdoc />
-    public FileSystem Metadata { get; private set; }
+    public ErrorNumber Unmount() => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public Dictionary<string, string> Namespaces { get; } = [];
+    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public string Name => Localization.RT11_Name;
+    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public Guid Id => new("DB3E2F98-8F98-463C-8126-E937843DA024");
+    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public string Author => Authors.NataliaPortillo;
+    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
 
-#endregion
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
+        throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename) => throw new NotImplementedException();
 }

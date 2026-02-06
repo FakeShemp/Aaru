@@ -1,8 +1,8 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : RT11.cs
+// Filename       : Unsupported.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : RT-11 file system plugin.
@@ -30,37 +30,31 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Enums;
 
 namespace Aaru.Filesystems;
 
 // Information from http://www.trailing-edge.com/~shoppa/rt11fs/
 /// <inheritdoc />
-/// <summary>Implements the DEC RT-11 filesystem</summary>
-public sealed partial class RT11 : IReadOnlyFilesystem
+public sealed partial class RT11
 {
-#region IFilesystem Members
+    /// <inheritdoc />
+    public ErrorNumber ListXAttr(string path, out List<string> xattrs)
+    {
+        xattrs = [];
+
+        return ErrorNumber.NotSupported;
+    }
 
     /// <inheritdoc />
-    public FileSystem Metadata { get; private set; }
+    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => ErrorNumber.NotSupported;
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
 
-    /// <inheritdoc />
-    public Dictionary<string, string> Namespaces { get; } = [];
-
-    /// <inheritdoc />
-    public string Name => Localization.RT11_Name;
-
-    /// <inheritdoc />
-    public Guid Id => new("DB3E2F98-8F98-463C-8126-E937843DA024");
-
-    /// <inheritdoc />
-    public string Author => Authors.NataliaPortillo;
-
-#endregion
+        return ErrorNumber.NotSupported;
+    }
 }
