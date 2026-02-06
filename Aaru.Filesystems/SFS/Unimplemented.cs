@@ -35,12 +35,8 @@ using Aaru.CommonTypes.Structs;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements the Smart File System</summary>
 public sealed partial class SFS
 {
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
-
     /// <inheritdoc />
     public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
 
@@ -50,8 +46,6 @@ public sealed partial class SFS
     /// <inheritdoc />
     public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
