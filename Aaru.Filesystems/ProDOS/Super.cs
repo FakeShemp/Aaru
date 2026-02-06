@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Apple ProDOS filesystem plugin.
@@ -26,9 +26,8 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
@@ -37,12 +36,26 @@ namespace Aaru.Filesystems;
 public sealed partial class ProDOSPlugin
 {
     /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        // Count free blocks by reading the volume bitmap
+        ulong freeBlocks = CountFreeBlocks();
+
+        stat = new FileSystemInfo
+        {
+            Blocks         = _totalBlocks,
+            FilenameLength = 15, // ProDOS maximum filename length
+            Files          = _volumeHeader.entry_count,
+            FreeBlocks     = freeBlocks,
+            FreeFiles      = 0, // ProDOS doesn't have a fixed file count limit
+            PluginId       = Id,
+            Type           = FS_TYPE
+        };
+
+        return ErrorNumber.NoError;
+    }
 }

@@ -45,4 +45,40 @@ public sealed partial class ProDOSPlugin
 
         return errno;
     }
+
+    /// <summary>Counts the number of free blocks by reading the volume bitmap</summary>
+    /// <returns>Number of free blocks</returns>
+    ulong CountFreeBlocks()
+    {
+        ulong freeBlocks = 0;
+
+        // Calculate number of bitmap blocks needed
+        // Each bitmap block covers 4096 blocks (512 bytes * 8 bits per byte)
+        var bitmapBlocksNeeded = (_totalBlocks + 4095) / 4096;
+
+        for(var i = 0; i < bitmapBlocksNeeded; i++)
+        {
+            ErrorNumber errno = ReadBlock((ushort)(_bitmapBlock + i), out byte[] bitmapBlock);
+
+            if(errno != ErrorNumber.NoError) continue;
+
+            // Count free blocks in this bitmap block
+            // In ProDOS bitmap: 1 = free, 0 = used
+            for(var byteIndex = 0; byteIndex < 512; byteIndex++)
+            {
+                var blockBase = (uint)(i * 4096 + byteIndex * 8);
+
+                for(var bit = 7; bit >= 0; bit--)
+                {
+                    uint blockNumber = blockBase + (uint)(7 - bit);
+
+                    if(blockNumber >= _totalBlocks) break;
+
+                    if((bitmapBlock[byteIndex] & 1 << bit) != 0) freeBlocks++;
+                }
+            }
+        }
+
+        return freeBlocks;
+    }
 }
