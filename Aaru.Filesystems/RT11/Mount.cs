@@ -152,6 +152,18 @@ public sealed partial class RT11
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber Unmount()
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        _rootDirectoryCache?.Clear();
+        _rootDirectoryCache = null;
+        _mounted            = false;
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Validates the home block checksum</summary>
     /// <param name="homeBlockData">Home block data (512 bytes)</param>
     /// <returns>True if checksum is valid</returns>
