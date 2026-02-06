@@ -90,4 +90,48 @@ public sealed partial class RT11
     }
 
 #endregion
+
+#region Nested type: DirectorySegmentHeader
+
+    /// <summary>Directory segment header, 5 words (10 bytes)</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct DirectorySegmentHeader
+    {
+        /// <summary>Total number of segments in this directory (1-31)</summary>
+        public readonly ushort totalSegments;
+        /// <summary>Segment number of the next logical directory segment (0 if last)</summary>
+        public readonly ushort nextSegment;
+        /// <summary>Number of the highest segment currently in use (only valid in segment 1)</summary>
+        public readonly ushort highestSegmentInUse;
+        /// <summary>Number of extra bytes per directory entry (always even)</summary>
+        public readonly ushort extraBytesPerEntry;
+        /// <summary>Block number on volume where data begins for this segment</summary>
+        public readonly ushort dataBlockStart;
+    }
+
+#endregion
+
+#region Nested type: DirectoryEntry
+
+    /// <summary>Directory entry, 7 words (14 bytes) + extra bytes</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct DirectoryEntry
+    {
+        /// <summary>Status word (high byte: entry type, low byte: file class)</summary>
+        public readonly ushort status;
+        /// <summary>First word of filename in Radix-50</summary>
+        public readonly ushort filename1;
+        /// <summary>Second word of filename in Radix-50</summary>
+        public readonly ushort filename2;
+        /// <summary>File type in Radix-50</summary>
+        public readonly ushort filetype;
+        /// <summary>Total file length in blocks</summary>
+        public readonly ushort length;
+        /// <summary>Job number (high byte) and channel number (low byte) - only for tentative files</summary>
+        public readonly ushort jobChannel;
+        /// <summary>Creation date</summary>
+        public readonly ushort creationDate;
+    }
+
+#endregion
 }
