@@ -30,9 +30,12 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.Logging;
 
 namespace Aaru.Filesystems;
@@ -41,6 +44,80 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class RT11
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, $"OpenDir: path='{path}'");
+
+        // Normalize the path
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath == "" || normalizedPath == ".") normalizedPath = "/";
+
+        // RT-11 only has a root directory (flat filesystem, no subdirectories)
+        if(normalizedPath != "/" && !string.Equals(normalizedPath, "/", StringComparison.OrdinalIgnoreCase))
+        {
+            AaruLogging.Debug(MODULE_NAME, $"OpenDir: RT-11 has no subdirectories, path='{normalizedPath}'");
+
+            return ErrorNumber.NotDirectory;
+        }
+
+        // Return the cached root directory entries
+        if(_rootDirectoryCache.Count == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenDir: Root directory is empty");
+
+            return ErrorNumber.NoSuchFile;
+        }
+
+        node = new RT11DirNode
+        {
+            Path     = "/",
+            Position = 0,
+            Entries  = _rootDirectoryCache.Keys.ToArray()
+        };
+
+        AaruLogging.Debug(MODULE_NAME,
+                          $"OpenDir: Successfully opened root directory with {_rootDirectoryCache.Count} entries");
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not RT11DirNode rt11Node) return ErrorNumber.InvalidArgument;
+
+        rt11Node.Position = -1;
+        rt11Node.Entries  = null;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not RT11DirNode rt11Node) return ErrorNumber.InvalidArgument;
+
+        if(rt11Node.Position < 0) return ErrorNumber.InvalidArgument;
+
+        if(rt11Node.Position >= rt11Node.Entries.Length) return ErrorNumber.NoError;
+
+        filename = rt11Node.Entries[rt11Node.Position++];
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Parses a directory segment and extracts file entries</summary>
     /// <param name="segmentData">Directory segment data (1024 bytes)</param>
     /// <param name="header">Directory segment header</param>
