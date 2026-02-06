@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -160,6 +161,212 @@ public sealed partial class RBF
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize the path
+        string normalizedPath = path ?? "";
+
+        if(normalizedPath == "" || normalizedPath == "." || normalizedPath == "/") return ErrorNumber.IsDirectory;
+
+        // Remove leading slash and split path
+        string pathWithoutLeadingSlash = normalizedPath.StartsWith("/", StringComparison.Ordinal)
+                                             ? normalizedPath[1..]
+                                             : normalizedPath;
+
+        string[] pathComponents = pathWithoutLeadingSlash.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
+
+        // Start traversal from root directory cache
+        Dictionary<string, CachedDirectoryEntry> currentDirectory = _rootDirectoryCache;
+        CachedDirectoryEntry                     targetEntry      = null;
+
+        // Traverse all path components
+        for(var i = 0; i < pathComponents.Length; i++)
+        {
+            string component = pathComponents[i];
+
+            // Skip . and ..
+            if(component == "." || component == "..") continue;
+
+            // Find the component in current directory
+            if(!currentDirectory.TryGetValue(component, out CachedDirectoryEntry entry)) return ErrorNumber.NoSuchFile;
+
+            // If this is the last component, we found our target
+            if(i == pathComponents.Length - 1)
+            {
+                targetEntry = entry;
+
+                break;
+            }
+
+            // Not the last component - must be a directory to continue traversal
+            if(!entry.IsDirectory) return ErrorNumber.NotDirectory;
+
+            // Read the subdirectory contents
+            ErrorNumber errno = ReadDirectoryContents(entry.Fd, out Dictionary<string, CachedDirectoryEntry> subDir);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            currentDirectory = subDir;
+        }
+
+        if(targetEntry == null) return ErrorNumber.NoSuchFile;
+
+        // Cannot open a directory as a file
+        if(targetEntry.IsDirectory) return ErrorNumber.IsDirectory;
+
+        // Parse the segment list for this file
+        List<(uint lsn, uint sectors)> segments = ParseSegmentList(targetEntry.Fd.fd_seg);
+
+        node = new RbfFileNode
+        {
+            Path     = path,
+            Length   = targetEntry.Fd.fd_fsize,
+            Offset   = 0,
+            FdLsn    = targetEntry.FdLsn,
+            Fd       = targetEntry.Fd,
+            Segments = segments
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not RbfFileNode rbfNode) return ErrorNumber.InvalidArgument;
+
+        // Clear node data
+        rbfNode.Segments = null;
+        rbfNode.Offset   = -1;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not RbfFileNode rbfNode) return ErrorNumber.InvalidArgument;
+
+        if(rbfNode.Offset < 0 || rbfNode.Segments == null) return ErrorNumber.InvalidArgument;
+
+        if(buffer == null || buffer.Length < length) return ErrorNumber.InvalidArgument;
+
+        // Check if at or past EOF
+        if(rbfNode.Offset >= rbfNode.Length) return ErrorNumber.NoError;
+
+        // Adjust length if it would read past EOF
+        long bytesToRead = length;
+
+        if(rbfNode.Offset + bytesToRead > rbfNode.Length) bytesToRead = rbfNode.Length - rbfNode.Offset;
+
+        if(bytesToRead <= 0) return ErrorNumber.NoError;
+
+        // Read data from the file's segments
+        long bufferOffset = 0;
+
+        while(bytesToRead > 0)
+        {
+            // Find the sector containing the current file position
+            ErrorNumber errno = FindSectorForOffset(rbfNode, rbfNode.Offset, out uint lsn, out int offsetInSector);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if(lsn == 0) break; // No more data
+
+            // Read the sector
+            errno = ReadLsn(lsn, out byte[] sectorData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // Calculate how much to copy from this sector
+            int bytesAvailableInSector = (int)_lsnSize - offsetInSector;
+            var bytesToCopy            = (int)Math.Min(bytesToRead, bytesAvailableInSector);
+
+            // Copy data to buffer
+            Array.Copy(sectorData, offsetInSector, buffer, bufferOffset, bytesToCopy);
+
+            bufferOffset   += bytesToCopy;
+            rbfNode.Offset += bytesToCopy;
+            bytesToRead    -= bytesToCopy;
+            read           += bytesToCopy;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Finds the LSN and offset within sector for a given file offset</summary>
+    /// <param name="node">The file node</param>
+    /// <param name="fileOffset">Offset within the file</param>
+    /// <param name="lsn">Output: LSN of the sector containing the offset</param>
+    /// <param name="offsetInSector">Output: Offset within the sector</param>
+    /// <returns>Error number</returns>
+    ErrorNumber FindSectorForOffset(RbfFileNode node, long fileOffset, out uint lsn, out int offsetInSector)
+    {
+        lsn            = 0;
+        offsetInSector = 0;
+
+        if(node.Segments == null || node.Segments.Count == 0) return ErrorNumber.NoError;
+
+        // Calculate which logical sector number contains this offset
+        long logicalSector = fileOffset   / _lsnSize;
+        offsetInSector = (int)(fileOffset % _lsnSize);
+
+        // Check if sector is within cached current segment (like Linux kernel's iu_seg* check)
+        if(node.CachedSegmentIndex >= 0                       &&
+           logicalSector           >= node.CachedSegmentStart &&
+           logicalSector           < node.CachedSegmentEnd)
+        {
+            lsn = node.CachedSegmentLsn + (uint)(logicalSector - node.CachedSegmentStart);
+
+            return ErrorNumber.NoError;
+        }
+
+        // Not in cache - walk through segments to find the physical LSN
+        long currentLogicalSector = 0;
+        var  segmentIndex         = 0;
+
+        // If seeking forward and we have a cached segment, start from there
+        if(node.CachedSegmentIndex >= 0 && logicalSector >= node.CachedSegmentEnd)
+        {
+            currentLogicalSector = node.CachedSegmentEnd;
+            segmentIndex         = node.CachedSegmentIndex + 1;
+        }
+
+        for(; segmentIndex < node.Segments.Count; segmentIndex++)
+        {
+            (uint segLsn, uint segSectors) = node.Segments[segmentIndex];
+
+            if(logicalSector < currentLogicalSector + segSectors)
+            {
+                // Found the segment - cache it for next call
+                node.CachedSegmentIndex = segmentIndex;
+                node.CachedSegmentStart = currentLogicalSector;
+                node.CachedSegmentEnd   = currentLogicalSector + segSectors;
+                node.CachedSegmentLsn   = segLsn;
+
+                lsn = segLsn + (uint)(logicalSector - currentLogicalSector);
+
+                return ErrorNumber.NoError;
+            }
+
+            currentLogicalSector += segSectors;
+        }
+
+        // Offset is beyond allocated segments
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Reads the contents of a directory given its file descriptor</summary>
     /// <param name="fd">The file descriptor of the directory</param>
     /// <param name="entries">Dictionary of directory entries indexed by filename</param>
@@ -268,6 +475,7 @@ public sealed partial class RBF
 
         return ErrorNumber.NoError;
     }
+
 
     /// <summary>Reads an RBF filename from directory entry (MSB of last char set)</summary>
     static string ReadRbfFilename(byte[] nameBytes)

@@ -81,6 +81,19 @@ public sealed partial class RBF
         /// <summary>Cached segment list</summary>
         internal List<(uint lsn, uint sectors)> Segments { get; set; }
 
+        // Cached current segment for performance (like Linux kernel's iu_seg* fields)
+        /// <summary>Index of cached segment in Segments list</summary>
+        internal int CachedSegmentIndex { get; set; } = -1;
+
+        /// <summary>Starting logical sector of cached segment</summary>
+        internal long CachedSegmentStart { get; set; }
+
+        /// <summary>Ending logical sector of cached segment (exclusive)</summary>
+        internal long CachedSegmentEnd { get; set; }
+
+        /// <summary>Physical LSN of cached segment start</summary>
+        internal uint CachedSegmentLsn { get; set; }
+
         /// <inheritdoc />
         public long Offset { get; set; }
 
