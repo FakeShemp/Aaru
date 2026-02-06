@@ -26,7 +26,9 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -253,5 +255,110 @@ public sealed partial class SFS
 
             if(offset < 0) break;
         }
+    }
+
+    /// <summary>Gets the object node number for a given path</summary>
+    /// <param name="path">The path to resolve</param>
+    /// <param name="objectNode">Output object node number</param>
+    /// <returns>Error code indicating success or failure</returns>
+    ErrorNumber GetObjectNodeForPath(string path, out uint objectNode)
+    {
+        objectNode = 0;
+
+        // Root directory
+        if(path == "/" || string.Equals(path, "/", StringComparison.OrdinalIgnoreCase))
+        {
+            objectNode = ROOTNODE;
+
+            return ErrorNumber.NoError;
+        }
+
+        // Remove leading slash and split path
+        string pathWithoutLeadingSlash = path.StartsWith("/", StringComparison.Ordinal) ? path[1..] : path;
+
+        string[] pathComponents = pathWithoutLeadingSlash.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
+
+        // Start traversal from root directory cache
+        Dictionary<string, uint> currentDirectory = _rootDirectoryCache;
+
+        // Traverse all path components
+        for(var i = 0; i < pathComponents.Length; i++)
+        {
+            string component = pathComponents[i];
+
+            // Find the component in current directory (handle case sensitivity)
+            string foundKey =
+                currentDirectory.Keys.FirstOrDefault(key => string.Equals(key,
+                                                                          component,
+                                                                          _caseSensitive
+                                                                              ? StringComparison.Ordinal
+                                                                              : StringComparison.OrdinalIgnoreCase));
+
+            if(foundKey == null) return ErrorNumber.NoSuchFile;
+
+            objectNode = currentDirectory[foundKey];
+
+            // If this is the last component, we found our target
+            if(i == pathComponents.Length - 1) return ErrorNumber.NoError;
+
+            // Not the last component - read directory contents for next iteration
+            ErrorNumber errno = ReadDirectoryContents(objectNode, out Dictionary<string, uint> childEntries);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            currentDirectory = childEntries;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads the comment for an object given its node number</summary>
+    /// <param name="objectNode">The object node number</param>
+    /// <param name="comment">Output comment string</param>
+    /// <returns>Error code indicating success or failure</returns>
+    ErrorNumber ReadObjectComment(uint objectNode, out string comment)
+    {
+        comment = null;
+
+        // Find the object container for this node
+        ErrorNumber errno = FindObjectNode(objectNode, out uint objectBlock);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        errno = ReadBlock(objectBlock, out byte[] objectData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Find the object in the container
+        errno = FindObjectInContainer(objectData, objectNode, out int objectOffset);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Object structure: fixed fields (25 bytes) + name (null-terminated) + comment (null-terminated)
+        // Skip to name field
+        int nameOffset = objectOffset + OBJECT_SIZE;
+
+        if(nameOffset >= objectData.Length) return ErrorNumber.InvalidArgument;
+
+        // Skip the name (null-terminated string)
+        int commentOffset = nameOffset;
+
+        while(commentOffset < objectData.Length && objectData[commentOffset] != 0) commentOffset++;
+
+        commentOffset++; // Skip null terminator
+
+        if(commentOffset >= objectData.Length) return ErrorNumber.NoError; // No comment
+
+        // Read the comment (null-terminated string)
+        var commentBytes = new List<byte>();
+
+        while(commentOffset < objectData.Length && objectData[commentOffset] != 0)
+            commentBytes.Add(objectData[commentOffset++]);
+
+        if(commentBytes.Count > 0) comment = _encoding.GetString(commentBytes.ToArray());
+
+        return ErrorNumber.NoError;
     }
 }
