@@ -1,8 +1,8 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : ProDOS.cs
+// Filename       : Unsupported.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Apple ProDOS filesystem plugin.
@@ -26,42 +26,21 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-// ReSharper disable NotAccessedField.Local
+using Aaru.CommonTypes.Enums;
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Aaru.CommonTypes.AaruMetadata;
-using Aaru.CommonTypes.Interfaces;
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 
 namespace Aaru.Filesystems;
 
 // Information from Apple ProDOS 8 Technical Reference
 /// <inheritdoc />
-/// <summary>Implements the Apple ProDOS filesystem</summary>
-[SuppressMessage("ReSharper", "UnusedMember.Local")]
-[SuppressMessage("ReSharper", "UnusedType.Local")]
-public sealed partial class ProDOSPlugin : IReadOnlyFilesystem
+public sealed partial class ProDOSPlugin
 {
-    const string MODULE_NAME = "ProDOS plugin";
-
-#region IFilesystem Members
-
     /// <inheritdoc />
-    public string Name => Localization.ProDOSPlugin_Name;
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
 
-    /// <inheritdoc />
-    public Guid Id => new("43874265-7B8A-4739-BCF7-07F80D5932BF");
-
-    /// <inheritdoc />
-    public string Author => Authors.NataliaPortillo;
-
-#endregion
-
-    /// <inheritdoc />
-    public FileSystem Metadata { get; private set; }
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
-    /// <inheritdoc />
-    public Dictionary<string, string> Namespaces { get; } = [];
+        return ErrorNumber.NotSupported;
+    }
 }

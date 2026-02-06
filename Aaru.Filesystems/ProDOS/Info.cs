@@ -44,7 +44,6 @@ namespace Aaru.Filesystems;
 
 // Information from Apple ProDOS 8 Technical Reference
 /// <inheritdoc />
-/// <summary>Implements detection of Apple ProDOS filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 [SuppressMessage("ReSharper", "UnusedType.Local")]
 public sealed partial class ProDOSPlugin
@@ -267,10 +266,7 @@ public sealed partial class ProDOSPlugin
 
         sbInformation.AppendFormat(Localization.Volume_name_is_0, volumeName).AppendLine();
 
-        if(dateCorrect)
-        {
-            sbInformation.AppendFormat(Localization.Volume_created_on_0, creationTime).AppendLine();
-        }
+        if(dateCorrect) sbInformation.AppendFormat(Localization.Volume_created_on_0, creationTime).AppendLine();
 
         sbInformation.AppendFormat(Localization._0_bytes_per_directory_entry, rootDirectoryKeyBlock.entry_length)
                      .AppendLine();
@@ -303,9 +299,7 @@ public sealed partial class ProDOSPlugin
 
         // TODO: Fix mask
         if((rootDirectoryKeyBlock.access & RESERVED_ATTRIBUTE_MASK) != 0)
-        {
             AaruLogging.Debug(MODULE_NAME, Localization.Reserved_attributes_are_set_0, rootDirectoryKeyBlock.access);
-        }
 
         information = sbInformation.ToString();
 

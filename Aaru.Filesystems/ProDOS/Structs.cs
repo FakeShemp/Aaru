@@ -35,7 +35,6 @@ namespace Aaru.Filesystems;
 
 // Information from Apple ProDOS 8 Technical Reference
 /// <inheritdoc />
-/// <summary>Implements detection of Apple ProDOS filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 [SuppressMessage("ReSharper", "UnusedType.Local")]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
