@@ -33,6 +33,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
@@ -41,6 +42,103 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class RT11
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize the path - RT-11 is a flat filesystem
+        string filename = path;
+
+        if(string.IsNullOrEmpty(filename) || filename == "/" || filename == ".") return ErrorNumber.IsDirectory;
+
+        // Remove leading slash if present
+        if(filename.StartsWith("/", StringComparison.Ordinal)) filename = filename[1..];
+
+        // Check if the file exists in cache
+        if(!_rootDirectoryCache.ContainsKey(filename)) return ErrorNumber.NoSuchFile;
+
+        // Get file information from directory
+        ErrorNumber error = GetFileStartBlockAndLength(filename, out uint startBlock, out uint lengthInBlocks);
+
+        if(error != ErrorNumber.NoError) return error;
+
+        // Create file node
+        node = new RT11FileNode
+        {
+            Path           = path,
+            Length         = lengthInBlocks * BLOCK_SIZE_BYTES,
+            Offset         = 0,
+            StartBlock     = startBlock,
+            LengthInBlocks = lengthInBlocks
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not RT11FileNode) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(buffer is null || buffer.Length < length) return ErrorNumber.InvalidArgument;
+
+        if(node is not RT11FileNode rt11Node) return ErrorNumber.InvalidArgument;
+
+        // Can't read past end of file
+        if(rt11Node.Offset >= rt11Node.Length) return ErrorNumber.NoError;
+
+        // Limit read to remaining file size
+        if(length > rt11Node.Length - rt11Node.Offset) length = rt11Node.Length - rt11Node.Offset;
+
+        // Calculate which block to start reading from
+        long  offsetInFile   = rt11Node.Offset;
+        ulong currentBlock   = rt11Node.StartBlock + (ulong)(offsetInFile / BLOCK_SIZE_BYTES);
+        var   offsetInBlock  = (int)(offsetInFile % BLOCK_SIZE_BYTES);
+        long  bytesRemaining = length;
+        var   bufferOffset   = 0;
+
+        // RT-11 files are stored in contiguous blocks, so we can read them sequentially
+        while(bytesRemaining > 0)
+        {
+            // Read the current block
+            ErrorNumber errno =
+                _imagePlugin.ReadSector(_partition.Start + currentBlock, false, out byte[] blockData, out _);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // Calculate how much to read from this block
+            var bytesToRead = (int)Math.Min(bytesRemaining, BLOCK_SIZE_BYTES - offsetInBlock);
+
+            // Copy data from block to buffer
+            Array.Copy(blockData, offsetInBlock, buffer, bufferOffset, bytesToRead);
+
+            bufferOffset    += bytesToRead;
+            bytesRemaining  -= bytesToRead;
+            rt11Node.Offset += bytesToRead;
+            currentBlock++;
+            offsetInBlock = 0; // After first block, always start at beginning
+        }
+
+        read = bufferOffset;
+
+        return ErrorNumber.NoError;
+    }
+
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
     {
@@ -97,6 +195,70 @@ public sealed partial class RT11
         ErrorNumber error = GetFileInfo(filename, out stat);
 
         return error;
+    }
+
+    /// <summary>Gets the starting block and length for a file</summary>
+    /// <param name="filename">Filename</param>
+    /// <param name="startBlock">Output starting block number</param>
+    /// <param name="lengthInBlocks">Output file length in blocks</param>
+    /// <returns>Error code</returns>
+    ErrorNumber GetFileStartBlockAndLength(string filename, out uint startBlock, out uint lengthInBlocks)
+    {
+        startBlock     = 0;
+        lengthInBlocks = 0;
+
+        // Read the first directory segment to get file information
+        ErrorNumber errno = _imagePlugin.ReadSectors(_partition.Start + _firstDirectoryBlock,
+                                                     false,
+                                                     2,
+                                                     out byte[] dirSegmentData,
+                                                     out _);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Parse directory segment header
+        DirectorySegmentHeader segmentHeader =
+            Marshal.PtrToStructure<DirectorySegmentHeader>(Marshal.UnsafeAddrOfPinnedArrayElement(dirSegmentData, 0));
+
+        // Directory entries start after the 5-word header (10 bytes)
+        // The starting block for files is in word 5 of the header (dataBlockStart)
+        var offset          = 10;
+        int entrySize       = DIRECTORY_ENTRY_WORDS * 2 + segmentHeader.extraBytesPerEntry;
+        var currentBlockNum = (uint)segmentHeader.dataBlockStart;
+
+        while(offset + entrySize <= dirSegmentData.Length)
+        {
+            DirectoryEntry entry =
+                Marshal.PtrToStructure<DirectoryEntry>(Marshal.UnsafeAddrOfPinnedArrayElement(dirSegmentData, offset));
+
+            // Check for end-of-segment marker
+            if((entry.status & 0xFF00) == E_EOS) break;
+
+            // Process permanent files
+            if((entry.status & 0xFF00) == E_PERM)
+            {
+                string entryFilename = DecodeRadix50Filename(entry.filename1, entry.filename2, entry.filetype);
+
+                if(string.Equals(entryFilename, filename, StringComparison.OrdinalIgnoreCase))
+                {
+                    startBlock     = currentBlockNum;
+                    lengthInBlocks = entry.length;
+
+                    return ErrorNumber.NoError;
+                }
+
+                currentBlockNum += entry.length;
+            }
+            else if((entry.status & 0xFF00) == E_TENT || (entry.status & 0xFF00) == E_MPTY)
+            {
+                // Skip tentative and empty entries, but advance block counter
+                currentBlockNum += entry.length;
+            }
+
+            offset += entrySize;
+        }
+
+        return ErrorNumber.NoSuchFile;
     }
 
     /// <summary>Gets file information from directory entry</summary>

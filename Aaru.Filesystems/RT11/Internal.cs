@@ -50,4 +50,23 @@ public sealed partial class RT11
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>File node for reading file contents</summary>
+    sealed class RT11FileNode : IFileNode
+    {
+        /// <summary>Starting block number of the file</summary>
+        internal uint StartBlock { get; set; }
+
+        /// <summary>File size in blocks</summary>
+        internal uint LengthInBlocks { get; set; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+    }
 }
