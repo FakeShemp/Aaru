@@ -32,8 +32,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -42,6 +44,32 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the DEC RT-11 filesystem</summary>
 public sealed partial class RT11 : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "RT-11 plugin";
+
+    /// <summary>The encoding to use for text data</summary>
+    Encoding _encoding;
+
+    /// <summary>First directory segment block number</summary>
+    ushort _firstDirectoryBlock;
+
+    /// <summary>The home block</summary>
+    HomeBlock _homeBlock;
+
+    /// <summary>The media image plugin used to read from the device</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Indicates if the filesystem is currently mounted</summary>
+    bool _mounted;
+
+    /// <summary>The partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>Cache of root directory entries mapped from filename to starting block number</summary>
+    Dictionary<string, uint> _rootDirectoryCache;
+
+    /// <summary>Total number of directory segments</summary>
+    ushort _totalSegments;
+
 #region IFilesystem Members
 
     /// <inheritdoc />

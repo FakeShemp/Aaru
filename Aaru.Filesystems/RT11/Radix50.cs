@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Radix50.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : RT-11 file system plugin.
@@ -30,45 +30,44 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
-
 namespace Aaru.Filesystems;
 
 // Information from http://www.trailing-edge.com/~shoppa/rt11fs/
 /// <inheritdoc />
 public sealed partial class RT11
 {
-    /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
+    /// <summary>Decodes a Radix-50 encoded filename</summary>
+    /// <param name="word1">First word of filename</param>
+    /// <param name="word2">Second word of filename</param>
+    /// <param name="type">File type word</param>
+    /// <returns>Decoded filename with extension</returns>
+    static string DecodeRadix50Filename(ushort word1, ushort word2, ushort type)
+    {
+        // Decode 6-character filename (2 words, 3 chars per word)
+        string filename = DecodeRadix50Word(word1) + DecodeRadix50Word(word2);
+        filename = filename.TrimEnd();
 
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes) => throw new NotImplementedException();
+        // Decode 3-character file type
+        string fileType = DecodeRadix50Word(type).TrimEnd();
 
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+        return string.IsNullOrEmpty(fileType) ? filename : $"{filename}.{fileType}";
+    }
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
+    /// <summary>Decodes a single Radix-50 word (3 characters)</summary>
+    /// <param name="word">Radix-50 encoded word</param>
+    /// <returns>Decoded 3-character string</returns>
+    static string DecodeRadix50Word(ushort word)
+    {
+        // Radix-50 character set: " ABCDEFGHIJKLMNOPQRSTUVWXYZ$.%0123456789"
+        const string radix50Chars = " ABCDEFGHIJKLMNOPQRSTUVWXYZ$.%0123456789";
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+        var chars = new char[3];
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+        // Extract 3 characters (each is 0-39, requiring ~5.3 bits, packed in base-40)
+        chars[2] = radix50Chars[word        % 40];
+        chars[1] = radix50Chars[word / 40   % 40];
+        chars[0] = radix50Chars[word / 1600 % 40];
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber OpenDir(string path, out IDirNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseDir(IDirNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadDir(IDirNode node, out string filename) => throw new NotImplementedException();
+        return new string(chars);
+    }
 }
