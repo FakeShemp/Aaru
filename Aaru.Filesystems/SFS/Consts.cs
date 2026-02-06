@@ -46,6 +46,8 @@ public sealed partial class SFS
     const uint NODECONTAINER_ID = 0x4E444320;
     /// <summary>Bitmap block identifier ('BITM')</summary>
     const uint BITMAP_ID = 0x4249544D;
+    /// <summary>B-tree node container block identifier ('BNDC')</summary>
+    const uint BNODECONTAINER_ID = 0x424E4443;
 
     /// <summary>Node number of the root directory object</summary>
     const uint ROOTNODE = 1;

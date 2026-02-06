@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 
@@ -39,6 +40,155 @@ public sealed partial class SFS
 {
     /// <summary>Amiga epoch: January 1, 1978</summary>
     static readonly DateTime _amigaEpoch = new(1978, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize the path
+        string normalizedPath = path ?? "";
+
+        if(normalizedPath == "" || normalizedPath == "." || normalizedPath == "/") return ErrorNumber.IsDirectory;
+
+        // Get file stat to validate it's a file and get its size
+        ErrorNumber errno = Stat(normalizedPath, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Verify it's a regular file, not a directory
+        if(stat.Attributes.HasFlag(FileAttributes.Directory)) return ErrorNumber.IsDirectory;
+
+        // Get the object node for this path
+        errno = GetObjectNodeForPath(normalizedPath, out uint objectNode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Find the object container for this node
+        errno = FindObjectNode(objectNode, out uint objectBlock);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        errno = ReadBlock(objectBlock, out byte[] objectData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Find the object in the container
+        errno = FindObjectInContainer(objectData, objectNode, out int objectOffset);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read the first extent block (data field at offset 12)
+        var firstExtent = BigEndianBitConverter.ToUInt32(objectData, objectOffset + 12);
+
+        // Create file node
+        node = new SfsFileNode
+        {
+            Path          = normalizedPath,
+            Length        = stat.Length,
+            Offset        = 0,
+            FirstExtent   = firstExtent,
+            CurrentExtent = firstExtent,
+            ExtentOffset  = 0
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not SfsFileNode) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(buffer is null || buffer.Length < length) return ErrorNumber.InvalidArgument;
+
+        if(node is not SfsFileNode sfsNode) return ErrorNumber.InvalidArgument;
+
+        if(sfsNode.Offset < 0 || length < 0) return ErrorNumber.InvalidArgument;
+
+        // If at or past end of file, return zero bytes read
+        if(sfsNode.Offset >= sfsNode.Length) return ErrorNumber.NoError;
+
+        // Adjust length to not read past end of file
+        long bytesToRead = length;
+
+        if(sfsNode.Offset + bytesToRead > sfsNode.Length) bytesToRead = sfsNode.Length - sfsNode.Offset;
+
+        if(bytesToRead == 0) return ErrorNumber.NoError;
+
+        // Seek to the correct extent if needed
+        ErrorNumber errno = SeekToOffset(sfsNode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read data from extent chain
+        long bufferOffset = 0;
+
+        while(bytesToRead > 0 && sfsNode.CurrentExtent != 0)
+        {
+            // Find the current extent B-node
+            errno = FindExtentBNode(sfsNode.CurrentExtent,
+                                    out uint extentKey,
+                                    out uint extentNext,
+                                    out ushort extentBlocks);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // Calculate how many bytes are available in this extent
+            long extentSize      = (long)extentBlocks << _blockShift;
+            long bytesInExtent   = extentSize - sfsNode.ExtentOffset;
+            long bytesFromExtent = Math.Min(bytesToRead, bytesInExtent);
+
+            // Calculate starting block and offset within the extent
+            long offsetInExtent = sfsNode.ExtentOffset;
+            uint startBlock     = extentKey + (uint)(offsetInExtent >> _blockShift);
+            var  offsetInBlock  = (int)(offsetInExtent & _blockSize - 1);
+
+            // Read blocks
+            while(bytesFromExtent > 0)
+            {
+                errno = ReadBlock(startBlock, out byte[] blockData);
+
+                if(errno != ErrorNumber.NoError) return errno;
+
+                var bytesFromBlock = (int)Math.Min(bytesFromExtent, _blockSize - offsetInBlock);
+                Array.Copy(blockData, offsetInBlock, buffer, bufferOffset, bytesFromBlock);
+
+                bufferOffset         += bytesFromBlock;
+                bytesFromExtent      -= bytesFromBlock;
+                bytesToRead          -= bytesFromBlock;
+                read                 += bytesFromBlock;
+                sfsNode.Offset       += bytesFromBlock;
+                sfsNode.ExtentOffset += bytesFromBlock;
+
+                offsetInBlock = 0;
+                startBlock++;
+            }
+
+            // Move to next extent if we've exhausted this one
+            if(sfsNode.ExtentOffset >= extentSize && extentNext != 0)
+            {
+                sfsNode.CurrentExtent = extentNext;
+                sfsNode.ExtentOffset  = 0;
+            }
+        }
+
+        return ErrorNumber.NoError;
+    }
 
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
@@ -150,6 +300,138 @@ public sealed partial class SFS
         if(findErr != ErrorNumber.NoError) return findErr;
 
         return StatFromObjectData(objectData, objectOffset, targetNode, out stat);
+    }
+
+    /// <summary>Seeks to the correct extent for the current file offset</summary>
+    /// <param name="node">The file node</param>
+    /// <returns>Error code indicating success or failure</returns>
+    ErrorNumber SeekToOffset(SfsFileNode node)
+    {
+        // If we're before the current extent position, restart from the beginning
+        long currentExtentStart = node.Offset - node.ExtentOffset;
+
+        if(node.Offset < currentExtentStart || node.CurrentExtent == 0)
+        {
+            node.CurrentExtent = node.FirstExtent;
+            node.ExtentOffset  = 0;
+            currentExtentStart = 0;
+        }
+
+        // Walk the extent chain to find the correct extent
+        while(node.CurrentExtent != 0)
+        {
+            ErrorNumber errno =
+                FindExtentBNode(node.CurrentExtent, out _, out uint extentNext, out ushort extentBlocks);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            long extentSize = (long)extentBlocks << _blockShift;
+            long extentEnd  = currentExtentStart + extentSize;
+
+            if(node.Offset < extentEnd)
+            {
+                // Found the correct extent
+                node.ExtentOffset = node.Offset - currentExtentStart;
+
+                return ErrorNumber.NoError;
+            }
+
+            // Move to next extent
+            currentExtentStart = extentEnd;
+            node.CurrentExtent = extentNext;
+            node.ExtentOffset  = 0;
+        }
+
+        return ErrorNumber.InvalidArgument;
+    }
+
+    /// <summary>Finds an extent B-node by key in the extent B-tree</summary>
+    /// <param name="key">The extent key (block number)</param>
+    /// <param name="extentKey">Output: the extent's data block start</param>
+    /// <param name="extentNext">Output: the next extent in the chain</param>
+    /// <param name="extentBlocks">Output: number of blocks in this extent</param>
+    /// <returns>Error code indicating success or failure</returns>
+    ErrorNumber FindExtentBNode(uint key, out uint extentKey, out uint extentNext, out ushort extentBlocks)
+    {
+        extentKey    = 0;
+        extentNext   = 0;
+        extentBlocks = 0;
+
+        // Start at the extent B-tree root
+        uint currentBlock = _rootBlock.extentbnoderoot;
+
+        while(true)
+        {
+            ErrorNumber errno = ReadBlock(currentBlock, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // Validate block ID
+            var blockId = BigEndianBitConverter.ToUInt32(blockData, 0);
+
+            if(blockId != BNODECONTAINER_ID) return ErrorNumber.InvalidArgument;
+
+            // BTreeContainer starts at offset 12 (after header)
+            // nodecount (2) + isleaf (1) + nodesize (1)
+            var  nodeCount = BigEndianBitConverter.ToUInt16(blockData, 12);
+            byte isLeaf    = blockData[14];
+            byte nodeSize  = blockData[15];
+
+            if(nodeCount == 0) return ErrorNumber.InvalidArgument;
+
+            // Search for the key in this container
+            // BNode entries start at offset 16
+            var nodeOffset = 16;
+
+            if(isLeaf != 0)
+            {
+                // Leaf node - contains ExtentBNode structures
+                // ExtentBNode: key (4) + next (4) + prev (4) + blocks (2) = 14 bytes
+                for(var i = 0; i < nodeCount; i++)
+                {
+                    var nodeKey = BigEndianBitConverter.ToUInt32(blockData, nodeOffset);
+
+                    if(nodeKey == key)
+                    {
+                        extentKey    = nodeKey;
+                        extentNext   = BigEndianBitConverter.ToUInt32(blockData, nodeOffset + 4);
+                        extentBlocks = BigEndianBitConverter.ToUInt16(blockData, nodeOffset + 12);
+
+                        return ErrorNumber.NoError;
+                    }
+
+                    nodeOffset += nodeSize;
+                }
+
+                // Key not found
+                return ErrorNumber.InvalidArgument;
+            }
+
+            // Index node - find the child to descend into
+            // BNode: key (4) + data (4) = 8 bytes
+            uint childBlock = 0;
+
+            for(int i = nodeCount - 1; i >= 0; i--)
+            {
+                int entryOffset = nodeOffset + i * nodeSize;
+                var nodeKey     = BigEndianBitConverter.ToUInt32(blockData, entryOffset);
+
+                if(key >= nodeKey)
+                {
+                    childBlock = BigEndianBitConverter.ToUInt32(blockData, entryOffset + 4);
+
+                    break;
+                }
+            }
+
+            if(childBlock == 0)
+            {
+                // Use first entry
+                childBlock = BigEndianBitConverter.ToUInt32(blockData, nodeOffset + 4);
+            }
+
+            currentBlock = childBlock;
+        }
     }
 
     /// <summary>Creates a FileEntryInfo from raw object data in an ObjectContainer</summary>

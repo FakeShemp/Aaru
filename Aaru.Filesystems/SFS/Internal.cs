@@ -45,4 +45,25 @@ public sealed partial class SFS
         /// <summary>The path of this directory</summary>
         public string Path { get; set; }
     }
+
+    /// <summary>Internal file node for SFS file reading with streaming support</summary>
+    sealed class SfsFileNode : IFileNode
+    {
+        /// <summary>First extent block (from object.data field)</summary>
+        public uint FirstExtent { get; set; }
+
+        /// <summary>Current extent block being read</summary>
+        public uint CurrentExtent { get; set; }
+
+        /// <summary>Offset within the current extent chain</summary>
+        public long ExtentOffset { get; set; }
+        /// <summary>Current read position in the file</summary>
+        public long Offset { get; set; }
+
+        /// <summary>Total file size in bytes</summary>
+        public long Length { get; set; }
+
+        /// <summary>Path to the file</summary>
+        public string Path { get; set; }
+    }
 }
