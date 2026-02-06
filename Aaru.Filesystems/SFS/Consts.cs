@@ -29,7 +29,6 @@
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Smart File System</summary>
 public sealed partial class SFS
 {
     /// <summary>Identifier for SFS v1</summary>

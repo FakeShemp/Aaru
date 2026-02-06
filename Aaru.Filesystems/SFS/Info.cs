@@ -36,7 +36,6 @@ using Partition = Aaru.CommonTypes.Partition;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Smart File System</summary>
 public sealed partial class SFS
 {
 #region IFilesystem Members

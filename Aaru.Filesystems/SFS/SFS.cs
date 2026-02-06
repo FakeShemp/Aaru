@@ -27,14 +27,23 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Smart File System</summary>
-public sealed partial class SFS : IFilesystem
+/// <summary>Implements the Smart File System</summary>
+public sealed partial class SFS : IReadOnlyFilesystem
 {
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
+
 #region IFilesystem Members
 
     /// <inheritdoc />

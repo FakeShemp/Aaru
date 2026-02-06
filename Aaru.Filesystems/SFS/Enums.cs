@@ -31,7 +31,6 @@ using System;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Smart File System</summary>
 public sealed partial class SFS
 {
 #region Nested type: Flags
