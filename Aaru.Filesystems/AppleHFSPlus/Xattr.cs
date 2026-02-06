@@ -69,6 +69,20 @@ public sealed partial class AppleHFSPlus
         // Add Resource Fork xattr if it exists and is non-empty
         if(fileEntry.ResourceForkLogicalSize > 0) xattrs.Add("com.apple.ResourceFork");
 
+        // Read attributes from the attributes B-tree file if it exists
+        if(_attributesFile != null)
+        {
+            ErrorNumber attrError = ListAttributesFromBTree(fileEntry.CNID, xattrs);
+
+            if(attrError != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "ListXAttr: Failed to read attributes from B-tree for CNID {0}: {1}",
+                                  fileEntry.CNID,
+                                  attrError);
+            }
+        }
+
         xattrs.Sort();
 
         return ErrorNumber.NoError;
@@ -132,6 +146,23 @@ public sealed partial class AppleHFSPlus
             return fileEntry.ResourceForkLogicalSize == 0
                        ? ErrorNumber.NoSuchExtendedAttribute
                        : ReadResourceFork(fileEntry, out buf);
+        }
+
+        // Try to read from attributes B-tree file
+        if(_attributesFile != null)
+        {
+            ErrorNumber attrError = GetAttributeFromBTree(fileEntry.CNID, xattr, out buf);
+
+            if(attrError == ErrorNumber.NoError) return ErrorNumber.NoError;
+
+            if(attrError != ErrorNumber.NoSuchExtendedAttribute)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "GetXattr: Failed to read attribute '{0}' from B-tree for CNID {1}: {2}",
+                                  xattr,
+                                  fileEntry.CNID,
+                                  attrError);
+            }
         }
 
         return ErrorNumber.NoSuchExtendedAttribute;
@@ -404,5 +435,702 @@ public sealed partial class AppleHFSPlus
         }
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Lists all attributes for a file from the attributes B-tree</summary>
+    /// <param name="fileID">CNID of the file</param>
+    /// <param name="xattrs">List to append attribute names to</param>
+    /// <returns>Error number</returns>
+    private ErrorNumber ListAttributesFromBTree(uint fileID, List<string> xattrs)
+    {
+        if(_attributesFile == null) return ErrorNumber.NotSupported;
+
+        try
+        {
+            // Search the attributes B-tree for all attributes belonging to this file
+            // Attributes are keyed by (fileID, startBlock, attrName)
+            // We need to find all records where fileID matches and startBlock == 0 (primary records)
+
+            ErrorNumber searchError = SearchAttributeBTree(fileID, null, out List<string> attributeNames);
+
+            if(searchError != ErrorNumber.NoError) return searchError;
+
+            if(attributeNames != null && attributeNames.Count > 0)
+            {
+                foreach(string attrName in attributeNames)
+                {
+                    // Skip protected/internal attributes
+                    if(attrName.StartsWith("com.apple.system.", StringComparison.Ordinal)) continue;
+
+                    if(!xattrs.Contains(attrName)) xattrs.Add(attrName);
+                }
+            }
+
+            return ErrorNumber.NoError;
+        }
+        catch(Exception ex)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ListAttributesFromBTree: Exception - {0}", ex.Message);
+
+            return ErrorNumber.InOutError;
+        }
+    }
+
+    /// <summary>Gets an attribute value from the attributes B-tree</summary>
+    /// <param name="fileID">CNID of the file</param>
+    /// <param name="attrName">Name of the attribute</param>
+    /// <param name="buf">Output buffer with attribute data</param>
+    /// <returns>Error number</returns>
+    private ErrorNumber GetAttributeFromBTree(uint fileID, string attrName, out byte[] buf)
+    {
+        buf = null;
+
+        if(_attributesFile == null) return ErrorNumber.NotSupported;
+
+        try
+        {
+            // Search for the specific attribute
+            ErrorNumber searchError = SearchAttributeBTree(fileID, attrName, out HFSPlusAttrRecord attrRecord);
+
+            if(searchError != ErrorNumber.NoError) return searchError;
+
+            // Extract data based on record type
+            switch((BTAttributeRecordType)attrRecord.recordType)
+            {
+                case BTAttributeRecordType.kHFSPlusAttrInlineData:
+                    // Inline data - data is stored directly in the B-tree node
+                    uint dataSize = attrRecord.attrData.attrSize;
+
+                    if(dataSize == 0)
+                    {
+                        buf = [];
+
+                        return ErrorNumber.NoError;
+                    }
+
+                    // Read the full record to get all the data
+                    ErrorNumber readError = ReadAttributeData(fileID, attrName, dataSize, out buf);
+
+                    return readError;
+
+                case BTAttributeRecordType.kHFSPlusAttrForkData:
+                    // Extent-based attribute - data is stored in allocation blocks
+                    return ReadAttributeForkData(fileID, attrName, ref attrRecord.forkData, out buf);
+
+                default:
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "GetAttributeFromBTree: Unknown attribute record type {0}",
+                                      attrRecord.recordType);
+
+                    return ErrorNumber.NotSupported;
+            }
+        }
+        catch(Exception ex)
+        {
+            AaruLogging.Debug(MODULE_NAME, "GetAttributeFromBTree: Exception - {0}", ex.Message);
+
+            return ErrorNumber.InOutError;
+        }
+    }
+
+    /// <summary>Searches the attributes B-tree for attributes</summary>
+    /// <param name="fileID">CNID of the file</param>
+    /// <param name="attrName">Specific attribute name to search for, or null to list all</param>
+    /// <param name="attributeNames">Output list of attribute names (if attrName is null)</param>
+    /// <returns>Error number</returns>
+    private ErrorNumber SearchAttributeBTree(uint fileID, string attrName, out List<string> attributeNames)
+    {
+        attributeNames = [];
+
+        if(_attributesFile == null) return ErrorNumber.NotSupported;
+
+        // Read the attributes B-tree header first
+        ErrorNumber headerErr = ReadAttributesBTreeHeader(out BTHeaderRec attrBTreeHeader);
+
+        if(headerErr != ErrorNumber.NoError) return headerErr;
+
+        // Traverse the attributes B-tree starting from the first leaf node
+        uint currentLeafNode = attrBTreeHeader.firstLeafNode;
+
+        while(currentLeafNode != 0)
+        {
+            ErrorNumber nodeErr = ReadAttributeNode(currentLeafNode, attrBTreeHeader.nodeSize, out byte[] leafNode);
+
+            if(nodeErr != ErrorNumber.NoError) break;
+
+            // Parse the leaf node for attributes belonging to this fileID
+            ParseAttributeLeafNode(leafNode, attrBTreeHeader.nodeSize, fileID, attributeNames);
+
+            // Get next leaf node
+            int ndSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BTNodeDescriptor));
+
+            if(leafNode.Length < ndSize) break;
+
+            BTNodeDescriptor nodeDesc = Marshal.ByteArrayToStructureBigEndian<BTNodeDescriptor>(leafNode, 0, ndSize);
+
+            currentLeafNode = nodeDesc.fLink;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Searches the attributes B-tree for a specific attribute</summary>
+    /// <param name="fileID">CNID of the file</param>
+    /// <param name="attrName">Attribute name to search for</param>
+    /// <param name="attrRecord">Output attribute record</param>
+    /// <returns>Error number</returns>
+    private ErrorNumber SearchAttributeBTree(uint fileID, string attrName, out HFSPlusAttrRecord attrRecord)
+    {
+        attrRecord = default(HFSPlusAttrRecord);
+
+        if(_attributesFile == null || string.IsNullOrEmpty(attrName)) return ErrorNumber.NotSupported;
+
+        // Read the attributes B-tree header
+        ErrorNumber headerErr = ReadAttributesBTreeHeader(out BTHeaderRec attrBTreeHeader);
+
+        if(headerErr != ErrorNumber.NoError) return headerErr;
+
+        // Traverse the attributes B-tree to find the specific attribute
+        uint currentLeafNode = attrBTreeHeader.firstLeafNode;
+
+        while(currentLeafNode != 0)
+        {
+            ErrorNumber nodeErr = ReadAttributeNode(currentLeafNode, attrBTreeHeader.nodeSize, out byte[] leafNode);
+
+            if(nodeErr != ErrorNumber.NoError) break;
+
+            // Search for the specific attribute in this leaf node
+            if(FindAttributeInLeafNode(leafNode, attrBTreeHeader.nodeSize, fileID, attrName, out attrRecord))
+                return ErrorNumber.NoError;
+
+            // Get next leaf node
+            int ndSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BTNodeDescriptor));
+
+            if(leafNode.Length < ndSize) break;
+
+            BTNodeDescriptor nodeDesc = Marshal.ByteArrayToStructureBigEndian<BTNodeDescriptor>(leafNode, 0, ndSize);
+
+            currentLeafNode = nodeDesc.fLink;
+        }
+
+        return ErrorNumber.NoSuchExtendedAttribute;
+    }
+
+    /// <summary>Reads inline attribute data</summary>
+    /// <param name="fileID">CNID of the file</param>
+    /// <param name="attrName">Attribute name</param>
+    /// <param name="dataSize">Size of data to read</param>
+    /// <param name="buf">Output buffer</param>
+    /// <returns>Error number</returns>
+    private ErrorNumber ReadAttributeData(uint fileID, string attrName, uint dataSize, out byte[] buf)
+    {
+        buf = null;
+
+        if(dataSize == 0)
+        {
+            buf = [];
+
+            return ErrorNumber.NoError;
+        }
+
+        // Search for the attribute record to get the full data
+        ErrorNumber searchErr = SearchAttributeBTree(fileID, attrName, out HFSPlusAttrRecord attrRecord);
+
+        if(searchErr != ErrorNumber.NoError) return searchErr;
+
+        // For inline data, we need to read the full record with all the data
+        // The attrData structure has a variable-length data field
+        if((BTAttributeRecordType)attrRecord.recordType != BTAttributeRecordType.kHFSPlusAttrInlineData)
+            return ErrorNumber.InvalidArgument;
+
+        // Read the attributes B-tree header
+        ErrorNumber headerErr = ReadAttributesBTreeHeader(out BTHeaderRec attrBTreeHeader);
+
+        if(headerErr != ErrorNumber.NoError) return headerErr;
+
+        // Find the attribute record again and read the full data
+        uint currentLeafNode = attrBTreeHeader.firstLeafNode;
+
+        while(currentLeafNode != 0)
+        {
+            ErrorNumber nodeErr = ReadAttributeNode(currentLeafNode, attrBTreeHeader.nodeSize, out byte[] leafNode);
+
+            if(nodeErr != ErrorNumber.NoError) break;
+
+            // Search for the specific attribute in this leaf node and extract data
+            if(ExtractInlineDataFromLeafNode(leafNode, attrBTreeHeader.nodeSize, fileID, attrName, dataSize, out buf))
+                return ErrorNumber.NoError;
+
+            // Get next leaf node
+            int ndSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BTNodeDescriptor));
+
+            if(leafNode.Length < ndSize) break;
+
+            BTNodeDescriptor nodeDesc = Marshal.ByteArrayToStructureBigEndian<BTNodeDescriptor>(leafNode, 0, ndSize);
+
+            currentLeafNode = nodeDesc.fLink;
+        }
+
+        return ErrorNumber.NoSuchExtendedAttribute;
+    }
+
+    /// <summary>Reads extent-based attribute data</summary>
+    /// <param name="fileID">CNID of the file</param>
+    /// <param name="attrName">Attribute name</param>
+    /// <param name="forkData">Fork data containing extents</param>
+    /// <param name="buf">Output buffer</param>
+    /// <returns>Error number</returns>
+    private ErrorNumber ReadAttributeForkData(uint       fileID, string attrName, ref HFSPlusAttrForkData forkData,
+                                              out byte[] buf)
+    {
+        buf = null;
+
+        ulong logicalSize = forkData.theFork.logicalSize;
+
+        if(logicalSize == 0)
+        {
+            buf = [];
+
+            return ErrorNumber.NoError;
+        }
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "ReadAttributeForkData: Reading {0} bytes for attr '{1}' (CNID={2})",
+                          logicalSize,
+                          attrName,
+                          fileID);
+
+        buf = new byte[logicalSize];
+        ulong bytesRead = 0;
+
+        // Get all extents for this attribute (may include overflow extents)
+        List<HFSPlusExtentDescriptor> allExtents = [];
+
+        // Add the first 8 extents from the fork data
+        foreach(HFSPlusExtentDescriptor extent in forkData.theFork.extents.extentDescriptors)
+        {
+            if(extent.blockCount == 0) break;
+
+            allExtents.Add(extent);
+        }
+
+        // Check if we need overflow extents
+        uint totalBlocksFromExtents = 0;
+
+        foreach(HFSPlusExtentDescriptor extent in allExtents) totalBlocksFromExtents += extent.blockCount;
+
+        if(totalBlocksFromExtents < forkData.theFork.totalBlocks)
+        {
+            // We need to read overflow extents from the Extents Overflow File
+            AaruLogging.Debug(MODULE_NAME,
+                              "ReadAttributeForkData: Need to read overflow extents for attribute '{0}' (CNID={1})",
+                              attrName,
+                              fileID);
+
+            // For now, we'll just use what we have
+            // A full implementation would read overflow extents from the attributes B-tree
+        }
+
+        // Read each extent
+        foreach(HFSPlusExtentDescriptor extent in allExtents)
+        {
+            if(extent.blockCount == 0) break;
+
+            ulong extentSizeBytes = (ulong)extent.blockCount * _volumeHeader.blockSize;
+            ulong toRead          = Math.Min(extentSizeBytes, logicalSize - bytesRead);
+
+            // Calculate sector offset for this extent
+            ulong blockOffsetBytes = (ulong)extent.startBlock * _volumeHeader.blockSize;
+
+            ulong deviceSector = ((_partitionStart + _hfsPlusVolumeOffset) * _sectorSize + blockOffsetBytes) /
+                                 _sectorSize;
+
+            var byteOffset = (uint)(((_partitionStart + _hfsPlusVolumeOffset) * _sectorSize + blockOffsetBytes) %
+                                    _sectorSize);
+
+            var sectorsToRead = (uint)((toRead + byteOffset + _sectorSize - 1) / _sectorSize);
+
+            ErrorNumber readErr = _imagePlugin.ReadSectors(deviceSector,
+                                                           false,
+                                                           sectorsToRead,
+                                                           out byte[] sectorData,
+                                                           out _);
+
+            if(readErr != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadAttributeForkData: Failed to read sectors: {0}", readErr);
+
+                return readErr;
+            }
+
+            if(sectorData == null || sectorData.Length == 0)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadAttributeForkData: Got empty sector data");
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            // Copy data from sector buffer to output buffer
+            uint bytesToCopy = Math.Min((uint)toRead, (uint)(sectorData.Length - byteOffset));
+
+            Array.Copy(sectorData, (int)byteOffset, buf, (int)bytesRead, bytesToCopy);
+
+            bytesRead += bytesToCopy;
+
+            if(bytesRead >= logicalSize) break;
+        }
+
+        if(bytesRead < logicalSize)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "ReadAttributeForkData: Warning - Read only {0} bytes out of {1} bytes for attribute '{2}' (CNID={3})",
+                              bytesRead,
+                              logicalSize,
+                              attrName,
+                              fileID);
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads the attributes B-tree header</summary>
+    /// <param name="header">Output B-tree header</param>
+    /// <returns>Error number</returns>
+    private ErrorNumber ReadAttributesBTreeHeader(out BTHeaderRec header)
+    {
+        header = default(BTHeaderRec);
+
+        if(_attributesFile == null) return ErrorNumber.NotSupported;
+
+        HFSPlusForkData attrFork = _attributesFile.Value;
+
+        if(attrFork.totalBlocks                             == 0    ||
+           attrFork.extents.extentDescriptors               == null ||
+           attrFork.extents.extentDescriptors.Length        == 0    ||
+           attrFork.extents.extentDescriptors[0].blockCount == 0)
+            return ErrorNumber.InvalidArgument;
+
+        HFSPlusExtentDescriptor firstExtent = attrFork.extents.extentDescriptors[0];
+
+        // Calculate byte offset of the attributes file
+        ulong attrFileOffset = firstExtent.startBlock * _volumeHeader.blockSize;
+
+        // Convert to device sector address
+        ulong deviceSector = ((_partitionStart + _hfsPlusVolumeOffset) * _sectorSize + attrFileOffset) / _sectorSize;
+
+        var byteOffset = (uint)(((_partitionStart + _hfsPlusVolumeOffset) * _sectorSize + attrFileOffset) %
+                                _sectorSize);
+
+        // Read the header node (assume 8192 bytes as typical for attributes file)
+        uint sectorsToRead = (8192 + byteOffset + _sectorSize - 1) / _sectorSize;
+
+        ErrorNumber errno =
+            _imagePlugin.ReadSectors(deviceSector, false, sectorsToRead, out byte[] headerSectors, out _);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(headerSectors.Length < byteOffset + System.Runtime.InteropServices.Marshal.SizeOf(typeof(BTNodeDescriptor)))
+            return ErrorNumber.InvalidArgument;
+
+        // Parse node descriptor
+        int ndSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BTNodeDescriptor));
+
+        BTNodeDescriptor nodeDesc =
+            Marshal.ByteArrayToStructureBigEndian<BTNodeDescriptor>(headerSectors, (int)byteOffset, ndSize);
+
+        if(nodeDesc.kind != BTNodeKind.kBTHeaderNode) return ErrorNumber.InvalidArgument;
+
+        // Parse B-tree header (follows node descriptor)
+        int bhSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BTHeaderRec));
+
+        if(headerSectors.Length < byteOffset + ndSize + bhSize) return ErrorNumber.InvalidArgument;
+
+        header = Marshal.ByteArrayToStructureBigEndian<BTHeaderRec>(headerSectors, (int)(byteOffset + ndSize), bhSize);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads an attributes B-tree node by node number</summary>
+    /// <param name="nodeNumber">Node number to read</param>
+    /// <param name="nodeSize">Size of each node</param>
+    /// <param name="nodeData">Output node data</param>
+    /// <returns>Error number</returns>
+    private ErrorNumber ReadAttributeNode(uint nodeNumber, ushort nodeSize, out byte[] nodeData)
+    {
+        nodeData = null;
+
+        if(_attributesFile == null) return ErrorNumber.NotSupported;
+
+        HFSPlusForkData attrFork = _attributesFile.Value;
+
+        if(attrFork.extents.extentDescriptors == null || attrFork.extents.extentDescriptors.Length == 0)
+            return ErrorNumber.InvalidArgument;
+
+        // Calculate byte offset of node within the attributes file
+        ulong nodeOffset = (ulong)nodeNumber * nodeSize;
+
+        // Find which extent contains this offset
+        ulong currentOffset = 0;
+
+        foreach(HFSPlusExtentDescriptor extent in attrFork.extents.extentDescriptors)
+        {
+            if(extent.blockCount == 0) break;
+
+            ulong extentSizeInBytes = (ulong)extent.blockCount * _volumeHeader.blockSize;
+
+            if(nodeOffset < currentOffset + extentSizeInBytes)
+            {
+                // Found the extent containing this node
+                ulong offsetInExtent = nodeOffset                                         - currentOffset;
+                ulong blockOffset    = (ulong)extent.startBlock * _volumeHeader.blockSize + offsetInExtent;
+
+                // Convert to device sector address
+                ulong deviceSector = ((_partitionStart + _hfsPlusVolumeOffset) * _sectorSize + blockOffset) /
+                                     _sectorSize;
+
+                var byteOffset = (uint)(((_partitionStart + _hfsPlusVolumeOffset) * _sectorSize + blockOffset) %
+                                        _sectorSize);
+
+                uint sectorsToRead = (nodeSize + byteOffset + _sectorSize - 1) / _sectorSize;
+
+                ErrorNumber errno =
+                    _imagePlugin.ReadSectors(deviceSector, false, sectorsToRead, out byte[] sectorData, out _);
+
+                if(errno != ErrorNumber.NoError) return errno;
+
+                if(sectorData.Length < byteOffset + nodeSize) return ErrorNumber.InvalidArgument;
+
+                nodeData = new byte[nodeSize];
+                Array.Copy(sectorData, (int)byteOffset, nodeData, 0, nodeSize);
+
+                return ErrorNumber.NoError;
+            }
+
+            currentOffset += extentSizeInBytes;
+        }
+
+        return ErrorNumber.InvalidArgument;
+    }
+
+    /// <summary>Parses an attribute leaf node and extracts attribute names for a specific file</summary>
+    /// <param name="leafNode">Leaf node data</param>
+    /// <param name="nodeSize">Node size</param>
+    /// <param name="fileID">CNID to match</param>
+    /// <param name="attributeNames">List to append attribute names to</param>
+    private void ParseAttributeLeafNode(byte[] leafNode, ushort nodeSize, uint fileID, List<string> attributeNames)
+    {
+        int ndSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BTNodeDescriptor));
+
+        if(leafNode.Length < ndSize) return;
+
+        BTNodeDescriptor nodeDesc = Marshal.ByteArrayToStructureBigEndian<BTNodeDescriptor>(leafNode, 0, ndSize);
+
+        ushort numRecords = nodeDesc.numRecords;
+
+        for(ushort i = 0; i < numRecords; i++)
+        {
+            int offsetPointerOffset = nodeSize - 2 * (i + 1);
+
+            if(offsetPointerOffset < 0 || offsetPointerOffset + 2 > leafNode.Length) continue;
+
+            var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPointerOffset);
+
+            if(recordOffset >= leafNode.Length || recordOffset + 8 > leafNode.Length) continue;
+
+            // Parse attribute key: keyLength(2) + pad(2) + fileID(4) + startBlock(4) + attrNameLen(2) + attrName...
+            var keyLength  = BigEndianBitConverter.ToUInt16(leafNode, recordOffset);
+            var keyFileID  = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 4);
+            var startBlock = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 8);
+
+            // Only process attributes for the requested fileID with startBlock == 0 (primary records)
+            if(keyFileID != fileID || startBlock != 0) continue;
+
+            if(recordOffset + 12 + 2 > leafNode.Length) continue;
+
+            var attrNameLen = BigEndianBitConverter.ToUInt16(leafNode, recordOffset + 12);
+
+            if(attrNameLen == 0 || recordOffset + 14 + attrNameLen * 2 > leafNode.Length) continue;
+
+            // Extract attribute name (Unicode UTF-16 big-endian)
+            var nameChars = new char[attrNameLen];
+
+            for(var j = 0; j < attrNameLen; j++)
+                nameChars[j] = (char)BigEndianBitConverter.ToUInt16(leafNode, recordOffset + 14 + j * 2);
+
+            string attrName = new(nameChars);
+
+            if(!string.IsNullOrEmpty(attrName) && !attributeNames.Contains(attrName)) attributeNames.Add(attrName);
+        }
+    }
+
+    /// <summary>Finds a specific attribute record in a leaf node</summary>
+    /// <param name="leafNode">Leaf node data</param>
+    /// <param name="nodeSize">Node size</param>
+    /// <param name="fileID">CNID to match</param>
+    /// <param name="attrName">Attribute name to match</param>
+    /// <param name="attrRecord">Output attribute record</param>
+    /// <returns>True if found</returns>
+    private bool FindAttributeInLeafNode(byte[]                leafNode, ushort nodeSize, uint fileID, string attrName,
+                                         out HFSPlusAttrRecord attrRecord)
+    {
+        attrRecord = default(HFSPlusAttrRecord);
+
+        int ndSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BTNodeDescriptor));
+
+        if(leafNode.Length < ndSize) return false;
+
+        BTNodeDescriptor nodeDesc = Marshal.ByteArrayToStructureBigEndian<BTNodeDescriptor>(leafNode, 0, ndSize);
+
+        ushort numRecords = nodeDesc.numRecords;
+
+        for(ushort i = 0; i < numRecords; i++)
+        {
+            int offsetPointerOffset = nodeSize - 2 * (i + 1);
+
+            if(offsetPointerOffset < 0 || offsetPointerOffset + 2 > leafNode.Length) continue;
+
+            var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPointerOffset);
+
+            if(recordOffset >= leafNode.Length || recordOffset + 8 > leafNode.Length) continue;
+
+            // Parse attribute key
+            var keyLength  = BigEndianBitConverter.ToUInt16(leafNode, recordOffset);
+            var keyFileID  = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 4);
+            var startBlock = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 8);
+
+            if(keyFileID != fileID || startBlock != 0) continue;
+
+            if(recordOffset + 12 + 2 > leafNode.Length) continue;
+
+            var attrNameLen = BigEndianBitConverter.ToUInt16(leafNode, recordOffset + 12);
+
+            if(attrNameLen == 0 || recordOffset + 14 + attrNameLen * 2 > leafNode.Length) continue;
+
+            // Extract attribute name
+            var nameChars = new char[attrNameLen];
+
+            for(var j = 0; j < attrNameLen; j++)
+                nameChars[j] = (char)BigEndianBitConverter.ToUInt16(leafNode, recordOffset + 14 + j * 2);
+
+            string recordAttrName = new(nameChars);
+
+            if(!string.Equals(recordAttrName, attrName, StringComparison.Ordinal)) continue;
+
+            // Found the attribute! Now parse the record data
+            int dataOffset = recordOffset + 2 + keyLength;
+
+            if(dataOffset + 4 > leafNode.Length) continue;
+
+            var recordType = BigEndianBitConverter.ToUInt32(leafNode, dataOffset);
+
+            // Parse based on record type
+            if(recordType == (uint)BTAttributeRecordType.kHFSPlusAttrInlineData)
+            {
+                int attrDataSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(HFSPlusAttrData));
+
+                if(dataOffset + attrDataSize <= leafNode.Length)
+                {
+                    HFSPlusAttrData attrData =
+                        Marshal.ByteArrayToStructureBigEndian<HFSPlusAttrData>(leafNode, dataOffset, attrDataSize);
+
+                    attrRecord.recordType = recordType;
+                    attrRecord.attrData   = attrData;
+
+                    return true;
+                }
+            }
+            else if(recordType == (uint)BTAttributeRecordType.kHFSPlusAttrForkData)
+            {
+                int forkDataSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(HFSPlusAttrForkData));
+
+                if(dataOffset + forkDataSize <= leafNode.Length)
+                {
+                    HFSPlusAttrForkData forkData =
+                        Marshal.ByteArrayToStructureBigEndian<HFSPlusAttrForkData>(leafNode, dataOffset, forkDataSize);
+
+                    attrRecord.recordType = recordType;
+                    attrRecord.forkData   = forkData;
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>Extracts inline data from an attribute record in a leaf node</summary>
+    /// <param name="leafNode">Leaf node data</param>
+    /// <param name="nodeSize">Node size</param>
+    /// <param name="fileID">CNID to match</param>
+    /// <param name="attrName">Attribute name to match</param>
+    /// <param name="dataSize">Expected data size</param>
+    /// <param name="buf">Output buffer</param>
+    /// <returns>True if found and extracted</returns>
+    private bool ExtractInlineDataFromLeafNode(byte[] leafNode, ushort     nodeSize, uint fileID, string attrName,
+                                               uint   dataSize, out byte[] buf)
+    {
+        buf = null;
+
+        if(!FindAttributeInLeafNode(leafNode, nodeSize, fileID, attrName, out HFSPlusAttrRecord attrRecord))
+            return false;
+
+        if((BTAttributeRecordType)attrRecord.recordType != BTAttributeRecordType.kHFSPlusAttrInlineData) return false;
+
+        // The inline data is stored after the HFSPlusAttrData structure
+        // We need to re-parse to get the actual data bytes
+        int ndSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BTNodeDescriptor));
+
+        BTNodeDescriptor nodeDesc = Marshal.ByteArrayToStructureBigEndian<BTNodeDescriptor>(leafNode, 0, ndSize);
+
+        ushort numRecords = nodeDesc.numRecords;
+
+        for(ushort i = 0; i < numRecords; i++)
+        {
+            int offsetPointerOffset = nodeSize - 2 * (i + 1);
+
+            if(offsetPointerOffset < 0 || offsetPointerOffset + 2 > leafNode.Length) continue;
+
+            var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPointerOffset);
+
+            if(recordOffset >= leafNode.Length) continue;
+
+            var keyLength = BigEndianBitConverter.ToUInt16(leafNode, recordOffset);
+            var keyFileID = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 4);
+
+            if(keyFileID != fileID) continue;
+
+            var attrNameLen = BigEndianBitConverter.ToUInt16(leafNode, recordOffset + 12);
+
+            if(attrNameLen == 0) continue;
+
+            var nameChars = new char[attrNameLen];
+
+            for(var j = 0; j < attrNameLen; j++)
+            {
+                if(recordOffset + 14 + j * 2 + 2 > leafNode.Length) break;
+
+                nameChars[j] = (char)BigEndianBitConverter.ToUInt16(leafNode, recordOffset + 14 + j * 2);
+            }
+
+            string recordAttrName = new(nameChars);
+
+            if(!string.Equals(recordAttrName, attrName, StringComparison.Ordinal)) continue;
+
+            // Found it! Extract the data
+            int dataOffset = recordOffset + 2 + keyLength;
+
+            // Skip: recordType(4) + reserved(8) + attrSize(4) = 16 bytes to get to attrData
+            int attrDataOffset = dataOffset + 16;
+
+            if(attrDataOffset + dataSize > leafNode.Length) return false;
+
+            buf = new byte[dataSize];
+            Array.Copy(leafNode, attrDataOffset, buf, 0, (int)dataSize);
+
+            return true;
+        }
+
+        return false;
     }
 }

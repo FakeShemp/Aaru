@@ -144,6 +144,9 @@ public sealed partial class AppleHFSPlus
         // Clear extents file header
         _extentsFileHeader = default(BTHeaderRec);
 
+        // Clear attributes file
+        _attributesFile = null;
+
         // Clear volume header
         _volumeHeader = default(VolumeHeader);
 
@@ -290,6 +293,19 @@ public sealed partial class AppleHFSPlus
 
         AaruLogging.Debug(MODULE_NAME,
                           $"VolumeHeader: signature=0x{_volumeHeader.signature:X4}, version={_volumeHeader.version}, blockSize={_volumeHeader.blockSize}, totalBlocks={_volumeHeader.totalBlocks}, freeBlocks={_volumeHeader.freeBlocks}");
+
+        // Initialize attributes file if it exists (has non-zero total blocks)
+        if(_volumeHeader.attributesFile.totalBlocks > 0)
+        {
+            _attributesFile = _volumeHeader.attributesFile;
+ AaruLogging.Debug(MODULE_NAME,
+                              $"Attributes file found: {_volumeHeader.attributesFile.totalBlocks} blocks, {_volumeHeader.attributesFile.logicalSize} bytes");
+        }
+        else
+        {
+            _attributesFile = null;
+            AaruLogging.Debug(MODULE_NAME, "No attributes file present on this volume");
+        }
 
         return ErrorNumber.NoError;
     }

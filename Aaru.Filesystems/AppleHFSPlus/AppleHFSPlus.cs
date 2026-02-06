@@ -42,6 +42,9 @@ public sealed partial class AppleHFSPlus : IReadOnlyFilesystem
     /// <summary>Module name for debugging</summary>
     const string MODULE_NAME = "HFS+ plugin";
 
+    /// <summary>Attributes File fork data (null if attributes file doesn't exist)</summary>
+    HFSPlusForkData? _attributesFile;
+
     /// <summary>Catalog B-Tree header information</summary>
     BTHeaderRec _catalogBTreeHeader;
     /// <summary>Cached directory entries by CNID, each entry keyed by filename</summary>

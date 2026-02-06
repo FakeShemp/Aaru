@@ -436,4 +436,91 @@ public sealed partial class AppleHFSPlus
         /// <summary>Additional extent descriptors for the attribute.</summary>
         public HFSPlusExtentRecord extents;
     }
+
+    /// <summary>
+    ///     Attributes B-tree data record. Used for small attributes whose entire value is stored
+    ///     within a single B-tree record.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusAttrData
+    {
+        /// <summary>Type of attribute record (kHFSPlusAttrInlineData).</summary>
+        public BTAttributeRecordType recordType;
+        /// <summary>Reserved; set to zero.</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public uint[] reserved;
+        /// <summary>Size of attribute data in bytes.</summary>
+        public uint attrSize;
+        /// <summary>Variable length attribute data.</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public byte[] attrData;
+    }
+
+    /// <summary>
+    ///     Obsolete inline data structure. Use HFSPlusAttrData instead.
+    ///     Kept for compatibility with older implementations.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusAttrInlineData
+    {
+        /// <summary>Type of attribute record.</summary>
+        public uint recordType;
+        /// <summary>Reserved; set to zero.</summary>
+        public uint reserved;
+        /// <summary>Logical size of the data.</summary>
+        public uint logicalSize;
+        /// <summary>Variable length user data.</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public byte[] userData;
+    }
+
+    /// <summary>
+    ///     Generic attribute record union. Can represent any type of attribute record
+    ///     (inline data, fork data, or overflow extents).
+    /// </summary>
+    [StructLayout(LayoutKind.Explicit, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusAttrRecord
+    {
+        /// <summary>Record type (at offset 0).</summary>
+        [FieldOffset(0)]
+        public uint recordType;
+        /// <summary>Inline data record (obsolete, use attrData instead).</summary>
+        [FieldOffset(0)]
+        public HFSPlusAttrInlineData inlineData;
+        /// <summary>Inline data record.</summary>
+        [FieldOffset(0)]
+        public HFSPlusAttrData attrData;
+        /// <summary>Fork data record for extent-based attributes.</summary>
+        [FieldOffset(0)]
+        public HFSPlusAttrForkData forkData;
+        /// <summary>Overflow extents record.</summary>
+        [FieldOffset(0)]
+        public HFSPlusAttrExtents overflowExtents;
+    }
+
+    /// <summary>
+    ///     Attribute file key. Used to search for attribute records in the attributes B-tree.
+    ///     The key consists of the file's CNID, start block (for extents), and attribute name.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HFSPlusAttrKey
+    {
+        /// <summary>Key length in bytes (not including this field).</summary>
+        public ushort keyLength;
+        /// <summary>Padding; set to zero.</summary>
+        public ushort pad;
+        /// <summary>Catalog node ID (CNID) of the file associated with this attribute.</summary>
+        public HFSCatalogNodeID fileID;
+        /// <summary>First allocation block number for extents (0 for inline data).</summary>
+        public uint startBlock;
+        /// <summary>Number of Unicode characters in the attribute name.</summary>
+        public ushort attrNameLen;
+        /// <summary>Attribute name (up to 127 Unicode characters).</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 127)]
+        public ushort[] attrName;
+    }
 }
