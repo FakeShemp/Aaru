@@ -54,11 +54,20 @@ public sealed partial class SFS
     /// <summary>Node number of the recycled directory object</summary>
     const uint RECYCLEDNODE = 2;
 
-    /// <summary>Expected structure version number</summary>
-    const ushort STRUCTURE_VERSION = 3;
+    /// <summary>Structure version for SFS\0</summary>
+    const ushort STRUCTURE_VERSION_SFS0 = 3;
+    /// <summary>Structure version for SFS\2</summary>
+    const ushort STRUCTURE_VERSION_SFS2 = 4;
 
-    /// <summary>Size of the fixed part of an Object structure (before name and comment)</summary>
-    const int OBJECT_SIZE = 25;
+    /// <summary>Size of the fixed part of an Object structure in SFS\0 (before name and comment)</summary>
+    const int OBJECT_SIZE_SFS0 = 25;
+    /// <summary>Size of the fixed part of an Object structure in SFS\2 (before name and comment)</summary>
+    const int OBJECT_SIZE_SFS2 = 27;
+
+    /// <summary>Size of ExtentBNode in SFS\0 (14 bytes - 16-bit blocks field)</summary>
+    const int EXTENTBNODE_SIZE_SFS0 = 14;
+    /// <summary>Size of ExtentBNode in SFS\2 (16 bytes - 32-bit blocks field)</summary>
+    const int EXTENTBNODE_SIZE_SFS2 = 16;
 
     const string FS_TYPE = "sfs";
 }

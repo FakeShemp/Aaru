@@ -192,8 +192,10 @@ public sealed partial class SFS
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        // Check if this is a directory (bits field at offset 24 from object start)
-        byte bits = objectData[objectOffset + 24];
+        // Check if this is a directory
+        // SFS\0: bits at offset 24, SFS\2: bits at offset 26
+        int  bitsOffset = _isSfs2 ? 26 : 24;
+        byte bits       = objectData[objectOffset + bitsOffset];
 
         if((bits & (byte)ObjectBits.Directory) == 0)
         {

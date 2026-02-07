@@ -147,19 +147,38 @@ public sealed partial class SFS
 
 #region Nested type: ExtentBNode
 
-    /// <summary>Extent B-tree node, used to track file data extents</summary>
+    /// <summary>Extent B-tree node, used to track file data extents (SFS\0 version - 14 bytes)</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
     partial struct ExtentBNode
     {
-        /// <summary>Key (data)</summary>
+        /// <summary>Key (block number where extent starts)</summary>
         public uint key;
-        /// <summary>Next node</summary>
+        /// <summary>Next extent in chain (0 if last)</summary>
         public uint next;
-        /// <summary>Previous node</summary>
+        /// <summary>Previous extent in chain (high bit set means points to object node)</summary>
         public uint prev;
-        /// <summary>The size in blocks of the region this extent controls</summary>
+        /// <summary>The size in blocks of the region this extent controls (16-bit in SFS\0)</summary>
         public ushort blocks;
+    }
+
+#endregion
+
+#region Nested type: ExtentBNode2
+
+    /// <summary>Extent B-tree node, used to track file data extents (SFS\2 version - 16 bytes)</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct ExtentBNode2
+    {
+        /// <summary>Key (block number where extent starts)</summary>
+        public uint key;
+        /// <summary>Next extent in chain (0 if last)</summary>
+        public uint next;
+        /// <summary>Previous extent in chain (high bit set means points to object node)</summary>
+        public uint prev;
+        /// <summary>The size in blocks of the region this extent controls (32-bit in SFS\2)</summary>
+        public uint blocks;
     }
 
 #endregion
@@ -191,8 +210,10 @@ public sealed partial class SFS
 #region Nested type: Object
 
     /// <summary>
-    ///     Object structure describing a file or directory.
+    ///     Object structure describing a file or directory (SFS\0 version - 25 bytes fixed).
     ///     Multiple objects can be stored in an ObjectContainer block.
+    ///     Note: In SFS\2 (version 4), there is an additional 16-bit sizeh field after sizeOrFirstDirBlock,
+    ///     making the structure 27 bytes. This is handled manually during parsing.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]

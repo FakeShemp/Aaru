@@ -215,7 +215,7 @@ public sealed partial class SFS
             errno = FindExtentBNode(sfsNode.CurrentExtent,
                                     out uint extentKey,
                                     out uint extentNext,
-                                    out ushort extentBlocks);
+                                    out uint extentBlocks);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -391,8 +391,7 @@ public sealed partial class SFS
         // Walk the extent chain to find the correct extent
         while(node.CurrentExtent != 0)
         {
-            ErrorNumber errno =
-                FindExtentBNode(node.CurrentExtent, out _, out uint extentNext, out ushort extentBlocks);
+            ErrorNumber errno = FindExtentBNode(node.CurrentExtent, out _, out uint extentNext, out uint extentBlocks);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -422,7 +421,7 @@ public sealed partial class SFS
     /// <param name="extentNext">Output: the next extent in the chain</param>
     /// <param name="extentBlocks">Output: number of blocks in this extent</param>
     /// <returns>Error code indicating success or failure</returns>
-    ErrorNumber FindExtentBNode(uint key, out uint extentKey, out uint extentNext, out ushort extentBlocks)
+    ErrorNumber FindExtentBNode(uint key, out uint extentKey, out uint extentNext, out uint extentBlocks)
     {
         extentKey    = 0;
         extentNext   = 0;
@@ -457,16 +456,22 @@ public sealed partial class SFS
             if(isLeaf != 0)
             {
                 // Leaf node - contains ExtentBNode structures
-                // ExtentBNode: key (4) + next (4) + prev (4) + blocks (2) = 14 bytes
+                // SFS\0: key (4) + next (4) + prev (4) + blocks (2) = 14 bytes
+                // SFS\2: key (4) + next (4) + prev (4) + blocks (4) = 16 bytes
+                // nodeSize field tells us the actual size
                 for(var i = 0; i < nodeCount; i++)
                 {
                     var nodeKey = BigEndianBitConverter.ToUInt32(blockData, nodeOffset);
 
                     if(nodeKey == key)
                     {
-                        extentKey    = nodeKey;
-                        extentNext   = BigEndianBitConverter.ToUInt32(blockData, nodeOffset + 4);
-                        extentBlocks = BigEndianBitConverter.ToUInt16(blockData, nodeOffset + 12);
+                        extentKey  = nodeKey;
+                        extentNext = BigEndianBitConverter.ToUInt32(blockData, nodeOffset + 4);
+
+                        // Read blocks field - 16-bit in SFS\0 (nodeSize=14), 32-bit in SFS\2 (nodeSize=16)
+                        extentBlocks = nodeSize >= 16
+                                           ? BigEndianBitConverter.ToUInt32(blockData, nodeOffset + 12)
+                                           : BigEndianBitConverter.ToUInt16(blockData, nodeOffset + 12);
 
                         return ErrorNumber.NoError;
                     }
@@ -516,19 +521,39 @@ public sealed partial class SFS
         stat = null;
 
         // Object structure (from objects.h):
-        // owneruid (2) + ownergid (2) + objectnode (4) + protection (4) +
-        // data/hashtable (4) + size/firstdirblock (4) + datemodified (4) + bits (1)
-        // Total fixed size: 25 bytes, followed by name and comment
+        // SFS\0 (25 bytes):
+        //   owneruid (2) + ownergid (2) + objectnode (4) + protection (4) +
+        //   data/hashtable (4) + size/firstdirblock (4) + datemodified (4) + bits (1)
+        // SFS\2 (27 bytes):
+        //   owneruid (2) + ownergid (2) + objectnode (4) + protection (4) +
+        //   data/hashtable (4) + size/firstdirblock (4) + sizeh (2) + datemodified (4) + bits (1)
 
-        if(objectOffset + OBJECT_SIZE > objectData.Length) return ErrorNumber.InvalidArgument;
+        if(objectOffset + _objectSize > objectData.Length) return ErrorNumber.InvalidArgument;
 
-        var ownerUid     = BigEndianBitConverter.ToUInt16(objectData, objectOffset);
-        var ownerGid     = BigEndianBitConverter.ToUInt16(objectData, objectOffset + 2);
-        var protection   = BigEndianBitConverter.ToUInt32(objectData, objectOffset + 8);
-        var dataOrHash   = BigEndianBitConverter.ToUInt32(objectData, objectOffset + 12);
-        var sizeOrDir    = BigEndianBitConverter.ToUInt32(objectData, objectOffset + 16);
-        var dateModified = BigEndianBitConverter.ToUInt32(objectData, objectOffset + 20);
-        var bits         = (ObjectBits)objectData[objectOffset + 24];
+        var ownerUid   = BigEndianBitConverter.ToUInt16(objectData, objectOffset);
+        var ownerGid   = BigEndianBitConverter.ToUInt16(objectData, objectOffset + 2);
+        var protection = BigEndianBitConverter.ToUInt32(objectData, objectOffset + 8);
+        var dataOrHash = BigEndianBitConverter.ToUInt32(objectData, objectOffset + 12);
+        var sizeOrDir  = BigEndianBitConverter.ToUInt32(objectData, objectOffset + 16);
+
+        ushort     sizeh;
+        uint       dateModified;
+        ObjectBits bits;
+
+        if(_isSfs2)
+        {
+            // SFS\2: sizeh at offset 20, datemodified at 22, bits at 26
+            sizeh        = BigEndianBitConverter.ToUInt16(objectData, objectOffset + 20);
+            dateModified = BigEndianBitConverter.ToUInt32(objectData, objectOffset + 22);
+            bits         = (ObjectBits)objectData[objectOffset + 26];
+        }
+        else
+        {
+            // SFS\0: datemodified at offset 20, bits at 24
+            sizeh        = 0;
+            dateModified = BigEndianBitConverter.ToUInt32(objectData, objectOffset + 20);
+            bits         = (ObjectBits)objectData[objectOffset + 24];
+        }
 
         // Determine file attributes
         FileAttributes attributes = FileAttributes.None;
@@ -553,7 +578,9 @@ public sealed partial class SFS
 
         if((bits & ObjectBits.Directory) == 0)
         {
-            length = sizeOrDir;
+            // In SFS\2, file size is 48-bit: (sizeOrDir << 16) | sizeh
+            // sizeh contains the LOW 16 bits, sizeOrDir contains the HIGH 32 bits
+            length = _isSfs2 ? (long)sizeOrDir << 16 | sizeh : sizeOrDir;
             blocks = (length + _blockSize - 1) / _blockSize;
         }
 

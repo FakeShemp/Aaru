@@ -59,11 +59,17 @@ public sealed partial class SFS : IReadOnlyFilesystem
     /// <summary>The media image plugin used to read from the device</summary>
     IMediaImage _imagePlugin;
 
+    /// <summary>Indicates if this is SFS\2 format (version 4)</summary>
+    bool _isSfs2;
+
     /// <summary>Indicates if the filesystem is currently mounted</summary>
     bool _mounted;
 
     /// <summary>Location of the object node tree root</summary>
     uint _objectNodeRoot;
+
+    /// <summary>Size of the fixed part of an Object structure</summary>
+    int _objectSize;
 
     /// <summary>The partition being mounted</summary>
     Partition _partition;

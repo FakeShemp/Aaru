@@ -46,10 +46,11 @@ public sealed partial class SFS
     string ReadObjectName(byte[] objectContainerData, int objectOffset)
     {
         // Object structure: skip header fields to reach the name
-        // Structure: ownerUid(2) + ownerGid(2) + objectNode(4) + protection(4) +
-        //            dataOrHashtable(4) + sizeOrFirstDirBlock(4) + dateModified(4) + bits(1) = 25 bytes
+        // SFS\0: ownerUid(2) + ownerGid(2) + objectNode(4) + protection(4) +
+        //        dataOrHashtable(4) + sizeOrFirstDirBlock(4) + dateModified(4) + bits(1) = 25 bytes
+        // SFS\2: Same + sizeh(2) = 27 bytes
         // The name immediately follows the fixed part of the object
-        int nameOffset = objectOffset + 25;
+        int nameOffset = objectOffset + _objectSize;
 
         // Read null-terminated string
         var nameBytes = new List<byte>();
@@ -142,12 +143,12 @@ public sealed partial class SFS
     {
         // Start after the ObjectContainer header: header(12) + parent(4) + next(4) + previous(4) = 24 bytes
         objectOffset = 24;
-        int endOffset = (int)_blockSize - OBJECT_SIZE - 2;
+        int endOffset = (int)_blockSize - _objectSize - 2;
 
         while(objectOffset < endOffset)
         {
             // Check if there's a valid object (name[0] != 0)
-            int nameOffset = objectOffset + 25;
+            int nameOffset = objectOffset + _objectSize;
 
             if(nameOffset >= containerData.Length || containerData[nameOffset] == 0) break;
 
@@ -169,10 +170,10 @@ public sealed partial class SFS
     /// <param name="containerData">The container data</param>
     /// <param name="currentOffset">Current object offset</param>
     /// <returns>Offset to next object, or -1 if none</returns>
-    static int GetNextObjectOffset(byte[] containerData, int currentOffset)
+    int GetNextObjectOffset(byte[] containerData, int currentOffset)
     {
         // Skip to name field
-        int nameOffset = currentOffset + 25;
+        int nameOffset = currentOffset + _objectSize;
 
         if(nameOffset >= containerData.Length) return -1;
 
@@ -198,12 +199,12 @@ public sealed partial class SFS
     {
         // Start after the ObjectContainer header: header(12) + parent(4) + next(4) + previous(4) = 24 bytes
         var offset    = 24;
-        int endOffset = (int)_blockSize - OBJECT_SIZE - 2;
+        int endOffset = (int)_blockSize - _objectSize - 2;
 
-        while(offset < endOffset && offset < containerData.Length - 25)
+        while(offset < endOffset && offset < containerData.Length - _objectSize)
         {
             // Check if there's a valid object (name[0] != 0)
-            int nameOffset = offset + 25;
+            int nameOffset = offset + _objectSize;
 
             if(nameOffset >= containerData.Length || containerData[nameOffset] == 0) break;
 
@@ -233,12 +234,12 @@ public sealed partial class SFS
     {
         // Start after the ObjectContainer header: header(12) + parent(4) + next(4) + previous(4) = 24 bytes
         var offset    = 24;
-        int endOffset = (int)_blockSize - OBJECT_SIZE - 2;
+        int endOffset = (int)_blockSize - _objectSize - 2;
 
-        while(offset < endOffset && offset < containerData.Length - 25)
+        while(offset < endOffset && offset < containerData.Length - _objectSize)
         {
             // Check if there's a valid object (name[0] != 0)
-            int nameOffset = offset + 25;
+            int nameOffset = offset + _objectSize;
 
             if(nameOffset >= containerData.Length || containerData[nameOffset] == 0) break;
 
@@ -336,9 +337,10 @@ public sealed partial class SFS
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        // Object structure: fixed fields (25 bytes) + name (null-terminated) + comment (null-terminated)
+        // Object structure: fixed fields + name (null-terminated) + comment (null-terminated)
+        // SFS\0: 25 bytes, SFS\2: 27 bytes
         // Skip to name field
-        int nameOffset = objectOffset + OBJECT_SIZE;
+        int nameOffset = objectOffset + _objectSize;
 
         if(nameOffset >= objectData.Length) return ErrorNumber.InvalidArgument;
 

@@ -39,8 +39,9 @@ public sealed partial class SFS
     /// <returns>True if the checksum is valid, false otherwise</returns>
     static bool ValidateChecksum(byte[] blockData)
     {
-        // The checksum is validated by summing all 32-bit big-endian words in the block,
-        // starting with 1. If the result is 0, the checksum is valid.
+        // The checksum is validated by summing all 32-bit big-endian words in the block.
+        // Starting with sum=1, if the result is 0, the checksum is valid.
+        // Some implementations may result in -1 (0xFFFFFFFF), so we accept that too.
         uint sum = 1;
 
         for(var i = 0; i < blockData.Length; i += 4)
@@ -49,7 +50,8 @@ public sealed partial class SFS
             sum += value;
         }
 
-        return sum == 0;
+        // Accept 0 or -1 as valid
+        return sum is 0 or 0xFFFFFFFF;
     }
 
     /// <summary>Calculates the block shift (log2 of block size)</summary>

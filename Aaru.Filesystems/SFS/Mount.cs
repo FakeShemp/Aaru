@@ -53,7 +53,7 @@ public sealed partial class SFS
         _partition   = partition;
         _encoding    = encoding ?? Encoding.GetEncoding("iso-8859-1");
 
-        // Read root block (block 0)
+        // Read root block (block 0) - first just one sector to get the block size
         ErrorNumber errno = ReadBlock(0, out byte[] rootBlockData);
 
         if(errno != ErrorNumber.NoError)
@@ -73,6 +73,25 @@ public sealed partial class SFS
             return ErrorNumber.InvalidArgument;
         }
 
+        // Now we know the block size, re-read if block size > sector size
+        if(_rootBlock.blocksize > _imagePlugin.Info.SectorSize)
+        {
+            _blockSize = _rootBlock.blocksize;
+
+            errno = ReadBlock(0, out rootBlockData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error re-reading root block with correct size: {0}", errno);
+
+                return errno;
+            }
+
+            // Re-parse after reading full block
+            _rootBlock = Marshal.ByteArrayToStructureBigEndian<RootBlock>(rootBlockData);
+        }
+
+        // Validate checksum
         // Validate checksum
         if(!ValidateChecksum(rootBlockData))
         {
@@ -92,15 +111,22 @@ public sealed partial class SFS
         }
 
         // Validate version
-        if(_rootBlock.version != STRUCTURE_VERSION)
+        if(_rootBlock.version is not STRUCTURE_VERSION_SFS0 and not STRUCTURE_VERSION_SFS2)
         {
             AaruLogging.Debug(MODULE_NAME,
-                              "Unsupported structure version: {0}, expected {1}",
+                              "Unsupported structure version: {0}, expected {1} or {2}",
                               _rootBlock.version,
-                              STRUCTURE_VERSION);
+                              STRUCTURE_VERSION_SFS0,
+                              STRUCTURE_VERSION_SFS2);
 
             return ErrorNumber.NotSupported;
         }
+
+        // Determine if this is SFS\2 format
+        _isSfs2     = _rootBlock.version == STRUCTURE_VERSION_SFS2;
+        _objectSize = _isSfs2 ? OBJECT_SIZE_SFS2 : OBJECT_SIZE_SFS0;
+
+        AaruLogging.Debug(MODULE_NAME, "SFS format: {0}, object size: {1}", _isSfs2 ? "SFS\\2" : "SFS\\0", _objectSize);
 
         _blockSize           = _rootBlock.blocksize;
         _blockShift          = CalculateBlockShift(_blockSize);
