@@ -219,16 +219,20 @@ public sealed partial class ODS
         sb.AppendFormat(Localization.Cached_directories_0,        homeblock.lru_lim).AppendLine();
         sb.AppendFormat(Localization.Default_allocation_0_blocks, homeblock.extend).AppendLine();
 
-        if((homeblock.volchar & 0x01) == 0x01) sb.AppendLine(Localization.Readings_should_be_verified);
+        if(homeblock.volchar.HasFlag(VolumeCharacteristics.ReadCheck))
+            sb.AppendLine(Localization.Readings_should_be_verified);
 
-        if((homeblock.volchar & 0x02) == 0x02) sb.AppendLine(Localization.Writings_should_be_verified);
+        if(homeblock.volchar.HasFlag(VolumeCharacteristics.WriteCheck))
+            sb.AppendLine(Localization.Writings_should_be_verified);
 
-        if((homeblock.volchar & 0x04) == 0x04)
+        if(homeblock.volchar.HasFlag(VolumeCharacteristics.Erase))
             sb.AppendLine(Localization.Files_should_be_erased_or_overwritten_when_deleted);
 
-        if((homeblock.volchar & 0x08) == 0x08) sb.AppendLine(Localization.Highwater_mark_is_to_be_disabled);
+        if(homeblock.volchar.HasFlag(VolumeCharacteristics.NoHighwater))
+            sb.AppendLine(Localization.Highwater_mark_is_to_be_disabled);
 
-        if((homeblock.volchar & 0x10) == 0x10) sb.AppendLine(Localization.Classification_checks_are_enabled);
+        if(homeblock.volchar.HasFlag(VolumeCharacteristics.ClassProt))
+            sb.AppendLine(Localization.Classification_checks_are_enabled);
 
         sb.AppendLine(Localization.Volume_permissions_r_read_w_write_c_create_d_delete);
         sb.AppendLine(Localization.System_owner_group_world);
