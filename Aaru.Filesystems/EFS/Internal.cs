@@ -45,4 +45,29 @@ public sealed partial class EFS
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>File node for reading file contents with streaming support</summary>
+    sealed class EfsFileNode : IFileNode
+    {
+        /// <summary>The file's inode number</summary>
+        internal uint InodeNumber { get; init; }
+
+        /// <summary>The file's inode structure</summary>
+        internal Inode Inode { get; init; }
+
+        /// <summary>
+        ///     Cached extents for reading. For files with <= 12 extents, these are the direct extents from the inode. For
+        ///     larger files, these are the indirect extents read from disk.
+        /// </summary>
+        internal Extent[] Extents { get; set; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 }
