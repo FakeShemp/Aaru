@@ -186,6 +186,17 @@ public sealed partial class PFS
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber Unmount()
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        _rootDirectoryCache.Clear();
+        _mounted = false;
+
+        return ErrorNumber.NoError;
+    }
+
 
     /// <summary>Loads the root directory contents into cache</summary>
     /// <returns>Error code indicating success or failure</returns>
