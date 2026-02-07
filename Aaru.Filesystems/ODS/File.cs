@@ -31,7 +31,9 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
 
@@ -39,6 +41,312 @@ namespace Aaru.Filesystems;
 
 public sealed partial class ODS
 {
+    // VMS file protection bits (each nibble for system/owner/group/world)
+    const byte VMS_PROT_DENY_READ  = 0x01;
+    const byte VMS_PROT_DENY_WRITE = 0x02;
+    const byte VMS_PROT_DENY_EXEC  = 0x04;
+
+    /// <inheritdoc />
+    public ErrorNumber Stat(string path, out FileEntryInfo stat)
+    {
+        stat = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize path
+        string normalizedPath = string.IsNullOrWhiteSpace(path) ? "/" : path;
+
+        if(!normalizedPath.StartsWith("/", StringComparison.Ordinal)) normalizedPath = "/" + normalizedPath;
+
+        // Root directory case
+        if(normalizedPath == "/")
+        {
+            // Read MFD file header
+            ErrorNumber errno = ReadFileHeader(MFD_FID, out FileHeader mfdHeader);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            stat = BuildFileEntryInfo(mfdHeader, MFD_FID);
+
+            return ErrorNumber.NoError;
+        }
+
+        // Look up the file
+        ErrorNumber lookupErr = LookupFile(normalizedPath, out CachedFile cachedFile);
+
+        if(lookupErr != ErrorNumber.NoError) return lookupErr;
+
+        // Read the file header
+        ErrorNumber readErr = ReadFileHeader(cachedFile.Fid.num, out FileHeader fileHeader);
+
+        if(readErr != ErrorNumber.NoError) return readErr;
+
+        stat = BuildFileEntryInfo(fileHeader, cachedFile.Fid.num);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Looks up a file by path and returns its cached entry.</summary>
+    /// <param name="path">Normalized path starting with /.</param>
+    /// <param name="cachedFile">Output cached file entry.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber LookupFile(string path, out CachedFile cachedFile)
+    {
+        cachedFile = null;
+
+        string   cutPath = path[1..]; // Remove leading '/'
+        string[] pieces  = cutPath.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries);
+
+        if(pieces.Length == 0) return ErrorNumber.NoSuchFile;
+
+        // Start from root directory
+        Dictionary<string, CachedFile> currentDirectory = _rootDirectoryCache;
+
+        for(var p = 0; p < pieces.Length; p++)
+        {
+            string component = pieces[p].ToUpperInvariant();
+
+            // ODS filenames may include version - strip it for lookup
+            int versionPos = component.IndexOf(';');
+
+            if(versionPos >= 0) component = component[..versionPos];
+
+            // Look for the component in current directory
+            if(!currentDirectory.TryGetValue(component, out CachedFile found)) return ErrorNumber.NoSuchFile;
+
+            // If this is the last component, return it
+            if(p == pieces.Length - 1)
+            {
+                cachedFile = found;
+
+                return ErrorNumber.NoError;
+            }
+
+            // Not the last component - must be a directory
+            ErrorNumber errno = ReadFileHeader(found.Fid.num, out FileHeader fileHeader);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if(!fileHeader.filechar.HasFlag(FileCharacteristicFlags.Directory)) return ErrorNumber.NotDirectory;
+
+            // Read directory entries
+            errno = ReadDirectoryEntries(fileHeader, out Dictionary<string, CachedFile> dirEntries);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            currentDirectory = dirEntries;
+        }
+
+        return ErrorNumber.NoSuchFile;
+    }
+
+    /// <summary>Builds a FileEntryInfo from a file header.</summary>
+    /// <param name="header">File header.</param>
+    /// <param name="fileNum">File number (inode).</param>
+    /// <returns>FileEntryInfo structure.</returns>
+    FileEntryInfo BuildFileEntryInfo(in FileHeader header, ushort fileNum)
+    {
+        var info = new FileEntryInfo
+        {
+            Inode     = fileNum,
+            Links     = header.linkcount > 0 ? (ulong)header.linkcount : 1,
+            BlockSize = ODS_BLOCK_SIZE,
+            UID       = header.fileowner.member,
+            GID       = header.fileowner.group
+        };
+
+        // Calculate file size
+        // File size = (efblk - 1) * blocksize + ffbyte
+        // But efblk is stored as high:low words
+        uint efblk = header.recattr.efblk.Value;
+
+        if(efblk > 0)
+            info.Length = (efblk - 1) * ODS_BLOCK_SIZE + header.recattr.ffbyte;
+        else
+            info.Length = 0;
+
+        // Calculate blocks allocated
+        info.Blocks = header.recattr.hiblk.Value;
+
+        // Get timestamps from ident area
+        ReadFileIdent(header, out ulong credate, out ulong revdate, out _, out ulong bakdate,
+                      out ulong accdate, out ulong attdate);
+
+        if(credate > 0) info.CreationTime = DateHandlers.VmsToDateTime(credate);
+
+        if(revdate > 0) info.LastWriteTime = DateHandlers.VmsToDateTime(revdate);
+
+        if(bakdate > 0) info.BackupTime = DateHandlers.VmsToDateTime(bakdate);
+
+        if(accdate > 0) info.AccessTime = DateHandlers.VmsToDateTime(accdate);
+
+        if(attdate > 0) info.StatusChangeTime = DateHandlers.VmsToDateTime(attdate);
+
+        // Set file type and attributes
+        info.Attributes = CommonTypes.Structs.FileAttributes.None;
+
+        // Check for directory
+        if(header.filechar.HasFlag(FileCharacteristicFlags.Directory))
+            info.Attributes |= CommonTypes.Structs.FileAttributes.Directory;
+        else
+        {
+            // Check for special file types based on file organization
+            FileOrganization org = header.recattr.Organization;
+
+            if(org == FileOrganization.Special)
+            {
+                // Check rattrib for special file type
+                var specialType = (SpecialFileType)((byte)header.recattr.rattrib & 0x0F);
+
+                switch(specialType)
+                {
+                    case SpecialFileType.Fifo:
+                        info.Attributes |= CommonTypes.Structs.FileAttributes.FIFO;
+
+                        break;
+                    case SpecialFileType.CharSpecial:
+                        info.Attributes |= CommonTypes.Structs.FileAttributes.CharDevice;
+
+                        break;
+                    case SpecialFileType.BlockSpecial:
+                        info.Attributes |= CommonTypes.Structs.FileAttributes.BlockDevice;
+
+                        break;
+                    case SpecialFileType.SymLink:
+                    case SpecialFileType.SymbolicLink:
+                        info.Attributes |= CommonTypes.Structs.FileAttributes.Symlink;
+
+                        break;
+                    default:
+                        info.Attributes |= CommonTypes.Structs.FileAttributes.File;
+
+                        break;
+                }
+            }
+            else
+                info.Attributes |= CommonTypes.Structs.FileAttributes.File;
+        }
+
+        // Map file characteristics to attributes
+        if(header.filechar.HasFlag(FileCharacteristicFlags.Locked))
+            info.Attributes |= CommonTypes.Structs.FileAttributes.Immutable;
+
+        if(header.filechar.HasFlag(FileCharacteristicFlags.Contig) ||
+           header.filechar.HasFlag(FileCharacteristicFlags.WasContig))
+            info.Attributes |= CommonTypes.Structs.FileAttributes.Extents;
+
+        if(header.filechar.HasFlag(FileCharacteristicFlags.NoBackup))
+            info.Attributes |= CommonTypes.Structs.FileAttributes.NoDump;
+
+        if(header.filechar.HasFlag(FileCharacteristicFlags.Spool))
+            info.Attributes |= CommonTypes.Structs.FileAttributes.Temporary;
+
+        if(header.filechar.HasFlag(FileCharacteristicFlags.MarkDel))
+            info.Attributes |= CommonTypes.Structs.FileAttributes.Deleted;
+
+        if(header.filechar.HasFlag(FileCharacteristicFlags.Erase))
+            info.Attributes |= CommonTypes.Structs.FileAttributes.Secured;
+
+        if(header.filechar.HasFlag(FileCharacteristicFlags.Shelved))
+            info.Attributes |= CommonTypes.Structs.FileAttributes.Offline;
+
+        // Convert VMS protection to POSIX mode
+        // VMS protection is 16 bits: system(4) | owner(4) | group(4) | world(4)
+        // Each nibble has bits: delete | execute | write | read (deny bits)
+        info.Mode = ConvertVmsProtectionToMode(header.fileprot,
+                                               header.filechar.HasFlag(FileCharacteristicFlags.Directory));
+
+        return info;
+    }
+
+    /// <summary>Reads the file ident area from a file header to extract timestamps.</summary>
+    /// <param name="header">File header.</param>
+    /// <param name="credate">Creation date.</param>
+    /// <param name="revdate">Revision date.</param>
+    /// <param name="expdate">Expiration date.</param>
+    /// <param name="bakdate">Backup date.</param>
+    /// <param name="accdate">Access date (ODS-5 only).</param>
+    /// <param name="attdate">Attribute change date (ODS-5 only).</param>
+    static void ReadFileIdent(in FileHeader header, out ulong credate, out ulong revdate, out ulong expdate,
+                              out ulong     bakdate, out ulong accdate, out ulong attdate)
+    {
+        credate = revdate = expdate = bakdate = accdate = attdate = 0;
+
+        // Ident area starts at idoffset words from start of header
+        int identOffset = header.idoffset * 2;
+
+        // The ident area is within the reserved area of the file header
+        // Reserved area starts at offset 0x50 (80 bytes) and is 430 bytes
+        const int reservedStart      = 0x50;
+        int       identOffsetInRes   = identOffset - reservedStart;
+
+        if(header.reserved == null || identOffsetInRes < 0) return;
+
+        // Determine structure level from header
+        var strucLevel = (byte)(header.struclev >> 8 & 0xFF);
+
+        if(strucLevel == 5 && identOffsetInRes + 52 <= header.reserved.Length)
+        {
+            // ODS-5 ident area
+            // Skip control byte (1) and namelen (1), revision (2) = offset 4 for credate
+            credate = BitConverter.ToUInt64(header.reserved, identOffsetInRes + 4);
+            revdate = BitConverter.ToUInt64(header.reserved, identOffsetInRes + 12);
+            expdate = BitConverter.ToUInt64(header.reserved, identOffsetInRes + 20);
+            bakdate = BitConverter.ToUInt64(header.reserved, identOffsetInRes + 28);
+            accdate = BitConverter.ToUInt64(header.reserved, identOffsetInRes + 36);
+            attdate = BitConverter.ToUInt64(header.reserved, identOffsetInRes + 44);
+        }
+        else if(identOffsetInRes + 46 <= header.reserved.Length)
+        {
+            // ODS-2 ident area
+            // Skip filename (20 bytes), revision (2) = offset 22 for credate
+            credate = BitConverter.ToUInt64(header.reserved, identOffsetInRes + 22);
+            revdate = BitConverter.ToUInt64(header.reserved, identOffsetInRes + 30);
+            expdate = BitConverter.ToUInt64(header.reserved, identOffsetInRes + 38);
+            bakdate = BitConverter.ToUInt64(header.reserved, identOffsetInRes + 46);
+        }
+    }
+
+    /// <summary>Converts VMS file protection to POSIX mode bits.</summary>
+    /// <param name="fileprot">VMS protection word.</param>
+    /// <param name="isDirectory">Whether this is a directory.</param>
+    /// <returns>POSIX mode bits.</returns>
+    static uint ConvertVmsProtectionToMode(ushort fileprot, bool isDirectory)
+    {
+        // VMS protection is stored as: system(4) | owner(4) | group(4) | world(4)
+        // Each 4-bit nibble has deny bits: delete(3) | execute(2) | write(1) | read(0)
+        // If a bit is SET, the permission is DENIED
+        // Note: VMS system permissions don't map directly to POSIX, so we skip them
+        var owner = (byte)(fileprot >> 8 & 0x0F);
+        var group = (byte)(fileprot >> 4 & 0x0F);
+        var world = (byte)(fileprot      & 0x0F);
+
+        uint mode = 0;
+
+        // File type bits
+        if(isDirectory)
+            mode |= 0x4000; // S_IFDIR
+        else
+            mode |= 0x8000; // S_IFREG
+
+        // Owner permissions (bits 8-6)
+        if((owner & VMS_PROT_DENY_READ) == 0) mode  |= 0x0100; // S_IRUSR
+        if((owner & VMS_PROT_DENY_WRITE) == 0) mode |= 0x0080; // S_IWUSR
+        if((owner & VMS_PROT_DENY_EXEC) == 0) mode  |= 0x0040; // S_IXUSR
+
+        // Group permissions (bits 5-3)
+        if((group & VMS_PROT_DENY_READ) == 0) mode  |= 0x0020; // S_IRGRP
+        if((group & VMS_PROT_DENY_WRITE) == 0) mode |= 0x0010; // S_IWGRP
+        if((group & VMS_PROT_DENY_EXEC) == 0) mode  |= 0x0008; // S_IXGRP
+
+        // World/other permissions (bits 2-0)
+        if((world & VMS_PROT_DENY_READ) == 0) mode  |= 0x0004; // S_IROTH
+        if((world & VMS_PROT_DENY_WRITE) == 0) mode |= 0x0002; // S_IWOTH
+        if((world & VMS_PROT_DENY_EXEC) == 0) mode  |= 0x0001; // S_IXOTH
+
+        return mode;
+    }
+
     /// <summary>Reads a file header by file ID.</summary>
     /// <param name="fileNum">File number (1-based).</param>
     /// <param name="header">Output file header.</param>
