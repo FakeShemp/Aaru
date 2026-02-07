@@ -62,7 +62,7 @@ public sealed partial class BOFS
                                       path,
                                       entry.FileType);
 
-                    xattrs.Add("com.be.filetype");
+                    xattrs.Add(Xattrs.XATTR_BE_OFS_FILETYPE);
                 }
             }
         }
@@ -88,7 +88,7 @@ public sealed partial class BOFS
                                       path,
                                       entry.FileType);
 
-                    xattrs.Add("com.be.filetype");
+                    xattrs.Add(Xattrs.XATTR_BE_OFS_FILETYPE);
                 }
             }
             catch(Exception ex)
@@ -105,7 +105,7 @@ public sealed partial class BOFS
     /// <inheritdoc />
     public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf)
     {
-        if(string.IsNullOrEmpty(path) || path == "/" || xattr != "com.be.filetype")
+        if(string.IsNullOrEmpty(path) || path == "/" || xattr != Xattrs.XATTR_BE_OFS_FILETYPE)
             return ErrorNumber.NoSuchExtendedAttribute;
 
         string trimmedPath = path.TrimStart('/');

@@ -65,7 +65,7 @@ public sealed partial class LisaFS
                 byte[] buf = Encoding.ASCII.GetBytes(_mddf.password);
 
                 // If the MDDF contains a password, show it
-                if(buf.Length > 0) xattrs.Add("com.apple.lisa.password");
+                if(buf.Length > 0) xattrs.Add(Xattrs.XATTR_APPLE_LISA_PASSWORD);
             }
         }
         else
@@ -78,17 +78,17 @@ public sealed partial class LisaFS
             xattrs = [];
 
             // Password field is never emptied, check if valid
-            if(file.password_valid > 0) xattrs.Add("com.apple.lisa.password");
+            if(file.password_valid > 0) xattrs.Add(Xattrs.XATTR_APPLE_LISA_PASSWORD);
 
             // Check for a valid copy-protection serial number
-            if(file.serial > 0) xattrs.Add("com.apple.lisa.serial");
+            if(file.serial > 0) xattrs.Add(Xattrs.XATTR_APPLE_LISA_SERIAL);
 
             // Check if the label contains something or is empty
-            if(!ArrayHelpers.ArrayIsNullOrEmpty(file.LisaInfo)) xattrs.Add("com.apple.lisa.label");
+            if(!ArrayHelpers.ArrayIsNullOrEmpty(file.LisaInfo)) xattrs.Add(Xattrs.XATTR_APPLE_LISA_LABEL);
         }
 
         // On debug mode allow sector tags to be accessed as an xattr
-        if(_debug) xattrs.Add("com.apple.lisa.tags");
+        if(_debug) xattrs.Add(Xattrs.XATTR_APPLE_LISA_TAGS);
 
         xattrs.Sort();
 
@@ -114,7 +114,7 @@ public sealed partial class LisaFS
             // Only MDDF contains an extended attributes
             if(fileId == FILEID_MDDF)
             {
-                if(xattr == "com.apple.lisa.password")
+                if(xattr == Xattrs.XATTR_APPLE_LISA_PASSWORD)
                 {
                     buf = Encoding.ASCII.GetBytes(_mddf.password);
 
@@ -123,7 +123,7 @@ public sealed partial class LisaFS
             }
 
             // But on debug mode even system files contain tags
-            if(_debug && xattr == "com.apple.lisa.tags") return ReadSystemFile(fileId, out buf, true);
+            if(_debug && xattr == Xattrs.XATTR_APPLE_LISA_TAGS) return ReadSystemFile(fileId, out buf, true);
 
             return ErrorNumber.NoSuchExtendedAttribute;
         }
@@ -135,18 +135,18 @@ public sealed partial class LisaFS
 
         switch(xattr)
         {
-            case "com.apple.lisa.password" when file.password_valid > 0:
+            case Xattrs.XATTR_APPLE_LISA_PASSWORD when file.password_valid > 0:
                 buf = new byte[8];
                 Array.Copy(file.password, 0, buf, 0, 8);
 
                 return ErrorNumber.NoError;
-            case "com.apple.lisa.serial" when file.serial > 0:
+            case Xattrs.XATTR_APPLE_LISA_SERIAL when file.serial > 0:
                 buf = Encoding.ASCII.GetBytes(file.serial.ToString());
 
                 return ErrorNumber.NoError;
         }
 
-        if(!ArrayHelpers.ArrayIsNullOrEmpty(file.LisaInfo) && xattr == "com.apple.lisa.label")
+        if(!ArrayHelpers.ArrayIsNullOrEmpty(file.LisaInfo) && xattr == Xattrs.XATTR_APPLE_LISA_LABEL)
         {
             buf = new byte[128];
             Array.Copy(file.LisaInfo, 0, buf, 0, 128);
@@ -154,7 +154,7 @@ public sealed partial class LisaFS
             return ErrorNumber.NoError;
         }
 
-        if(_debug && xattr == "com.apple.lisa.tags") return ReadFile(fileId, out buf, true);
+        if(_debug && xattr == Xattrs.XATTR_APPLE_LISA_TAGS) return ReadFile(fileId, out buf, true);
 
         return ErrorNumber.NoSuchExtendedAttribute;
     }

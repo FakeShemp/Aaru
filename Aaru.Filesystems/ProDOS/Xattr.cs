@@ -37,11 +37,6 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class ProDOSPlugin
 {
-    const string XATTR_PRODOS_TYPE     = "prodos.type";
-    const string XATTR_PRODOS_AUX_TYPE = "prodos.aux_type";
-    const string XATTR_RESOURCE_FORK   = "com.apple.ResourceFork";
-    const string XATTR_FINDER_INFO     = "com.apple.FinderInfo";
-
     /// <inheritdoc />
     public ErrorNumber ListXAttr(string path, out List<string> xattrs)
     {
@@ -68,8 +63,8 @@ public sealed partial class ProDOSPlugin
         if(entry.IsDirectory) return ErrorNumber.NoError;
 
         // All files have type and aux_type
-        xattrs.Add(XATTR_PRODOS_TYPE);
-        xattrs.Add(XATTR_PRODOS_AUX_TYPE);
+        xattrs.Add(Xattrs.XATTR_APPLE_PRODOS_TYPE);
+        xattrs.Add(Xattrs.XATTR_APPLE_PRODOS_AUX_TYPE);
 
         // Extended files have resource fork
         if(entry.StorageType == EXTENDED_FILE_TYPE)
@@ -86,7 +81,7 @@ public sealed partial class ProDOSPlugin
                                         extKeyBlock.resource_fork.eof[1] << 8 |
                                         extKeyBlock.resource_fork.eof[2] << 16);
 
-                if(resForkEof > 0) xattrs.Add(XATTR_RESOURCE_FORK);
+                if(resForkEof > 0) xattrs.Add(Xattrs.XATTR_APPLE_RESOURCE_FORK);
 
                 // Check for FinderInfo (FInfo + FXInfo) in reserved1 area (32 bytes)
                 var hasFinderInfo = false;
@@ -101,7 +96,7 @@ public sealed partial class ProDOSPlugin
                     }
                 }
 
-                if(hasFinderInfo) xattrs.Add(XATTR_FINDER_INFO);
+                if(hasFinderInfo) xattrs.Add(Xattrs.XATTR_APPLE_FINDER_INFO);
             }
         }
 
@@ -126,21 +121,21 @@ public sealed partial class ProDOSPlugin
 
         switch(xattr)
         {
-            case XATTR_PRODOS_TYPE:
+            case Xattrs.XATTR_APPLE_PRODOS_TYPE:
                 buf    = new byte[1];
                 buf[0] = entry.FileType;
 
                 return ErrorNumber.NoError;
 
-            case XATTR_PRODOS_AUX_TYPE:
+            case Xattrs.XATTR_APPLE_PRODOS_AUX_TYPE:
                 buf = BitConverter.GetBytes(entry.AuxType);
 
                 return ErrorNumber.NoError;
 
-            case XATTR_RESOURCE_FORK:
+            case Xattrs.XATTR_APPLE_RESOURCE_FORK:
                 return ReadResourceFork(entry, ref buf);
 
-            case XATTR_FINDER_INFO:
+            case Xattrs.XATTR_APPLE_FINDER_INFO:
                 return ReadFinderInfo(entry, ref buf);
 
             default:

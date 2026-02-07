@@ -849,7 +849,8 @@ public sealed partial class UDF
     /// <returns>The mapped xattr name</returns>
     static string MapStreamNameToXattr(string streamName) => streamName switch
                                                              {
-                                                                 STREAM_MAC_RESOURCE_FORK => "com.apple.ResourceFork",
+                                                                 STREAM_MAC_RESOURCE_FORK => Xattrs
+                                                                    .XATTR_APPLE_RESOURCE_FORK,
                                                                  STREAM_OS2_EA =>
                                                                      null, // OS/2 EAs are decoded separately
                                                                  STREAM_NT_ACL => "com.microsoft.ntacl",

@@ -55,21 +55,21 @@ public sealed partial class ISO9660
 
         xattrs = [];
 
-        if(entry.XattrLength > 0) xattrs.Add("org.iso.9660.ea");
+        if(entry.XattrLength > 0) xattrs.Add(Xattrs.XATTR_ISO9660_EA);
 
-        if(entry.AssociatedFile != null) xattrs.Add("org.iso.9660.AssociatedFile");
+        if(entry.AssociatedFile != null) xattrs.Add(Xattrs.XATTR_ISO9660_ASSOCIATED_FILE);
 
-        if(entry.AppleDosType is not null) xattrs.Add("com.apple.dos.type");
+        if(entry.AppleDosType is not null) xattrs.Add(Xattrs.XATTR_APPLE_DOS_TYPE);
 
-        if(entry.AppleProDosType is not null) xattrs.Add("com.apple.prodos.type");
+        if(entry.AppleProDosType is not null) xattrs.Add(Xattrs.XATTR_APPLE_PRODOS_TYPE);
 
-        if(entry.ResourceFork != null) xattrs.Add("com.apple.ResourceFork");
+        if(entry.ResourceFork != null) xattrs.Add(Xattrs.XATTR_APPLE_RESOURCE_FORK);
 
-        if(entry.FinderInfo != null) xattrs.Add("com.apple.FinderInfo");
+        if(entry.FinderInfo != null) xattrs.Add(Xattrs.XATTR_APPLE_FINDER_INFO);
 
-        if(entry.AppleIcon != null) xattrs.Add("com.apple.Macintosh.Icon");
+        if(entry.AppleIcon != null) xattrs.Add(Xattrs.XATTR_APPLE_ICON);
 
-        if(entry.AmigaComment != null) xattrs.Add("com.amiga.comments");
+        if(entry.AmigaComment != null) xattrs.Add(Xattrs.XATTR_AMIGA_COMMENTS);
 
         if(entry.Flags.HasFlag(FileFlags.Directory) || entry.Extents == null || entry.Extents.Count == 0)
             return ErrorNumber.NoError;
@@ -81,8 +81,8 @@ public sealed partial class ISO9660
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        xattrs.Add("org.iso.mode2.subheader");
-        xattrs.Add("org.iso.mode2.subheader.copy");
+        xattrs.Add(Xattrs.XATTR_ISO9660_MODE2_SUBHEADER);
+        xattrs.Add(Xattrs.XATTR_ISO9660_MODE2_SUBHEADER_COPY);
 
         return ErrorNumber.NoError;
     }
@@ -100,14 +100,14 @@ public sealed partial class ISO9660
 
         switch(xattr)
         {
-            case "org.iso.9660.ea":
+            case Xattrs.XATTR_ISO9660_EA:
                 return entry.XattrLength == 0
                            ? ErrorNumber.NoSuchExtendedAttribute
                            : entry.Extents is null
                                ? ErrorNumber.InvalidArgument
                                : ReadSingleExtent(entry.XattrLength * _blockSize, entry.Extents[0].extent, out buf);
 
-            case "org.iso.9660.AssociatedFile":
+            case Xattrs.XATTR_ISO9660_ASSOCIATED_FILE:
                 if(entry.AssociatedFile is null) return ErrorNumber.NoSuchExtendedAttribute;
 
                 if(entry.AssociatedFile.Extents is null) return ErrorNumber.InvalidArgument;
@@ -128,20 +128,20 @@ public sealed partial class ISO9660
 
                 return ErrorNumber.NoError;
 
-            case "com.apple.dos.type":
+            case Xattrs.XATTR_APPLE_DOS_TYPE:
                 if(entry.AppleDosType is null) return ErrorNumber.NoSuchExtendedAttribute;
 
                 buf    = new byte[1];
                 buf[0] = entry.AppleDosType.Value;
 
                 return ErrorNumber.NoError;
-            case "com.apple.prodos.type":
+            case Xattrs.XATTR_APPLE_PRODOS_TYPE:
                 if(entry.AppleProDosType is null) return ErrorNumber.NoSuchExtendedAttribute;
 
                 buf = BitConverter.GetBytes(entry.AppleProDosType.Value);
 
                 return ErrorNumber.NoError;
-            case "com.apple.ResourceFork":
+            case Xattrs.XATTR_APPLE_RESOURCE_FORK:
                 if(entry.ResourceFork is null) return ErrorNumber.NoSuchExtendedAttribute;
 
                 if(entry.ResourceFork.Extents is null) return ErrorNumber.InvalidArgument;
@@ -161,31 +161,31 @@ public sealed partial class ISO9660
 
                 return ErrorNumber.NoError;
 
-            case "com.apple.FinderInfo":
+            case Xattrs.XATTR_APPLE_FINDER_INFO:
                 if(entry.FinderInfo is null) return ErrorNumber.NoSuchExtendedAttribute;
 
                 buf = Marshal.StructureToByteArrayBigEndian(entry.FinderInfo.Value);
 
                 return ErrorNumber.NoError;
-            case "com.apple.Macintosh.Icon":
+            case Xattrs.XATTR_APPLE_ICON:
                 if(entry.AppleIcon is null) return ErrorNumber.NoSuchExtendedAttribute;
 
                 buf = new byte[entry.AppleIcon.Length];
                 Array.Copy(entry.AppleIcon, 0, buf, 0, entry.AppleIcon.Length);
 
                 return ErrorNumber.NoError;
-            case "com.amiga.comments":
+            case Xattrs.XATTR_AMIGA_COMMENTS:
                 if(entry.AmigaComment is null) return ErrorNumber.NoSuchExtendedAttribute;
 
                 buf = new byte[entry.AmigaComment.Length];
                 Array.Copy(entry.AmigaComment, 0, buf, 0, entry.AmigaComment.Length);
 
                 return ErrorNumber.NoError;
-            case "org.iso.mode2.subheader":
+            case Xattrs.XATTR_ISO9660_MODE2_SUBHEADER:
                 buf = ReadSubheaderWithExtents(entry.Extents, false);
 
                 return ErrorNumber.NoError;
-            case "org.iso.mode2.subheader.copy":
+            case Xattrs.XATTR_ISO9660_MODE2_SUBHEADER_COPY:
                 buf = ReadSubheaderWithExtents(entry.Extents, true);
 
                 return ErrorNumber.NoError;

@@ -63,14 +63,14 @@ public sealed partial class AppleHFS
         if(entry is not FileEntry fileEntry) return ErrorNumber.NoError;
 
         // Add Finder Info xattr (always present for files)
-        xattrs.Add("com.apple.FinderInfo");
+        xattrs.Add(Xattrs.XATTR_APPLE_FINDER_INFO);
 
         // Add HFS creator and type xattrs
-        xattrs.Add("hfs.creator");
-        xattrs.Add("hfs.type");
+        xattrs.Add(Xattrs.XATTR_APPLE_HFS_CREATOR);
+        xattrs.Add(Xattrs.XATTR_APPLE_HFS_OSTYPE);
 
         // Add Resource Fork xattr if it exists and is non-empty
-        if(fileEntry.ResourceForkLogicalSize > 0) xattrs.Add("com.apple.ResourceFork");
+        if(fileEntry.ResourceForkLogicalSize > 0) xattrs.Add(Xattrs.XATTR_APPLE_RESOURCE_FORK);
 
         xattrs.Sort();
 
@@ -96,7 +96,7 @@ public sealed partial class AppleHFS
         if(entry is not FileEntry fileEntry) return ErrorNumber.NoSuchExtendedAttribute;
 
         // Handle Finder Info xattr: concatenate FInfo (16 bytes) + FXInfo (16 bytes) = 32 bytes
-        if(string.Equals(xattr, "com.apple.FinderInfo", StringComparison.OrdinalIgnoreCase))
+        if(string.Equals(xattr, Xattrs.XATTR_APPLE_FINDER_INFO, StringComparison.OrdinalIgnoreCase))
         {
             buf = new byte[32];
 
@@ -112,7 +112,7 @@ public sealed partial class AppleHFS
         }
 
         // Handle HFS creator xattr (4 bytes, as stored)
-        if(string.Equals(xattr, "hfs.creator", StringComparison.OrdinalIgnoreCase))
+        if(string.Equals(xattr, Xattrs.XATTR_APPLE_HFS_CREATOR, StringComparison.OrdinalIgnoreCase))
         {
             buf = BitConverter.GetBytes(fileEntry.FinderInfo.fdCreator);
 
@@ -120,7 +120,7 @@ public sealed partial class AppleHFS
         }
 
         // Handle HFS type xattr (4 bytes, as stored)
-        if(string.Equals(xattr, "hfs.type", StringComparison.OrdinalIgnoreCase))
+        if(string.Equals(xattr, Xattrs.XATTR_APPLE_HFS_OSTYPE, StringComparison.OrdinalIgnoreCase))
         {
             buf = BitConverter.GetBytes(fileEntry.FinderInfo.fdType);
 
@@ -128,7 +128,7 @@ public sealed partial class AppleHFS
         }
 
         // Handle Resource Fork xattr
-        if(string.Equals(xattr, "com.apple.ResourceFork", StringComparison.OrdinalIgnoreCase))
+        if(string.Equals(xattr, Xattrs.XATTR_APPLE_RESOURCE_FORK, StringComparison.OrdinalIgnoreCase))
         {
             return fileEntry.ResourceForkLogicalSize == 0
                        ? ErrorNumber.NoSuchExtendedAttribute

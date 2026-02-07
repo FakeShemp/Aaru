@@ -182,8 +182,9 @@ public sealed partial class UDF
                         List<string> os2Xattrs = GetOs2EaNames(feBuffer, eaOffset, iuea);
 
                         foreach(string os2Xattr in os2Xattrs)
-                            if(!xattrs.Contains(os2Xattr))
-                                xattrs.Add(os2Xattr);
+                        {
+                            if(!xattrs.Contains(os2Xattr)) xattrs.Add(os2Xattr);
+                        }
 
                         eaOffset += (int)eaHeader.attributeLength;
 
@@ -425,19 +426,19 @@ public sealed partial class UDF
         switch(eaHeader.attributeType)
         {
             case EA_TYPE_CHARSET_INFO:
-                return "ch.ecma.charset_info";
+                return Xattrs.XATTR_ECMA_CHARSET_INFO;
 
             case EA_TYPE_ALTERNATE_PERMS:
-                return "ch.ecma.alternate_permissions";
+                return Xattrs.XATTR_ECMA_ALTERNATE_PERMISSIONS;
 
             case EA_TYPE_FILE_TIMES:
-                return "ch.ecma.file_times";
+                return Xattrs.XATTR_ECMA_FILE_TIMES;
 
             case EA_TYPE_INFO_TIMES:
-                return "ch.ecma.info_times";
+                return Xattrs.XATTR_ECMA_INFO_TIMES;
 
             case EA_TYPE_DEVICE_SPEC:
-                return "ch.ecma.device_specification";
+                return Xattrs.XATTR_ECMA_DEVICE_SPECIFICATION;
 
             case EA_TYPE_IMPLEMENTATION:
                 return GetImplementationUseEaName(feBuffer, eaOffset);
@@ -472,15 +473,16 @@ public sealed partial class UDF
 
         // Check for known identifiers
         if(CompareIdentifier(iuea.implementationIdentifier.identifier, _mac_ResourceFork))
-            return "com.apple.ResourceFork";
+            return Xattrs.XATTR_APPLE_RESOURCE_FORK;
 
-        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _mac_FinderInfo)) return "com.apple.FinderInfo";
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _mac_FinderInfo))
+            return Xattrs.XATTR_APPLE_FINDER_INFO;
 
         if(CompareIdentifier(iuea.implementationIdentifier.identifier, _mac_UniqueId))
             return null; // MacUniqueIDTable is internal UDF structure, should be ignored
 
         if(CompareIdentifier(iuea.implementationIdentifier.identifier, _mac_VolumeInfo))
-            return "com.apple.FinderInfo"; // MacVolumeInfo contains Finder info
+            return Xattrs.XATTR_APPLE_FINDER_INFO; // MacVolumeInfo contains Finder info
 
         if(CompareIdentifier(iuea.implementationIdentifier.identifier, _os2_Ea))
             return null; // OS/2 EAs are handled separately in ListXAttr
@@ -488,13 +490,14 @@ public sealed partial class UDF
         if(CompareIdentifier(iuea.implementationIdentifier.identifier, _os2_Ea_Len))
             return null; // OS/2 EALength should be ignored
 
-        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _dvd_Cgms)) return "org.osta.udf.dvd_cgms_info";
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _dvd_Cgms)) return Xattrs.XATTR_UDF_DVD_CGMS;
 
         if(CompareIdentifier(iuea.implementationIdentifier.identifier, _udf_Free_Ea))
-            return "org.osta.udf.free_ea_space";
+            return Xattrs.XATTR_UDF_FREE_EA_SPACE;
 
         // UDF 2.01: OS/400 DirInfo
-        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _os400_DirInfo)) return "com.ibm.os400.dirinfo";
+        if(CompareIdentifier(iuea.implementationIdentifier.identifier, _os400_DirInfo))
+            return Xattrs.XATTR_IBM_OS400_DIR_INFO;
 
         // Unknown implementation use EA
         string identifier = StringHandlers.CToString(iuea.implementationIdentifier.identifier, Encoding.ASCII)?.Trim();
@@ -873,8 +876,9 @@ public sealed partial class UDF
         int compareLength = Math.Min(identifier.Length, pattern.Length);
 
         for(var i = 0; i < compareLength; i++)
-            if(identifier[i] != pattern[i])
-                return false;
+        {
+            if(identifier[i] != pattern[i]) return false;
+        }
 
         return true;
     }

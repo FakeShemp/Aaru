@@ -35,9 +35,6 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class SFS
 {
-    /// <summary>Extended attribute name for the Amiga file comment</summary>
-    const string XATTR_AMIGA_COMMENT = "amiga.comment";
-
     /// <inheritdoc />
     public ErrorNumber ListXAttr(string path, out List<string> xattrs)
     {
@@ -61,7 +58,7 @@ public sealed partial class SFS
         if(errno != ErrorNumber.NoError) return errno;
 
         // If there's a comment, add the xattr to the list
-        if(!string.IsNullOrEmpty(comment)) xattrs.Add(XATTR_AMIGA_COMMENT);
+        if(!string.IsNullOrEmpty(comment)) xattrs.Add(Xattrs.XATTR_AMIGA_COMMENTS);
 
         return ErrorNumber.NoError;
     }
@@ -72,7 +69,8 @@ public sealed partial class SFS
         if(!_mounted) return ErrorNumber.AccessDenied;
 
         // We only support the amiga.comment xattr
-        if(!string.Equals(xattr, XATTR_AMIGA_COMMENT, StringComparison.Ordinal)) return ErrorNumber.NotSupported;
+        if(!string.Equals(xattr, Xattrs.XATTR_AMIGA_COMMENTS, StringComparison.Ordinal))
+            return ErrorNumber.NotSupported;
 
         // Normalize the path
         string normalizedPath = path ?? "/";

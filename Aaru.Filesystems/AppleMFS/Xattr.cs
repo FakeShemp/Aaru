@@ -78,13 +78,13 @@ public sealed partial class AppleMFS
 
         if(entry.flRLgLen > 0)
         {
-            xattrs.Add("com.apple.ResourceFork");
+            xattrs.Add(Xattrs.XATTR_APPLE_RESOURCE_FORK);
 
             if(_debug && _device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSonyTag))
                 xattrs.Add("com.apple.ResourceFork.tags");
         }
 
-        xattrs.Add("com.apple.FinderInfo");
+        xattrs.Add(Xattrs.XATTR_APPLE_FINDER_INFO);
 
         if(_debug && _device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSonyTag) && entry.flLgLen > 0)
             xattrs.Add("com.apple.macintosh.tags");
@@ -160,7 +160,7 @@ public sealed partial class AppleMFS
 
         switch(entry.flRLgLen)
         {
-            case > 0 when string.Equals(xattr, "com.apple.ResourceFork", StringComparison.InvariantCulture):
+            case > 0 when string.Equals(xattr, Xattrs.XATTR_APPLE_RESOURCE_FORK, StringComparison.InvariantCulture):
                 error = ReadFile(path, out buf, true, false);
 
                 return error;
@@ -170,7 +170,7 @@ public sealed partial class AppleMFS
                 return error;
         }
 
-        if(string.Equals(xattr, "com.apple.FinderInfo", StringComparison.InvariantCulture))
+        if(string.Equals(xattr, Xattrs.XATTR_APPLE_FINDER_INFO, StringComparison.InvariantCulture))
         {
             buf = Marshal.StructureToByteArrayBigEndian(entry.flUsrWds);
 

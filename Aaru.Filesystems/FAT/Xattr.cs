@@ -128,7 +128,7 @@ public sealed partial class FAT
             {
                 // This is WorkPlace System information so it's IBM
                 if(name == ".CLASSINFO")
-                    name = "com.ibm.os2.classinfo";
+                    name = Xattrs.XATTR_WORKPLACE_CLASSINFO;
                 else
                     name = "com.microsoft.os2" + name.ToLower();
             }

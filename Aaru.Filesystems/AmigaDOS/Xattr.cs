@@ -34,9 +34,6 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class AmigaDOSPlugin
 {
-    /// <summary>Extended attribute name for the Amiga file comment</summary>
-    const string XATTR_AMIGA_COMMENT = "amiga.comment";
-
     /// <inheritdoc />
     public ErrorNumber ListXAttr(string path, out List<string> xattrs)
     {
@@ -69,7 +66,7 @@ public sealed partial class AmigaDOSPlugin
         byte commLen       = blockData[commLenOffset];
 
         // If there's a comment, add the xattr to the list
-        if(commLen is > 0 and <= MAX_COMMENT_LENGTH) xattrs.Add(XATTR_AMIGA_COMMENT);
+        if(commLen is > 0 and <= MAX_COMMENT_LENGTH) xattrs.Add(Xattrs.XATTR_AMIGA_COMMENTS);
 
         return ErrorNumber.NoError;
     }
@@ -80,7 +77,8 @@ public sealed partial class AmigaDOSPlugin
         if(!_mounted) return ErrorNumber.AccessDenied;
 
         // We only support the amiga.comment xattr
-        if(!string.Equals(xattr, XATTR_AMIGA_COMMENT, StringComparison.Ordinal)) return ErrorNumber.NotSupported;
+        if(!string.Equals(xattr, Xattrs.XATTR_AMIGA_COMMENTS, StringComparison.Ordinal))
+            return ErrorNumber.NotSupported;
 
         // Normalize the path
         string normalizedPath = path ?? "/";

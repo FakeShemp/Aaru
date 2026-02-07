@@ -65,9 +65,9 @@ public sealed partial class AppleDOS
         {
             if(!_catalogCache.ContainsKey(filename)) return ErrorNumber.NoSuchFile;
 
-            xattrs.Add("com.apple.dos.type");
+            xattrs.Add(Xattrs.XATTR_APPLE_DOS_TYPE);
 
-            if(_debug) xattrs.Add("com.apple.dos.tracksectorlist");
+            if(_debug) xattrs.Add(Xattrs.XATTR_APPLE_DOS_TYPE);
         }
 
         return ErrorNumber.NoError;
@@ -94,7 +94,7 @@ public sealed partial class AppleDOS
 
         if(!_catalogCache.ContainsKey(filename)) return ErrorNumber.NoSuchFile;
 
-        if(string.Equals(xattr, "com.apple.dos.type", StringComparison.InvariantCulture))
+        if(string.Equals(xattr, Xattrs.XATTR_APPLE_DOS_TYPE, StringComparison.InvariantCulture))
         {
             if(!_fileTypeCache.TryGetValue(filename, out byte type)) return ErrorNumber.InvalidArgument;
 
@@ -104,7 +104,7 @@ public sealed partial class AppleDOS
             return ErrorNumber.NoError;
         }
 
-        if(!string.Equals(xattr, "com.apple.dos.tracksectorlist", StringComparison.InvariantCulture) || !_debug)
+        if(!string.Equals(xattr, Xattrs.XATTR_APPLE_DOS_TYPE, StringComparison.InvariantCulture) || !_debug)
             return ErrorNumber.NoSuchExtendedAttribute;
 
         if(!_extentCache.TryGetValue(filename, out byte[] ts)) return ErrorNumber.InvalidArgument;
