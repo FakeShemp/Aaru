@@ -129,8 +129,8 @@ public sealed partial class ODS
 
             if(!fileHeader.filechar.HasFlag(FileCharacteristicFlags.Directory)) return ErrorNumber.NotDirectory;
 
-            // Read directory entries
-            errno = ReadDirectoryEntries(fileHeader, out Dictionary<string, CachedFile> dirEntries);
+            // Read directory entries, skipping self-referential entry
+            errno = ReadDirectoryEntries(fileHeader, out Dictionary<string, CachedFile> dirEntries, found.Fid.num);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -169,8 +169,13 @@ public sealed partial class ODS
         info.Blocks = header.recattr.hiblk.Value;
 
         // Get timestamps from ident area
-        ReadFileIdent(header, out ulong credate, out ulong revdate, out _, out ulong bakdate,
-                      out ulong accdate, out ulong attdate);
+        ReadFileIdent(header,
+                      out ulong credate,
+                      out ulong revdate,
+                      out _,
+                      out ulong bakdate,
+                      out ulong accdate,
+                      out ulong attdate);
 
         if(credate > 0) info.CreationTime = DateHandlers.VmsToDateTime(credate);
 
@@ -267,8 +272,8 @@ public sealed partial class ODS
     /// <param name="bakdate">Backup date.</param>
     /// <param name="accdate">Access date (ODS-5 only).</param>
     /// <param name="attdate">Attribute change date (ODS-5 only).</param>
-    static void ReadFileIdent(in FileHeader header, out ulong credate, out ulong revdate, out ulong expdate,
-                              out ulong     bakdate, out ulong accdate, out ulong attdate)
+    static void ReadFileIdent(in  FileHeader header,  out ulong credate, out ulong revdate, out ulong expdate,
+                              out ulong      bakdate, out ulong accdate, out ulong attdate)
     {
         credate = revdate = expdate = bakdate = accdate = attdate = 0;
 
@@ -277,8 +282,8 @@ public sealed partial class ODS
 
         // The ident area is within the reserved area of the file header
         // Reserved area starts at offset 0x50 (80 bytes) and is 430 bytes
-        const int reservedStart      = 0x50;
-        int       identOffsetInRes   = identOffset - reservedStart;
+        const int reservedStart    = 0x50;
+        int       identOffsetInRes = identOffset - reservedStart;
 
         if(header.reserved == null || identOffsetInRes < 0) return;
 
@@ -330,19 +335,19 @@ public sealed partial class ODS
             mode |= 0x8000; // S_IFREG
 
         // Owner permissions (bits 8-6)
-        if((owner & VMS_PROT_DENY_READ) == 0) mode  |= 0x0100; // S_IRUSR
+        if((owner & VMS_PROT_DENY_READ)  == 0) mode |= 0x0100; // S_IRUSR
         if((owner & VMS_PROT_DENY_WRITE) == 0) mode |= 0x0080; // S_IWUSR
-        if((owner & VMS_PROT_DENY_EXEC) == 0) mode  |= 0x0040; // S_IXUSR
+        if((owner & VMS_PROT_DENY_EXEC)  == 0) mode |= 0x0040; // S_IXUSR
 
         // Group permissions (bits 5-3)
-        if((group & VMS_PROT_DENY_READ) == 0) mode  |= 0x0020; // S_IRGRP
+        if((group & VMS_PROT_DENY_READ)  == 0) mode |= 0x0020; // S_IRGRP
         if((group & VMS_PROT_DENY_WRITE) == 0) mode |= 0x0010; // S_IWGRP
-        if((group & VMS_PROT_DENY_EXEC) == 0) mode  |= 0x0008; // S_IXGRP
+        if((group & VMS_PROT_DENY_EXEC)  == 0) mode |= 0x0008; // S_IXGRP
 
         // World/other permissions (bits 2-0)
-        if((world & VMS_PROT_DENY_READ) == 0) mode  |= 0x0004; // S_IROTH
+        if((world & VMS_PROT_DENY_READ)  == 0) mode |= 0x0004; // S_IROTH
         if((world & VMS_PROT_DENY_WRITE) == 0) mode |= 0x0002; // S_IWOTH
-        if((world & VMS_PROT_DENY_EXEC) == 0) mode  |= 0x0001; // S_IXOTH
+        if((world & VMS_PROT_DENY_EXEC)  == 0) mode |= 0x0001; // S_IXOTH
 
         return mode;
     }

@@ -102,8 +102,8 @@ public sealed partial class ODS
 
             if(!fileHeader.filechar.HasFlag(FileCharacteristicFlags.Directory)) return ErrorNumber.NotDirectory;
 
-            // Read directory entries
-            errno = ReadDirectoryEntries(fileHeader, out Dictionary<string, CachedFile> dirEntries);
+            // Read directory entries, skipping self-referential entry
+            errno = ReadDirectoryEntries(fileHeader, out Dictionary<string, CachedFile> dirEntries, cachedFile.Fid.num);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -164,8 +164,10 @@ public sealed partial class ODS
     /// <summary>Reads directory entries from a directory file header.</summary>
     /// <param name="dirHeader">File header of the directory.</param>
     /// <param name="entries">Output dictionary of cached entries.</param>
+    /// <param name="skipFid">Optional FID to skip (for filtering self-referential entries).</param>
     /// <returns>Error number indicating success or failure.</returns>
-    ErrorNumber ReadDirectoryEntries(in FileHeader dirHeader, out Dictionary<string, CachedFile> entries)
+    ErrorNumber ReadDirectoryEntries(in FileHeader dirHeader, out Dictionary<string, CachedFile> entries,
+                                     ushort        skipFid = 0)
     {
         entries = new Dictionary<string, CachedFile>();
 
@@ -193,7 +195,7 @@ public sealed partial class ODS
             if(errno != ErrorNumber.NoError) break;
 
             // Parse directory entries in this block
-            ParseDirectoryBlockToCache(dirBlock, entries);
+            ParseDirectoryBlockToCache(dirBlock, entries, skipFid);
 
             vbn++;
         }
@@ -204,7 +206,8 @@ public sealed partial class ODS
     /// <summary>Parses directory entries from a directory block into a cache dictionary.</summary>
     /// <param name="block">Directory block data.</param>
     /// <param name="cache">Cache dictionary to populate.</param>
-    void ParseDirectoryBlockToCache(byte[] block, Dictionary<string, CachedFile> cache)
+    /// <param name="skipFid">Optional FID to skip (for filtering self-referential entries).</param>
+    void ParseDirectoryBlockToCache(byte[] block, Dictionary<string, CachedFile> cache, ushort skipFid = 0)
     {
         var offset = 0;
 
@@ -242,6 +245,14 @@ public sealed partial class ODS
                 var entryVersion = BitConverter.ToUInt16(block, valueOffset);
 
                 FileId fid = Marshal.ByteArrayToStructureLittleEndian<FileId>(block, valueOffset + 2, 6);
+
+                // Skip self-referential entries (like 000000.DIR pointing to MFD)
+                if(skipFid != 0 && fid.num == skipFid)
+                {
+                    offset += size + 2;
+
+                    continue;
+                }
 
                 // Store without version for directory listing
                 if(!cache.ContainsKey(filename.ToUpperInvariant()))
@@ -308,6 +319,14 @@ public sealed partial class ODS
                 var entryVersion = BitConverter.ToUInt16(block, valueOffset);
 
                 FileId fid = Marshal.ByteArrayToStructureLittleEndian<FileId>(block, valueOffset + 2, 6);
+
+                // Skip self-referential MFD entry (000000.DIR pointing to itself)
+                if(fid.num == MFD_FID)
+                {
+                    offset += size + 2;
+
+                    continue;
+                }
 
                 // Create filename with version (ODS style: FILENAME.EXT;VERSION)
                 var fullName = $"{filename};{entryVersion}";
