@@ -7533,5 +7533,17 @@ namespace Aaru.Filesystems {
                 return ResourceManager.GetString("Probable_machine_type_0", resourceCulture);
             }
         }
+        
+        internal static string Default_namespace_showing_all_file_versions {
+            get {
+                return ResourceManager.GetString("Default_namespace_showing_all_file_versions", resourceCulture);
+            }
+        }
+        
+        internal static string Namespace_showing_only_the_latest_version_without_version_suffix {
+            get {
+                return ResourceManager.GetString("Namespace_showing_only_the_latest_version_without_version_suffix", resourceCulture);
+            }
+        }
     }
 }

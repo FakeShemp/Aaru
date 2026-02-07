@@ -3773,4 +3773,10 @@
     <data name="Probable_machine_type_0" xml:space="preserve">
         <value>Probable machine type: {0}</value>
     </data>
+    <data name="Default_namespace_showing_all_file_versions" xml:space="preserve">
+        <value>Default namespace showing all file versions (FILE;1, FILE;2, etc)</value>
+    </data>
+    <data name="Namespace_showing_only_the_latest_version_without_version_suffix" xml:space="preserve">
+        <value>Namespace showing only the latest version without version suffix</value>
+    </data>
 </root>

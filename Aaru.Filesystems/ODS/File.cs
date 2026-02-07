@@ -176,7 +176,7 @@ public sealed partial class ODS
         // Clear cached data
         myNode.MapData       = null;
         myNode.ExtensionMaps = null;
-        myNode.FileHeader    = default;
+        myNode.FileHeader    = default(FileHeader);
         myNode.Offset        = -1;
 
         return ErrorNumber.NoError;
@@ -384,10 +384,7 @@ public sealed partial class ODS
 
             if(errno != ErrorNumber.NoError)
             {
-                AaruLogging.Debug(MODULE_NAME,
-                                  "Error reading extension file header {0}: {1}",
-                                  extFileNum,
-                                  errno);
+                AaruLogging.Debug(MODULE_NAME, "Error reading extension file header {0}: {1}", extFileNum, errno);
 
                 return errno;
             }
@@ -444,8 +441,7 @@ public sealed partial class ODS
         if(errno == ErrorNumber.NoError) return ErrorNumber.NoError;
 
         // If no extension maps, VBN is not found
-        if(fileNode.ExtensionMaps == null || fileNode.ExtensionMaps.Count == 0)
-            return ErrorNumber.InvalidArgument;
+        if(fileNode.ExtensionMaps == null || fileNode.ExtensionMaps.Count == 0) return ErrorNumber.InvalidArgument;
 
         // Search through extension maps
         foreach(ExtensionMapInfo extMap in fileNode.ExtensionMaps)
@@ -479,11 +475,19 @@ public sealed partial class ODS
         {
             string component = pieces[p].ToUpperInvariant();
 
-            // ODS filenames may include version - strip it for lookup
+            // Handle version number based on namespace
             int versionPos = component.IndexOf(';');
 
-            if(versionPos >= 0) component = component[..versionPos];
+            if(_namespace == NAMESPACE_NOVERSIONS)
+            {
+                // noversions namespace - always strip version and look up without it
+                if(versionPos >= 0) component = component[..versionPos];
+            }
 
+            // default namespace - if version specified, look up with version; otherwise without
+            // The cache stores both "FILE" and "FILE;1" entries
+            // If user specifies "FILE;1", look for "FILE;1"
+            // If user specifies "FILE", look for "FILE" (which gives latest version)
             // Look for the component in current directory
             if(!currentDirectory.TryGetValue(component, out CachedFile found)) return ErrorNumber.NoSuchFile;
 
@@ -496,6 +500,14 @@ public sealed partial class ODS
             }
 
             // Not the last component - must be a directory
+            // For directories, we need to strip version for lookup
+            string dirComponent  = component;
+            int    dirVersionPos = dirComponent.IndexOf(';');
+
+            if(dirVersionPos >= 0) dirComponent = dirComponent[..dirVersionPos];
+
+            if(!currentDirectory.TryGetValue(dirComponent, out found)) return ErrorNumber.NoSuchFile;
+
             ErrorNumber errno = ReadFileHeader(found.Fid.num, out FileHeader fileHeader);
 
             if(errno != ErrorNumber.NoError) return errno;
@@ -788,7 +800,7 @@ public sealed partial class ODS
         header = default(FileHeader);
 
         // File number includes nmx in high bits for large volumes
-        uint fileNum = (uint)(fid.num + (fid.nmx << 16));
+        var fileNum = (uint)(fid.num + (fid.nmx << 16));
 
         // File header LBN = ibmaplbn + ibmapsize + (fileNum - 1)
         uint headerLbn = _homeBlock.ibmaplbn + _homeBlock.ibmapsize + fileNum - 1;

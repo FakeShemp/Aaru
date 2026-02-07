@@ -55,6 +55,24 @@ public sealed partial class ODS
 
         if(options.TryGetValue("debug", out string debugString)) bool.TryParse(debugString, out _debug);
 
+        // Handle namespace selection - default to "default" if not specified
+        @namespace ??= NAMESPACE_DEFAULT;
+
+        switch(@namespace.ToLowerInvariant())
+        {
+            case NAMESPACE_DEFAULT:
+            case "":
+                _namespace = NAMESPACE_DEFAULT;
+
+                break;
+            case NAMESPACE_NOVERSIONS:
+                _namespace = NAMESPACE_NOVERSIONS;
+
+                break;
+            default:
+                return ErrorNumber.InvalidArgument;
+        }
+
         // Validate sector size - ODS uses 512-byte blocks
         _sectorSize = imagePlugin.Info.SectorSize;
 

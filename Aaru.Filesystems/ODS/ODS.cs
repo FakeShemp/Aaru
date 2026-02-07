@@ -55,12 +55,19 @@ public sealed partial class ODS : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "Files-11 plugin";
 
+    /// <summary>Namespace showing all file versions with version suffix (FILE;1, FILE;2, etc)</summary>
+    const string NAMESPACE_DEFAULT = "default";
+
+    /// <summary>Namespace showing only the latest version without version suffix</summary>
+    const string NAMESPACE_NOVERSIONS = "noversions";
+
     uint                           _blocksPerSector;
     bool                           _debug;
     Encoding                       _encoding;
     HomeBlock                      _homeBlock;
     IMediaImage                    _image;
     bool                           _mounted;
+    string                         _namespace;
     Partition                      _partition;
     Dictionary<string, CachedFile> _rootDirectoryCache;
     uint                           _sectorSize;
@@ -72,7 +79,15 @@ public sealed partial class ODS : IReadOnlyFilesystem
     /// <inheritdoc />
     public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
     /// <inheritdoc />
-    public Dictionary<string, string> Namespaces { get; } = [];
+    public Dictionary<string, string> Namespaces { get; } = new()
+    {
+        {
+            NAMESPACE_DEFAULT, Localization.Default_namespace_showing_all_file_versions
+        },
+        {
+            NAMESPACE_NOVERSIONS, Localization.Namespace_showing_only_the_latest_version_without_version_suffix
+        }
+    };
 
     static Dictionary<string, string> GetDefaultOptions() => new()
     {

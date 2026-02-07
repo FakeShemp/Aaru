@@ -63,10 +63,7 @@ public sealed partial class ODS
             {
                 Path     = "/",
                 Position = 0,
-                Entries = _rootDirectoryCache.Where(static kvp => !kvp.Key.Contains(';'))
-                                             .OrderBy(static k => k.Key)
-                                             .Select(static kvp => (kvp.Key, kvp.Value))
-                                             .ToArray()
+                Entries  = GetDirectoryEntries(_rootDirectoryCache)
             };
 
             return ErrorNumber.NoError;
@@ -114,10 +111,7 @@ public sealed partial class ODS
                 {
                     Path     = normalizedPath,
                     Position = 0,
-                    Entries = dirEntries.Where(static kvp => !kvp.Key.Contains(';'))
-                                        .OrderBy(static k => k.Key)
-                                        .Select(static kvp => (kvp.Key, kvp.Value))
-                                        .ToArray()
+                    Entries  = GetDirectoryEntries(dirEntries)
                 };
 
                 return ErrorNumber.NoError;
@@ -159,6 +153,27 @@ public sealed partial class ODS
         filename = myNode.Entries[myNode.Position++].Filename;
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Gets directory entries filtered by the current namespace.</summary>
+    /// <param name="cache">Directory cache with all entries.</param>
+    /// <returns>Array of entries appropriate for the current namespace.</returns>
+    (string Filename, CachedFile File)[] GetDirectoryEntries(Dictionary<string, CachedFile> cache)
+    {
+        if(_namespace == NAMESPACE_NOVERSIONS)
+        {
+            // noversions namespace - show only entries without version suffix (latest version)
+            return cache.Where(static kvp => !kvp.Key.Contains(';'))
+                        .OrderBy(static k => k.Key)
+                        .Select(static kvp => (kvp.Key, kvp.Value))
+                        .ToArray();
+        }
+
+        // default namespace - show all entries WITH version suffix (FILE;1, FILE;2, etc)
+        return cache.Where(static kvp => kvp.Key.Contains(';'))
+                    .OrderBy(static k => k.Key)
+                    .Select(static kvp => (kvp.Key, kvp.Value))
+                    .ToArray();
     }
 
     /// <summary>Reads directory entries from a directory file header.</summary>

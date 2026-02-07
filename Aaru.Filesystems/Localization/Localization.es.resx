@@ -3764,4 +3764,10 @@
     <data name="Probable_machine_type_0" xml:space="preserve">
         <value>Tipo de máquina probable: {0}</value>
     </data>
+    <data name="Default_namespace_showing_all_file_versions" xml:space="preserve">
+        <value>Espacio de nombres por defecto mostrando todas las versiones de los ficheros (FILE;1, FILE;2, etc)</value>
+    </data>
+    <data name="Namespace_showing_only_the_latest_version_without_version_suffix" xml:space="preserve">
+        <value>Espacio de nombres mostrando sólo la última versión sin el sufijo</value>
+    </data>
 </root>
