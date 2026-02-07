@@ -170,8 +170,11 @@ public sealed partial class EFS
             // Offset in file is in bytes, extents use basic block offsets
             var logicalBlock = (uint)(currentOffset / EFS_BBSIZE);
 
-            ErrorNumber errno =
-                FindExtentForBlock(fileNode.Extents, logicalBlock, out Extent extent, out uint blockInExtent);
+            ErrorNumber errno = FindExtentForBlock(fileNode.Extents,
+                                                   logicalBlock,
+                                                   out Extent extent,
+                                                   out uint blockInExtent,
+                                                   out bool isHole);
 
             if(errno != ErrorNumber.NoError)
             {
@@ -186,26 +189,36 @@ public sealed partial class EFS
                 return errno;
             }
 
-            // Calculate the physical block number
-            uint physicalBlock = extent.BlockNumber + blockInExtent;
-
             // Calculate offset within the block
             var offsetInBlock = (int)(currentOffset % EFS_BBSIZE);
 
-            // Read the block
-            errno = ReadBasicBlock((int)physicalBlock, out byte[] blockData);
+            byte[] blockData;
 
-            if(errno != ErrorNumber.NoError)
+            if(isHole)
             {
-                AaruLogging.Debug(MODULE_NAME,
-                                  "ReadFile: ReadBasicBlock failed for block {0}: {1}",
-                                  physicalBlock,
-                                  errno);
+                // Sparse file hole - return zeros
+                blockData = new byte[EFS_BBSIZE];
+            }
+            else
+            {
+                // Calculate the physical block number
+                uint physicalBlock = extent.BlockNumber + blockInExtent;
 
-                // If we've read some data, return what we have
-                if(bytesRead > 0) break;
+                // Read the block
+                errno = ReadBasicBlock((int)physicalBlock, out blockData);
 
-                return errno;
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "ReadFile: ReadBasicBlock failed for block {0}: {1}",
+                                      physicalBlock,
+                                      errno);
+
+                    // If we've read some data, return what we have
+                    if(bytesRead > 0) break;
+
+                    return errno;
+                }
             }
 
             // Calculate how much data to copy from this block
@@ -300,16 +313,31 @@ public sealed partial class EFS
         {
             var logicalBlock = (uint)(bytesRead / EFS_BBSIZE);
 
-            errno = FindExtentForBlock(extents, logicalBlock, out Extent extent, out uint blockInExtent);
+            errno = FindExtentForBlock(extents,
+                                       logicalBlock,
+                                       out Extent extent,
+                                       out uint blockInExtent,
+                                       out bool isHole);
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            uint physicalBlock = extent.BlockNumber + blockInExtent;
-            int  offsetInBlock = bytesRead % EFS_BBSIZE;
+            int offsetInBlock = bytesRead % EFS_BBSIZE;
 
-            errno = ReadBasicBlock((int)physicalBlock, out byte[] blockData);
+            byte[] blockData;
 
-            if(errno != ErrorNumber.NoError) return errno;
+            if(isHole)
+            {
+                // Sparse file hole - return zeros
+                blockData = new byte[EFS_BBSIZE];
+            }
+            else
+            {
+                uint physicalBlock = extent.BlockNumber + blockInExtent;
+
+                errno = ReadBasicBlock((int)physicalBlock, out blockData);
+
+                if(errno != ErrorNumber.NoError) return errno;
+            }
 
             int bytesToCopy = Math.Min(EFS_BBSIZE - offsetInBlock, inode.di_size - bytesRead);
             Array.Copy(blockData, offsetInBlock, linkData, bytesRead, bytesToCopy);
@@ -569,8 +597,9 @@ public sealed partial class EFS
         if(inode.di_extents != null)
         {
             for(var i = 0; i < inode.di_numextents && i < EFS_DIRECTEXTENTS; i++)
-                if(inode.di_extents[i].Magic == 0)
-                    blocksUsed += inode.di_extents[i].Length;
+            {
+                if(inode.di_extents[i].Magic == 0) blocksUsed += inode.di_extents[i].Length;
+            }
         }
 
         info.Blocks = blocksUsed;

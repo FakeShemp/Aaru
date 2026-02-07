@@ -123,12 +123,14 @@ public sealed partial class EFS
     /// <param name="logicalBlock">Logical block number within the file</param>
     /// <param name="extent">The extent containing the block</param>
     /// <param name="blockInExtent">Offset within the extent</param>
+    /// <param name="isHole">True if the block is in a sparse hole (not covered by any extent)</param>
     /// <returns>Error number indicating success or failure</returns>
-    static ErrorNumber FindExtentForBlock(Extent[] extents, uint logicalBlock, out Extent extent,
-                                          out uint blockInExtent)
+    static ErrorNumber FindExtentForBlock(Extent[] extents,       uint     logicalBlock, out Extent extent,
+                                          out uint blockInExtent, out bool isHole)
     {
         extent        = default(Extent);
         blockInExtent = 0;
+        isHole        = false;
 
         if(extents == null || extents.Length == 0) return ErrorNumber.InvalidArgument;
 
@@ -151,6 +153,10 @@ public sealed partial class EFS
             }
         }
 
-        return ErrorNumber.InvalidArgument;
+        // Block not found in any extent - this is a sparse file hole
+        // The block should be treated as containing zeros
+        isHole = true;
+
+        return ErrorNumber.NoError;
     }
 }
