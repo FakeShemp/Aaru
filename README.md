@@ -218,6 +218,7 @@ Fully supported file-systems (identify and extraction)
 * OS-9 Random Block File
 * QNX4 filesystems
 * QNX6 filesystems
+* SmartFileSystem
 * U.C.S.D Pascal file system
 * Universal Disk Format (UDF)
 * UNIX boot file system
@@ -262,7 +263,6 @@ Supported file systems for identification and information only
 * Reiser file systems
 * SGI Extent File System (EFS)
 * SGI XFS
-* SmartFileSystem
 * SolarOS file system
 * Squash file system
 * UNICOS file system
