@@ -72,8 +72,9 @@ public sealed partial class ISO9660
         public ushort                         VolumeSequenceNumber;
 
         // ReSharper disable once InconsistentNaming
-        public CdromXa? XA;
-        public byte     XattrLength;
+        public CdromXa?     XA;
+        public byte         XattrLength;
+        public ZisofsEntry? Zisofs;
 
         public override string ToString() => Filename;
     }

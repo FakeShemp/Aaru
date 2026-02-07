@@ -269,6 +269,26 @@ public sealed partial class ISO9660
 
         if(length + mynode.Offset >= mynode.Length) read = mynode.Length - mynode.Offset;
 
+        // Handle zisofs compressed files
+        if(mynode.Dentry.Zisofs is not null)
+        {
+            ErrorNumber err = ReadZisofsFile(mynode.Offset, read, mynode.Dentry, out byte[] buf);
+
+            if(err != ErrorNumber.NoError)
+            {
+                read = 0;
+
+                return err;
+            }
+
+            Array.Copy(buf, 0, buffer, 0, Math.Min(buf.Length, (int)read));
+            read = Math.Min(buf.Length, read);
+
+            node.Offset += read;
+
+            return ErrorNumber.NoError;
+        }
+
         long offset = mynode.Offset + mynode.Dentry.XattrLength * _blockSize;
 
         if(mynode.Dentry.CdiSystemArea?.attributes.HasFlag(CdiAttributes.DigitalAudio) != true ||
@@ -345,19 +365,24 @@ public sealed partial class ISO9660
 
         if(err != ErrorNumber.NoError) return err;
 
+        // For zisofs compressed files, use the uncompressed size
+        long fileLength = entry.Zisofs is not null ? entry.Zisofs.Value.uncomp_len : (long)entry.Size;
+
         stat = new FileEntryInfo
         {
             Attributes       = new FileAttributes(),
-            Blocks           = (long)(entry.Size / 2048), // TODO: XA
+            Blocks           = fileLength / 2048,
             BlockSize        = 2048,
-            Length           = (long)entry.Size,
+            Length           = fileLength,
             Links            = 1,
             LastWriteTimeUtc = entry.Timestamp
         };
 
         if(entry.Extents?.Count > 0) stat.Inode = entry.Extents[0].extent;
 
-        if(entry.Size % 2048 > 0) stat.Blocks++;
+        if(fileLength % 2048 > 0) stat.Blocks++;
+
+        if(entry.Zisofs is not null) stat.Attributes |= FileAttributes.Compressed;
 
         if(entry.Flags.HasFlag(FileFlags.Directory)) stat.Attributes |= FileAttributes.Directory;
 

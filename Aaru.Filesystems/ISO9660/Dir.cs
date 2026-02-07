@@ -945,8 +945,16 @@ public sealed partial class ISO9660
 
                     break;
                 case ZISO_MAGIC:
-                    // TODO: Implement support for zisofs
                     byte zfLength = data[systemAreaOff + 2];
+
+                    ZisofsEntry zf =
+                        Marshal.ByteArrayToStructureLittleEndian<ZisofsEntry>(data,
+                                                                              systemAreaOff,
+                                                                              Marshal.SizeOf<ZisofsEntry>());
+
+                    // Only support "pz" (paged zlib) algorithm
+                    if(zf.algorithm == ZISO_PAGED_ZLIB) entry.Zisofs = zf;
+
                     systemAreaOff += zfLength;
 
                     break;

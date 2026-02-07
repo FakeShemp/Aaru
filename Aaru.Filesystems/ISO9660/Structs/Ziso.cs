@@ -43,7 +43,7 @@ public sealed partial class ISO9660
         public readonly ushort signature;
         public readonly byte   length;
         public readonly byte   version;
-        public readonly ushort alogirhtm;
+        public readonly ushort algorithm;
         public readonly byte   header_size;    // Shifted >> 2
         public readonly byte   block_size_log; // log2(block_size)
         public readonly uint   uncomp_len;
