@@ -150,4 +150,58 @@ public sealed partial class HPFS
 
         return ErrorNumber.NoError;
     }
+
+    /// <summary>Gets a directory entry by path.</summary>
+    /// <param name="path">Normalized path to the file/directory.</param>
+    /// <param name="entry">The directory entry found.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber GetDirectoryEntry(string path, out DirectoryEntry entry)
+    {
+        entry = default(DirectoryEntry);
+
+        // Remove leading slash and split path
+        string   cutPath = path[1..];
+        string[] pieces  = cutPath.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
+
+        if(pieces.Length == 0) return ErrorNumber.NoSuchFile;
+
+        // Start from root dnode
+        uint currentDnode = _rootDnode;
+
+        for(var i = 0; i < pieces.Length; i++)
+        {
+            string component = pieces[i];
+
+            // Search for the component in current dnode
+            ErrorNumber errno = FindEntryInDnode(currentDnode, component, out DirectoryEntry foundEntry);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // If this is the last component, return it
+            if(i == pieces.Length - 1)
+            {
+                entry = foundEntry;
+
+                return ErrorNumber.NoError;
+            }
+
+            // Not the last component - must be a directory
+            if(!foundEntry.attributes.HasFlag(DosAttributes.Directory)) return ErrorNumber.NotDirectory;
+
+            // Get the dnode for the subdirectory
+            errno = ReadFNode(foundEntry.fnode, out FNode subFnode);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if(!subFnode.IsDirectory) return ErrorNumber.NotDirectory;
+
+            BPlusLeafNode[] leafNodes = GetBPlusLeafNodes(subFnode.btree, subFnode.btree_data);
+
+            if(leafNodes.Length == 0) return ErrorNumber.InvalidArgument;
+
+            currentDnode = leafNodes[0].disk_secno;
+        }
+
+        return ErrorNumber.NoSuchFile;
+    }
 }

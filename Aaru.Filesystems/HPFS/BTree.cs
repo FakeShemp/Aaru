@@ -235,4 +235,89 @@ public sealed partial class HPFS
         // Cache all entries from the directory tree
         return CacheDNodeEntries(rootDnode, entries);
     }
+
+    /// <summary>Searches a dnode tree for an entry by name.</summary>
+    /// <param name="dnodeSector">Starting dnode sector.</param>
+    /// <param name="name">Name to search for (case-insensitive).</param>
+    /// <param name="entry">The found directory entry.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber FindEntryInDnode(uint dnodeSector, string name, out DirectoryEntry entry)
+    {
+        entry = default(DirectoryEntry);
+
+        ErrorNumber errno = ReadDNode(dnodeSector, out DNode dnode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        string nameUpper = name.ToUpperInvariant();
+
+        // Parse directory entries
+        var offset    = 0;
+        int endOffset = (int)dnode.first_free - 20;
+
+        while(offset < endOffset && offset + 31 < dnode.dirent.Length)
+        {
+            DirectoryEntry currentEntry =
+                Marshal.ByteArrayToStructureLittleEndian<DirectoryEntry>(dnode.dirent, offset, 31);
+
+            if(currentEntry.length is < 32 or > 2048) break;
+
+            // Skip special entries
+            if(!currentEntry.flags.HasFlag(DirectoryEntryFlags.First) &&
+               !currentEntry.flags.HasFlag(DirectoryEntryFlags.Last))
+            {
+                if(currentEntry.namelen > 0 && offset + 31 + currentEntry.namelen <= dnode.dirent.Length)
+                {
+                    var nameBytes = new byte[currentEntry.namelen];
+                    Array.Copy(dnode.dirent, offset + 31, nameBytes, 0, currentEntry.namelen);
+                    string entryName = _encoding.GetString(nameBytes);
+
+                    // Compare names (case-insensitive)
+                    int cmp = string.Compare(nameUpper, entryName.ToUpperInvariant(), StringComparison.Ordinal);
+
+                    if(cmp == 0)
+                    {
+                        entry = currentEntry;
+
+                        return ErrorNumber.NoError;
+                    }
+
+                    // B-tree ordering: if our name is less than this entry's name,
+                    // and there's a down pointer, search the child
+                    if(cmp < 0 && currentEntry.flags.HasFlag(DirectoryEntryFlags.Down))
+                    {
+                        int downPtrOffset = offset + currentEntry.length - 4;
+
+                        if(downPtrOffset + 4 <= dnode.dirent.Length)
+                        {
+                            var downDnode = BitConverter.ToUInt32(dnode.dirent, downPtrOffset);
+
+                            return FindEntryInDnode(downDnode, name, out entry);
+                        }
+                    }
+                }
+            }
+
+            // Check down pointer for last entry or if we need to go down
+            if(currentEntry.flags.HasFlag(DirectoryEntryFlags.Down))
+            {
+                int downPtrOffset = offset + currentEntry.length - 4;
+
+                if(downPtrOffset + 4 <= dnode.dirent.Length)
+                {
+                    var downDnode = BitConverter.ToUInt32(dnode.dirent, downPtrOffset);
+
+                    // If this is the last entry, search its subtree
+                    if(currentEntry.flags.HasFlag(DirectoryEntryFlags.Last))
+                        return FindEntryInDnode(downDnode, name, out entry);
+                }
+            }
+
+            offset += currentEntry.length;
+
+            if(currentEntry.flags.HasFlag(DirectoryEntryFlags.Last)) break;
+        }
+
+        return ErrorNumber.NoSuchFile;
+    }
 }
