@@ -174,6 +174,14 @@ public class FileEntryInfo
     /// <summary>If file points to a device, device number. Null if the underlying filesystem does not support them.</summary>
     public ulong? DeviceNo { get; set; }
 
+    /// <summary>If file points to a device, device major number (upper 32 bits of DeviceNo). Null if DeviceNo is null.</summary>
+    [JsonIgnore]
+    public uint? DeviceMajor => DeviceNo.HasValue ? (uint)(DeviceNo.Value >> 32) : null;
+
+    /// <summary>If file points to a device, device minor number (lower 32 bits of DeviceNo). Null if DeviceNo is null.</summary>
+    [JsonIgnore]
+    public uint? DeviceMinor => DeviceNo.HasValue ? (uint)(DeviceNo.Value & 0xFFFFFFFF) : null;
+
     /// <summary>POSIX group ID. Null if the underlying filesystem does not support them.</summary>
     public ulong? GID { get; set; }
 
