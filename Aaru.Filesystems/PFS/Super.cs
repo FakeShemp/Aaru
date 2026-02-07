@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Professional File System plugin.
@@ -26,9 +26,8 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
@@ -36,19 +35,22 @@ namespace Aaru.Filesystems;
 public sealed partial class PFS
 {
     /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+        stat = new FileSystemInfo
+        {
+            Blocks         = _rootBlock.diskSize,
+            FilenameLength = (ushort)(_hasExtension ? _filenameSize : DNSIZE - 2), // Default 30 chars
+            FreeBlocks     = _rootBlock.blocksfree,
+            FreeFiles      = 0, // PFS doesn't have a fixed inode count
+            PluginId       = Id,
+            Type           = FS_TYPE
+        };
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        return ErrorNumber.NoError;
+    }
 }
