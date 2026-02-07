@@ -26,8 +26,11 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Logging;
 
@@ -36,6 +39,155 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class PFS
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize the path
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath == "" || normalizedPath == ".") normalizedPath = "/";
+
+        // Root directory - return cached entries
+        if(normalizedPath == "/" || string.Equals(normalizedPath, "/", StringComparison.OrdinalIgnoreCase))
+        {
+            if(_rootDirectoryCache.Count == 0) return ErrorNumber.NoSuchFile;
+
+            node = new PFSDirNode
+            {
+                Path     = "/",
+                Position = 0,
+                Entries  = _rootDirectoryCache.Keys.ToArray()
+            };
+
+            return ErrorNumber.NoError;
+        }
+
+        // Subdirectory traversal
+        string pathWithoutLeadingSlash = normalizedPath.StartsWith("/", StringComparison.Ordinal)
+                                             ? normalizedPath[1..]
+                                             : normalizedPath;
+
+        string[] pathComponents = pathWithoutLeadingSlash.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenDir: Traversing path with {0} components", pathComponents.Length);
+
+        // Start from root directory cache
+        Dictionary<string, DirEntryCacheItem> currentEntries = _rootDirectoryCache;
+
+        // Traverse each path component
+        foreach(string component in pathComponents)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenDir: Navigating to component '{0}'", component);
+
+            // Find the component in current directory (case-insensitive)
+            string foundKey = null;
+
+            foreach(string key in currentEntries.Keys)
+            {
+                if(string.Equals(key, component, StringComparison.OrdinalIgnoreCase))
+                {
+                    foundKey = key;
+
+                    break;
+                }
+            }
+
+            if(foundKey == null)
+            {
+                AaruLogging.Debug(MODULE_NAME, "OpenDir: Component '{0}' not found in directory", component);
+
+                return ErrorNumber.NoSuchFile;
+            }
+
+            DirEntryCacheItem entry = currentEntries[foundKey];
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "OpenDir: Component '{0}' found with anode {1}, type {2}",
+                              component,
+                              entry.Anode,
+                              entry.Type);
+
+            // Check if it's a directory
+            if(entry.Type != EntryType.Directory && entry.Type != EntryType.HardLinkDir)
+            {
+                AaruLogging.Debug(MODULE_NAME, "OpenDir: '{0}' is not a directory (type={1})", component, entry.Type);
+
+                return ErrorNumber.NotDirectory;
+            }
+
+            // Get the anode for this directory
+            ErrorNumber errno = GetAnode(entry.Anode, out Anode dirAnode);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "OpenDir: Error getting anode {0}: {1}", entry.Anode, errno);
+
+                return errno;
+            }
+
+            // Read directory contents
+            currentEntries = new Dictionary<string, DirEntryCacheItem>();
+            errno          = ReadDirectoryBlocks(dirAnode, currentEntries);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "OpenDir: Error reading directory blocks: {0}", errno);
+
+                return errno;
+            }
+        }
+
+        // Create directory node with the entries we found
+        node = new PFSDirNode
+        {
+            Path     = normalizedPath,
+            Position = 0,
+            Entries  = currentEntries.Keys.ToArray()
+        };
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "OpenDir: Successfully opened directory '{0}' with {1} entries",
+                          normalizedPath,
+                          currentEntries.Count);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(node is not PFSDirNode pfsNode) return ErrorNumber.InvalidArgument;
+
+        pfsNode.Position = -1;
+        pfsNode.Entries  = null;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not PFSDirNode pfsNode) return ErrorNumber.InvalidArgument;
+
+        if(pfsNode.Position < 0) return ErrorNumber.InvalidArgument;
+
+        if(pfsNode.Position >= pfsNode.Entries.Length) return ErrorNumber.NoError;
+
+        filename = pfsNode.Entries[pfsNode.Position++];
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Reads directory blocks following an anode chain and caches entries</summary>
     /// <param name="startAnode">The starting anode</param>
     /// <param name="cache">The cache dictionary to populate</param>
