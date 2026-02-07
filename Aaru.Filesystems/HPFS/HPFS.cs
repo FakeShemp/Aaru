@@ -49,6 +49,13 @@ public sealed partial class HPFS : IReadOnlyFilesystem
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces { get; } = [];
 
+    static Dictionary<string, string> GetDefaultOptions() => new()
+    {
+        {
+            "debug", false.ToString()
+        }
+    };
+
 #region IFilesystem Members
 
     /// <inheritdoc />
