@@ -31,6 +31,7 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
 using Partition = Aaru.CommonTypes.Partition;
@@ -223,6 +224,23 @@ public sealed partial class HPFS
             Dirty        = _spareblock.flags1.HasFlag(SpareBlockFlags.Dirty),
             VolumeName   = StringHandlers.CToString(_bpb.volume_label, _encoding),
             VolumeSerial = $"{_bpb.serial_no:X8}"
+        };
+
+        // Build filesystem info for StatFs
+        _statfs = new FileSystemInfo
+        {
+            Blocks         = _superblock.sectors,
+            FilenameLength = 254, // HPFS supports filenames up to 254 characters
+            Files          = 0,   // Would require traversing all directories
+            FreeBlocks     = 0,   // Would require parsing the bitmap
+            FreeFiles      = 0,
+            Id = new FileSystemId
+            {
+                IsInt    = true,
+                Serial32 = _bpb.serial_no
+            },
+            PluginId = Id,
+            Type     = FS_TYPE
         };
 
         _mounted = true;

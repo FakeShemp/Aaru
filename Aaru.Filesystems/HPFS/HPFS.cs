@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -59,6 +60,7 @@ public sealed partial class HPFS : IReadOnlyFilesystem
     uint                     _rootDnode;
     uint                     _rootFnode;
     SpareBlock               _spareblock;
+    FileSystemInfo           _statfs;
     SuperBlock               _superblock;
 
     /// <inheritdoc />
