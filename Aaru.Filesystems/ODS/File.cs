@@ -238,6 +238,113 @@ public sealed partial class ODS
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize path
+        string normalizedPath = string.IsNullOrWhiteSpace(path) ? "/" : path;
+
+        if(!normalizedPath.StartsWith("/", StringComparison.Ordinal)) normalizedPath = "/" + normalizedPath;
+
+        // Root directory cannot be a symlink
+        if(normalizedPath == "/") return ErrorNumber.InvalidArgument;
+
+        // Look up the file
+        ErrorNumber errno = LookupFile(normalizedPath, out CachedFile cachedFile);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read the file header
+        errno = ReadFileHeader(cachedFile.Fid.num, out FileHeader fileHeader);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Verify it's a symbolic link (special file organization with symlink type)
+        if(fileHeader.recattr.Organization != FileOrganization.Special) return ErrorNumber.InvalidArgument;
+
+        var specialType = (SpecialFileType)((byte)fileHeader.recattr.rattrib & 0x0F);
+
+        if(specialType != SpecialFileType.SymLink && specialType != SpecialFileType.SymbolicLink)
+            return ErrorNumber.InvalidArgument;
+
+        // Get the mapping data for file extents
+        byte[] mapData = GetMapData(fileHeader);
+
+        if(mapData == null || mapData.Length == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Symlink has no mapping data");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Calculate file size (symlink target length)
+        uint efblk = fileHeader.recattr.efblk.Value;
+        long length;
+
+        if(efblk > 0)
+            length = (efblk - 1) * ODS_BLOCK_SIZE + fileHeader.recattr.ffbyte;
+        else
+            length = 0;
+
+        if(length <= 0)
+        {
+            dest = string.Empty;
+
+            return ErrorNumber.NoError;
+        }
+
+        // Read the symlink target (file content)
+        var linkData = new byte[length];
+        var offset   = 0L;
+        var read     = 0;
+
+        while(read < length)
+        {
+            // Calculate which VBN we need (1-based)
+            uint vbn         = (uint)(offset / ODS_BLOCK_SIZE) + 1;
+            var  offsetInVbn = (int)(offset % ODS_BLOCK_SIZE);
+
+            // Map VBN to LBN
+            errno = MapVbnToLbn(mapData, fileHeader.map_inuse, vbn, out uint lbn, out _);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error mapping symlink VBN {0} to LBN: {1}", vbn, errno);
+
+                return errno;
+            }
+
+            // Read the ODS block
+            errno = ReadOdsBlock(_image, _partition, lbn, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error reading symlink block at LBN {0}: {1}", lbn, errno);
+
+                return errno;
+            }
+
+            // Calculate how much data to copy from this block
+            int bytesAvailable = blockData.Length - offsetInVbn;
+            var bytesToCopy    = (int)Math.Min(bytesAvailable, length - read);
+
+            // Copy data to buffer
+            Array.Copy(blockData, offsetInVbn, linkData, read, bytesToCopy);
+
+            offset += bytesToCopy;
+            read   += bytesToCopy;
+        }
+
+        // Convert to string using the filesystem encoding
+        dest = _encoding.GetString(linkData).TrimEnd('\0');
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Looks up a file by path and returns its cached entry.</summary>
     /// <param name="path">Normalized path starting with /.</param>
     /// <param name="cachedFile">Output cached file entry.</param>
