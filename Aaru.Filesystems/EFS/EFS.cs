@@ -27,15 +27,24 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements identification for the SGI Extent FileSystem</summary>
-public sealed partial class EFS : IFilesystem
+/// <summary>Implements the SGI Extent FileSystem</summary>
+public sealed partial class EFS : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "EFS plugin";
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
 #region IFilesystem Members
 

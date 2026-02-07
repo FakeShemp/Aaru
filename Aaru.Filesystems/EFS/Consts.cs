@@ -29,7 +29,6 @@
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements identification for the SGI Extent FileSystem</summary>
 public sealed partial class EFS
 {
     /// <summary>Original EFS magic number.</summary>

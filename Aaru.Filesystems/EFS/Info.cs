@@ -38,7 +38,6 @@ using Partition = Aaru.CommonTypes.Partition;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements identification for the SGI Extent FileSystem</summary>
 public sealed partial class EFS
 {
 #region IFilesystem Members
