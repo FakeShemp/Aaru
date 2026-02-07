@@ -40,24 +40,6 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class HPFS
 {
-    const string            MODULE_NAME = "HPFS";
-    BiosParameterBlock      _bpb;
-    uint                    _bytesPerSector;
-    byte[]                  _codePageTable;
-    bool                    _debug;
-    Dictionary<uint, DNode> _dnodeCache;
-    Encoding                _encoding;
-    Dictionary<uint, FNode> _fnodeCache;
-
-    IMediaImage              _image;
-    bool                     _mounted;
-    Partition                _partition;
-    Dictionary<string, uint> _rootDirectoryCache;
-    uint                     _rootDnode;
-    uint                     _rootFnode;
-    SpareBlock               _spareblock;
-    SuperBlock               _superblock;
-
     /// <inheritdoc />
     public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
                              Dictionary<string, string> options,     string    @namespace)
@@ -271,6 +253,6 @@ public sealed partial class HPFS
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        return CacheDNodeEntries(rootDnode, "");
+        return CacheDNodeEntries(rootDnode, _rootDirectoryCache);
     }
 }

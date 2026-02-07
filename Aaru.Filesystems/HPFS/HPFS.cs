@@ -32,8 +32,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -42,6 +44,23 @@ namespace Aaru.Filesystems;
 /// <summary>Implements IBM's High Performance File System (HPFS)</summary>
 public sealed partial class HPFS : IReadOnlyFilesystem
 {
+    const string             MODULE_NAME = "HPFS";
+    BiosParameterBlock       _bpb;
+    uint                     _bytesPerSector;
+    byte[]                   _codePageTable;
+    bool                     _debug;
+    Dictionary<uint, DNode>  _dnodeCache;
+    Encoding                 _encoding;
+    Dictionary<uint, FNode>  _fnodeCache;
+    IMediaImage              _image;
+    bool                     _mounted;
+    Partition                _partition;
+    Dictionary<string, uint> _rootDirectoryCache;
+    uint                     _rootDnode;
+    uint                     _rootFnode;
+    SpareBlock               _spareblock;
+    SuperBlock               _superblock;
+
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
     /// <inheritdoc />

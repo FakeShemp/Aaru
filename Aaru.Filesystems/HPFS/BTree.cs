@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -133,9 +134,9 @@ public sealed partial class HPFS
 
     /// <summary>Recursively caches directory entries from a dnode and its children.</summary>
     /// <param name="dnode">The dnode to process.</param>
-    /// <param name="pathPrefix">Path prefix for entries.</param>
+    /// <param name="cache">Dictionary to cache entries into (filename to fnode mapping).</param>
     /// <returns>Error number indicating success or failure.</returns>
-    ErrorNumber CacheDNodeEntries(DNode dnode, string pathPrefix)
+    ErrorNumber CacheDNodeEntries(DNode dnode, Dictionary<string, uint> cache)
     {
         // Parse directory entries from the dnode
         var offset    = 0;
@@ -159,8 +160,8 @@ public sealed partial class HPFS
                     Array.Copy(dnode.dirent, offset + 31, nameBytes, 0, entry.namelen);
                     string filename = _encoding.GetString(nameBytes);
 
-                    // Cache the entry
-                    _rootDirectoryCache[filename.ToUpperInvariant()] = entry.fnode;
+                    // Cache the entry (case-insensitive key)
+                    cache[filename.ToUpperInvariant()] = entry.fnode;
 
                     AaruLogging.Debug(MODULE_NAME, "Cached entry: {0} -> fnode {1}", filename, entry.fnode);
                 }
@@ -179,7 +180,7 @@ public sealed partial class HPFS
                     // Recursively process child dnode
                     ErrorNumber errno = ReadDNode(downDnode, out DNode childDnode);
 
-                    if(errno == ErrorNumber.NoError) CacheDNodeEntries(childDnode, pathPrefix);
+                    if(errno == ErrorNumber.NoError) CacheDNodeEntries(childDnode, cache);
                 }
             }
 
@@ -191,5 +192,47 @@ public sealed partial class HPFS
         }
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads directory entries from a directory fnode.</summary>
+    /// <param name="fnode">Fnode sector number of the directory.</param>
+    /// <param name="entries">Dictionary of filename to fnode sector.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber ReadDirectoryEntries(uint fnode, out Dictionary<string, uint> entries)
+    {
+        entries = new Dictionary<string, uint>();
+
+        // Read the fnode
+        ErrorNumber errno = ReadFNode(fnode, out FNode fnodeStruct);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Validate it's a directory
+        if(!fnodeStruct.IsDirectory)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Fnode {0} is not a directory", fnode);
+
+            return ErrorNumber.NotDirectory;
+        }
+
+        // Get the root dnode for this directory from the fnode's btree
+        BPlusLeafNode[] leafNodes = GetBPlusLeafNodes(fnodeStruct.btree, fnodeStruct.btree_data);
+
+        if(leafNodes.Length == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Directory fnode {0} has no extents", fnode);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        uint dnodeSector = leafNodes[0].disk_secno;
+
+        // Read the root dnode
+        errno = ReadDNode(dnodeSector, out DNode rootDnode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Cache all entries from the directory tree
+        return CacheDNodeEntries(rootDnode, entries);
     }
 }
