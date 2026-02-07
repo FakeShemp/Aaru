@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -63,6 +64,7 @@ public sealed partial class ODS : IReadOnlyFilesystem
     Partition                      _partition;
     Dictionary<string, CachedFile> _rootDirectoryCache;
     uint                           _sectorSize;
+    FileSystemInfo                 _statfs;
     byte                           _structureLevel;
 
     /// <inheritdoc />
