@@ -597,9 +597,8 @@ public sealed partial class EFS
         if(inode.di_extents != null)
         {
             for(var i = 0; i < inode.di_numextents && i < EFS_DIRECTEXTENTS; i++)
-            {
-                if(inode.di_extents[i].Magic == 0) blocksUsed += inode.di_extents[i].Length;
-            }
+                if(inode.di_extents[i].Magic == 0)
+                    blocksUsed += inode.di_extents[i].Length;
         }
 
         info.Blocks = blocksUsed;
@@ -618,6 +617,38 @@ public sealed partial class EFS
                               FileType.IFBLKLNK => FileAttributes.BlockDevice,
                               _                 => FileAttributes.File
                           };
+
+        // Extract device numbers for block/character devices
+        // Device numbers are stored in the di_extents area as a DeviceNumbers union
+        if(fileType is FileType.IFCHR or FileType.IFBLK or FileType.IFCHRLNK or FileType.IFBLKLNK &&
+           inode.di_extents is { Length: > 0 })
+        {
+            // The device numbers are stored in the first 8 bytes of the extent area
+            // Extract the raw bytes from the first extent
+            uint magicBn      = inode.di_extents[0].ex_magic_bn;
+            uint lengthOffset = inode.di_extents[0].ex_length_offset;
+            var  odev         = (short)(magicBn >> 16);
+            uint ndev         = lengthOffset;
+
+            uint major, minor;
+
+            if(odev == -1)
+            {
+                // New format: ndev contains the device number
+                // Upper 14 bits are major, lower 18 bits are minor
+                major = ndev >> 18;
+                minor = ndev & 0x3FFFF;
+            }
+            else
+            {
+                // Old format: odev contains the device number
+                // Upper 8 bits are major, lower 8 bits are minor
+                major = (uint)((ushort)odev >> 8);
+                minor = (uint)((ushort)odev & 0xFF);
+            }
+
+            info.DeviceNo = (ulong)major << 32 | minor;
+        }
 
         return info;
     }
