@@ -328,4 +328,84 @@ public sealed partial class HPFS
 
         return ErrorNumber.NoSuchFile;
     }
+
+    /// <summary>
+    ///     Looks up a file sector in the B+ tree and returns the corresponding disk sector.
+    ///     Based on hpfs_bplus_lookup from the Linux kernel.
+    /// </summary>
+    /// <param name="btreeHeader">B+ tree header from fnode or anode.</param>
+    /// <param name="btreeData">B+ tree data (nodes) from fnode or anode.</param>
+    /// <param name="fileSector">File sector number to look up.</param>
+    /// <param name="diskSector">Output: corresponding disk sector number.</param>
+    /// <param name="runLength">Output: number of consecutive sectors in this extent.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber BPlusLookup(BPlusHeader btreeHeader, byte[] btreeData, uint fileSector, out uint diskSector,
+                            out uint    runLength)
+    {
+        diskSector = 0;
+        runLength  = 0;
+
+        // If this is an internal node, find the correct subtree and recurse
+        if(btreeHeader.IsInternal)
+        {
+            // Parse internal nodes (8 bytes each: file_secno + down pointer)
+            for(var i = 0; i < btreeHeader.n_used_nodes; i++)
+            {
+                int offset = i * 8;
+
+                if(offset + 8 > btreeData.Length) break;
+
+                BPlusInternalNode internalNode =
+                    Marshal.ByteArrayToStructureLittleEndian<BPlusInternalNode>(btreeData, offset, 8);
+
+                // Internal nodes store the maximum file sector for each subtree
+                // If our sector is less than this node's file_secno, descend into this subtree
+                if(fileSector < internalNode.file_secno)
+                {
+                    // Read the anode
+                    ErrorNumber errno = _image.ReadSector(_partition.Start + internalNode.down,
+                                                          false,
+                                                          out byte[] anodeSector,
+                                                          out _);
+
+                    if(errno != ErrorNumber.NoError) return errno;
+
+                    ANode anode = Marshal.ByteArrayToStructureLittleEndian<ANode>(anodeSector);
+
+                    if(anode.magic != ANODE_MAGIC) return ErrorNumber.InvalidArgument;
+
+                    // Recurse into the anode's btree
+                    return BPlusLookup(anode.btree, anode.btree_data, fileSector, out diskSector, out runLength);
+                }
+            }
+
+            // If we get here, the sector wasn't found in any subtree
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // This is a leaf node - search for the extent containing our sector
+        // Parse leaf nodes (12 bytes each: file_secno + length + disk_secno)
+        for(var i = 0; i < btreeHeader.n_used_nodes; i++)
+        {
+            int offset = i * 12;
+
+            if(offset + 12 > btreeData.Length) break;
+
+            BPlusLeafNode leafNode = Marshal.ByteArrayToStructureLittleEndian<BPlusLeafNode>(btreeData, offset, 12);
+
+            // Check if this extent contains our file sector
+            // file_secno is the starting file sector, length is the number of sectors
+            if(fileSector >= leafNode.file_secno && fileSector < leafNode.file_secno + leafNode.length)
+            {
+                // Calculate the disk sector: base disk sector + offset within extent
+                diskSector = leafNode.disk_secno + (fileSector - leafNode.file_secno);
+                runLength  = leafNode.length     - (fileSector - leafNode.file_secno);
+
+                return ErrorNumber.NoError;
+            }
+        }
+
+        // Sector not found
+        return ErrorNumber.InvalidArgument;
+    }
 }

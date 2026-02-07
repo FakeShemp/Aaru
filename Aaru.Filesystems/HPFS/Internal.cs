@@ -53,4 +53,29 @@ public sealed partial class HPFS
     }
 
 #endregion
+
+#region Nested type: HpfsFileNode
+
+    /// <summary>File node implementation for HPFS file reading.</summary>
+    sealed class HpfsFileNode : IFileNode
+    {
+        /// <summary>Fnode sector number for this file.</summary>
+        internal uint Fnode;
+
+        /// <summary>Cached fnode structure for B+ tree traversal.</summary>
+        internal FNode FnodeData;
+
+#region IFileNode Members
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+        /// <inheritdoc />
+        public long Length { get; init; }
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+#endregion
+    }
+
+#endregion
 }
