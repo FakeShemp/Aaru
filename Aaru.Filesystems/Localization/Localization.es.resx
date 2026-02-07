@@ -1550,7 +1550,10 @@
     <value>Consola Virtual NES</value>
   </data>
     <data name="New_version" xml:space="preserve">
-    <value>Nueva versión</value>
+    <value>Nueva versión (IRIX 3.3+)</value>
+  </data>
+    <data name="Pre_33_version" xml:space="preserve">
+    <value>Versión pre-3.3</value>
   </data>
     <data name="Next_allocation_block_0" xml:space="preserve">
     <value>Siguiente bloque de asignación: {0}.</value>

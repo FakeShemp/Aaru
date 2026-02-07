@@ -1547,8 +1547,11 @@
     <data name="SGI_extent_filesystem" xml:space="preserve">
     <value>SGI extent filesystem</value>
   </data>
+    <data name="Pre_33_version" xml:space="preserve">
+    <value>Pre-3.3 version</value>
+  </data>
     <data name="New_version" xml:space="preserve">
-    <value>New version</value>
+    <value>New version (IRIX 3.3+)</value>
   </data>
     <data name="Filesystem_size_0_basic_blocks" xml:space="preserve">
     <value>Filesystem size: {0} basic blocks</value>

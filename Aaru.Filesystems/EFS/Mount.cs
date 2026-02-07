@@ -189,6 +189,31 @@ public sealed partial class EFS
             return ErrorNumber.InvalidArgument;
         }
 
+        // Determine filesystem version
+        bool isPre33 = _superblock.sb_magic == EFS_MAGIC;
+
+        AaruLogging.Debug(MODULE_NAME, "EFS version: {0}", isPre33 ? "pre-3.3" : "3.3+");
+
+        // Validate superblock checksum using the appropriate algorithm
+        if(!ValidateSuperblockChecksum(sbData, _superblock))
+        {
+            AaruLogging.Debug(MODULE_NAME, "Superblock checksum validation failed");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "Superblock checksum validated successfully");
+
+        // Validate size parameterization (different between pre-3.3 and 3.3+)
+        if(!ValidateSizeParameterization(_superblock))
+        {
+            AaruLogging.Debug(MODULE_NAME, "Size parameterization validation failed");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "Size parameterization validated successfully");
+
         AaruLogging.Debug(MODULE_NAME, "Filesystem size: {0} blocks",        _superblock.sb_size);
         AaruLogging.Debug(MODULE_NAME, "First cylinder group at block: {0}", _superblock.sb_firstcg);
         AaruLogging.Debug(MODULE_NAME, "Cylinder group size: {0} blocks",    _superblock.sb_cgfsize);
@@ -196,6 +221,14 @@ public sealed partial class EFS
         AaruLogging.Debug(MODULE_NAME, "Number of cylinder groups: {0}",     _superblock.sb_ncg);
         AaruLogging.Debug(MODULE_NAME, "Free blocks: {0}",                   _superblock.sb_tfree);
         AaruLogging.Debug(MODULE_NAME, "Free inodes: {0}",                   _superblock.sb_tinode);
+
+        if(isPre33)
+            AaruLogging.Debug(MODULE_NAME, "Bitmap at block: {0} (fixed location)", EFS_BITMAPBB);
+        else
+        {
+            AaruLogging.Debug(MODULE_NAME, "Bitmap at block: {0}",                _superblock.sb_bmblock);
+            AaruLogging.Debug(MODULE_NAME, "Replicated superblock at block: {0}", _superblock.sb_replsb);
+        }
 
         return ErrorNumber.NoError;
     }
