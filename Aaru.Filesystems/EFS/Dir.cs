@@ -32,6 +32,7 @@ using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Logging;
+using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
 
@@ -192,6 +193,125 @@ public sealed partial class EFS
 
         // Get current filename and advance position
         filename = efsNode.Entries[efsNode.Position++];
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads directory contents from an inode</summary>
+    /// <param name="inode">Directory inode</param>
+    /// <param name="entries">Dictionary of filename to inode number</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadDirectoryContents(Inode inode, out Dictionary<string, uint> entries)
+    {
+        entries = new Dictionary<string, uint>();
+
+        if(inode.di_numextents <= 0 || inode.di_size <= 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Directory has no extents or zero size");
+
+            return ErrorNumber.NoError;
+        }
+
+        // Read each extent
+        for(var i = 0; i < inode.di_numextents && i < EFS_DIRECTEXTENTS; i++)
+        {
+            Extent extent = inode.di_extents[i];
+
+            if(extent.Magic != 0)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Extent {0} has invalid magic: {1}", i, extent.Magic);
+
+                continue;
+            }
+
+            uint blockNumber = extent.BlockNumber;
+            byte length      = extent.Length;
+
+            AaruLogging.Debug(MODULE_NAME, "Reading extent {0}: bn={1}, len={2}", i, blockNumber, length);
+
+            // Read each block in the extent
+            for(var j = 0; j < length; j++)
+            {
+                ErrorNumber errno = ReadBasicBlock((int)(blockNumber + j), out byte[] blockData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME, "Error reading directory block {0}: {1}", blockNumber + j, errno);
+
+                    continue;
+                }
+
+                // Parse directory block
+                errno = ParseDirectoryBlock(blockData, entries);
+
+                if(errno != ErrorNumber.NoError)
+                    AaruLogging.Debug(MODULE_NAME, "Error parsing directory block: {0}", errno);
+            }
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Parses a directory block and extracts entries</summary>
+    /// <param name="blockData">Directory block data</param>
+    /// <param name="entries">Dictionary to add entries to</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ParseDirectoryBlock(byte[] blockData, Dictionary<string, uint> entries)
+    {
+        if(blockData.Length < EFS_DIRBLK_HEADERSIZE) return ErrorNumber.InvalidArgument;
+
+        // Parse directory block header
+        DirectoryBlock dirBlock =
+            Marshal.ByteArrayToStructureBigEndian<DirectoryBlock>(blockData, 0, EFS_DIRBLK_HEADERSIZE);
+
+        if(dirBlock.magic != EFS_DIRBLK_MAGIC)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Invalid directory block magic: 0x{0:X4}", dirBlock.magic);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "Directory block: slots={0}, firstused={1}", dirBlock.slots, dirBlock.firstused);
+
+        // Process each slot
+        for(var slot = 0; slot < dirBlock.slots; slot++)
+        {
+            // Get the offset for this slot (stored after header)
+            byte compactOffset = blockData[EFS_DIRBLK_HEADERSIZE + slot];
+
+            // Check for free slot
+            if(compactOffset == 0xFF) continue;
+
+            // Convert compact offset to real offset (multiply by 2)
+            int realOffset = compactOffset << 1;
+
+            if(realOffset == 0 || realOffset >= blockData.Length) continue;
+
+            // Parse directory entry
+            if(realOffset + 5 > blockData.Length) continue;
+
+            // Read inode number (big-endian, stored as two 16-bit values)
+            var inumHigh = (ushort)(blockData[realOffset]     << 8  | blockData[realOffset + 1]);
+            var inumLow  = (ushort)(blockData[realOffset + 2] << 8  | blockData[realOffset + 3]);
+            var inum     = (uint)(inumHigh                    << 16 | inumLow);
+
+            // Read name length
+            byte nameLen = blockData[realOffset + 4];
+
+            if(nameLen == 0 || realOffset + 5 + nameLen > blockData.Length) continue;
+
+            // Read name
+            var nameBytes = new byte[nameLen];
+            Array.Copy(blockData, realOffset + 5, nameBytes, 0, nameLen);
+            string name = _encoding.GetString(nameBytes);
+
+            if(string.IsNullOrWhiteSpace(name)) continue;
+
+            if(entries.ContainsKey(name)) continue;
+
+            entries[name] = inum;
+            AaruLogging.Debug(MODULE_NAME, "Found entry: '{0}' -> inode {1}", name, inum);
+        }
 
         return ErrorNumber.NoError;
     }
