@@ -195,11 +195,13 @@ public sealed partial class HPFS
 
             if(!subFnode.IsDirectory) return ErrorNumber.NotDirectory;
 
-            BPlusLeafNode[] leafNodes = GetBPlusLeafNodes(subFnode.btree, subFnode.btree_data);
+            // For directories, read dnode pointer directly from btree_data
+            // (disk_secno is at offset 8 in the first leaf node)
+            if(subFnode.btree_data == null || subFnode.btree_data.Length < 12) return ErrorNumber.InvalidArgument;
 
-            if(leafNodes.Length == 0) return ErrorNumber.InvalidArgument;
+            currentDnode = BitConverter.ToUInt32(subFnode.btree_data, 8);
 
-            currentDnode = leafNodes[0].disk_secno;
+            if(currentDnode == 0) return ErrorNumber.InvalidArgument;
         }
 
         return ErrorNumber.NoSuchFile;

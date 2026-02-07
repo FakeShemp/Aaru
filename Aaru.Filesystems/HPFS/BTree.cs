@@ -215,17 +215,25 @@ public sealed partial class HPFS
             return ErrorNumber.NotDirectory;
         }
 
-        // Get the root dnode for this directory from the fnode's btree
-        BPlusLeafNode[] leafNodes = GetBPlusLeafNodes(fnodeStruct.btree, fnodeStruct.btree_data);
-
-        if(leafNodes.Length == 0)
+        // For directories, the first extent in the btree_data directly points to the root dnode.
+        // The Linux kernel accesses this as fnode->u.external[0].disk_secno without checking
+        // the btree flags, because directory fnodes always use this format.
+        if(fnodeStruct.btree_data == null || fnodeStruct.btree_data.Length < 12)
         {
-            AaruLogging.Debug(MODULE_NAME, "Directory fnode {0} has no extents", fnode);
+            AaruLogging.Debug(MODULE_NAME, "Directory fnode {0} has no btree data", fnode);
 
             return ErrorNumber.InvalidArgument;
         }
 
-        uint dnodeSector = leafNodes[0].disk_secno;
+        // Read the first leaf node directly (offset 8 is disk_secno in the leaf node structure)
+        var dnodeSector = BitConverter.ToUInt32(fnodeStruct.btree_data, 8);
+
+        if(dnodeSector == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Directory fnode {0} has null dnode pointer", fnode);
+
+            return ErrorNumber.InvalidArgument;
+        }
 
         // Read the root dnode
         errno = ReadDNode(dnodeSector, out DNode rootDnode);
