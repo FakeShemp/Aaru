@@ -221,6 +221,7 @@ Fully supported file-systems (identify and extraction)
 * Professional File System
 * QNX4 filesystems
 * QNX6 filesystems
+* SGI Extent File System (EFS)
 * SmartFileSystem
 * U.C.S.D Pascal file system
 * Universal Disk Format (UDF)
@@ -261,7 +262,6 @@ Supported file systems for identification and information only
 * NILFS2
 * Nintendo optical filesystems (GameCube and Wii)
 * Reiser file systems
-* SGI Extent File System (EFS)
 * SGI XFS
 * SolarOS file system
 * Squash file system
