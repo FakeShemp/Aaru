@@ -189,22 +189,20 @@ public sealed partial class EFS
             return ErrorNumber.InvalidArgument;
         }
 
-        // Determine filesystem version
-        bool isPre33 = _superblock.sb_magic == EFS_MAGIC;
+        // Determine if this is a grown filesystem
+        // EFS_MAGIC is used by both pre-3.3 and non-grown 3.3+ filesystems
+        // EFS_MAGIC_NEW is only used by grown filesystems
+        bool isGrown = _superblock.sb_magic == EFS_MAGIC_NEW;
 
-        AaruLogging.Debug(MODULE_NAME, "EFS version: {0}", isPre33 ? "pre-3.3" : "3.3+");
+        AaruLogging.Debug(MODULE_NAME, "EFS type: {0}", isGrown ? "grown" : "standard");
 
         // Validate superblock checksum using the appropriate algorithm
         if(!ValidateSuperblockChecksum(sbData, _superblock))
-        {
-            AaruLogging.Debug(MODULE_NAME, "Superblock checksum validation failed");
+            AaruLogging.Debug(MODULE_NAME, "Superblock checksum validation failed (continuing anyway)");
+        else
+            AaruLogging.Debug(MODULE_NAME, "Superblock checksum validated successfully");
 
-            return ErrorNumber.InvalidArgument;
-        }
-
-        AaruLogging.Debug(MODULE_NAME, "Superblock checksum validated successfully");
-
-        // Validate size parameterization (different between pre-3.3 and 3.3+)
+        // Validate size parameterization
         if(!ValidateSizeParameterization(_superblock))
         {
             AaruLogging.Debug(MODULE_NAME, "Size parameterization validation failed");
@@ -222,13 +220,13 @@ public sealed partial class EFS
         AaruLogging.Debug(MODULE_NAME, "Free blocks: {0}",                   _superblock.sb_tfree);
         AaruLogging.Debug(MODULE_NAME, "Free inodes: {0}",                   _superblock.sb_tinode);
 
-        if(isPre33)
-            AaruLogging.Debug(MODULE_NAME, "Bitmap at block: {0} (fixed location)", EFS_BITMAPBB);
+        if(_superblock.sb_bmblock > 0)
+            AaruLogging.Debug(MODULE_NAME, "Bitmap at block: {0}", _superblock.sb_bmblock);
         else
-        {
-            AaruLogging.Debug(MODULE_NAME, "Bitmap at block: {0}",                _superblock.sb_bmblock);
+            AaruLogging.Debug(MODULE_NAME, "Bitmap at block: {0} (fixed location)", EFS_BITMAPBB);
+
+        if(_superblock.sb_replsb > 0)
             AaruLogging.Debug(MODULE_NAME, "Replicated superblock at block: {0}", _superblock.sb_replsb);
-        }
 
         return ErrorNumber.NoError;
     }

@@ -3086,15 +3086,9 @@ namespace Aaru.Filesystems {
             }
         }
         
-        internal static string Pre_33_version {
+        internal static string Grown_filesystem {
             get {
-                return ResourceManager.GetString("Pre_33_version", resourceCulture);
-            }
-        }
-        
-        internal static string New_version {
-            get {
-                return ResourceManager.GetString("New_version", resourceCulture);
+                return ResourceManager.GetString("Grown_filesystem", resourceCulture);
             }
         }
         

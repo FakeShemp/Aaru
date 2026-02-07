@@ -59,7 +59,7 @@ public sealed partial class EFS
         public short sb_ncg;
         /// <summary>0x14: Non-zero indicates fsck required.</summary>
         public short sb_dirty;
-        /// <summary>0x16: Padding.</summary>
+        /// <summary>0x16: Padding for alignment.</summary>
         public short sb_pad0;
         /// <summary>0x18: Superblock creation/modification time.</summary>
         public int sb_time;

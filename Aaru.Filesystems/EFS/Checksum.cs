@@ -95,35 +95,45 @@ public sealed partial class EFS
     static bool ValidateSuperblockChecksum(byte[] data, Superblock superblock)
     {
         var storedChecksum = (int)superblock.sb_checksum;
-        int calculatedChecksum;
 
-        if(superblock.sb_magic == EFS_MAGIC)
+        if(superblock.sb_magic == EFS_MAGIC_NEW)
         {
-            // Pre-3.3 filesystem - use old checksum algorithm
-            calculatedChecksum = ComputeOldChecksum(data);
+            // Grown filesystem (EFS_NEWMAGIC) - definitely uses new checksum algorithm
+            int calculatedChecksum = ComputeChecksum(data);
 
             AaruLogging.Debug(MODULE_NAME,
-                              "Pre-3.3 EFS checksum: stored=0x{0:X8}, calculated=0x{1:X8}",
+                              "Grown EFS checksum: stored=0x{0:X8}, calculated=0x{1:X8}",
                               storedChecksum,
                               calculatedChecksum);
-        }
-        else
-        {
-            // 3.3+ filesystem - use new checksum algorithm
-            calculatedChecksum = ComputeChecksum(data);
 
-            AaruLogging.Debug(MODULE_NAME,
-                              "3.3+ EFS checksum: stored=0x{0:X8}, calculated=0x{1:X8}",
-                              storedChecksum,
-                              calculatedChecksum);
+            return storedChecksum == calculatedChecksum;
         }
 
-        return storedChecksum == calculatedChecksum;
+        // EFS_MAGIC is used by both pre-3.3 and non-grown 3.3+ filesystems
+        // Try the new algorithm first (more common), then fall back to old
+        int newChecksum = ComputeChecksum(data);
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "EFS checksum (new algorithm): stored=0x{0:X8}, calculated=0x{1:X8}",
+                          storedChecksum,
+                          newChecksum);
+
+        if(storedChecksum == newChecksum) return true;
+
+        // Try old algorithm for true pre-3.3 filesystems
+        int oldChecksum = ComputeOldChecksum(data);
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "EFS checksum (old algorithm): stored=0x{0:X8}, calculated=0x{1:X8}",
+                          storedChecksum,
+                          oldChecksum);
+
+        return storedChecksum == oldChecksum;
     }
 
     /// <summary>
     ///     Validates the filesystem size parameterization based on the EFS version. Pre-3.3 and 3.3+ have different
-    ///     definitions for fs_size.
+    ///     definitions for fs_size. Note that EFS_MAGIC is used by both pre-3.3 and non-grown 3.3+ filesystems.
     /// </summary>
     /// <param name="superblock">The superblock to validate</param>
     /// <returns>True if size parameterization is valid, false otherwise</returns>
@@ -132,35 +142,49 @@ public sealed partial class EFS
         // Calculate the data area end (first cylinder group + all cylinder groups)
         int dataAreaEnd = superblock.sb_firstcg + superblock.sb_cgfsize * superblock.sb_ncg;
 
-        if(superblock.sb_magic == EFS_MAGIC)
+        if(superblock.sb_magic == EFS_MAGIC_NEW)
         {
-            // Pre-3.3: fs_size should equal the data area end
-            // (excludes trailing blocks after last cylinder group)
-            bool valid = superblock.sb_size == dataAreaEnd;
+            // Grown filesystem: fs_size includes bitmap and replicated superblock at end
+            // Data area should not exceed fs_size and should not exceed bitmap block location
+            bool validSize    = dataAreaEnd <= superblock.sb_size;
+            bool validBmblock = superblock.sb_bmblock == 0 || dataAreaEnd <= superblock.sb_bmblock;
 
             AaruLogging.Debug(MODULE_NAME,
-                              "Pre-3.3 EFS size validation: sb_size={0}, expected={1}, valid={2}",
+                              "Grown EFS size validation: sb_size={0}, dataAreaEnd={1}, sb_bmblock={2}, validSize={3}, validBmblock={4}",
                               superblock.sb_size,
                               dataAreaEnd,
-                              valid);
+                              superblock.sb_bmblock,
+                              validSize,
+                              validBmblock);
 
-            return valid;
+            return validSize && validBmblock;
         }
 
-        // 3.3+ (possibly grown): fs_size includes bitmap and replicated superblock at end
-        // Data area should not exceed fs_size and should not exceed bitmap block location
-        bool validSize = dataAreaEnd <= superblock.sb_size;
+        // EFS_MAGIC is used by both pre-3.3 and non-grown 3.3+ filesystems
+        // Pre-3.3: fs_size should equal the data area end
+        // Non-grown 3.3+: fs_size may include trailing space for replicated superblock
 
-        bool validBmblock = superblock.sb_bmblock == 0 || dataAreaEnd <= superblock.sb_bmblock;
+        // Try exact match first (pre-3.3 style)
+        if(superblock.sb_size == dataAreaEnd)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "EFS size validation (exact match): sb_size={0}, dataAreaEnd={1}",
+                              superblock.sb_size,
+                              dataAreaEnd);
+
+            return true;
+        }
+
+        // Allow fs_size >= dataAreaEnd for 3.3+ non-grown filesystems
+        // which may have trailing space for replicated superblock
+        bool valid = superblock.sb_size >= dataAreaEnd;
 
         AaruLogging.Debug(MODULE_NAME,
-                          "3.3+ EFS size validation: sb_size={0}, dataAreaEnd={1}, sb_bmblock={2}, validSize={3}, validBmblock={4}",
+                          "EFS size validation (3.3+ style): sb_size={0}, dataAreaEnd={1}, valid={2}",
                           superblock.sb_size,
                           dataAreaEnd,
-                          superblock.sb_bmblock,
-                          validSize,
-                          validBmblock);
+                          valid);
 
-        return validSize && validBmblock;
+        return valid;
     }
 }

@@ -128,12 +128,8 @@ public sealed partial class EFS
 
         sb.AppendLine(Localization.SGI_extent_filesystem);
 
-        bool isPre33 = efsSb.sb_magic == EFS_MAGIC;
-
-        if(isPre33)
-            sb.AppendLine(Localization.Pre_33_version);
-        else
-            sb.AppendLine(Localization.New_version);
+        // EFS_MAGIC_NEW indicates a grown (expanded) filesystem
+        if(efsSb.sb_magic == EFS_MAGIC_NEW) sb.AppendLine(Localization.Grown_filesystem);
 
         sb.AppendFormat(Localization.Filesystem_size_0_basic_blocks, efsSb.sb_size).AppendLine();
         sb.AppendFormat(Localization.First_cylinder_group_starts_at_block_0, efsSb.sb_firstcg).AppendLine();
