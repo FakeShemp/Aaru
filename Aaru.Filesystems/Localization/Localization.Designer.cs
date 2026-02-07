@@ -1479,6 +1479,12 @@ namespace Aaru.Filesystems {
             }
         }
         
+        internal static string Acorn_RISC_OS_extensions_present {
+            get {
+                return ResourceManager.GetString("Acorn_RISC_OS_extensions_present", resourceCulture);
+            }
+        }
+        
         internal static string Amiga_extensions_present {
             get {
                 return ResourceManager.GetString("Amiga_extensions_present", resourceCulture);

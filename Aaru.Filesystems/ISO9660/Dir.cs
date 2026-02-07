@@ -425,6 +425,27 @@ public sealed partial class ISO9660
         var continueSymlink          = false;
         var continueSymlinkComponent = false;
 
+        // Check for Acorn RISC OS system area (exactly 32 bytes starting with "ARCHIMEDES")
+        if(end - start == ACORN_SYSTEM_AREA_SIZE && end <= data.Length && start + 10 <= data.Length)
+        {
+            if(data[start]     == _acornMagic[0] &&
+               data[start + 1] == _acornMagic[1] &&
+               data[start + 2] == _acornMagic[2] &&
+               data[start + 3] == _acornMagic[3] &&
+               data[start + 4] == _acornMagic[4] &&
+               data[start + 5] == _acornMagic[5] &&
+               data[start + 6] == _acornMagic[6] &&
+               data[start + 7] == _acornMagic[7] &&
+               data[start + 8] == _acornMagic[8] &&
+               data[start + 9] == _acornMagic[9])
+            {
+                entry.AcornSystemArea =
+                    Marshal.ByteArrayToStructureLittleEndian<AcornSystemArea>(data, start, ACORN_SYSTEM_AREA_SIZE);
+
+                return;
+            }
+        }
+
         while(systemAreaOff + 2 <= end)
         {
             var systemAreaSignature = BigEndianBitConverter.ToUInt16(data, systemAreaOff);

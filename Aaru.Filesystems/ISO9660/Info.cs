@@ -284,6 +284,7 @@ public sealed partial class ISO9660
         var                    ziso            = false;
         var                    amiga           = false;
         var                    aaip            = false;
+        var                    acorn           = false;
         List<ContinuationArea> contareas       = [];
         List<byte[]>           refareas        = [];
         var                    suspInformation = new StringBuilder();
@@ -327,6 +328,28 @@ public sealed partial class ISO9660
                             saOff        += Marshal.SizeOf<CdromXa>();
                             noneFound    =  false;
                         }
+                    }
+
+                    // Check for Acorn RISC OS system area (exactly 32 bytes starting with "ARCHIMEDES")
+                    if(!acorn                              &&
+                       saLen     == ACORN_SYSTEM_AREA_SIZE &&
+                       saOff     == 0                      &&
+                       sa.Length >= _acornMagic.Length     &&
+                       sa[0]     == _acornMagic[0]         &&
+                       sa[1]     == _acornMagic[1]         &&
+                       sa[2]     == _acornMagic[2]         &&
+                       sa[3]     == _acornMagic[3]         &&
+                       sa[4]     == _acornMagic[4]         &&
+                       sa[5]     == _acornMagic[5]         &&
+                       sa[6]     == _acornMagic[6]         &&
+                       sa[7]     == _acornMagic[7]         &&
+                       sa[8]     == _acornMagic[8]         &&
+                       sa[9]     == _acornMagic[9])
+                    {
+                        acorn     = true;
+                        noneFound = false;
+
+                        break;
                     }
 
                     if(saOff + 2 >= saLen) break;
@@ -547,6 +570,8 @@ public sealed partial class ISO9660
             isoMetadata.AppendLine(Localization.ISO9660_file_system);
 
         if(xaExtensions) isoMetadata.AppendLine(Localization.CD_ROM_XA_extensions_present);
+
+        if(acorn) isoMetadata.AppendLine(Localization.Acorn_RISC_OS_extensions_present);
 
         if(amiga) isoMetadata.AppendLine(Localization.Amiga_extensions_present);
 

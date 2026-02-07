@@ -65,6 +65,9 @@
     <data name="Amiga_extensions_present" xml:space="preserve">
     <value>[fuchsia]Extensiones de Amiga presentes.[/]</value>
   </data>
+    <data name="Acorn_RISC_OS_extensions_present" xml:space="preserve">
+    <value>[fuchsia]Extensiones de Acorn RISC OS presentes.[/]</value>
+  </data>
     <data name="Amiga_Fast_File_System" xml:space="preserve">
     <value>Sistema de ficheros rápido de Amiga</value>
   </data>

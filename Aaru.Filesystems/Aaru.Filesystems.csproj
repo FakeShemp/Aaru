@@ -53,7 +53,6 @@
     <Folder Include="CPM\"/>
     <Folder Include="AppleDOS\"/>
     <Folder Include="ISO9660\"/>
-    <Folder Include="ISO9660\Structs\"/>
     <Folder Include="ISO9660\Consts\"/>
   </ItemGroup>
   <ItemGroup>

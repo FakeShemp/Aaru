@@ -71,6 +71,8 @@ public sealed partial class ISO9660
 
         if(entry.AmigaComment != null) xattrs.Add(Xattrs.XATTR_AMIGA_COMMENTS);
 
+        if(entry.AcornSystemArea?.Filetype != null) xattrs.Add(Xattrs.XATTR_ACORN_RISCOS_FILETYPE);
+
         if(entry.Flags.HasFlag(FileFlags.Directory) || entry.Extents == null || entry.Extents.Count == 0)
             return ErrorNumber.NoError;
 
@@ -179,6 +181,12 @@ public sealed partial class ISO9660
 
                 buf = new byte[entry.AmigaComment.Length];
                 Array.Copy(entry.AmigaComment, 0, buf, 0, entry.AmigaComment.Length);
+
+                return ErrorNumber.NoError;
+            case Xattrs.XATTR_ACORN_RISCOS_FILETYPE:
+                if(entry.AcornSystemArea?.Filetype is null) return ErrorNumber.NoSuchExtendedAttribute;
+
+                buf = BitConverter.GetBytes(entry.AcornSystemArea.Value.Filetype.Value);
 
                 return ErrorNumber.NoError;
             case Xattrs.XATTR_ISO9660_MODE2_SUBHEADER:

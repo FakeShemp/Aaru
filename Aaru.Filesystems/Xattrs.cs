@@ -5,6 +5,9 @@ namespace Aaru.Filesystems;
 /// <summary>Extended attribute name constants used across filesystems</summary>
 static class Xattrs
 {
+    /// <summary>Extended attribute name for Acorn RISC OS filetype</summary>
+    public const string XATTR_ACORN_RISCOS_FILETYPE = "riscos.type";
+
     /// <summary>Extended attribute name for the Amiga file comment</summary>
     public const string XATTR_AMIGA_COMMENTS = "amiga.comments";
 

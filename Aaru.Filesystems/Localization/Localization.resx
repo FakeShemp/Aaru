@@ -740,6 +740,9 @@
     <data name="CD_ROM_XA_extensions_present" xml:space="preserve">
     <value>[fuchsia]CD-ROM XA extensions present.[/]</value>
   </data>
+    <data name="Acorn_RISC_OS_extensions_present" xml:space="preserve">
+    <value>[fuchsia]Acorn RISC OS extensions present.[/]</value>
+  </data>
     <data name="Amiga_extensions_present" xml:space="preserve">
     <value>[fuchsia]Amiga extensions present.[/]</value>
   </data>
