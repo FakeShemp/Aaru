@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -38,6 +39,160 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class PFS
 {
+    /// <inheritdoc />
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: path='{0}'", path);
+
+        // Find the file entry
+        ErrorNumber errno = GetEntryForPath(path, out DirEntryCacheItem entry);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Check if it's a file
+        if(entry.Type == EntryType.Directory || entry.Type == EntryType.HardLinkDir)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: '{0}' is a directory", path);
+
+            return ErrorNumber.IsDirectory;
+        }
+
+        // Get the file's starting anode
+        errno = GetAnode(entry.Anode, out Anode fileAnode);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: Error getting anode {0}: {1}", entry.Anode, errno);
+
+            return errno;
+        }
+
+        // Create file node
+        node = new PFSFileNode
+        {
+            Path         = path,
+            Length       = entry.Size,
+            Offset       = 0,
+            StartAnode   = entry.Anode,
+            CurrentAnode = fileAnode,
+            AnodeOffset  = 0,
+            BlockOffset  = 0,
+            FileSize     = entry.Size
+        };
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "OpenFile: Opened file '{0}', size={1}, anode={2}",
+                          path,
+                          entry.Size,
+                          entry.Anode);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not PFSFileNode) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(buffer is null || buffer.Length < length) return ErrorNumber.InvalidArgument;
+
+        if(node is not PFSFileNode pfsNode) return ErrorNumber.InvalidArgument;
+
+        // Can't read past end of file
+        if(pfsNode.Offset >= pfsNode.Length) return ErrorNumber.NoError;
+
+        // Limit read to remaining file size
+        if(length > pfsNode.Length - pfsNode.Offset) length = pfsNode.Length - pfsNode.Offset;
+
+        var  bufferOffset   = 0;
+        long bytesRemaining = length;
+
+        while(bytesRemaining > 0)
+        {
+            // Calculate current block number within the filesystem
+            uint currentBlock = pfsNode.CurrentAnode.blocknr + pfsNode.AnodeOffset;
+
+            // Read the current data block
+            ErrorNumber errno = ReadBlock(currentBlock, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadFile: Error reading block {0}: {1}", currentBlock, errno);
+
+                return errno;
+            }
+
+            // Calculate how much data to read from this block
+            var dataInBlock = (int)(_blockSize - pfsNode.BlockOffset);
+
+            if(dataInBlock > bytesRemaining) dataInBlock = (int)bytesRemaining;
+
+            // Copy data to buffer
+            Array.Copy(blockData, (int)pfsNode.BlockOffset, buffer, bufferOffset, dataInBlock);
+
+            bufferOffset   += dataInBlock;
+            bytesRemaining -= dataInBlock;
+            pfsNode.Offset += dataInBlock;
+
+            // Update position within block
+            pfsNode.BlockOffset += (uint)dataInBlock;
+
+            // If we've read past the end of this block, move to the next
+            if(pfsNode.BlockOffset >= _blockSize)
+            {
+                pfsNode.BlockOffset = 0;
+                pfsNode.AnodeOffset++;
+
+                // Check if we need to move to the next anode in the chain
+                if(pfsNode.AnodeOffset >= pfsNode.CurrentAnode.clustersize)
+                {
+                    // Move to next anode
+                    if(pfsNode.CurrentAnode.next == ANODE_EOF)
+                    {
+                        // End of file
+                        break;
+                    }
+
+                    errno = GetAnode(pfsNode.CurrentAnode.next, out Anode nextAnode);
+
+                    if(errno != ErrorNumber.NoError)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "ReadFile: Error getting next anode {0}: {1}",
+                                          pfsNode.CurrentAnode.next,
+                                          errno);
+
+                        break;
+                    }
+
+                    pfsNode.CurrentAnode = nextAnode;
+                    pfsNode.AnodeOffset  = 0;
+                }
+            }
+        }
+
+        read = bufferOffset;
+
+        return ErrorNumber.NoError;
+    }
+
     /// <inheritdoc />
     public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
     {

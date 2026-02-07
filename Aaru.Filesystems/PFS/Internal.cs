@@ -74,4 +74,36 @@ public sealed partial class PFS
     }
 
 #endregion
+
+#region Nested type: PFSFileNode
+
+    /// <summary>File node for reading file contents</summary>
+    sealed class PFSFileNode : IFileNode
+    {
+        /// <summary>Starting anode number for the file</summary>
+        internal uint StartAnode { get; init; }
+
+        /// <summary>Current anode in the chain</summary>
+        internal Anode CurrentAnode { get; set; }
+
+        /// <summary>Offset within current anode's cluster (in blocks)</summary>
+        internal uint AnodeOffset { get; set; }
+
+        /// <summary>Offset within current block (in bytes)</summary>
+        internal uint BlockOffset { get; set; }
+
+        /// <summary>File size in bytes</summary>
+        internal uint FileSize { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+    }
+
+#endregion
 }
