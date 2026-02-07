@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : EFS.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Extent File System plugin
@@ -26,9 +26,8 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
@@ -36,15 +35,26 @@ namespace Aaru.Filesystems;
 public sealed partial class EFS
 {
     /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+        // Calculate total inodes: inodes per cylinder group * number of cylinder groups
+        long totalInodes = _inodesPerCg * _superblock.sb_ncg;
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        stat = new FileSystemInfo
+        {
+            Blocks         = (ulong)_superblock.sb_size,
+            FreeBlocks     = (ulong)_superblock.sb_tfree,
+            Files          = (ulong)totalInodes,
+            FreeFiles      = (ulong)_superblock.sb_tinode,
+            FilenameLength = EFS_MAXNAMELEN,
+            Type           = FS_TYPE,
+            PluginId       = Id
+        };
+
+        return ErrorNumber.NoError;
+    }
 }
