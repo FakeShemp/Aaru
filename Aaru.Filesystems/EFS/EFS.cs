@@ -28,8 +28,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -38,6 +40,30 @@ namespace Aaru.Filesystems;
 public sealed partial class EFS : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "EFS plugin";
+
+    /// <summary>Cached inodes (inode number -> inode)</summary>
+    readonly Dictionary<uint, Inode> _inodeCache = new();
+
+    /// <summary>Cached root directory entries (filename -> inode number)</summary>
+    readonly Dictionary<string, uint> _rootDirectoryCache = new();
+
+    /// <summary>Encoding used for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>Image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Calculated inodes per cylinder group</summary>
+    short _inodesPerCg;
+
+    /// <summary>Whether filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>Cached superblock</summary>
+    Superblock _superblock;
 
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
