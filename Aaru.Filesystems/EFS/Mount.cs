@@ -141,60 +141,39 @@ public sealed partial class EFS
     {
         AaruLogging.Debug(MODULE_NAME, "Reading superblock...");
 
-        // Handle optical disc alignment (superblock at offset 0x200 within sector)
-        if(_imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
+        uint sectorSize = _imagePlugin.Info.SectorSize;
+
+        // Superblock is at basic block 1 (byte offset 0x200)
+        const long sbByteOffset = EFS_SUPERBB * EFS_BBSIZE;
+
+        // Calculate which sector contains the superblock and offset within it
+        ulong sectorNumber   = (ulong)(sbByteOffset / sectorSize) + _partition.Start;
+        var   offsetInSector = (int)(sbByteOffset % sectorSize);
+
+        // Calculate how many sectors we need to read
+        int sbStructSize  = Marshal.SizeOf<Superblock>();
+        var sectorsToRead = (uint)((offsetInSector + sbStructSize + sectorSize - 1) / sectorSize);
+
+        ErrorNumber errno = _imagePlugin.ReadSectors(sectorNumber, false, sectorsToRead, out byte[] sector, out _);
+
+        if(errno != ErrorNumber.NoError)
         {
-            var sbSize = (uint)((Marshal.SizeOf<Superblock>() + 0x200) / _imagePlugin.Info.SectorSize);
+            AaruLogging.Debug(MODULE_NAME, "Error reading superblock sector: {0}", errno);
 
-            if((Marshal.SizeOf<Superblock>() + 0x200) % _imagePlugin.Info.SectorSize != 0) sbSize++;
-
-            ErrorNumber errno = _imagePlugin.ReadSectors(_partition.Start, false, sbSize, out byte[] sector, out _);
-
-            if(errno != ErrorNumber.NoError)
-            {
-                AaruLogging.Debug(MODULE_NAME, "Error reading superblock sector: {0}", errno);
-
-                return errno;
-            }
-
-            if(sector.Length < Marshal.SizeOf<Superblock>() + 0x200)
-            {
-                AaruLogging.Debug(MODULE_NAME, "Sector too small for superblock");
-
-                return ErrorNumber.InvalidArgument;
-            }
-
-            var sbpiece = new byte[Marshal.SizeOf<Superblock>()];
-            Array.Copy(sector, 0x200, sbpiece, 0, Marshal.SizeOf<Superblock>());
-
-            _superblock = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbpiece);
+            return errno;
         }
-        else
+
+        if(offsetInSector + sbStructSize > sector.Length)
         {
-            // Standard layout: superblock at basic block 1
-            var sbSize = (uint)(Marshal.SizeOf<Superblock>() / _imagePlugin.Info.SectorSize);
+            AaruLogging.Debug(MODULE_NAME, "Sector too small for superblock");
 
-            if(Marshal.SizeOf<Superblock>() % _imagePlugin.Info.SectorSize != 0) sbSize++;
-
-            ErrorNumber errno =
-                _imagePlugin.ReadSectors(_partition.Start + EFS_SUPERBB, false, sbSize, out byte[] sector, out _);
-
-            if(errno != ErrorNumber.NoError)
-            {
-                AaruLogging.Debug(MODULE_NAME, "Error reading superblock sector: {0}", errno);
-
-                return errno;
-            }
-
-            if(sector.Length < Marshal.SizeOf<Superblock>())
-            {
-                AaruLogging.Debug(MODULE_NAME, "Sector too small for superblock");
-
-                return ErrorNumber.InvalidArgument;
-            }
-
-            _superblock = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
+            return ErrorNumber.InvalidArgument;
         }
+
+        var sbData = new byte[sbStructSize];
+        Array.Copy(sector, offsetInSector, sbData, 0, sbStructSize);
+
+        _superblock = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbData);
 
         AaruLogging.Debug(MODULE_NAME, "Magic: 0x{0:X8}", _superblock.sb_magic);
 

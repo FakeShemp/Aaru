@@ -42,54 +42,27 @@ public sealed partial class EFS
     {
         blockData = null;
 
-        // Handle optical disc alignment
-        if(_imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
-        {
-            // On optical discs, basic blocks are at byte offsets within sectors
-            long byteOffset     = blockNumber * EFS_BBSIZE;
-            long sectorNumber   = byteOffset / _imagePlugin.Info.SectorSize + (long)_partition.Start;
-            var  offsetInSector = (int)(byteOffset % _imagePlugin.Info.SectorSize);
+        uint sectorSize = _imagePlugin.Info.SectorSize;
 
-            // Calculate how many sectors to read
-            var sectorsToRead = (uint)((offsetInSector + EFS_BBSIZE + _imagePlugin.Info.SectorSize - 1) /
-                                       _imagePlugin.Info.SectorSize);
+        // Calculate byte offset of the basic block
+        long byteOffset = blockNumber * EFS_BBSIZE;
 
-            ErrorNumber errno =
-                _imagePlugin.ReadSectors((ulong)sectorNumber, false, sectorsToRead, out byte[] sectorData, out _);
+        // Calculate which sector contains the start of this block and offset within it
+        ulong sectorNumber   = (ulong)(byteOffset / sectorSize) + _partition.Start;
+        var   offsetInSector = (int)(byteOffset % sectorSize);
 
-            if(errno != ErrorNumber.NoError) return errno;
+        // Calculate how many sectors we need to read to get the full basic block
+        var sectorsToRead = (uint)((offsetInSector + EFS_BBSIZE + sectorSize - 1) / sectorSize);
 
-            blockData = new byte[EFS_BBSIZE];
+        ErrorNumber errno = _imagePlugin.ReadSectors(sectorNumber, false, sectorsToRead, out byte[] sectorData, out _);
 
-            if(offsetInSector + EFS_BBSIZE <= sectorData.Length)
-                Array.Copy(sectorData, offsetInSector, blockData, 0, EFS_BBSIZE);
-            else
-                return ErrorNumber.InvalidArgument;
-        }
-        else
-        {
-            // Standard disk: basic blocks map directly to sectors (assuming 512-byte sectors)
-            uint sectorsPerBb = EFS_BBSIZE / _imagePlugin.Info.SectorSize;
+        if(errno != ErrorNumber.NoError) return errno;
 
-            if(sectorsPerBb == 0) sectorsPerBb = 1;
+        if(offsetInSector + EFS_BBSIZE > sectorData.Length) return ErrorNumber.InvalidArgument;
 
-            ulong sectorNumber = _partition.Start + (ulong)blockNumber * sectorsPerBb;
-
-            ErrorNumber errno =
-                _imagePlugin.ReadSectors(sectorNumber, false, sectorsPerBb, out byte[] sectorData, out _);
-
-            if(errno != ErrorNumber.NoError) return errno;
-
-            if(sectorData.Length >= EFS_BBSIZE)
-            {
-                blockData = new byte[EFS_BBSIZE];
-                Array.Copy(sectorData, 0, blockData, 0, EFS_BBSIZE);
-            }
-            else
-                blockData = sectorData;
-        }
+        blockData = new byte[EFS_BBSIZE];
+        Array.Copy(sectorData, offsetInSector, blockData, 0, EFS_BBSIZE);
 
         return ErrorNumber.NoError;
     }
 }
-

@@ -47,59 +47,38 @@ public sealed partial class EFS
     {
         if(imagePlugin.Info.SectorSize < 512) return false;
 
-        // Misaligned
-        if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
-        {
-            var sbSize = (uint)((Marshal.SizeOf<Superblock>() + 0x200) / imagePlugin.Info.SectorSize);
+        uint sectorSize = imagePlugin.Info.SectorSize;
 
-            if((Marshal.SizeOf<Superblock>() + 0x200) % imagePlugin.Info.SectorSize != 0) sbSize++;
+        // Superblock is at basic block 1 (byte offset 0x200)
+        const long sbByteOffset = EFS_SUPERBB * EFS_BBSIZE;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, false, sbSize, out byte[] sector, out _);
+        // Calculate which sector contains the superblock and offset within it
+        ulong sectorNumber   = (ulong)(sbByteOffset / sectorSize) + partition.Start;
+        var   offsetInSector = (int)(sbByteOffset % sectorSize);
 
-            if(errno != ErrorNumber.NoError) return false;
+        // Calculate how many sectors we need to read
+        int sbStructSize  = Marshal.SizeOf<Superblock>();
+        var sectorsToRead = (uint)((offsetInSector + sbStructSize + sectorSize - 1) / sectorSize);
 
-            if(sector.Length < Marshal.SizeOf<Superblock>()) return false;
+        ErrorNumber errno = imagePlugin.ReadSectors(sectorNumber, false, sectorsToRead, out byte[] sector, out _);
 
-            var sbpiece = new byte[Marshal.SizeOf<Superblock>()];
+        if(errno != ErrorNumber.NoError) return false;
 
-            Array.Copy(sector, 0x200, sbpiece, 0, Marshal.SizeOf<Superblock>());
+        if(offsetInSector + sbStructSize > sector.Length) return false;
 
-            Superblock sb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbpiece);
+        var sbData = new byte[sbStructSize];
+        Array.Copy(sector, offsetInSector, sbData, 0, sbStructSize);
 
-            AaruLogging.Debug(MODULE_NAME,
-                              Localization.magic_at_0_equals_1_expected_2_or_3,
-                              0x200,
-                              sb.sb_magic,
-                              EFS_MAGIC,
-                              EFS_MAGIC_NEW);
+        Superblock sb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbData);
 
-            if(sb.sb_magic is EFS_MAGIC or EFS_MAGIC_NEW) return true;
-        }
-        else
-        {
-            var sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
+        AaruLogging.Debug(MODULE_NAME,
+                          Localization.magic_at_0_equals_1_expected_2_or_3,
+                          sbByteOffset,
+                          sb.sb_magic,
+                          EFS_MAGIC,
+                          EFS_MAGIC_NEW);
 
-            if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
-
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + 1, false, sbSize, out byte[] sector, out _);
-
-            if(errno != ErrorNumber.NoError) return false;
-
-            if(sector.Length < Marshal.SizeOf<Superblock>()) return false;
-
-            Superblock sb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
-
-            AaruLogging.Debug(MODULE_NAME,
-                              Localization.magic_at_0_equals_1_expected_2_or_3,
-                              1,
-                              sb.sb_magic,
-                              EFS_MAGIC,
-                              EFS_MAGIC_NEW);
-
-            if(sb.sb_magic is EFS_MAGIC or EFS_MAGIC_NEW) return true;
-        }
-
-        return false;
+        return sb.sb_magic is EFS_MAGIC or EFS_MAGIC_NEW;
     }
 
     /// <inheritdoc />
@@ -112,55 +91,36 @@ public sealed partial class EFS
 
         if(imagePlugin.Info.SectorSize < 512) return;
 
-        Superblock efsSb;
+        uint sectorSize = imagePlugin.Info.SectorSize;
 
-        // Misaligned
-        if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
-        {
-            var sbSize = (uint)((Marshal.SizeOf<Superblock>() + 0x400) / imagePlugin.Info.SectorSize);
+        // Superblock is at basic block 1 (byte offset 0x200)
+        const long sbByteOffset = EFS_SUPERBB * EFS_BBSIZE;
 
-            if((Marshal.SizeOf<Superblock>() + 0x400) % imagePlugin.Info.SectorSize != 0) sbSize++;
+        // Calculate which sector contains the superblock and offset within it
+        ulong sectorNumber   = (ulong)(sbByteOffset / sectorSize) + partition.Start;
+        var   offsetInSector = (int)(sbByteOffset % sectorSize);
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, false, sbSize, out byte[] sector, out _);
+        // Calculate how many sectors we need to read
+        int sbStructSize  = Marshal.SizeOf<Superblock>();
+        var sectorsToRead = (uint)((offsetInSector + sbStructSize + sectorSize - 1) / sectorSize);
 
-            if(errno != ErrorNumber.NoError) return;
+        ErrorNumber errno = imagePlugin.ReadSectors(sectorNumber, false, sectorsToRead, out byte[] sector, out _);
 
-            if(sector.Length < Marshal.SizeOf<Superblock>()) return;
+        if(errno != ErrorNumber.NoError) return;
 
-            var sbpiece = new byte[Marshal.SizeOf<Superblock>()];
+        if(offsetInSector + sbStructSize > sector.Length) return;
 
-            Array.Copy(sector, 0x200, sbpiece, 0, Marshal.SizeOf<Superblock>());
+        var sbData = new byte[sbStructSize];
+        Array.Copy(sector, offsetInSector, sbData, 0, sbStructSize);
 
-            efsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbpiece);
+        Superblock efsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbData);
 
-            AaruLogging.Debug(MODULE_NAME,
-                              Localization.magic_at_0_X3_equals_1_expected_2_or_3,
-                              0x200,
-                              efsSb.sb_magic,
-                              EFS_MAGIC,
-                              EFS_MAGIC_NEW);
-        }
-        else
-        {
-            var sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
-
-            if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
-
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + 1, false, sbSize, out byte[] sector, out _);
-
-            if(errno != ErrorNumber.NoError) return;
-
-            if(sector.Length < Marshal.SizeOf<Superblock>()) return;
-
-            efsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
-
-            AaruLogging.Debug(MODULE_NAME,
-                              Localization.magic_at_0_equals_1_expected_2_or_3,
-                              1,
-                              efsSb.sb_magic,
-                              EFS_MAGIC,
-                              EFS_MAGIC_NEW);
-        }
+        AaruLogging.Debug(MODULE_NAME,
+                          Localization.magic_at_0_X3_equals_1_expected_2_or_3,
+                          sbByteOffset,
+                          efsSb.sb_magic,
+                          EFS_MAGIC,
+                          EFS_MAGIC_NEW);
 
         if(efsSb.sb_magic != EFS_MAGIC && efsSb.sb_magic != EFS_MAGIC_NEW) return;
 
