@@ -30,8 +30,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -39,12 +41,60 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the Professional File System</summary>
 public sealed partial class PFS : IReadOnlyFilesystem
 {
+    const    string                                MODULE_NAME         = "PFS plugin";
+    readonly Dictionary<string, DirEntryCacheItem> _rootDirectoryCache = new();
+    ushort                                         _anodesPerBlock;
+    uint                                           _blockSize;
+    Encoding                                       _encoding;
+    ushort                                         _filenameSize;
+    uint                                           _firstReserved;
+    bool                                           _hasExtension;
+    IMediaImage                                    _imagePlugin;
+    bool                                           _isMultiUser;
+    bool                                           _largeDirSupport;
+    uint                                           _lastReserved;
+    ModeFlags                                      _modeFlags;
+
+    // Instance fields for mounted volume
+    bool               _mounted;
+    Partition          _partition;
+    ushort             _reservedBlockSize;
+    RootBlock          _rootBlock;
+    RootBlockExtension _rootBlockExtension;
+    bool               _splitAnodeMode;
+    string             _volumeName;
+
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
     /// <inheritdoc />
     public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces { get; } = [];
+
+#region Nested type: DirEntryCacheItem
+
+    /// <summary>Cached directory entry information</summary>
+    sealed class DirEntryCacheItem
+    {
+        /// <summary>Anode number for this entry</summary>
+        public uint Anode { get; init; }
+        /// <summary>Entry type (file, directory, link, etc.)</summary>
+        public EntryType Type { get; init; }
+        /// <summary>File size in bytes</summary>
+        public uint Size { get; set; }
+        /// <summary>Protection bits</summary>
+        public ProtectionBits Protection { get; init; }
+        /// <summary>Creation day (days since Jan 1, 1978)</summary>
+        public ushort CreationDay { get; init; }
+        /// <summary>Creation minute</summary>
+        public ushort CreationMinute { get; init; }
+        /// <summary>Creation tick</summary>
+        public ushort CreationTick { get; init; }
+        /// <summary>File comment</summary>
+        public string Comment { get; set; }
+    }
+
+#endregion
 
 #region IFilesystem Members
 
