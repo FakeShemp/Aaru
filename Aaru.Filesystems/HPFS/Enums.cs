@@ -35,7 +35,6 @@ using System;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of IBM's High Performance File System (HPFS)</summary>
 public sealed partial class HPFS
 {
 #region Nested type: SpareBlockFlags

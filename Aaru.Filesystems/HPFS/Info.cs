@@ -43,7 +43,6 @@ namespace Aaru.Filesystems;
 
 // Information from an old unnamed document
 /// <inheritdoc />
-/// <summary>Implements detection of IBM's High Performance File System (HPFS)</summary>
 public sealed partial class HPFS
 {
 #region IFilesystem Members

@@ -31,15 +31,24 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 // Information from an old unnamed document
 /// <inheritdoc />
-/// <summary>Implements detection of IBM's High Performance File System (HPFS)</summary>
-public sealed partial class HPFS : IFilesystem
+/// <summary>Implements IBM's High Performance File System (HPFS)</summary>
+public sealed partial class HPFS : IReadOnlyFilesystem
 {
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
+
 #region IFilesystem Members
 
     /// <inheritdoc />
