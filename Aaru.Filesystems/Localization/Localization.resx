@@ -3000,6 +3000,12 @@
     <data name="This_volume_may_be_corrupted" xml:space="preserve">
     <value>This volume may be corrupted.</value>
   </data>
+    <data name="Homeblock_checksum1_invalid_expected_0_X4_calculated_1_X4" xml:space="preserve">
+    <value>Homeblock checksum 1 is invalid (expected {0:X4}, calculated {1:X4})</value>
+  </data>
+    <data name="Homeblock_checksum2_invalid_expected_0_X4_calculated_1_X4" xml:space="preserve">
+    <value>Homeblock checksum 2 is invalid (expected {0:X4}, calculated {1:X4})</value>
+  </data>
     <data name="Volume_format_is_0" xml:space="preserve">
     <value>Volume format is {0}</value>
   </data>

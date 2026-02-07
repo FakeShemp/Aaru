@@ -2249,6 +2249,12 @@
     <data name="This_volume_may_be_corrupted" xml:space="preserve">
     <value>Este volumen podría esta corrupto.</value>
   </data>
+    <data name="Homeblock_checksum1_invalid_expected_0_X4_calculated_1_X4" xml:space="preserve">
+    <value>La suma de comprobación 1 del bloque de inicio es inválida (esperada {0:X4}, calculada {1:X4})</value>
+  </data>
+    <data name="Homeblock_checksum2_invalid_expected_0_X4_calculated_1_X4" xml:space="preserve">
+    <value>La suma de comprobación 2 del bloque de inicio es inválida (esperada {0:X4}, calculada {1:X4})</value>
+  </data>
     <data name="Title_0" xml:space="preserve">
     <value>Título: {0}</value>
   </data>

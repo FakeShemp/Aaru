@@ -43,7 +43,6 @@ namespace Aaru.Filesystems;
 // Book only describes ODS-2. Need to test ODS-1 and ODS-5
 // There is an ODS with signature "DECFILES11A", yet to be seen
 // Time is a 64 bit unsigned integer, tenths of microseconds since 1858/11/17 00:00:00.
-// TODO: Implement checksum
 /// <inheritdoc />
 /// <summary>Implements detection of DEC's On-Disk Structure, aka the ODS filesystem</summary>
 public sealed partial class ODS : IFilesystem

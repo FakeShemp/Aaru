@@ -49,7 +49,6 @@ namespace Aaru.Filesystems;
 // Book only describes ODS-2. Need to test ODS-1 and ODS-5
 // There is an ODS with signature "DECFILES11A", yet to be seen
 // Time is a 64 bit unsigned integer, tenths of microseconds since 1858/11/17 00:00:00.
-// TODO: Implement checksum
 /// <inheritdoc />
 /// <summary>Implements detection of DEC's On-Disk Structure, aka the ODS filesystem</summary>
 public sealed partial class ODS
@@ -135,6 +134,33 @@ public sealed partial class ODS
             sb.AppendLine(Localization.The_following_information_may_be_incorrect_for_this_volume);
 
         if(homeblock.resfiles < 5 || homeblock.devtype != 0) sb.AppendLine(Localization.This_volume_may_be_corrupted);
+
+        // Validate checksums
+        // checksum1 is the sum of all 16-bit words from offset 0 to offset 0x3A (exclusive)
+        // checksum2 is the continuation of that sum from offset 0x3C to offset 0x1FE (exclusive)
+        ushort calculatedChecksum1 = 0;
+
+        for(var i = 0; i < 0x3A; i += 2) calculatedChecksum1 += BitConverter.ToUInt16(hbSector, i);
+
+        ushort calculatedChecksum2 = calculatedChecksum1;
+
+        for(var i = 0x3C; i < 0x1FE; i += 2) calculatedChecksum2 += BitConverter.ToUInt16(hbSector, i);
+
+        if(calculatedChecksum1 != homeblock.checksum1)
+        {
+            sb.AppendFormat(Localization.Homeblock_checksum1_invalid_expected_0_X4_calculated_1_X4,
+                            homeblock.checksum1,
+                            calculatedChecksum1)
+              .AppendLine();
+        }
+
+        if(calculatedChecksum2 != homeblock.checksum2)
+        {
+            sb.AppendFormat(Localization.Homeblock_checksum2_invalid_expected_0_X4_calculated_1_X4,
+                            homeblock.checksum2,
+                            calculatedChecksum2)
+              .AppendLine();
+        }
 
         sb.AppendFormat(Localization.Volume_format_is_0, StringHandlers.SpacePaddedToString(homeblock.format, encoding))
           .AppendLine();

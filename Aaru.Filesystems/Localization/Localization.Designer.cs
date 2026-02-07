@@ -5991,6 +5991,18 @@ namespace Aaru.Filesystems {
             }
         }
         
+        internal static string Homeblock_checksum1_invalid_expected_0_X4_calculated_1_X4 {
+            get {
+                return ResourceManager.GetString("Homeblock_checksum1_invalid_expected_0_X4_calculated_1_X4", resourceCulture);
+            }
+        }
+        
+        internal static string Homeblock_checksum2_invalid_expected_0_X4_calculated_1_X4 {
+            get {
+                return ResourceManager.GetString("Homeblock_checksum2_invalid_expected_0_X4_calculated_1_X4", resourceCulture);
+            }
+        }
+        
         internal static string Volume_format_is_0 {
             get {
                 return ResourceManager.GetString("Volume_format_is_0", resourceCulture);
