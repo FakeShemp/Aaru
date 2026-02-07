@@ -32,16 +32,6 @@
 
 namespace Aaru.Filesystems;
 
-// Information from VMS File System Internals by Kirby McCoy
-// ISBN: 1-55558-056-4
-// With some hints from http://www.decuslib.com/DECUS/vmslt97b/gnusoftware/gccaxp/7_1/vms/hm2def.h
-// Expects the home block to be always in sector #1 (does not check deltas)
-// Assumes a sector size of 512 bytes (VMS does on HDDs and optical drives, dunno about M.O.)
-// Book only describes ODS-2. Need to test ODS-1 and ODS-5
-// There is an ODS with signature "DECFILES11A", yet to be seen
-// Time is a 64 bit unsigned integer, tenths of microseconds since 1858/11/17 00:00:00.
-/// <inheritdoc />
-/// <summary>Implements detection of DEC's On-Disk Structure, aka the ODS filesystem</summary>
 public sealed partial class ODS
 {
     const string FS_TYPE = "files11";
