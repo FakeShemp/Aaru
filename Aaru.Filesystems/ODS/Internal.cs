@@ -30,6 +30,7 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
@@ -83,8 +84,11 @@ public sealed partial class ODS
         /// <summary>Cached file header.</summary>
         internal FileHeader FileHeader;
 
-        /// <summary>Cached retrieval pointers (mapping information).</summary>
+        /// <summary>Cached retrieval pointers (mapping information) from primary header.</summary>
         internal byte[] MapData;
+
+        /// <summary>Cached extension file headers for multi-extent files.</summary>
+        internal List<ExtensionMapInfo> ExtensionMaps;
 
 #region IFileNode Members
 
@@ -98,6 +102,26 @@ public sealed partial class ODS
         public long Offset { get; set; }
 
 #endregion
+    }
+
+#endregion
+
+#region Nested type: ExtensionMapInfo
+
+    /// <summary>Cached extension file header mapping information.</summary>
+    sealed class ExtensionMapInfo
+    {
+        /// <summary>Extension file ID.</summary>
+        internal FileId ExtFid;
+
+        /// <summary>Mapping data from this extension header.</summary>
+        internal byte[] MapData;
+
+        /// <summary>Number of map words in use.</summary>
+        internal byte MapInUse;
+
+        /// <summary>VBN sum before this extension (cumulative block count).</summary>
+        internal uint VbnSum;
     }
 
 #endregion

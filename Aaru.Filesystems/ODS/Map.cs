@@ -78,14 +78,28 @@ public sealed partial class ODS
     /// <param name="lbn">Output logical block number (0-based).</param>
     /// <param name="extent">Output extent size.</param>
     /// <returns>Error number indicating success or failure.</returns>
-    static ErrorNumber MapVbnToLbn(byte[] mapData, byte mapInUse, uint vbn, out uint lbn, out uint extent)
+    static ErrorNumber MapVbnToLbn(byte[] mapData, byte mapInUse, uint vbn, out uint lbn, out uint extent) =>
+        MapVbnToLbnWithSum(mapData, mapInUse, vbn, 0, out lbn, out extent, out _);
+
+    /// <summary>Maps a Virtual Block Number (VBN) to a Logical Block Number (LBN) with a starting VBN sum.</summary>
+    /// <param name="mapData">Mapping data from file header.</param>
+    /// <param name="mapInUse">Number of words in use in the map.</param>
+    /// <param name="vbn">Virtual block number (1-based).</param>
+    /// <param name="startSum">Starting VBN sum (for extension headers).</param>
+    /// <param name="lbn">Output logical block number (0-based).</param>
+    /// <param name="extent">Output extent size.</param>
+    /// <param name="endSum">Output ending VBN sum after processing this map.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    static ErrorNumber MapVbnToLbnWithSum(byte[] mapData, byte mapInUse, uint vbn, uint startSum, out uint lbn,
+                                          out uint extent, out uint endSum)
     {
         lbn    = 0;
         extent = 0;
+        endSum = startSum;
 
         if(mapData == null || mapData.Length == 0) return ErrorNumber.InvalidArgument;
 
-        uint sum = 0;
+        uint sum = startSum;
         var  i   = 0;
 
         while(i < mapInUse * 2 && i < mapData.Length)
@@ -107,7 +121,12 @@ public sealed partial class ODS
 
                 case 1:
                     // 8-bit count, 22-bit LBN (4 bytes total)
-                    if(i + 4 > mapData.Length) return ErrorNumber.InvalidArgument;
+                    if(i + 4 > mapData.Length)
+                    {
+                        endSum = sum;
+
+                        return ErrorNumber.InvalidArgument;
+                    }
 
                     count   =  (uint)(mapData[i] + 1);
                     diskLbn =  (uint)((mapData[i + 1] & 0x3F) << 16 | BitConverter.ToUInt16(mapData, i + 2));
@@ -117,7 +136,12 @@ public sealed partial class ODS
 
                 case 2:
                     // 14-bit count, 32-bit LBN (6 bytes total)
-                    if(i + 6 > mapData.Length) return ErrorNumber.InvalidArgument;
+                    if(i + 6 > mapData.Length)
+                    {
+                        endSum = sum;
+
+                        return ErrorNumber.InvalidArgument;
+                    }
 
                     count   =  (uint)((word0 & 0x3FFF) + 1);
                     diskLbn =  BitConverter.ToUInt32(mapData, i + 2);
@@ -127,7 +151,12 @@ public sealed partial class ODS
 
                 case 3:
                     // 30-bit count, 32-bit LBN (8 bytes total)
-                    if(i + 8 > mapData.Length) return ErrorNumber.InvalidArgument;
+                    if(i + 8 > mapData.Length)
+                    {
+                        endSum = sum;
+
+                        return ErrorNumber.InvalidArgument;
+                    }
 
                     var lowCount = BitConverter.ToUInt16(mapData, i + 2);
                     count   =  (uint)(((word0 & 0x3FFF) << 16 | lowCount) + 1);
@@ -137,6 +166,8 @@ public sealed partial class ODS
                     break;
 
                 default:
+                    endSum = sum;
+
                     return ErrorNumber.InvalidArgument;
             }
 
@@ -144,7 +175,8 @@ public sealed partial class ODS
             if(vbn <= sum + count)
             {
                 lbn    = diskLbn + (vbn - sum) - 1;
-                extent = count                 - (lbn - diskLbn);
+                extent = count   - (lbn - diskLbn);
+                endSum = sum     + count;
 
                 return ErrorNumber.NoError;
             }
@@ -152,6 +184,69 @@ public sealed partial class ODS
             sum += count;
         }
 
+        endSum = sum;
+
+        // VBN not found in this map - may need extension header
         return ErrorNumber.InvalidArgument;
+    }
+
+    /// <summary>Calculates the total VBN count covered by a map.</summary>
+    /// <param name="mapData">Mapping data from file header.</param>
+    /// <param name="mapInUse">Number of words in use in the map.</param>
+    /// <returns>Total VBN count.</returns>
+    static uint GetMapVbnCount(byte[] mapData, byte mapInUse)
+    {
+        if(mapData == null || mapData.Length == 0) return 0;
+
+        uint sum = 0;
+        var  i   = 0;
+
+        while(i < mapInUse * 2 && i < mapData.Length)
+        {
+            var word0  = BitConverter.ToUInt16(mapData, i);
+            var format = (byte)(word0 >> 14 & 0x03);
+
+            uint count;
+
+            switch(format)
+            {
+                case 0:
+                    i += 2;
+
+                    continue;
+
+                case 1:
+                    if(i + 4 > mapData.Length) return sum;
+
+                    count =  (uint)(mapData[i] + 1);
+                    i     += 4;
+
+                    break;
+
+                case 2:
+                    if(i + 6 > mapData.Length) return sum;
+
+                    count =  (uint)((word0 & 0x3FFF) + 1);
+                    i     += 6;
+
+                    break;
+
+                case 3:
+                    if(i + 8 > mapData.Length) return sum;
+
+                    var lowCount = BitConverter.ToUInt16(mapData, i + 2);
+                    count =  (uint)(((word0 & 0x3FFF) << 16 | lowCount) + 1);
+                    i     += 8;
+
+                    break;
+
+                default:
+                    return sum;
+            }
+
+            sum += count;
+        }
+
+        return sum;
     }
 }

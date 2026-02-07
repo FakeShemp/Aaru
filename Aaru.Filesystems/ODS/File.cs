@@ -135,15 +135,33 @@ public sealed partial class ODS
         else
             length = 0;
 
-        node = new OdsFileNode
+        var fileNode = new OdsFileNode
         {
-            Path       = normalizedPath,
-            Fid        = cachedFile.Fid,
-            FileHeader = fileHeader,
-            MapData    = mapData,
-            Length     = length,
-            Offset     = 0
+            Path          = normalizedPath,
+            Fid           = cachedFile.Fid,
+            FileHeader    = fileHeader,
+            MapData       = mapData,
+            Length        = length,
+            Offset        = 0,
+            ExtensionMaps = null
         };
+
+        // Check if file has extension headers (multi-extent file)
+        // ext_fid.num != 0 means there's an extension header
+        if(fileHeader.ext_fid.num != 0 || fileHeader.ext_fid.nmx != 0)
+        {
+            // Load extension header chain
+            errno = LoadExtensionHeaders(fileNode);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error loading extension headers: {0}", errno);
+
+                return errno;
+            }
+        }
+
+        node = fileNode;
 
         return ErrorNumber.NoError;
     }
@@ -156,9 +174,10 @@ public sealed partial class ODS
         if(node is not OdsFileNode myNode) return ErrorNumber.InvalidArgument;
 
         // Clear cached data
-        myNode.MapData    = null;
-        myNode.FileHeader = default(FileHeader);
-        myNode.Offset     = -1;
+        myNode.MapData       = null;
+        myNode.ExtensionMaps = null;
+        myNode.FileHeader    = default;
+        myNode.Offset        = -1;
 
         return ErrorNumber.NoError;
     }
@@ -193,12 +212,8 @@ public sealed partial class ODS
             uint vbn         = (uint)(myNode.Offset / ODS_BLOCK_SIZE) + 1;
             var  offsetInVbn = (int)(myNode.Offset % ODS_BLOCK_SIZE);
 
-            // Map VBN to LBN
-            ErrorNumber errno = MapVbnToLbn(myNode.MapData,
-                                            myNode.FileHeader.map_inuse,
-                                            vbn,
-                                            out uint lbn,
-                                            out uint extent);
+            // Map VBN to LBN using multi-extent support
+            ErrorNumber errno = MapVbnToLbnMultiExtent(myNode, vbn, out uint lbn, out uint extent);
 
             if(errno != ErrorNumber.NoError)
             {
@@ -343,6 +358,105 @@ public sealed partial class ODS
         dest = _encoding.GetString(linkData).TrimEnd('\0');
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Loads extension file headers for a multi-extent file.</summary>
+    /// <param name="fileNode">File node to populate with extension maps.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber LoadExtensionHeaders(OdsFileNode fileNode)
+    {
+        fileNode.ExtensionMaps = [];
+
+        // Calculate the VBN sum from the primary header's map
+        uint vbnSum = GetMapVbnCount(fileNode.MapData, fileNode.FileHeader.map_inuse);
+
+        // Start with the extension file ID from the primary header
+        FileId currentExtFid = fileNode.FileHeader.ext_fid;
+
+        // Follow the chain of extension headers
+        while(currentExtFid.num != 0 || currentExtFid.nmx != 0)
+        {
+            // Read the extension file header
+            // Extension file number includes nmx in high bits
+            var extFileNum = (ushort)(currentExtFid.num + (currentExtFid.nmx << 16));
+
+            ErrorNumber errno = ReadFileHeader(extFileNum, out FileHeader extHeader);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Error reading extension file header {0}: {1}",
+                                  extFileNum,
+                                  errno);
+
+                return errno;
+            }
+
+            // Get mapping data from extension header
+            byte[] extMapData = GetMapData(extHeader);
+
+            if(extMapData == null || extMapData.Length == 0)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Extension header {0} has no mapping data", extFileNum);
+
+                break;
+            }
+
+            // Add to extension maps list
+            fileNode.ExtensionMaps.Add(new ExtensionMapInfo
+            {
+                ExtFid   = currentExtFid,
+                MapData  = extMapData,
+                MapInUse = extHeader.map_inuse,
+                VbnSum   = vbnSum
+            });
+
+            // Update VBN sum for next extension
+            vbnSum += GetMapVbnCount(extMapData, extHeader.map_inuse);
+
+            // Move to next extension header in chain
+            currentExtFid = extHeader.ext_fid;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Maps a VBN to LBN using multi-extent support.</summary>
+    /// <param name="fileNode">File node with primary and extension map data.</param>
+    /// <param name="vbn">Virtual block number (1-based).</param>
+    /// <param name="lbn">Output logical block number.</param>
+    /// <param name="extent">Output extent size.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    static ErrorNumber MapVbnToLbnMultiExtent(OdsFileNode fileNode, uint vbn, out uint lbn, out uint extent)
+    {
+        lbn    = 0;
+        extent = 0;
+
+        // First try the primary file header's map
+        ErrorNumber errno = MapVbnToLbnWithSum(fileNode.MapData,
+                                               fileNode.FileHeader.map_inuse,
+                                               vbn,
+                                               0,
+                                               out lbn,
+                                               out extent,
+                                               out uint endSum);
+
+        if(errno == ErrorNumber.NoError) return ErrorNumber.NoError;
+
+        // If no extension maps, VBN is not found
+        if(fileNode.ExtensionMaps == null || fileNode.ExtensionMaps.Count == 0)
+            return ErrorNumber.InvalidArgument;
+
+        // Search through extension maps
+        foreach(ExtensionMapInfo extMap in fileNode.ExtensionMaps)
+        {
+            errno = MapVbnToLbnWithSum(extMap.MapData, extMap.MapInUse, vbn, extMap.VbnSum, out lbn, out extent, out _);
+
+            if(errno == ErrorNumber.NoError) return ErrorNumber.NoError;
+        }
+
+        // VBN not found in any map
+        return ErrorNumber.InvalidArgument;
     }
 
     /// <summary>Looks up a file by path and returns its cached entry.</summary>
