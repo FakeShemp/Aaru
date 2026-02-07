@@ -40,6 +40,66 @@ namespace Aaru.Filesystems;
 public sealed partial class PFS
 {
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Find the file entry
+        ErrorNumber errno = GetEntryForPath(path, out DirEntryCacheItem entry);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Check if it's a symbolic link
+        if(entry.Type != EntryType.SoftLink)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: '{0}' is not a symbolic link (type={1})", path, entry.Type);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Get the link's anode to find the data block
+        errno = GetAnode(entry.Anode, out Anode linkAnode);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: Error getting anode {0}: {1}", entry.Anode, errno);
+
+            return errno;
+        }
+
+        // Read the block containing the symbolic link target
+        errno = ReadBlock(linkAnode.blocknr, out byte[] blockData);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: Error reading block {0}: {1}", linkAnode.blocknr, errno);
+
+            return errno;
+        }
+
+        // The fsize field contains the length of the symbolic link path
+        // The path is stored at the beginning of the data block
+        var linkLength = (int)entry.Size;
+
+        if(linkLength <= 0 || linkLength > blockData.Length)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: Invalid link length {0}", linkLength);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Extract the symbolic link target
+        dest = _encoding.GetString(blockData, 0, linkLength);
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: '{0}' -> '{1}'", path, dest);
+
+        return ErrorNumber.NoError;
+    }
+
     /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
