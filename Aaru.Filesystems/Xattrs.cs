@@ -89,6 +89,15 @@ static class Xattrs
     /// <summary>Extended attribute name for UDF free extended attribute space</summary>
     public const string XATTR_UDF_FREE_EA_SPACE = "org.osta.udf.free_ea_space";
 
+    /// <summary>Extended attribute name for VMS/ODS Access Control List</summary>
+    public const string XATTR_VMS_ACL = "com.vms.acl";
+
+    /// <summary>Extended attribute name for VMS/ODS File Attributes (FAT) record</summary>
+    public const string XATTR_VMS_FAT = "com.vms.fat";
+
+    /// <summary>Extended attribute name for VMS/ODS file organization</summary>
+    public const string XATTR_VMS_ORGANIZATION = "com.vms.organization";
+
     /// <summary>Extended attribute name for OS/2 Workplace Shell class information</summary>
     public const string XATTR_WORKPLACE_CLASSINFO = "com.ibm.os2.classinfo";
 }
