@@ -64,7 +64,7 @@ public sealed partial class HPFS
         var magic1 = BitConverter.ToUInt32(hpfsSbSector, 0x000);
         var magic2 = BitConverter.ToUInt32(hpfsSbSector, 0x004);
 
-        return magic1 == 0xF995E849 && magic2 == 0xFA53E9C5;
+        return magic1 == SB_MAGIC && magic2 == SB_MAGIC2;
     }
 
     /// <inheritdoc />
@@ -106,10 +106,10 @@ public sealed partial class HPFS
         SpareBlock sp = Marshal.ByteArrayToStructureLittleEndian<SpareBlock>(hpfsSpSector);
 
         if(StringHandlers.CToString(bpb.fs_type) != "HPFS    " ||
-           hpfsSb.magic1                         != 0xF995E849 ||
-           hpfsSb.magic2                         != 0xFA53E9C5 ||
-           sp.magic1                             != 0xF9911849 ||
-           sp.magic2                             != 0xFA5229C5)
+           hpfsSb.magic1                         != SB_MAGIC   ||
+           hpfsSb.magic2                         != SB_MAGIC2  ||
+           sp.magic1                             != SP_MAGIC   ||
+           sp.magic2                             != SP_MAGIC2)
         {
             sb.AppendLine(Localization.This_may_not_be_HPFS_following_information_may_be_not_correct);
             sb.AppendFormat(Localization.File_system_type_0_Should_be_HPFS,        bpb.fs_type).AppendLine();
@@ -170,7 +170,6 @@ public sealed partial class HPFS
         sb.AppendFormat(Localization.Directory_band_starts_at_sector_0, hpfsSb.dband_start).AppendLine();
         sb.AppendFormat(Localization.Directory_band_ends_at_sector_0,   hpfsSb.dband_last).AppendLine();
         sb.AppendFormat(Localization.Sector_of_directory_band_bitmap_0, hpfsSb.dband_bitmap).AppendLine();
-        sb.AppendFormat(Localization.Sector_of_ACL_directory_0,         hpfsSb.acl_start).AppendLine();
 
         sb.AppendFormat(Localization.Sector_of_Hotfix_directory_0,    sp.hotfix_start).AppendLine();
         sb.AppendFormat(Localization._0_used_Hotfix_entries,          sp.hotfix_used).AppendLine();
@@ -183,42 +182,49 @@ public sealed partial class HPFS
         sb.AppendFormat(Localization.SpareBlock_CRC32_0,              sp.sp_crc32).AppendLine();
 
         sb.AppendLine(Localization.Flags);
-        sb.AppendLine((sp.flags1 & 0x01) == 0x01 ? Localization.Filesystem_is_dirty : Localization.Filesystem_is_clean);
 
-        if((sp.flags1 & 0x02) == 0x02) sb.AppendLine(Localization.Spare_directory_blocks_are_in_use);
+        sb.AppendLine(sp.flags1.HasFlag(SpareBlockFlags.Dirty)
+                          ? Localization.Filesystem_is_dirty
+                          : Localization.Filesystem_is_clean);
 
-        if((sp.flags1 & 0x04) == 0x04) sb.AppendLine(Localization.Hotfixes_are_in_use);
+        if(sp.flags1.HasFlag(SpareBlockFlags.SpareDirUsed))
+            sb.AppendLine(Localization.Spare_directory_blocks_are_in_use);
 
-        if((sp.flags1 & 0x08) == 0x08) sb.AppendLine(Localization.Disk_contains_bad_sectors);
+        if(sp.flags1.HasFlag(SpareBlockFlags.HotfixesUsed)) sb.AppendLine(Localization.Hotfixes_are_in_use);
 
-        if((sp.flags1 & 0x10) == 0x10) sb.AppendLine(Localization.Disk_has_a_bad_bitmap);
+        if(sp.flags1.HasFlag(SpareBlockFlags.BadSector)) sb.AppendLine(Localization.Disk_contains_bad_sectors);
 
-        if((sp.flags1 & 0x20) == 0x20) sb.AppendLine(Localization.Filesystem_was_formatted_fast);
+        if(sp.flags1.HasFlag(SpareBlockFlags.BadBitmap)) sb.AppendLine(Localization.Disk_has_a_bad_bitmap);
 
-        if((sp.flags1 & 0x40) == 0x40) sb.AppendLine(Localization.Unknown_flag_0x40_on_flags1_is_active);
+        if(sp.flags1.HasFlag(SpareBlockFlags.FastFormat)) sb.AppendLine(Localization.Filesystem_was_formatted_fast);
 
-        if((sp.flags1 & 0x80) == 0x80) sb.AppendLine(Localization.Filesystem_has_been_mounted_by_an_old_IFS);
+        if(sp.flags1.HasFlag(SpareBlockFlags.OldWrote))
+            sb.AppendLine(Localization.Unknown_flag_0x40_on_flags1_is_active);
 
-        if((sp.flags2 & 0x01) == 0x01) sb.AppendLine(Localization.Install_DASD_limits);
+        if(sp.flags1.HasFlag(SpareBlockFlags.OldWrote1))
+            sb.AppendLine(Localization.Filesystem_has_been_mounted_by_an_old_IFS);
 
-        if((sp.flags2 & 0x02) == 0x02) sb.AppendLine(Localization.Resync_DASD_limits);
+        if(sp.flags2.HasFlag(SpareBlockFlags386.InstallDasdLimits)) sb.AppendLine(Localization.Install_DASD_limits);
 
-        if((sp.flags2 & 0x04) == 0x04) sb.AppendLine(Localization.DASD_limits_are_operational);
+        if(sp.flags2.HasFlag(SpareBlockFlags386.ResynchDasdLimits)) sb.AppendLine(Localization.Resync_DASD_limits);
 
-        if((sp.flags2 & 0x08) == 0x08) sb.AppendLine(Localization.Multimedia_is_active);
+        if(sp.flags2.HasFlag(SpareBlockFlags386.DasdLimitsOperational))
+            sb.AppendLine(Localization.DASD_limits_are_operational);
 
-        if((sp.flags2 & 0x10) == 0x10) sb.AppendLine(Localization.DCE_ACLs_are_active);
+        if(sp.flags2.HasFlag(SpareBlockFlags386.MultimediaActive)) sb.AppendLine(Localization.Multimedia_is_active);
 
-        if((sp.flags2 & 0x20) == 0x20) sb.AppendLine(Localization.DASD_limits_are_dirty);
+        if(sp.flags2.HasFlag(SpareBlockFlags386.DceAclsActive)) sb.AppendLine(Localization.DCE_ACLs_are_active);
 
-        if((sp.flags2 & 0x40) == 0x40) sb.AppendLine(Localization.Unknown_flag_0x40_on_flags2_is_active);
+        if(sp.flags2.HasFlag(SpareBlockFlags386.DasdLimitsDirty)) sb.AppendLine(Localization.DASD_limits_are_dirty);
 
-        if((sp.flags2 & 0x80) == 0x80) sb.AppendLine(Localization.Unknown_flag_0x80_on_flags2_is_active);
+        if(((byte)sp.flags2 & 0x40) == 0x40) sb.AppendLine(Localization.Unknown_flag_0x40_on_flags2_is_active);
+
+        if(((byte)sp.flags2 & 0x80) == 0x80) sb.AppendLine(Localization.Unknown_flag_0x80_on_flags2_is_active);
 
         metadata = new FileSystem();
 
         // Theoretically everything from BPB to SB is boot code, should I hash everything or only the sector loaded by BIOS itself?
-        if(bpb.jump[0] == 0xEB && bpb.jump[1] > 0x3C && bpb.jump[1] < 0x80 && bpb.signature2 == 0xAA55)
+        if(bpb.jump[0] == 0xEB && bpb.jump[1] > 0x3C && bpb.jump[1] < 0x80 && bpb.signature2 == BB_MAGIC)
         {
             metadata.Bootable = true;
             string bootChk = Sha1Context.Data(bpb.boot_code, out byte[] _);
@@ -226,7 +232,7 @@ public sealed partial class HPFS
             sb.AppendFormat(Localization.Boot_code_SHA1_0, bootChk).AppendLine();
         }
 
-        metadata.Dirty            |= (sp.flags1 & 0x01) == 0x01;
+        metadata.Dirty            |= sp.flags1.HasFlag(SpareBlockFlags.Dirty);
         metadata.Clusters         =  hpfsSb.sectors;
         metadata.ClusterSize      =  bpb.bps;
         metadata.Type             =  FS_TYPE;
