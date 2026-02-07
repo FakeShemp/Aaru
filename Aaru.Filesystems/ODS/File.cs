@@ -33,6 +33,7 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -82,6 +83,157 @@ public sealed partial class ODS
         if(readErr != ErrorNumber.NoError) return readErr;
 
         stat = BuildFileEntryInfo(fileHeader, cachedFile.Fid.num);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize path
+        string normalizedPath = string.IsNullOrWhiteSpace(path) ? "/" : path;
+
+        if(!normalizedPath.StartsWith("/", StringComparison.Ordinal)) normalizedPath = "/" + normalizedPath;
+
+        // Cannot open root directory as a file
+        if(normalizedPath == "/") return ErrorNumber.IsDirectory;
+
+        // Look up the file
+        ErrorNumber errno = LookupFile(normalizedPath, out CachedFile cachedFile);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read the file header
+        errno = ReadFileHeader(cachedFile.Fid.num, out FileHeader fileHeader);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Cannot open directories as files
+        if(fileHeader.filechar.HasFlag(FileCharacteristicFlags.Directory)) return ErrorNumber.IsDirectory;
+
+        // Get the mapping data for file extents
+        byte[] mapData = GetMapData(fileHeader);
+
+        if(mapData == null || mapData.Length == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "File has no mapping data");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Calculate file size from FAT
+        // File size = (efblk - 1) * blocksize + ffbyte
+        uint efblk = fileHeader.recattr.efblk.Value;
+        long length;
+
+        if(efblk > 0)
+            length = (efblk - 1) * ODS_BLOCK_SIZE + fileHeader.recattr.ffbyte;
+        else
+            length = 0;
+
+        node = new OdsFileNode
+        {
+            Path       = normalizedPath,
+            Fid        = cachedFile.Fid,
+            FileHeader = fileHeader,
+            MapData    = mapData,
+            Length     = length,
+            Offset     = 0
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not OdsFileNode myNode) return ErrorNumber.InvalidArgument;
+
+        // Clear cached data
+        myNode.MapData    = null;
+        myNode.FileHeader = default(FileHeader);
+        myNode.Offset     = -1;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(buffer is null || buffer.Length < length) return ErrorNumber.InvalidArgument;
+
+        if(node is not OdsFileNode myNode) return ErrorNumber.InvalidArgument;
+
+        if(myNode.Offset < 0) return ErrorNumber.InvalidArgument;
+
+        // Nothing to read
+        if(length <= 0) return ErrorNumber.NoError;
+
+        // Clamp read length to remaining file size
+        if(myNode.Offset + length > myNode.Length) length = myNode.Length - myNode.Offset;
+
+        if(length <= 0) return ErrorNumber.NoError;
+
+        var bufferPos = 0;
+
+        while(length > 0)
+        {
+            // Calculate which VBN we need (1-based)
+            // VBN = (offset / blocksize) + 1
+            uint vbn         = (uint)(myNode.Offset / ODS_BLOCK_SIZE) + 1;
+            var  offsetInVbn = (int)(myNode.Offset % ODS_BLOCK_SIZE);
+
+            // Map VBN to LBN
+            ErrorNumber errno = MapVbnToLbn(myNode.MapData,
+                                            myNode.FileHeader.map_inuse,
+                                            vbn,
+                                            out uint lbn,
+                                            out uint extent);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error mapping VBN {0} to LBN: {1}", vbn, errno);
+
+                return errno;
+            }
+
+            // Calculate how many consecutive blocks we can read from this extent
+            // Don't read more blocks than needed
+            var  blocksNeeded = (uint)((length + offsetInVbn + ODS_BLOCK_SIZE - 1) / ODS_BLOCK_SIZE);
+            uint blocksToRead = Math.Min(extent, blocksNeeded);
+
+            // Read the ODS block(s)
+            errno = ReadOdsBlock(_image, _partition, lbn, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error reading block at LBN {0}: {1}", lbn, errno);
+
+                return errno;
+            }
+
+            // Calculate how much data to copy from this block
+            int bytesAvailable = blockData.Length - offsetInVbn;
+            var bytesToCopy    = (int)Math.Min(bytesAvailable, length);
+
+            // Copy data to buffer
+            Array.Copy(blockData, offsetInVbn, buffer, bufferPos, bytesToCopy);
+
+            bufferPos     += bytesToCopy;
+            myNode.Offset += bytesToCopy;
+            length        -= bytesToCopy;
+            read          += bytesToCopy;
+        }
 
         return ErrorNumber.NoError;
     }
