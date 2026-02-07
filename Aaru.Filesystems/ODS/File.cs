@@ -77,8 +77,8 @@ public sealed partial class ODS
 
         if(lookupErr != ErrorNumber.NoError) return lookupErr;
 
-        // Read the file header
-        ErrorNumber readErr = ReadFileHeader(cachedFile.Fid.num, out FileHeader fileHeader);
+        // Read the file header with sequence validation
+        ErrorNumber readErr = ReadFileHeader(cachedFile.Fid, out FileHeader fileHeader);
 
         if(readErr != ErrorNumber.NoError) return readErr;
 
@@ -107,8 +107,8 @@ public sealed partial class ODS
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        // Read the file header
-        errno = ReadFileHeader(cachedFile.Fid.num, out FileHeader fileHeader);
+        // Read the file header with sequence validation
+        errno = ReadFileHeader(cachedFile.Fid, out FileHeader fileHeader);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -273,8 +273,8 @@ public sealed partial class ODS
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        // Read the file header
-        errno = ReadFileHeader(cachedFile.Fid.num, out FileHeader fileHeader);
+        // Read the file header with sequence validation
+        errno = ReadFileHeader(cachedFile.Fid, out FileHeader fileHeader);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -725,7 +725,7 @@ public sealed partial class ODS
         return mode;
     }
 
-    /// <summary>Reads a file header by file ID.</summary>
+    /// <summary>Reads a file header by file number (without sequence validation).</summary>
     /// <param name="fileNum">File number (1-based).</param>
     /// <param name="header">Output file header.</param>
     /// <returns>Error number indicating success or failure.</returns>
@@ -734,8 +734,6 @@ public sealed partial class ODS
         header = default(FileHeader);
 
         // File header LBN = ibmaplbn + ibmapsize + (fileNum - 1)
-        // The header for file ID n is at CLUSTER*4 + IBMAPSIZE + n (in VBN)
-        // or ibmaplbn + ibmapsize + (n-1) in LBN
         uint headerLbn = _homeBlock.ibmaplbn + _homeBlock.ibmapsize + fileNum - 1;
 
         ErrorNumber errno = ReadOdsBlock(_image, _partition, headerLbn, out byte[] headerSector);
@@ -774,6 +772,88 @@ public sealed partial class ODS
         if(header.idoffset > header.mpoffset || header.mpoffset > header.acoffset || header.acoffset > header.rsoffset)
         {
             AaruLogging.Debug(MODULE_NAME, "Invalid file header offsets");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads a file header by file ID with sequence validation.</summary>
+    /// <param name="fid">File ID including number, sequence, rvn, and nmx.</param>
+    /// <param name="header">Output file header.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber ReadFileHeader(FileId fid, out FileHeader header)
+    {
+        header = default(FileHeader);
+
+        // File number includes nmx in high bits for large volumes
+        uint fileNum = (uint)(fid.num + (fid.nmx << 16));
+
+        // File header LBN = ibmaplbn + ibmapsize + (fileNum - 1)
+        uint headerLbn = _homeBlock.ibmaplbn + _homeBlock.ibmapsize + fileNum - 1;
+
+        ErrorNumber errno = ReadOdsBlock(_image, _partition, headerLbn, out byte[] headerSector);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        header = Marshal.ByteArrayToStructureLittleEndian<FileHeader>(headerSector);
+
+        // Validate file header checksum
+        ushort calculatedChecksum = 0;
+
+        for(var i = 0; i < 0x1FE; i += 2) calculatedChecksum += BitConverter.ToUInt16(headerSector, i);
+
+        if(calculatedChecksum != header.checksum)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "File header checksum mismatch for file {0}: expected {1:X4}, calculated {2:X4}",
+                              fileNum,
+                              header.checksum,
+                              calculatedChecksum);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Validate structure level
+        var headerStrucLevel = (byte)(header.struclev >> 8 & 0xFF);
+
+        if(headerStrucLevel != 2 && headerStrucLevel != 5)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Invalid file header structure level: {0}", headerStrucLevel);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Validate offsets are in correct order
+        if(header.idoffset > header.mpoffset || header.mpoffset > header.acoffset || header.acoffset > header.rsoffset)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Invalid file header offsets");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Validate file ID matches (prevents reading stale/reused headers)
+        if(header.fid.num != fid.num || header.fid.nmx != fid.nmx)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "File ID mismatch: requested ({0},{1}), header has ({2},{3})",
+                              fid.num,
+                              fid.nmx,
+                              header.fid.num,
+                              header.fid.nmx);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Validate sequence number if provided (non-zero)
+        if(fid.seq != 0 && header.fid.seq != fid.seq)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "File ID sequence mismatch for file {0}: requested {1}, header has {2}",
+                              fileNum,
+                              fid.seq,
+                              header.fid.seq);
 
             return ErrorNumber.InvalidArgument;
         }
