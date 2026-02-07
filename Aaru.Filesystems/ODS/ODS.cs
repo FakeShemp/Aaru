@@ -32,8 +32,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -52,12 +54,30 @@ public sealed partial class ODS : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "Files-11 plugin";
 
+    uint                           _blocksPerSector;
+    bool                           _debug;
+    Encoding                       _encoding;
+    HomeBlock                      _homeBlock;
+    IMediaImage                    _image;
+    bool                           _mounted;
+    Partition                      _partition;
+    Dictionary<string, CachedFile> _rootDirectoryCache;
+    uint                           _sectorSize;
+    byte                           _structureLevel;
+
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
     /// <inheritdoc />
     public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces { get; } = [];
+
+    static Dictionary<string, string> GetDefaultOptions() => new()
+    {
+        {
+            "debug", false.ToString()
+        }
+    };
 
 #region IFilesystem Members
 

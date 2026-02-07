@@ -134,7 +134,7 @@ public sealed partial class ODS
 
         ushort calculatedChecksum2 = calculatedChecksum1;
 
-        for(var i = 0x3C; i < 0x1FE; i += 2) calculatedChecksum2 += BitConverter.ToUInt16(hbSector, i);
+        for(var i = 0x3A; i < 0x1FE; i += 2) calculatedChecksum2 += BitConverter.ToUInt16(hbSector, i);
 
         if(calculatedChecksum1 != homeblock.checksum1)
         {
