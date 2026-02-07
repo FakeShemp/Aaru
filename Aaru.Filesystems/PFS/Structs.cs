@@ -34,7 +34,6 @@ using Aaru.CommonTypes.Attributes;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Professional File System</summary>
 public sealed partial class PFS
 {
 #region Nested type: BootBlock

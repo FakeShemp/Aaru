@@ -38,7 +38,6 @@ using Partition = Aaru.CommonTypes.Partition;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Professional File System</summary>
 public sealed partial class PFS
 {
 #region IFilesystem Members

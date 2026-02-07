@@ -29,14 +29,23 @@
 // ReSharper disable UnusedType.Local
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Professional File System</summary>
-public sealed partial class PFS : IFilesystem
+/// <summary>Implements the Professional File System</summary>
+public sealed partial class PFS : IReadOnlyFilesystem
 {
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
+
 #region IFilesystem Members
 
     /// <inheritdoc />
