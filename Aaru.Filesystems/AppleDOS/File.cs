@@ -137,8 +137,7 @@ public sealed partial class AppleDOS
 
 #region IReadOnlyFilesystem Members
 
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
+    ErrorNumber GetAttributes(string path, out FileAttributes attributes)
     {
         attributes = new FileAttributes();
 

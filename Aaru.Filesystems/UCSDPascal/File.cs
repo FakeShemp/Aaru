@@ -206,26 +206,6 @@ public sealed partial class PascalPlugin
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = new FileAttributes();
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        string[] pathElements = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
-
-        if(pathElements.Length != 1) return ErrorNumber.NotSupported;
-
-        ErrorNumber error = GetFileEntry(path, out _);
-
-        if(error != ErrorNumber.NoError) return error;
-
-        attributes = FileAttributes.File;
-
-        return error;
-    }
-
-    /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
         node = null;

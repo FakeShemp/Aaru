@@ -3,7 +3,6 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Filters;
-using FileAttributes = System.IO.FileAttributes;
 
 namespace Aaru.Archives;
 
@@ -78,23 +77,6 @@ public sealed partial class Stfs
     }
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes)
-    {
-        attributes = FileAttributes.None;
-
-        if(!Opened) return ErrorNumber.NotOpened;
-
-        if(entryNumber < 0 || entryNumber >= _entries.Length) return ErrorNumber.OutOfRange;
-
-        if(_entries[entryNumber].IsDirectory)
-            attributes |= FileAttributes.Directory;
-        else
-            attributes |= FileAttributes.Normal;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
     public ErrorNumber Stat(int entryNumber, out FileEntryInfo stat)
     {
         stat = null;
@@ -107,7 +89,7 @@ public sealed partial class Stfs
 
         stat = new FileEntryInfo
         {
-            Attributes       = CommonTypes.Structs.FileAttributes.None,
+            Attributes       = FileAttributes.None,
             Blocks           = entry.FileSize / 4096,
             BlockSize        = 4096,
             Length           = entry.FileSize,
@@ -120,9 +102,9 @@ public sealed partial class Stfs
         if(entry.FileSize % 4096 != 0) stat.Blocks++;
 
         if(entry.IsDirectory)
-            stat.Attributes |= CommonTypes.Structs.FileAttributes.Directory;
+            stat.Attributes |= FileAttributes.Directory;
         else
-            stat.Attributes |= CommonTypes.Structs.FileAttributes.File;
+            stat.Attributes |= FileAttributes.File;
 
         return ErrorNumber.NoError;
     }

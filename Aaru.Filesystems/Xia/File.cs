@@ -106,7 +106,7 @@ public sealed partial class Xia
         while(bytesRead < inode.i_size)
         {
             uint zoneSize     = _superblock.s_zone_size;
-            var  zoneNum      = currentOffset / zoneSize;
+            uint zoneNum      = currentOffset / zoneSize;
             var  offsetInZone = (int)(currentOffset % zoneSize);
 
             errno = MapZone(inode, zoneNum, out uint physicalZone);
@@ -302,23 +302,6 @@ public sealed partial class Xia
         fileNode.Offset += bytesRead;
 
         AaruLogging.Debug(MODULE_NAME, "ReadFile: read {0} bytes, new offset={1}", read, fileNode.Offset);
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = FileAttributes.None;
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        // Use Stat to get file info including attributes
-        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
-        attributes = stat.Attributes;
 
         return ErrorNumber.NoError;
     }

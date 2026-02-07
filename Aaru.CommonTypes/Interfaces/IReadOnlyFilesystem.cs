@@ -45,7 +45,6 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 
 namespace Aaru.CommonTypes.Interfaces;
@@ -80,12 +79,6 @@ public interface IReadOnlyFilesystem : IFilesystem
 
     /// <summary>Frees all internal structures created by <see cref="Mount" /></summary>
     ErrorNumber Unmount();
-
-    /// <summary>Gets the attributes of a file or directory</summary>
-    /// <returns>Error number.</returns>
-    /// <param name="path">File path.</param>
-    /// <param name="attributes">File attributes.</param>
-    ErrorNumber GetAttributes(string path, out FileAttributes attributes);
 
     /// <summary>Lists all extended attributes, alternate data streams and forks of the given file.</summary>
     /// <returns>Error number.</returns>

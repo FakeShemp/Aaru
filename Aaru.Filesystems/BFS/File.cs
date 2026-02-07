@@ -115,41 +115,6 @@ public sealed partial class BeFS
         return ErrorNumber.NoError;
     }
 
-    /// <summary>Gets the file attributes for a given path</summary>
-    /// <remarks>
-    ///     Determines the file attributes (directory, file, symlink, etc.) based on the i-node
-    ///     mode field. Uses Unix-style file type bits from the mode field.
-    /// </remarks>
-    /// <param name="path">Path to the file or directory</param>
-    /// <param name="attributes">Output file attributes</param>
-    /// <returns>Error code indicating success or failure</returns>
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = FileAttributes.File;
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        AaruLogging.Debug(MODULE_NAME, "GetAttributes: path='{0}'", path);
-
-        // Use Stat to get the file information
-        ErrorNumber statError = Stat(path, out FileEntryInfo fileInfo);
-
-        if(statError != ErrorNumber.NoError)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Error getting file stat: {0}", statError);
-
-            return statError;
-        }
-
-        // Copy the attributes from the stat result
-        attributes = fileInfo.Attributes;
-
-        AaruLogging.Debug(MODULE_NAME, "GetAttributes successful: path='{0}', attributes=0x{1:X}", path, attributes);
-
-        return ErrorNumber.NoError;
-    }
-
     /// <summary>Gets file metadata (stat) for a given path</summary>
     /// <remarks>
     ///     Locates the file/directory at the specified path, reads its i-node,

@@ -184,38 +184,6 @@ public sealed partial class BOFS
     }
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = 0;
-
-        if(string.IsNullOrEmpty(path) || path == "/")
-        {
-            // Root directory
-            attributes = FileAttributes.Directory;
-
-            return ErrorNumber.NoError;
-        }
-
-        // Use helper to lookup the entry
-        ErrorNumber lookupErr = LookupEntry(path, out FileEntry entry);
-
-        if(lookupErr != ErrorNumber.NoError) return ErrorNumber.NoSuchFile;
-
-        // Set basic attributes based on FileType
-        if(entry.FileType == DIR_TYPE)
-            attributes |= FileAttributes.Directory;
-        else
-            attributes |= FileAttributes.File;
-
-        // Set read-only if no write permission for owner
-        // Mode format: S_IFREG/S_IFDIR | permissions
-        // Check owner write bit (0x80 = 0o200)
-        if((entry.Mode & 0x80) == 0) attributes |= FileAttributes.ReadOnly;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {
         stat = null;

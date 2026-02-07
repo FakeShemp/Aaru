@@ -147,56 +147,6 @@ public sealed partial class AppleMFS
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = new FileAttributes();
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        string[] pathElements = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
-
-        if(pathElements.Length != 1) return ErrorNumber.NotSupported;
-
-        path = pathElements[0];
-
-        if(!_filenameToId.TryGetValue(path.ToLowerInvariant(), out uint fileId)) return ErrorNumber.NoSuchFile;
-
-        if(!_idToEntry.TryGetValue(fileId, out FileEntry entry)) return ErrorNumber.NoSuchFile;
-
-        if(entry.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsAlias)) attributes |= FileAttributes.Alias;
-
-        if(entry.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kHasBundle)) attributes |= FileAttributes.Bundle;
-
-        if(entry.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kHasBeenInited))
-            attributes |= FileAttributes.HasBeenInited;
-
-        if(entry.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kHasCustomIcon))
-            attributes |= FileAttributes.HasCustomIcon;
-
-        if(entry.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kHasNoINITs)) attributes |= FileAttributes.HasNoINITs;
-
-        if(entry.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsInvisible)) attributes |= FileAttributes.Hidden;
-
-        if(entry.flFlags.HasFlag(FileFlags.Locked)) attributes |= FileAttributes.Immutable;
-
-        if(entry.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsOnDesk)) attributes |= FileAttributes.IsOnDesk;
-
-        if(entry.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsShared)) attributes |= FileAttributes.Shared;
-
-        if(entry.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsStationery))
-            attributes |= FileAttributes.Stationery;
-
-        if(!attributes.HasFlag(FileAttributes.Alias)  &&
-           !attributes.HasFlag(FileAttributes.Bundle) &&
-           !attributes.HasFlag(FileAttributes.Stationery))
-            attributes |= FileAttributes.File;
-
-        attributes |= FileAttributes.BlockUnits;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
         node = null;
@@ -338,7 +288,71 @@ public sealed partial class AppleMFS
 
         if(!_idToEntry.TryGetValue(fileId, out FileEntry entry)) return ErrorNumber.NoSuchFile;
 
-        ErrorNumber error = GetAttributes(path, out FileAttributes attr);
+        string      path1 = path;
+        ErrorNumber error;
+        var         attr = new FileAttributes();
+
+        if(!_mounted)
+            error = ErrorNumber.AccessDenied;
+        else
+        {
+            string[] pathElements1 = path1.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
+
+            if(pathElements1.Length != 1)
+                error = ErrorNumber.NotSupported;
+            else
+            {
+                path1 = pathElements1[0];
+
+                if(!_filenameToId.TryGetValue(path1.ToLowerInvariant(), out uint fileId1))
+                    error = ErrorNumber.NoSuchFile;
+                else
+                {
+                    if(!_idToEntry.TryGetValue(fileId1, out FileEntry entry1))
+                        error = ErrorNumber.NoSuchFile;
+                    else
+                    {
+                        if(entry1.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsAlias))
+                            attr |= FileAttributes.Alias;
+
+                        if(entry1.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kHasBundle))
+                            attr |= FileAttributes.Bundle;
+
+                        if(entry1.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kHasBeenInited))
+                            attr |= FileAttributes.HasBeenInited;
+
+                        if(entry1.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kHasCustomIcon))
+                            attr |= FileAttributes.HasCustomIcon;
+
+                        if(entry1.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kHasNoINITs))
+                            attr |= FileAttributes.HasNoINITs;
+
+                        if(entry1.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsInvisible))
+                            attr |= FileAttributes.Hidden;
+
+                        if(entry1.flFlags.HasFlag(FileFlags.Locked)) attr |= FileAttributes.Immutable;
+
+                        if(entry1.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsOnDesk))
+                            attr |= FileAttributes.IsOnDesk;
+
+                        if(entry1.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsShared))
+                            attr |= FileAttributes.Shared;
+
+                        if(entry1.flUsrWds.fdFlags.HasFlag(AppleCommon.FinderFlags.kIsStationery))
+                            attr |= FileAttributes.Stationery;
+
+                        if(!attr.HasFlag(FileAttributes.Alias)  &&
+                           !attr.HasFlag(FileAttributes.Bundle) &&
+                           !attr.HasFlag(FileAttributes.Stationery))
+                            attr |= FileAttributes.File;
+
+                        attr |= FileAttributes.BlockUnits;
+
+                        error = ErrorNumber.NoError;
+                    }
+                }
+            }
+        }
 
         if(error != ErrorNumber.NoError) return error;
 

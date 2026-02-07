@@ -134,7 +134,7 @@ public sealed partial class MicroDOS
             var offsetInBlock = (int)(currentOffset  % BLOCK_SIZE);
 
             // Physical block = starting block + logical block number
-            uint physicalBlock = (uint)(fileNode.Entry.blockNo + blockNum);
+            var physicalBlock = fileNode.Entry.blockNo + blockNum;
 
             // Read the block
             ErrorNumber errno = _imagePlugin.ReadSector(_partition.Start + physicalBlock,
@@ -152,11 +152,9 @@ public sealed partial class MicroDOS
             // Copy data from block to buffer
             long bytesToCopy = Math.Min(BLOCK_SIZE - offsetInBlock, toRead - bytesRead);
 
-            if(offsetInBlock + bytesToCopy > blockData.Length)
-                bytesToCopy = blockData.Length - offsetInBlock;
+            if(offsetInBlock + bytesToCopy > blockData.Length) bytesToCopy = blockData.Length - offsetInBlock;
 
-            if(bytesToCopy <= 0)
-                break;
+            if(bytesToCopy <= 0) break;
 
             Array.Copy(blockData, offsetInBlock, buffer, bytesRead, bytesToCopy);
 
@@ -168,20 +166,6 @@ public sealed partial class MicroDOS
         fileNode.Offset += bytesRead;
 
         AaruLogging.Debug(MODULE_NAME, "ReadFile: read {0} bytes, new offset={1}", read, fileNode.Offset);
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = FileAttributes.None;
-
-        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
-        attributes = stat.Attributes;
 
         return ErrorNumber.NoError;
     }

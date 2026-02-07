@@ -36,7 +36,7 @@ using Aaru.Compression;
 using Aaru.Filters;
 using Aaru.Helpers;
 using Aaru.Helpers.IO;
-using FileAttributes = System.IO.FileAttributes;
+using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
 namespace Aaru.Archives;
 
@@ -105,19 +105,6 @@ public sealed partial class Zoo
     }
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes)
-    {
-        // DOS version of ZOO ignores the attributes, so we just say it's a file
-        attributes = FileAttributes.None;
-
-        if(!Opened) return ErrorNumber.NotOpened;
-
-        if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
     public ErrorNumber GetEntryNumber(string fileName, bool caseInsensitiveMatch, out int entryNumber)
     {
         // This can be done faster, it's 7am, gimme a break
@@ -155,7 +142,7 @@ public sealed partial class Zoo
         stat = new FileEntryInfo
         {
             Length           = entry.org_size,
-            Attributes       = CommonTypes.Structs.FileAttributes.File,
+            Attributes       = FileAttributes.File,
             Blocks           = entry.org_size / 512,
             BlockSize        = 512,
             LastWriteTime    = DateHandlers.DosToDateTime(entry.date, entry.time),

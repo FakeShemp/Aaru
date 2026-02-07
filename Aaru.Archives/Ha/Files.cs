@@ -82,20 +82,6 @@ public sealed partial class Ha
     }
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes)
-    {
-        attributes = FileAttributes.None;
-
-        if(!Opened) return ErrorNumber.NotOpened;
-
-        if(entryNumber < 0 || entryNumber >= _entries.Count) return ErrorNumber.OutOfRange;
-
-        attributes = _entries[entryNumber].Attributes;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
     public ErrorNumber Stat(int entryNumber, out FileEntryInfo stat)
     {
         stat = null;

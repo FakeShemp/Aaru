@@ -213,41 +213,6 @@ public sealed partial class ProDOSPlugin
         return ErrorNumber.NoError;
     }
 
-
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = new FileAttributes();
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        // Get the entry for this path
-        ErrorNumber errno = GetEntryForPath(path, out CachedEntry entry);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
-        // Directory
-        if(entry.IsDirectory)
-        {
-            attributes = FileAttributes.Directory;
-
-            return ErrorNumber.NoError;
-        }
-
-        // File attributes
-        attributes = FileAttributes.File;
-
-        // ProDOS access flags
-        if((entry.Access & READ_ATTRIBUTE) == 0) attributes |= FileAttributes.Hidden;
-
-        if((entry.Access & WRITE_ATTRIBUTE) == 0) attributes |= FileAttributes.ReadOnly;
-
-        // Backup needed flag
-        if((entry.Access & BACKUP_ATTRIBUTE) != 0) attributes |= FileAttributes.Archive;
-
-        return ErrorNumber.NoError;
-    }
-
     /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {

@@ -216,22 +216,6 @@ public sealed partial class ISO9660
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = new FileAttributes();
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        ErrorNumber err = Stat(path, out FileEntryInfo stat);
-
-        if(err != ErrorNumber.NoError) return err;
-
-        attributes = stat.Attributes;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
         node = null;

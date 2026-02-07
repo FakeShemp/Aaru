@@ -254,25 +254,6 @@ public sealed partial class PFS
     }
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = FileAttributes.None;
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        AaruLogging.Debug(MODULE_NAME, "GetAttributes: path='{0}'", path);
-
-        // Use Stat to get file information
-        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
-        attributes = stat.Attributes;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {
         stat = null;

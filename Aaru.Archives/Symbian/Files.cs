@@ -38,7 +38,7 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Filters;
 using Aaru.Helpers.IO;
-using FileAttributes = System.IO.FileAttributes;
+using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
 namespace Aaru.Archives;
 
@@ -109,20 +109,6 @@ public sealed partial class Symbian
     }
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes)
-    {
-        attributes = FileAttributes.None;
-
-        if(!Opened) return ErrorNumber.NotOpened;
-
-        if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
-
-        attributes = FileAttributes.Normal;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
     public ErrorNumber Stat(int entryNumber, out FileEntryInfo stat)
     {
         stat = null;
@@ -134,7 +120,7 @@ public sealed partial class Symbian
         stat = new FileEntryInfo
         {
             Length     = _compressed ? _files[entryNumber].originalLength : _files[entryNumber].length,
-            Attributes = CommonTypes.Structs.FileAttributes.File,
+            Attributes = FileAttributes.File,
             Inode      = (ulong)entryNumber
         };
 

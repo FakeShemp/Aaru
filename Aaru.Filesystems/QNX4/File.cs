@@ -90,8 +90,8 @@ public sealed partial class QNX4
 
         while(bytesRead < inode.di_size)
         {
-            var blockNum      = currentOffset / QNX4_BLOCK_SIZE;
-            var offsetInBlock = (int)(currentOffset % QNX4_BLOCK_SIZE);
+            uint blockNum      = currentOffset / QNX4_BLOCK_SIZE;
+            var  offsetInBlock = (int)(currentOffset % QNX4_BLOCK_SIZE);
 
             errno = MapBlock(inode, blockNum, out uint physicalBlock);
 
@@ -274,20 +274,6 @@ public sealed partial class QNX4
         fileNode.Offset += bytesRead;
 
         AaruLogging.Debug(MODULE_NAME, "ReadFile: read {0} bytes, new offset={1}", read, fileNode.Offset);
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = FileAttributes.None;
-
-        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
-        attributes = stat.Attributes;
 
         return ErrorNumber.NoError;
     }

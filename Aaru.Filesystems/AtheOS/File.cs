@@ -234,33 +234,6 @@ public sealed partial class AtheOS
     }
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = FileAttributes.File;
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        AaruLogging.Debug(MODULE_NAME, "GetAttributes: path='{0}'", path);
-
-        // Use Stat to get the file information
-        ErrorNumber statError = Stat(path, out FileEntryInfo fileInfo);
-
-        if(statError != ErrorNumber.NoError)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Error getting file stat: {0}", statError);
-
-            return statError;
-        }
-
-        // Copy the attributes from the stat result
-        attributes = fileInfo.Attributes;
-
-        AaruLogging.Debug(MODULE_NAME, "GetAttributes successful: path='{0}', attributes=0x{1:X}", path, attributes);
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {
         stat = null;

@@ -279,20 +279,6 @@ public sealed partial class QNX6
     }
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = FileAttributes.None;
-
-        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
-        attributes = stat.Attributes;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {
         stat = null;

@@ -200,65 +200,6 @@ public sealed partial class UDF
     }
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = new FileAttributes();
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
-        errno = ParseFileEntryInfo(feBuffer, out UdfFileEntryInfo fileEntryInfo);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
-        // Set file attributes based on file type
-        switch(fileEntryInfo.IcbTag.fileType)
-        {
-            case FileType.Directory:
-                attributes |= FileAttributes.Directory;
-
-                break;
-            case FileType.SymbolicLink:
-                attributes |= FileAttributes.Symlink;
-
-                break;
-            case FileType.BlockDevice:
-                attributes |= FileAttributes.BlockDevice;
-
-                break;
-            case FileType.CharacterDevice:
-                attributes |= FileAttributes.CharDevice;
-
-                break;
-            case FileType.Fifo:
-                attributes |= FileAttributes.Pipe;
-
-                break;
-            case FileType.Socket:
-                attributes |= FileAttributes.Socket;
-
-                break;
-        }
-
-        // Set attributes based on flags
-        if(fileEntryInfo.IcbTag.flags.HasFlag(FileFlags.System)) attributes |= FileAttributes.System;
-
-        if(fileEntryInfo.IcbTag.flags.HasFlag(FileFlags.Archive)) attributes |= FileAttributes.Archive;
-
-        // Check for hidden flag in file characteristics (from directory entry)
-        // We need to check if the file was marked as hidden in its directory entry
-        errno = GetFileCharacteristics(path, out FileCharacteristics characteristics);
-
-        if(errno == ErrorNumber.NoError && characteristics.HasFlag(FileCharacteristics.Hidden))
-            attributes |= FileAttributes.Hidden;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
     public ErrorNumber ReadLink(string path, out string dest)
     {
         dest = null;

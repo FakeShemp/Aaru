@@ -30,7 +30,6 @@ using System;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
 namespace Aaru.Filesystems;
 
@@ -39,26 +38,6 @@ namespace Aaru.Filesystems;
 public sealed partial class CBM
 {
 #region IReadOnlyFilesystem Members
-
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = new FileAttributes();
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        string[] pathElements = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
-
-        if(pathElements.Length != 1) return ErrorNumber.NotSupported;
-
-        string filename = pathElements[0].ToUpperInvariant();
-
-        if(!_cache.TryGetValue(filename, out CachedFile file)) return ErrorNumber.NoSuchFile;
-
-        attributes = file.attributes;
-
-        return ErrorNumber.NoError;
-    }
 
     /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)

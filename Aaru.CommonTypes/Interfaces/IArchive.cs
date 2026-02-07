@@ -38,7 +38,6 @@ using System.Collections.Generic;
 using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using FileAttributes = System.IO.FileAttributes;
 
 namespace Aaru.CommonTypes.Interfaces;
 
@@ -160,13 +159,6 @@ public interface IArchive
     /// <seealso cref="GetCompressedSize" />
     ErrorNumber GetUncompressedSize(int entryNumber, out long length);
 
-    /// <summary>Gets the attributes of a file or directory.</summary>
-    /// <param name="entryNumber">The entry in the archive for which to retrieve the attributes.</param>
-    /// <param name="attributes">File attributes, or zero if the archive does not support attributes.</param>
-    /// <returns>Error number.</returns>
-    /// <seealso cref="Stat" />
-    ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes);
-
     /// <summary>Lists all extended attributes, alternate data streams and forks of the given file.</summary>
     /// <param name="entryNumber">The entry in the archive for which to retrieve the list of attributes.</param>
     /// <param name="xattrs">List of extended attributes, alternate data streams and forks.</param>
@@ -185,7 +177,6 @@ public interface IArchive
     /// <param name="entryNumber">The entry int he archive for which to get the information</param>
     /// <param name="stat">The available information about the entry in the archive</param>
     /// <returns>Error number.</returns>
-    /// <seealso cref="GetAttributes" />
     /// <seealso cref="GetFilename" />
     ErrorNumber Stat(int entryNumber, out FileEntryInfo stat);
 

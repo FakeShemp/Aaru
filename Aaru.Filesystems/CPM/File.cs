@@ -40,34 +40,6 @@ public sealed partial class CPM
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = new FileAttributes();
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        string[] pathElements = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
-
-        if(pathElements.Length != 1) return ErrorNumber.NotSupported;
-
-        if(string.IsNullOrEmpty(pathElements[0]) ||
-           string.Equals(pathElements[0], "/", StringComparison.OrdinalIgnoreCase))
-        {
-            attributes = new FileAttributes();
-            attributes = FileAttributes.Directory;
-
-            return ErrorNumber.NoError;
-        }
-
-        if(!_statCache.TryGetValue(pathElements[0].ToUpperInvariant(), out FileEntryInfo fInfo))
-            return ErrorNumber.NoSuchFile;
-
-        attributes = fInfo.Attributes;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
         node = null;
