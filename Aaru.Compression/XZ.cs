@@ -1,4 +1,7 @@
+using System;
+using System.IO;
 using System.Runtime.InteropServices;
+using SharpCompress.Compressors.Xz;
 // ReSharper disable UnusedMember.Global
 
 namespace Aaru.Compression;
@@ -48,14 +51,44 @@ public static partial class XZ
     /// <returns>The number of decoded bytes, or -1 on error</returns>
     public static int DecodeBuffer(byte[] source, byte[] destination)
     {
-        if(!Native.IsSupported) return -1;
+        if(Native.IsSupported)
+        {
+            var dstSize = (nuint)destination.Length;
+            int res     = AARU_xz_decode_buffer(destination, ref dstSize, source, (nuint)source.Length);
 
-        var dstSize = (nuint)destination.Length;
-        int res     = AARU_xz_decode_buffer(destination, ref dstSize, source, (nuint)source.Length);
+            if(res == 0) return (int)dstSize;
+        }
 
-        if(res != 0) return -1;
+        // Managed fallback using SharpCompress
+        return DecodeBufferManaged(source, destination);
+    }
 
-        return (int)dstSize;
+    /// <summary>Decodes a buffer compressed with XZ using managed code</summary>
+    /// <param name="source">Encoded buffer</param>
+    /// <param name="destination">Buffer where to write the decoded data</param>
+    /// <returns>The number of decoded bytes, or -1 on error</returns>
+    static int DecodeBufferManaged(byte[] source, byte[] destination)
+    {
+        try
+        {
+            using var inputStream  = new MemoryStream(source);
+            using var xzStream     = new XZStream(inputStream);
+            using var outputStream = new MemoryStream();
+
+            xzStream.CopyTo(outputStream);
+
+            byte[] result = outputStream.ToArray();
+
+            if(result.Length > destination.Length) return -1;
+
+            Array.Copy(result, destination, result.Length);
+
+            return result.Length;
+        }
+        catch
+        {
+            return -1;
+        }
     }
 
     /// <summary>Compresses a buffer using XZ</summary>
