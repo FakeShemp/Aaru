@@ -26,6 +26,9 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
+using Aaru.CommonTypes.Interfaces;
+
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
@@ -52,5 +55,20 @@ public sealed partial class AcornADFS
         /// <summary>File attributes</summary>
         public byte Attributes { get; set; }
     }
-}
 
+    /// <summary>Directory node for enumerating directory contents</summary>
+    sealed class AcornDirNode : IDirNode
+    {
+        /// <summary>Current position in the directory enumeration (entry index)</summary>
+        internal int Position { get; set; }
+
+        /// <summary>Cached directory entries</summary>
+        internal Dictionary<string, DirectoryEntryInfo> Entries { get; set; }
+
+        /// <summary>Array of entry names for enumeration</summary>
+        internal string[] EntryNames { get; set; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
+}

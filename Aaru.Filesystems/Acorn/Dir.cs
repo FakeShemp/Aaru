@@ -27,7 +27,10 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 
 namespace Aaru.Filesystems;
@@ -35,6 +38,155 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class AcornADFS
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize path
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath is "" or ".") normalizedPath = "/";
+
+        // Root directory case
+        if(normalizedPath == "/")
+        {
+            if(_rootDirectoryCache.Count == 0) return ErrorNumber.NoSuchFile;
+
+            node = new AcornDirNode
+            {
+                Path       = "/",
+                Position   = 0,
+                Entries    = _rootDirectoryCache,
+                EntryNames = _rootDirectoryCache.Keys.ToArray()
+            };
+
+            return ErrorNumber.NoError;
+        }
+
+        // Subdirectory traversal
+        string pathWithoutLeadingSlash = normalizedPath.StartsWith("/", StringComparison.Ordinal)
+                                             ? normalizedPath[1..]
+                                             : normalizedPath;
+
+        string[] pathComponents = pathWithoutLeadingSlash.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
+
+        // Start from root directory cache
+        Dictionary<string, DirectoryEntryInfo> currentEntries = _rootDirectoryCache;
+
+        // Traverse each path component
+        for(var p = 0; p < pathComponents.Length; p++)
+        {
+            string component = pathComponents[p];
+
+            // Find the component in current directory
+            if(!currentEntries.TryGetValue(component, out DirectoryEntryInfo entry)) return ErrorNumber.NoSuchFile;
+
+            // Check if it's a directory (attribute bit 3 = directory)
+            if((entry.Attributes & 0x08) == 0) return ErrorNumber.NotDirectory;
+
+            // Read the subdirectory
+            ErrorNumber errno =
+                ReadDirectoryContents(entry.IndAddr, out Dictionary<string, DirectoryEntryInfo> subDirEntries);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // If this is the last component, we're opening this directory
+            if(p == pathComponents.Length - 1)
+            {
+                node = new AcornDirNode
+                {
+                    Path       = normalizedPath,
+                    Position   = 0,
+                    Entries    = subDirEntries,
+                    EntryNames = subDirEntries.Keys.ToArray()
+                };
+
+                return ErrorNumber.NoError;
+            }
+
+            // Not the last component - move to next level
+            currentEntries = subDirEntries;
+        }
+
+        return ErrorNumber.NoSuchFile;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(node is not AcornDirNode acornNode) return ErrorNumber.InvalidArgument;
+
+        acornNode.Position   = -1;
+        acornNode.Entries    = null;
+        acornNode.EntryNames = null;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not AcornDirNode acornNode) return ErrorNumber.InvalidArgument;
+
+        if(acornNode.Position < 0) return ErrorNumber.InvalidArgument;
+
+        // End of directory
+        if(acornNode.Position >= acornNode.EntryNames.Length) return ErrorNumber.NoError;
+
+        // Get current filename and advance position
+        filename = acornNode.EntryNames[acornNode.Position++];
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads and parses directory contents from the specified indirect disc address</summary>
+    /// <param name="indAddr">Indirect disc address of the directory</param>
+    /// <param name="entries">Output dictionary of directory entries</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadDirectoryContents(uint indAddr, out Dictionary<string, DirectoryEntryInfo> entries)
+    {
+        entries = new Dictionary<string, DirectoryEntryInfo>();
+
+        // Determine directory size based on format
+        uint dirSize = _isBigDirectory
+                           ? 0
+                           : _isOldMap
+                               ? OLD_DIRECTORY_SIZE
+                               : NEW_DIRECTORY_SIZE;
+
+        // For big directories, we need to read the header first to get the size
+        if(_isBigDirectory)
+        {
+            // Read just the header first (28 bytes minimum)
+            ErrorNumber errno = ReadDirectoryData(indAddr, 28, out byte[] headerData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            BigDirectoryHeader header = Marshal.ByteArrayToStructureLittleEndian<BigDirectoryHeader>(headerData);
+
+            if(header.bigDirStartName != BIG_DIR_START_NAME) return ErrorNumber.InvalidArgument;
+
+            dirSize = header.bigDirSize;
+        }
+
+        ErrorNumber err = ReadDirectoryData(indAddr, dirSize, out byte[] dirData);
+
+        if(err != ErrorNumber.NoError) return err;
+
+        if(_isBigDirectory) return ParseBigDirectoryToDict(dirData, entries);
+
+        return ParseStandardDirectoryToDict(dirData, entries);
+    }
+
     /// <summary>Reads directory data from the specified indirect disc address</summary>
     /// <param name="indAddr">Indirect disc address</param>
     /// <param name="size">Size of directory in bytes</param>
@@ -44,8 +196,7 @@ public sealed partial class AcornADFS
     {
         data = null;
 
-        if(size == 0)
-            size = _isBigDirectory ? 0 : NEW_DIRECTORY_SIZE;
+        if(size == 0) size = _isBigDirectory ? 0 : NEW_DIRECTORY_SIZE;
 
         // For old formats, indAddr is the direct byte offset (e.g., 0x200 or 0x400)
         // For new formats, we need to use the map to look up the fragment
@@ -65,18 +216,17 @@ public sealed partial class AcornADFS
             byteOffset = indAddr * (ulong)_blockSize;
         }
 
-        ulong sector        = byteOffset / _imagePlugin.Info.SectorSize + _partition.Start;
-        var   offsetInSect  = (int)(byteOffset % _imagePlugin.Info.SectorSize);
-        uint  sectorsToRead = (uint)((offsetInSect + size + _imagePlugin.Info.SectorSize - 1) /
-                                     _imagePlugin.Info.SectorSize);
+        ulong sector       = byteOffset / _imagePlugin.Info.SectorSize + _partition.Start;
+        var   offsetInSect = (int)(byteOffset % _imagePlugin.Info.SectorSize);
 
-        if(sector + sectorsToRead > _partition.End)
-            return ErrorNumber.InvalidArgument;
+        var sectorsToRead = (uint)((offsetInSect + size + _imagePlugin.Info.SectorSize - 1) /
+                                   _imagePlugin.Info.SectorSize);
+
+        if(sector + sectorsToRead > _partition.End) return ErrorNumber.InvalidArgument;
 
         ErrorNumber errno = _imagePlugin.ReadSectors(sector, false, sectorsToRead, out byte[] sectorData, out _);
 
-        if(errno != ErrorNumber.NoError)
-            return errno;
+        if(errno != ErrorNumber.NoError) return errno;
 
         data = new byte[size];
 
@@ -90,32 +240,31 @@ public sealed partial class AcornADFS
             Array.Copy(sectorData, sectorData.Length - 54, data, (int)OLD_DIRECTORY_SIZE - 54, 53);
         }
         else if(offsetInSect + size <= sectorData.Length)
-        {
             Array.Copy(sectorData, offsetInSect, data, 0, size);
-        }
         else
-        {
             Array.Copy(sectorData, offsetInSect, data, 0, sectorData.Length - offsetInSect);
-        }
 
         return ErrorNumber.NoError;
     }
 
-    /// <summary>Parses a standard (F format) directory and caches entries</summary>
+    /// <summary>Parses a standard (F format) directory and caches entries to root cache</summary>
     /// <param name="dirData">Raw directory data</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ParseStandardDirectory(byte[] dirData)
+    ErrorNumber ParseStandardDirectory(byte[] dirData) => ParseStandardDirectoryToDict(dirData, _rootDirectoryCache);
+
+    /// <summary>Parses a standard (F format) directory into a dictionary</summary>
+    /// <param name="dirData">Raw directory data</param>
+    /// <param name="entries">Dictionary to populate with entries</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ParseStandardDirectoryToDict(byte[] dirData, Dictionary<string, DirectoryEntryInfo> entries)
     {
         // Check minimum size - old format is 1280 bytes, new format is 2048 bytes
-        if(dirData.Length < OLD_DIRECTORY_SIZE)
-            return ErrorNumber.InvalidArgument;
+        if(dirData.Length < OLD_DIRECTORY_SIZE) return ErrorNumber.InvalidArgument;
 
         // Validate directory magic
         DirectoryHeader header = Marshal.ByteArrayToStructureLittleEndian<DirectoryHeader>(dirData);
 
-
-        if(header.magic != OLD_DIR_MAGIC && header.magic != NEW_DIR_MAGIC)
-            return ErrorNumber.InvalidArgument;
+        if(header.magic != OLD_DIR_MAGIC && header.magic != NEW_DIR_MAGIC) return ErrorNumber.InvalidArgument;
 
         // Directory entries start at offset 5
         const int entryOffset = 5;
@@ -128,12 +277,10 @@ public sealed partial class AcornADFS
         {
             int offset = entryOffset + i * entrySize;
 
-            if(offset + entrySize > dirData.Length)
-                break;
+            if(offset + entrySize > dirData.Length) break;
 
             // Check if entry is used (first byte of name is non-zero and >= space)
-            if(dirData[offset] < 0x20)
-                break;
+            if(dirData[offset] < 0x20) break;
 
             var entryBytes = new byte[entrySize];
             Array.Copy(dirData, offset, entryBytes, 0, entrySize);
@@ -145,19 +292,17 @@ public sealed partial class AcornADFS
 
             for(var j = 0; j < F_NAME_LEN; j++)
             {
-                if(entry.name[j] < 0x20)
-                    break;
+                if(entry.name[j] < 0x20) break;
 
                 nameLen++;
             }
 
-            if(nameLen == 0)
-                break;
+            if(nameLen == 0) break;
 
             string filename = _encoding.GetString(entry.name, 0, nameLen);
 
             // Calculate indirect disc address from 3 bytes
-            uint indAddr = (uint)(entry.address[0] | entry.address[1] << 8 | entry.address[2] << 16);
+            var indAddr = (uint)(entry.address[0] | entry.address[1] << 8 | entry.address[2] << 16);
 
             var entryInfo = new DirectoryEntryInfo
             {
@@ -170,17 +315,22 @@ public sealed partial class AcornADFS
             };
 
             // Don't add duplicate entries
-            if(!_rootDirectoryCache.ContainsKey(filename))
-                _rootDirectoryCache[filename] = entryInfo;
+            if(!entries.ContainsKey(filename)) entries[filename] = entryInfo;
         }
 
         return ErrorNumber.NoError;
     }
 
-    /// <summary>Parses a big (F+ format) directory and caches entries</summary>
+    /// <summary>Parses a big (F+ format) directory and caches entries to root cache</summary>
     /// <param name="dirData">Raw directory data</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ParseBigDirectory(byte[] dirData)
+    ErrorNumber ParseBigDirectory(byte[] dirData) => ParseBigDirectoryToDict(dirData, _rootDirectoryCache);
+
+    /// <summary>Parses a big (F+ format) directory into a dictionary</summary>
+    /// <param name="dirData">Raw directory data</param>
+    /// <param name="entries">Dictionary to populate with entries</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ParseBigDirectoryToDict(byte[] dirData, Dictionary<string, DirectoryEntryInfo> entries)
     {
         if(dirData.Length < 28) // Minimum header size
             return ErrorNumber.InvalidArgument;
@@ -188,16 +338,14 @@ public sealed partial class AcornADFS
         // Parse big directory header
         BigDirectoryHeader header = Marshal.ByteArrayToStructureLittleEndian<BigDirectoryHeader>(dirData);
 
-        if(header.bigDirStartName != BIG_DIR_START_NAME)
-            return ErrorNumber.InvalidArgument;
+        if(header.bigDirStartName != BIG_DIR_START_NAME) return ErrorNumber.InvalidArgument;
 
         uint numEntries  = header.bigDirEntries;
         uint nameHeapOff = 28 + header.bigDirNameLen; // After header + directory name
         uint entriesOff  = nameHeapOff;
 
         // Align to 4 bytes
-        if(entriesOff % 4 != 0)
-            entriesOff += 4 - entriesOff % 4;
+        if(entriesOff % 4 != 0) entriesOff += 4 - entriesOff % 4;
 
         const int bigEntrySize = 28;
 
@@ -205,8 +353,7 @@ public sealed partial class AcornADFS
         {
             uint offset = entriesOff + i * bigEntrySize;
 
-            if(offset + bigEntrySize > dirData.Length)
-                break;
+            if(offset + bigEntrySize > dirData.Length) break;
 
             var entryBytes = new byte[bigEntrySize];
             Array.Copy(dirData, offset, entryBytes, 0, bigEntrySize);
@@ -217,16 +364,14 @@ public sealed partial class AcornADFS
             uint nameOff = header.bigDirSize - 8 - header.bigDirNameSize + entry.bigDirObNamePtr;
             uint nameLen = entry.bigDirObNameLen;
 
-            if(nameOff + nameLen > dirData.Length || nameLen == 0)
-                continue;
+            if(nameOff + nameLen > dirData.Length || nameLen == 0) continue;
 
             var nameBytes = new byte[nameLen];
             Array.Copy(dirData, nameOff, nameBytes, 0, nameLen);
 
             string filename = _encoding.GetString(nameBytes).TrimEnd('\0');
 
-            if(string.IsNullOrEmpty(filename))
-                continue;
+            if(string.IsNullOrEmpty(filename)) continue;
 
             var entryInfo = new DirectoryEntryInfo
             {
@@ -239,11 +384,9 @@ public sealed partial class AcornADFS
             };
 
             // Don't add duplicate entries
-            if(!_rootDirectoryCache.ContainsKey(filename))
-                _rootDirectoryCache[filename] = entryInfo;
+            if(!entries.ContainsKey(filename)) entries[filename] = entryInfo;
         }
 
         return ErrorNumber.NoError;
     }
 }
-

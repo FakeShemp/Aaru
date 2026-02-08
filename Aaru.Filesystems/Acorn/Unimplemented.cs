@@ -37,7 +37,6 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class AcornADFS
 {
-
     /// <inheritdoc />
     public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
 
@@ -62,13 +61,4 @@ public sealed partial class AcornADFS
     /// <inheritdoc />
     public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
         throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber OpenDir(string path, out IDirNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseDir(IDirNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadDir(IDirNode node, out string filename) => throw new NotImplementedException();
 }
