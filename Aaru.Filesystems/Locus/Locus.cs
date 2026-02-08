@@ -59,6 +59,9 @@ public sealed partial class Locus : IReadOnlyFilesystem
     /// <summary>Cached root directory entries (filename -> inode number)</summary>
     readonly Dictionary<string, int> _rootDirectoryCache = new();
 
+    /// <summary>Cached smallblock inline data (inode number -> inline data)</summary>
+    readonly Dictionary<int, byte[]> _smallBlockDataCache = new();
+
     /// <summary>Whether the filesystem uses big-endian byte order</summary>
     bool _bigEndian;
 

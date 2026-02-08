@@ -133,6 +133,7 @@ public sealed partial class Locus
 
         _rootDirectoryCache.Clear();
         _inodeCache.Clear();
+        _smallBlockDataCache.Clear();
         _mounted        = false;
         _imagePlugin    = null;
         _partition      = default(Partition);
@@ -247,7 +248,7 @@ public sealed partial class Locus
         AaruLogging.Debug(MODULE_NAME, "Root inode size: {0} bytes", rootInode.di_size);
 
         // Read directory contents
-        errno = ReadDirectoryContents(rootInode, out Dictionary<string, int> entries);
+        errno = ReadDirectoryContents(ROOT_INO, rootInode, out Dictionary<string, int> entries);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -329,8 +330,9 @@ public sealed partial class Locus
         var allZeros = true;
 
         for(var i = 0; i < inodeSize && allZeros; i++)
-            if(inodeData[i] != 0)
-                allZeros = false;
+        {
+            if(inodeData[i] != 0) allZeros = false;
+        }
 
         if(allZeros)
         {
@@ -353,6 +355,35 @@ public sealed partial class Locus
                           inode.di_nlink);
 
         _inodeCache[inodeNumber] = inode;
+
+        // For smallblock filesystems, check if inline data is present
+        if(_smallBlocks && inodeSize == DINODE_SMALLBLOCK_SIZE)
+        {
+            // di_sbflag is at offset 75 (after 27 bytes of padding at offset 48)
+            // di_pad[27] starts at offset 48 (after di_blocks at offset 44, 4 bytes)
+            // di_sbflag is at offset 48 + 27 = 75
+            // di_addr[13] starts at offset 76
+            // di_sbbuf[384] starts at offset 76 + 52 = 128
+            const int sbflagOffset = 75;
+            const int sbbufOffset  = 128; // 76 + (13 * 4) = 76 + 52 = 128
+
+            byte sbflag = inodeData[sbflagOffset];
+
+            AaruLogging.Debug(MODULE_NAME, "Inode {0}: sbflag=0x{1:X2}", inodeNumber, sbflag);
+
+            if((sbflag & SBINUSE) != 0)
+            {
+                // Extract inline data from di_sbbuf
+                var inlineData = new byte[SMBLKSZ];
+                Array.Copy(inodeData, sbbufOffset, inlineData, 0, SMBLKSZ);
+                _smallBlockDataCache[inodeNumber] = inlineData;
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Inode {0}: Cached {1} bytes of inline smallblock data",
+                                  inodeNumber,
+                                  SMBLKSZ);
+            }
+        }
 
         return ErrorNumber.NoError;
     }
@@ -390,14 +421,35 @@ public sealed partial class Locus
     }
 
     /// <summary>Reads directory contents from an inode</summary>
+    /// <param name="inodeNumber">Inode number</param>
     /// <param name="inode">Directory inode</param>
     /// <param name="entries">Dictionary of filename to inode number</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadDirectoryContents(Dinode inode, out Dictionary<string, int> entries)
+    ErrorNumber ReadDirectoryContents(int inodeNumber, Dinode inode, out Dictionary<string, int> entries)
     {
         entries = new Dictionary<string, int>();
 
-        if(inode.di_size <= 0) return ErrorNumber.NoError;
+        AaruLogging.Debug(MODULE_NAME,
+                          "ReadDirectoryContents: size={0}, blocks={1}, dflag=0x{2:X4}",
+                          inode.di_size,
+                          inode.di_blocks,
+                          inode.di_dflag);
+
+        if(inode.di_size <= 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadDirectoryContents: Directory has zero size");
+
+            return ErrorNumber.NoError;
+        }
+
+        // Debug: Log first few block addresses
+        if(inode.di_addr != null)
+        {
+            for(var i = 0; i < Math.Min(5, inode.di_addr.Length); i++)
+                AaruLogging.Debug(MODULE_NAME, "ReadDirectoryContents: di_addr[{0}] = {1}", i, inode.di_addr[i]);
+        }
+        else
+            AaruLogging.Debug(MODULE_NAME, "ReadDirectoryContents: di_addr is NULL!");
 
         // Check if this is a long directory (BSD 4.3 format) or old format
         bool longDir = (inode.di_dflag & (short)DiskFlags.DILONGDIR) != 0;
@@ -405,7 +457,7 @@ public sealed partial class Locus
         AaruLogging.Debug(MODULE_NAME, "Directory format: {0}", longDir ? "long (BSD 4.3)" : "old (System V)");
 
         // Read all directory data
-        ErrorNumber errno = ReadFileData(inode, out byte[] dirData);
+        ErrorNumber errno = ReadFileData(inodeNumber, inode, out byte[] dirData);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -503,10 +555,11 @@ public sealed partial class Locus
     }
 
     /// <summary>Reads all data from a file inode</summary>
+    /// <param name="inodeNumber">Inode number</param>
     /// <param name="inode">File inode</param>
     /// <param name="data">The file data</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadFileData(Dinode inode, out byte[] data)
+    ErrorNumber ReadFileData(int inodeNumber, Dinode inode, out byte[] data)
     {
         data = null;
 
@@ -517,19 +570,46 @@ public sealed partial class Locus
             return ErrorNumber.NoError;
         }
 
+        AaruLogging.Debug(MODULE_NAME, "ReadFileData: Reading {0} bytes for inode {1}", inode.di_size, inodeNumber);
+
+        // Check for smallblock inline data first
+        if(_smallBlocks && _smallBlockDataCache.TryGetValue(inodeNumber, out byte[] inlineData))
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadFileData: Using inline smallblock data");
+
+            // Copy inline data up to file size
+            int copySize = Math.Min(inode.di_size, inlineData.Length);
+            data = new byte[inode.di_size];
+            Array.Copy(inlineData, 0, data, 0, copySize);
+
+            return ErrorNumber.NoError;
+        }
+
         data = new byte[inode.di_size];
         var bytesRead = 0;
+
+        // Check if di_addr is valid
+        if(inode.di_addr == null || inode.di_addr.Length == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadFileData: di_addr is null or empty!");
+
+            return ErrorNumber.InvalidArgument;
+        }
 
         // Direct blocks (first NDADDR = 10 blocks)
         for(var i = 0; i < NDADDR && bytesRead < inode.di_size; i++)
         {
             int blockNum = inode.di_addr[i];
 
+            AaruLogging.Debug(MODULE_NAME, "ReadFileData: Direct block[{0}] = {1}", i, blockNum);
+
             if(blockNum == 0)
             {
                 // Sparse file - fill with zeros
                 int toFill = Math.Min(_blockSize, inode.di_size - bytesRead);
                 bytesRead += toFill;
+
+                AaruLogging.Debug(MODULE_NAME, "ReadFileData: Sparse block, filled {0} zeros", toFill);
 
                 continue;
             }

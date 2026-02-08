@@ -122,7 +122,7 @@ public sealed partial class Locus
             }
 
             // Read directory contents for next iteration
-            errno = ReadDirectoryContents(inode, out Dictionary<string, int> dirEntries);
+            errno = ReadDirectoryContents(inodeNumber, inode, out Dictionary<string, int> dirEntries);
 
             if(errno != ErrorNumber.NoError)
             {

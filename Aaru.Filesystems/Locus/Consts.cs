@@ -69,4 +69,7 @@ public sealed partial class Locus
 
     /// <summary>Small block buffer size in bytes</summary>
     const int SMBLKSZ = 384;
+
+    /// <summary>Small block in use flag</summary>
+    const byte SBINUSE = 0x1;
 }

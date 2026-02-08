@@ -123,7 +123,7 @@ public sealed partial class Locus
             }
 
             // Read directory contents
-            errno = ReadDirectoryContents(inode, out Dictionary<string, int> dirEntries);
+            errno = ReadDirectoryContents(inodeNumber, inode, out Dictionary<string, int> dirEntries);
 
             if(errno != ErrorNumber.NoError)
             {
@@ -136,8 +136,9 @@ public sealed partial class Locus
             var filteredEntries = new Dictionary<string, int>();
 
             foreach(KeyValuePair<string, int> entry in dirEntries)
-                if(entry.Key is not ("." or ".."))
-                    filteredEntries[entry.Key] = entry.Value;
+            {
+                if(entry.Key is not ("." or "..")) filteredEntries[entry.Key] = entry.Value;
+            }
 
             // If this is the last component, we're opening this directory
             if(p == pathComponents.Length - 1)
