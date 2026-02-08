@@ -506,6 +506,8 @@ public sealed partial class MinixFS
                 info.Attributes = FileAttributes.CharDevice;
 
                 // Extract device numbers from first zone
+                // V1/V2: Use old_decode_dev() style - only low 16 bits (major=bits 8-15, minor=bits 0-7)
+                // V3: Use raw 32-bit value like Minix MFS does (major=bits 8-15, minor=bits 0-7 of full value)
                 if(_version == FilesystemVersion.V1)
                 {
                     var inode = (V1DiskInode)inodeObj;
@@ -524,7 +526,12 @@ public sealed partial class MinixFS
 
                     if(inode.d2_zone is { Length: > 0 })
                     {
-                        uint dev   = inode.d2_zone[0];
+                        uint dev = inode.d2_zone[0];
+
+                        // V2: old_decode_dev() only uses low 16 bits
+                        // V3: Minix MFS uses raw 32-bit value directly as dev_t
+                        if(_version == FilesystemVersion.V2) dev &= 0xFFFF;
+
                         uint major = dev >> 8 & 0xFF;
                         uint minor = dev      & 0xFF;
                         info.DeviceNo = (ulong)major << 32 | minor;
@@ -536,6 +543,8 @@ public sealed partial class MinixFS
                 info.Attributes = FileAttributes.BlockDevice;
 
                 // Extract device numbers from first zone
+                // V1/V2: Use old_decode_dev() style - only low 16 bits (major=bits 8-15, minor=bits 0-7)
+                // V3: Use raw 32-bit value like Minix MFS does (major=bits 8-15, minor=bits 0-7 of full value)
                 if(_version == FilesystemVersion.V1)
                 {
                     var inode = (V1DiskInode)inodeObj;
@@ -554,7 +563,12 @@ public sealed partial class MinixFS
 
                     if(inode.d2_zone is { Length: > 0 })
                     {
-                        uint dev   = inode.d2_zone[0];
+                        uint dev = inode.d2_zone[0];
+
+                        // V2: old_decode_dev() only uses low 16 bits
+                        // V3: Minix MFS uses raw 32-bit value directly as dev_t
+                        if(_version == FilesystemVersion.V2) dev &= 0xFFFF;
+
                         uint major = dev >> 8 & 0xFF;
                         uint minor = dev      & 0xFF;
                         info.DeviceNo = (ulong)major << 32 | minor;
