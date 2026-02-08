@@ -113,6 +113,42 @@ public sealed partial class AcornADFS
     }
 
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Get the file entry
+        ErrorNumber errno = GetEntry(path, out DirectoryEntryInfo entry);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Check it's a symbolic link (filetype 0xFC0 = LinkFS)
+        if(!HasFiletype(entry.LoadAddr) || GetFiletype(entry.LoadAddr) != FILETYPE_LINKFS)
+            return ErrorNumber.InvalidArgument;
+
+        // Read the link target (stored as file content)
+        if(entry.Length == 0)
+        {
+            dest = string.Empty;
+
+            return ErrorNumber.NoError;
+        }
+
+        var buffer = new byte[entry.Length];
+
+        errno = ReadFileData(entry.IndAddr, 0, entry.Length, buffer, out long read);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Convert to string, trimming any null terminator
+        dest = _encoding.GetString(buffer, 0, (int)read).TrimEnd('\0');
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {
         stat = null;
