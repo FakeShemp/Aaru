@@ -76,4 +76,53 @@ public sealed partial class Squash
     }
 
 #endregion
+
+#region Nested type: SquashFileNode
+
+    /// <summary>File node for reading file contents</summary>
+    sealed class SquashFileNode : IFileNode
+    {
+        /// <summary>Start block of file data (absolute position)</summary>
+        public ulong StartBlock { get; set; }
+
+        /// <summary>Fragment index (or SQUASHFS_INVALID_FRAG if no fragment)</summary>
+        public uint Fragment { get; set; }
+
+        /// <summary>Offset within fragment</summary>
+        public uint FragmentOffset { get; set; }
+
+        /// <summary>Block list metadata block (relative to inode table)</summary>
+        public uint BlockListStart { get; set; }
+
+        /// <summary>Offset within block list metadata block</summary>
+        public ushort BlockListOffset { get; set; }
+
+        /// <summary>Number of data blocks (excluding fragment)</summary>
+        public uint BlockCount { get; set; }
+
+        /// <summary>Whether this is an extended file inode</summary>
+        public bool IsExtended { get; set; }
+
+        /// <summary>Sparse file indicator (only for extended inodes)</summary>
+        public ulong Sparse { get; set; }
+
+        /// <summary>Cached decompressed block data (for read-ahead)</summary>
+        public byte[] CachedBlock { get; set; }
+
+        /// <summary>Index of the cached block (-1 if none)</summary>
+        public int CachedBlockIndex { get; set; } = -1;
+
+        /// <summary>Cached fragment data</summary>
+        public byte[] CachedFragment { get; set; }
+        /// <inheritdoc />
+        public string Path { get; set; }
+
+        /// <summary>Current read position within the file</summary>
+        public long Offset { get; set; }
+
+        /// <summary>File length in bytes</summary>
+        public long Length { get; set; }
+    }
+
+#endregion
 }
