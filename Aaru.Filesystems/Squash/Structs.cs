@@ -32,7 +32,6 @@ using Aaru.CommonTypes.Attributes;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the squash filesystem</summary>
 public sealed partial class Squash
 {
 #region Nested type: SuperBlock

@@ -29,7 +29,6 @@
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the squash filesystem</summary>
 public sealed partial class Squash
 {
     /// <summary>Identifier for Squash (little-endian)</summary>
