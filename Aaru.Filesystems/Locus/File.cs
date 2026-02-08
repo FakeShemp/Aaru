@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Helpers;
 using Aaru.Logging;
 
 namespace Aaru.Filesystems;
@@ -370,69 +369,6 @@ public sealed partial class Locus
         return ErrorNumber.NoSuchFile;
     }
 
-    /// <summary>Converts a Locus disk inode to a FileEntryInfo structure</summary>
-    /// <param name="inode">The Locus disk inode</param>
-    /// <param name="inodeNumber">The inode number</param>
-    /// <returns>The FileEntryInfo structure</returns>
-    FileEntryInfo InodeToFileEntryInfo(Dinode inode, int inodeNumber)
-    {
-        var info = new FileEntryInfo
-        {
-            Attributes          = FileAttributes.None,
-            BlockSize           = _blockSize,
-            Inode               = (ulong)inodeNumber,
-            Length              = inode.di_size,
-            Links               = (ulong)inode.di_nlink,
-            UID                 = (ulong)inode.di_uid,
-            GID                 = (ulong)inode.di_gid,
-            Mode                = (uint)(inode.di_mode & 0x0FFF), // Lower 12 bits are permissions
-            AccessTimeUtc       = DateHandlers.UnixToDateTime(inode.di_atime),
-            LastWriteTimeUtc    = DateHandlers.UnixToDateTime(inode.di_mtime),
-            StatusChangeTimeUtc = DateHandlers.UnixToDateTime(inode.di_ctime),
-            CreationTimeUtc     = DateHandlers.UnixToDateTime(inode.di_ctime),
-            Blocks              = inode.di_blocks
-        };
-
-        // Determine file type from di_mode
-        var fileType = (FileMode)(inode.di_mode & (ushort)FileMode.IFMT);
-
-        info.Attributes = fileType switch
-                          {
-                              FileMode.IFDIR => FileAttributes.Directory,
-                              FileMode.IFREG => FileAttributes.File,
-                              FileMode.IFIFO => FileAttributes.Pipe,
-                              FileMode.IFCHR => FileAttributes.CharDevice,
-                              FileMode.IFBLK => FileAttributes.BlockDevice,
-                              FileMode.IFMPC => FileAttributes.CharDevice,
-                              FileMode.IFMPB => FileAttributes.BlockDevice,
-                              _              => FileAttributes.File
-                          };
-
-        // Check disk flags for symbolic link
-        if((inode.di_dflag & (short)DiskFlags.DILINK) != 0) info.Attributes = FileAttributes.Symlink;
-
-        // Check disk flags for socket
-        if((inode.di_dflag & (short)DiskFlags.DISOCKET) != 0) info.Attributes = FileAttributes.Socket;
-
-        // Check disk flags for hidden
-        if((inode.di_dflag & (short)DiskFlags.DIHIDDEN) != 0) info.Attributes |= FileAttributes.Hidden;
-
-        // Extract device numbers for block/character devices
-        if(fileType is not (FileMode.IFCHR or FileMode.IFBLK or FileMode.IFMPC or FileMode.IFMPB) ||
-           inode.di_addr is not { Length: > 0 })
-            return info;
-
-        // Device numbers are stored in the first address entry
-        var dev = (uint)inode.di_addr[0];
-
-        // Old Unix format: upper 8 bits are major, lower 8 bits are minor
-        uint major = dev >> 8 & 0xFF;
-        uint minor = dev      & 0xFF;
-
-        info.DeviceNo = (ulong)major << 32 | minor;
-
-        return info;
-    }
 
     /// <summary>Looks up a file by path and returns its inode number</summary>
     /// <param name="path">Path to the file</param>
@@ -504,118 +440,110 @@ public sealed partial class Locus
         return ErrorNumber.NoSuchFile;
     }
 
-    /// <summary>Gets the physical block number for a logical block in a file</summary>
+
+    /// <summary>Reads all data from a file inode</summary>
+    /// <param name="inodeNumber">Inode number</param>
     /// <param name="inode">File inode</param>
-    /// <param name="logicalBlock">Logical block number within the file</param>
-    /// <param name="physicalBlock">Physical block number on disk (0 for sparse hole)</param>
+    /// <param name="data">The file data</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber GetPhysicalBlock(Dinode inode, int logicalBlock, out int physicalBlock)
+    ErrorNumber ReadFileData(int inodeNumber, Dinode inode, out byte[] data)
     {
-        physicalBlock = 0;
+        data = null;
 
-        if(inode.di_addr == null || inode.di_addr.Length < NADDR)
+        if(inode.di_size <= 0)
         {
-            AaruLogging.Debug(MODULE_NAME, "GetPhysicalBlock: di_addr is null or too short");
-
-            return ErrorNumber.InvalidArgument;
-        }
-
-        int pointersPerBlock = _blockSize / 4; // 4 bytes per block pointer
-
-        // Direct blocks (first NDADDR = 10 blocks)
-        if(logicalBlock < NDADDR)
-        {
-            physicalBlock = inode.di_addr[logicalBlock];
+            data = [];
 
             return ErrorNumber.NoError;
         }
 
-        // Single indirect block
-        int remaining = logicalBlock - NDADDR;
+        AaruLogging.Debug(MODULE_NAME, "ReadFileData: Reading {0} bytes for inode {1}", inode.di_size, inodeNumber);
 
-        if(remaining < pointersPerBlock)
+        // Check for smallblock inline data first
+        if(_smallBlocks && _smallBlockDataCache.TryGetValue(inodeNumber, out byte[] inlineData))
         {
-            int indirectBlock = inode.di_addr[NDADDR];
+            AaruLogging.Debug(MODULE_NAME, "ReadFileData: Using inline smallblock data");
 
-            if(indirectBlock == 0) return ErrorNumber.NoError; // Sparse
+            // Copy inline data up to file size
+            int copySize = Math.Min(inode.di_size, inlineData.Length);
+            data = new byte[inode.di_size];
+            Array.Copy(inlineData, 0, data, 0, copySize);
 
-            return ReadIndirectPointer(indirectBlock, remaining, out physicalBlock);
+            return ErrorNumber.NoError;
         }
 
-        // Double indirect block
-        remaining -= pointersPerBlock;
+        data = new byte[inode.di_size];
+        var bytesRead = 0;
 
-        if(remaining < pointersPerBlock * pointersPerBlock)
+        // Check if di_addr is valid
+        if(inode.di_addr == null || inode.di_addr.Length == 0)
         {
-            int doubleIndirectBlock = inode.di_addr[NDADDR + 1];
+            AaruLogging.Debug(MODULE_NAME, "ReadFileData: di_addr is null or empty!");
 
-            if(doubleIndirectBlock == 0) return ErrorNumber.NoError; // Sparse
+            return ErrorNumber.InvalidArgument;
+        }
 
-            int firstIndex  = remaining / pointersPerBlock;
-            int secondIndex = remaining % pointersPerBlock;
+        // Direct blocks (first NDADDR = 10 blocks)
+        for(var i = 0; i < NDADDR && bytesRead < inode.di_size; i++)
+        {
+            int blockNum = inode.di_addr[i];
 
-            ErrorNumber errno = ReadIndirectPointer(doubleIndirectBlock, firstIndex, out int indirectBlock);
+            AaruLogging.Debug(MODULE_NAME, "ReadFileData: Direct block[{0}] = {1}", i, blockNum);
+
+            if(blockNum == 0)
+            {
+                // Sparse file - fill with zeros
+                int toFill = Math.Min(_blockSize, inode.di_size - bytesRead);
+                bytesRead += toFill;
+
+                AaruLogging.Debug(MODULE_NAME, "ReadFileData: Sparse block, filled {0} zeros", toFill);
+
+                continue;
+            }
+
+            ErrorNumber errno = ReadBlock(blockNum, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error reading direct block {0}: {1}", blockNum, errno);
+
+                return errno;
+            }
+
+            int toCopy = Math.Min(blockData.Length, inode.di_size - bytesRead);
+            Array.Copy(blockData, 0, data, bytesRead, toCopy);
+            bytesRead += toCopy;
+        }
+
+        if(bytesRead >= inode.di_size) return ErrorNumber.NoError;
+
+        // Single indirect block
+        if(inode.di_addr[NDADDR] != 0)
+        {
+            ErrorNumber errno = ReadIndirectBlock(inode.di_addr[NDADDR], 1, ref data, ref bytesRead, inode.di_size);
 
             if(errno != ErrorNumber.NoError) return errno;
-
-            if(indirectBlock == 0) return ErrorNumber.NoError; // Sparse
-
-            return ReadIndirectPointer(indirectBlock, secondIndex, out physicalBlock);
         }
 
+        if(bytesRead >= inode.di_size) return ErrorNumber.NoError;
+
+        // Double indirect block
+        if(inode.di_addr[NDADDR + 1] != 0)
+        {
+            ErrorNumber errno = ReadIndirectBlock(inode.di_addr[NDADDR + 1], 2, ref data, ref bytesRead, inode.di_size);
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+
+        if(bytesRead >= inode.di_size) return ErrorNumber.NoError;
+
         // Triple indirect block
-        remaining -= pointersPerBlock * pointersPerBlock;
+        if(inode.di_addr[NDADDR + 2] != 0)
+        {
+            ErrorNumber errno = ReadIndirectBlock(inode.di_addr[NDADDR + 2], 3, ref data, ref bytesRead, inode.di_size);
 
-        int tripleIndirectBlock = inode.di_addr[NDADDR + 2];
-
-        if(tripleIndirectBlock == 0) return ErrorNumber.NoError; // Sparse
-
-        int firstIdx  = remaining / (pointersPerBlock * pointersPerBlock);
-        int remainder = remaining % (pointersPerBlock * pointersPerBlock);
-        int secondIdx = remainder / pointersPerBlock;
-        int thirdIdx  = remainder % pointersPerBlock;
-
-        ErrorNumber err = ReadIndirectPointer(tripleIndirectBlock, firstIdx, out int doubleBlock);
-
-        if(err != ErrorNumber.NoError) return err;
-
-        if(doubleBlock == 0) return ErrorNumber.NoError; // Sparse
-
-        err = ReadIndirectPointer(doubleBlock, secondIdx, out int singleBlock);
-
-        if(err != ErrorNumber.NoError) return err;
-
-        if(singleBlock == 0) return ErrorNumber.NoError; // Sparse
-
-        return ReadIndirectPointer(singleBlock, thirdIdx, out physicalBlock);
-    }
-
-    /// <summary>Reads a block pointer from an indirect block</summary>
-    /// <param name="indirectBlockNum">Indirect block number</param>
-    /// <param name="index">Index within the indirect block</param>
-    /// <param name="pointer">The block pointer value</param>
-    /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadIndirectPointer(int indirectBlockNum, int index, out int pointer)
-    {
-        pointer = 0;
-
-        ErrorNumber errno = ReadBlock(indirectBlockNum, out byte[] blockData);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
-        int offset = index * 4;
-
-        if(offset + 4 > blockData.Length) return ErrorNumber.InvalidArgument;
-
-        pointer = _bigEndian
-                      ? blockData[offset]     << 24 |
-                        blockData[offset + 1] << 16 |
-                        blockData[offset + 2] << 8  |
-                        blockData[offset + 3]
-                      : blockData[offset]           |
-                        blockData[offset + 1] << 8  |
-                        blockData[offset + 2] << 16 |
-                        blockData[offset + 3] << 24;
+            if(errno != ErrorNumber.NoError) return errno;
+        }
 
         return ErrorNumber.NoError;
     }

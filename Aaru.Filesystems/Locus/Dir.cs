@@ -136,9 +136,8 @@ public sealed partial class Locus
             var filteredEntries = new Dictionary<string, int>();
 
             foreach(KeyValuePair<string, int> entry in dirEntries)
-            {
-                if(entry.Key is not ("." or "..")) filteredEntries[entry.Key] = entry.Value;
-            }
+                if(entry.Key is not ("." or ".."))
+                    filteredEntries[entry.Key] = entry.Value;
 
             // If this is the last component, we're opening this directory
             if(p == pathComponents.Length - 1)
@@ -194,5 +193,139 @@ public sealed partial class Locus
         filename = locusNode.Entries[locusNode.Position++];
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads directory contents from an inode</summary>
+    /// <param name="inodeNumber">Inode number</param>
+    /// <param name="inode">Directory inode</param>
+    /// <param name="entries">Dictionary of filename to inode number</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadDirectoryContents(int inodeNumber, Dinode inode, out Dictionary<string, int> entries)
+    {
+        entries = new Dictionary<string, int>();
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "ReadDirectoryContents: size={0}, blocks={1}, dflag=0x{2:X4}",
+                          inode.di_size,
+                          inode.di_blocks,
+                          inode.di_dflag);
+
+        if(inode.di_size <= 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadDirectoryContents: Directory has zero size");
+
+            return ErrorNumber.NoError;
+        }
+
+        // Debug: Log first few block addresses
+        if(inode.di_addr != null)
+        {
+            for(var i = 0; i < Math.Min(5, inode.di_addr.Length); i++)
+                AaruLogging.Debug(MODULE_NAME, "ReadDirectoryContents: di_addr[{0}] = {1}", i, inode.di_addr[i]);
+        }
+        else
+            AaruLogging.Debug(MODULE_NAME, "ReadDirectoryContents: di_addr is NULL!");
+
+        // Check if this is a long directory (BSD 4.3 format) or old format
+        bool longDir = (inode.di_dflag & (short)DiskFlags.DILONGDIR) != 0;
+
+        AaruLogging.Debug(MODULE_NAME, "Directory format: {0}", longDir ? "long (BSD 4.3)" : "old (System V)");
+
+        // Read all directory data
+        ErrorNumber errno = ReadFileData(inodeNumber, inode, out byte[] dirData);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error reading directory data: {0}", errno);
+
+            return errno;
+        }
+
+        if(longDir)
+            ParseLongDirectory(dirData, entries);
+        else
+            ParseOldDirectory(dirData, entries);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Parses old System V format directory</summary>
+    /// <param name="data">Raw directory data</param>
+    /// <param name="entries">Dictionary to populate with entries</param>
+    void ParseOldDirectory(byte[] data, Dictionary<string, int> entries)
+    {
+        var offset = 0;
+
+        while(offset + DIRSIZ + 2 <= data.Length) // 2 bytes for inode + 14 bytes for name
+        {
+            short ino = _bigEndian
+                            ? (short)(data[offset] << 8 | data[offset + 1])
+                            : (short)(data[offset]      | data[offset + 1] << 8);
+
+            offset += 2;
+
+            if(ino == 0)
+            {
+                offset += DIRSIZ;
+
+                continue;
+            }
+
+            // Extract name (14 bytes, null-padded)
+            var nameLen = 0;
+
+            for(var i = 0; i < DIRSIZ && data[offset + i] != 0; i++) nameLen++;
+
+            string name = _encoding.GetString(data, offset, nameLen);
+            offset += DIRSIZ;
+
+            if(!string.IsNullOrEmpty(name) && !entries.ContainsKey(name))
+            {
+                entries[name] = ino;
+
+                AaruLogging.Debug(MODULE_NAME, "Old dir entry: {0} -> inode {1}", name, ino);
+            }
+        }
+    }
+
+    /// <summary>Parses long BSD 4.3 format directory</summary>
+    /// <param name="data">Raw directory data</param>
+    /// <param name="entries">Dictionary to populate with entries</param>
+    void ParseLongDirectory(byte[] data, Dictionary<string, int> entries)
+    {
+        var offset = 0;
+
+        while(offset < data.Length)
+        {
+            if(offset + 8 > data.Length) break;
+
+            int ino = _bigEndian
+                          ? data[offset] << 24 | data[offset + 1] << 16 | data[offset + 2] << 8 | data[offset + 3]
+                          : data[offset] | data[offset + 1] << 8 | data[offset + 2] << 16 | data[offset + 3] << 24;
+
+            ushort reclen = _bigEndian
+                                ? (ushort)(data[offset + 4] << 8 | data[offset + 5])
+                                : (ushort)(data[offset                         + 4] | data[offset + 5] << 8);
+
+            ushort namlen = _bigEndian
+                                ? (ushort)(data[offset + 6] << 8 | data[offset + 7])
+                                : (ushort)(data[offset                         + 6] | data[offset + 7] << 8);
+
+            if(reclen == 0) break;
+
+            if(ino != 0 && namlen > 0 && offset + 8 + namlen <= data.Length)
+            {
+                string name = _encoding.GetString(data, offset + 8, namlen);
+
+                if(!string.IsNullOrEmpty(name) && !entries.ContainsKey(name))
+                {
+                    entries[name] = ino;
+
+                    AaruLogging.Debug(MODULE_NAME, "Long dir entry: {0} -> inode {1}", name, ino);
+                }
+            }
+
+            offset += reclen;
+        }
     }
 }
