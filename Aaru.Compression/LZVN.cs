@@ -65,7 +65,7 @@ public static partial class LZVN
     /// <param name="scratch_buffer">Scratch buffer</param>
     /// <returns></returns>
     [LibraryImport("libAaru.Compression.Native", SetLastError = true)]
-    private static partial nuint AARU_lzvn_encode_buffer(byte[] dst_buffer, nuint  dst_size, in byte[] src_buffer,
+    private static partial nuint AARU_lzvn_encode_buffer(byte[] dst_buffer, nuint  dst_size, byte[] src_buffer,
                                                          nuint  src_size,   byte[] scratch_buffer);
 
     /// <summary>Decodes a buffer compressed with LZVN</summary>
@@ -95,7 +95,7 @@ public static partial class LZVN
 
         byte[] scratch = new byte[1048576]; // LZVN requires a 512KB scratch buffer for encoding, let's give it twice that
 
-        return (long)AARU_lzvn_encode_buffer(destination, (nuint)destination.LongLength, in source, (nuint)source.LongLength, scratch);
+        return (long)AARU_lzvn_encode_buffer(destination, (nuint)destination.LongLength, source, (nuint)source.LongLength, scratch);
     }
 
     /// <summary>Decodes a buffer compressed with LZVN</summary>

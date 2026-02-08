@@ -42,7 +42,7 @@ public sealed partial class LZO
     /// <param name="algorithm">Which algorithm to use</param>
     /// <returns>Error code or 0 on success</returns>
     [LibraryImport("libAaru.Compression.Native", SetLastError = true)]
-    private static partial int AARU_lzo_decode_buffer(byte[] dst_buffer, ref nuint dst_size, in byte[] src_buffer,
+    private static partial int AARU_lzo_decode_buffer(byte[] dst_buffer, ref nuint dst_size, byte[] src_buffer,
                                                       nuint  src_size,   Algorithm algorithm);
 
 
@@ -58,7 +58,7 @@ public sealed partial class LZO
     /// <param name="algorithm">Which algorithm to use</param>
     /// <returns>Error code or 0 on success</returns>
     [LibraryImport("libAaru.Compression.Native", SetLastError = true)]
-    private static partial int AARU_lzo_encode_buffer(byte[] dst_buffer, ref nuint dst_size,  in byte[] src_buffer,
+    private static partial int AARU_lzo_encode_buffer(byte[] dst_buffer, ref nuint dst_size, byte[] src_buffer,
                                                       nuint  src_size,   Algorithm algorithm, int compression_level);
 
     /// <summary>Decodes a buffer compressed with LZO</summary>

@@ -26,7 +26,7 @@ public static partial class XZ
     /// <param name="src_size">Size of the source buffer</param>
     /// <returns></returns>
     [LibraryImport("libAaru.Compression.Native", SetLastError = true)]
-    private static partial int AARU_xz_decode_buffer(byte[] dst_buffer, ref nuint dst_size, in byte[] src_buffer,
+    private static partial int AARU_xz_decode_buffer(byte[] dst_buffer, ref nuint dst_size, byte[] src_buffer,
                                                      nuint  src_size);
 
 
@@ -42,7 +42,7 @@ public static partial class XZ
     /// <param name="checkType">Checksum to use</param>
     /// <returns>The size of the compressed data, or -1 on error.</returns>
     [LibraryImport("libAaru.Compression.Native", SetLastError = true)]
-    private static partial int AARU_xz_encode_buffer(byte[] dst_buffer, ref nuint dst_size, in byte[] src_buffer,
+    private static partial int AARU_xz_encode_buffer(byte[] dst_buffer, ref nuint dst_size, byte[] src_buffer,
                                                      nuint  src_size,   uint      level,    CheckType checkType);
 
     /// <summary>Decodes a buffer compressed with XZ</summary>
