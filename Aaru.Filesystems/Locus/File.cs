@@ -40,6 +40,53 @@ namespace Aaru.Filesystems;
 public sealed partial class Locus
 {
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Get file stat to verify it's a symlink
+        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(!stat.Attributes.HasFlag(FileAttributes.Symlink)) return ErrorNumber.InvalidArgument;
+
+        // Look up the file's inode
+        errno = LookupFile(path, out int inodeNumber);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read the inode
+        errno = ReadInode(inodeNumber, out Dinode inode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Check for inline smallblock data
+        if(_smallBlocks && _smallBlockDataCache.TryGetValue(inodeNumber, out byte[] inlineData))
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: Using inline smallblock data");
+
+            int linkLen = Math.Min(inode.di_size, inlineData.Length);
+            dest = _encoding.GetString(inlineData, 0, linkLen).TrimEnd('\0');
+
+            return ErrorNumber.NoError;
+        }
+
+        // Read symlink data from disk blocks
+        errno = ReadFileData(inodeNumber, inode, out byte[] linkData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        dest = _encoding.GetString(linkData).TrimEnd('\0');
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
         node = null;
