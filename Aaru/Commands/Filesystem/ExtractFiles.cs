@@ -278,6 +278,8 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
                                                         ? "NO NAME"
                                                         : fs.Metadata.VolumeName;
 
+                                volumeName = volumeName.Replace('/', '_').Replace('\\', '_');
+
                                 ExtractFilesInDir("/", fs, volumeName, settings.OutputDir, settings.Xattrs);
 
                                 Statistics.AddFilesystem(fs.Metadata.Type);
@@ -310,6 +312,8 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
                             string volumeName = string.IsNullOrEmpty(fs.Metadata.VolumeName)
                                                     ? "NO NAME"
                                                     : fs.Metadata.VolumeName;
+
+                            volumeName = volumeName.Replace('/', '_').Replace('\\', '_');
 
                             ExtractFilesInDir("/", fs, volumeName, settings.OutputDir, settings.Xattrs);
 
