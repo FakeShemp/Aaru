@@ -29,17 +29,12 @@
 using System;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
 public sealed partial class AcornADFS
 {
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
-
-
     /// <inheritdoc />
     public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
 
