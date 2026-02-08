@@ -26,7 +26,6 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
@@ -67,29 +66,17 @@ public sealed partial class Squash
         offset     = 0;
         size       = 0;
 
-        // Calculate absolute position of the inode
-        ulong inodePosition = _superBlock.inode_table_start + inodeBlock;
+        // First read the base inode to determine the type
+        int baseInodeSize = Marshal.SizeOf<BaseInode>();
 
-        // Read the metadata block containing the inode
-        ErrorNumber errno = ReadMetadataBlock(inodePosition, out byte[] inodeBlockData);
+        ErrorNumber errno = ReadInodeData(inodeBlock, inodeOffset, baseInodeSize, out byte[] baseInodeData);
 
         if(errno != ErrorNumber.NoError)
         {
-            AaruLogging.Debug(MODULE_NAME, "Error reading inode metadata block: {0}", errno);
+            AaruLogging.Debug(MODULE_NAME, "Error reading base inode: {0}", errno);
 
             return errno;
         }
-
-        if(inodeBlockData == null || inodeBlockData.Length <= inodeOffset)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Invalid inode block data");
-
-            return ErrorNumber.InvalidArgument;
-        }
-
-        // Read the base inode to get the type
-        var baseInodeData = new byte[Marshal.SizeOf<BaseInode>()];
-        Array.Copy(inodeBlockData, inodeOffset, baseInodeData, 0, baseInodeData.Length);
 
         BaseInode baseInode = _littleEndian
                                   ? Helpers.Marshal.ByteArrayToStructureLittleEndian<BaseInode>(baseInodeData)
@@ -98,8 +85,16 @@ public sealed partial class Squash
         // Read the directory inode based on type
         if(baseInode.inode_type == (ushort)SquashInodeType.Directory)
         {
-            var dirInodeData = new byte[Marshal.SizeOf<DirInode>()];
-            Array.Copy(inodeBlockData, inodeOffset, dirInodeData, 0, dirInodeData.Length);
+            int dirInodeSize = Marshal.SizeOf<DirInode>();
+
+            errno = ReadInodeData(inodeBlock, inodeOffset, dirInodeSize, out byte[] dirInodeData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error reading DirInode: {0}", errno);
+
+                return errno;
+            }
 
             DirInode dirInode = _littleEndian
                                     ? Helpers.Marshal.ByteArrayToStructureLittleEndian<DirInode>(dirInodeData)
@@ -111,8 +106,16 @@ public sealed partial class Squash
         }
         else if(baseInode.inode_type == (ushort)SquashInodeType.ExtendedDirectory)
         {
-            var extDirInodeData = new byte[Marshal.SizeOf<ExtendedDirInode>()];
-            Array.Copy(inodeBlockData, inodeOffset, extDirInodeData, 0, extDirInodeData.Length);
+            int extDirInodeSize = Marshal.SizeOf<ExtendedDirInode>();
+
+            errno = ReadInodeData(inodeBlock, inodeOffset, extDirInodeSize, out byte[] extDirInodeData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error reading ExtendedDirInode: {0}", errno);
+
+                return errno;
+            }
 
             ExtendedDirInode extDirInode = _littleEndian
                                                ? Helpers.Marshal
@@ -153,29 +156,17 @@ public sealed partial class Squash
     {
         stat = null;
 
-        // Calculate absolute position of the inode
-        ulong inodePosition = _superBlock.inode_table_start + inodeBlock;
+        // First read the base inode to determine the type
+        int baseInodeSize = Marshal.SizeOf<BaseInode>();
 
-        // Read the metadata block containing the inode
-        ErrorNumber errno = ReadMetadataBlock(inodePosition, out byte[] inodeBlockData);
+        ErrorNumber errno = ReadInodeData(inodeBlock, inodeOffset, baseInodeSize, out byte[] baseInodeData);
 
         if(errno != ErrorNumber.NoError)
         {
-            AaruLogging.Debug(MODULE_NAME, "Error reading inode metadata block: {0}", errno);
+            AaruLogging.Debug(MODULE_NAME, "Error reading base inode: {0}", errno);
 
             return errno;
         }
-
-        if(inodeBlockData == null || inodeBlockData.Length <= inodeOffset)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Invalid inode block data");
-
-            return ErrorNumber.InvalidArgument;
-        }
-
-        // Read the base inode to get the type
-        var baseInodeData = new byte[Marshal.SizeOf<BaseInode>()];
-        Array.Copy(inodeBlockData, inodeOffset, baseInodeData, 0, baseInodeData.Length);
 
         BaseInode baseInode = _littleEndian
                                   ? Helpers.Marshal.ByteArrayToStructureLittleEndian<BaseInode>(baseInodeData)
@@ -200,8 +191,16 @@ public sealed partial class Squash
         {
             case SquashInodeType.Directory:
             {
-                var dirInodeData = new byte[Marshal.SizeOf<DirInode>()];
-                Array.Copy(inodeBlockData, inodeOffset, dirInodeData, 0, dirInodeData.Length);
+                int size = Marshal.SizeOf<DirInode>();
+
+                errno = ReadInodeData(inodeBlock, inodeOffset, size, out byte[] dirInodeData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    stat.Attributes = FileAttributes.Directory;
+
+                    break;
+                }
 
                 DirInode dirInode = _littleEndian
                                         ? Helpers.Marshal.ByteArrayToStructureLittleEndian<DirInode>(dirInodeData)
@@ -216,8 +215,16 @@ public sealed partial class Squash
 
             case SquashInodeType.ExtendedDirectory:
             {
-                var extDirInodeData = new byte[Marshal.SizeOf<ExtendedDirInode>()];
-                Array.Copy(inodeBlockData, inodeOffset, extDirInodeData, 0, extDirInodeData.Length);
+                int size = Marshal.SizeOf<ExtendedDirInode>();
+
+                errno = ReadInodeData(inodeBlock, inodeOffset, size, out byte[] extDirInodeData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    stat.Attributes = FileAttributes.Directory;
+
+                    break;
+                }
 
                 ExtendedDirInode extDirInode = _littleEndian
                                                    ? Helpers.Marshal
@@ -236,8 +243,16 @@ public sealed partial class Squash
 
             case SquashInodeType.RegularFile:
             {
-                var regInodeData = new byte[Marshal.SizeOf<RegInode>()];
-                Array.Copy(inodeBlockData, inodeOffset, regInodeData, 0, regInodeData.Length);
+                int size = Marshal.SizeOf<RegInode>();
+
+                errno = ReadInodeData(inodeBlock, inodeOffset, size, out byte[] regInodeData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    stat.Attributes = FileAttributes.File;
+
+                    break;
+                }
 
                 RegInode regInode = _littleEndian
                                         ? Helpers.Marshal.ByteArrayToStructureLittleEndian<RegInode>(regInodeData)
@@ -252,8 +267,16 @@ public sealed partial class Squash
 
             case SquashInodeType.ExtendedRegularFile:
             {
-                var extRegInodeData = new byte[Marshal.SizeOf<ExtendedRegInode>()];
-                Array.Copy(inodeBlockData, inodeOffset, extRegInodeData, 0, extRegInodeData.Length);
+                int size = Marshal.SizeOf<ExtendedRegInode>();
+
+                errno = ReadInodeData(inodeBlock, inodeOffset, size, out byte[] extRegInodeData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    stat.Attributes = FileAttributes.File;
+
+                    break;
+                }
 
                 ExtendedRegInode extRegInode = _littleEndian
                                                    ? Helpers.Marshal
@@ -274,8 +297,16 @@ public sealed partial class Squash
             case SquashInodeType.Symlink:
             case SquashInodeType.ExtendedSymlink:
             {
-                var symlinkInodeData = new byte[Marshal.SizeOf<SymlinkInode>()];
-                Array.Copy(inodeBlockData, inodeOffset, symlinkInodeData, 0, symlinkInodeData.Length);
+                int size = Marshal.SizeOf<SymlinkInode>();
+
+                errno = ReadInodeData(inodeBlock, inodeOffset, size, out byte[] symlinkInodeData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    stat.Attributes = FileAttributes.Symlink;
+
+                    break;
+                }
 
                 SymlinkInode symlinkInode = _littleEndian
                                                 ? Helpers.Marshal
@@ -294,8 +325,16 @@ public sealed partial class Squash
             case SquashInodeType.BlockDevice:
             case SquashInodeType.ExtendedBlockDevice:
             {
-                var devInodeData = new byte[Marshal.SizeOf<DevInode>()];
-                Array.Copy(inodeBlockData, inodeOffset, devInodeData, 0, devInodeData.Length);
+                int size = Marshal.SizeOf<DevInode>();
+
+                errno = ReadInodeData(inodeBlock, inodeOffset, size, out byte[] devInodeData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    stat.Attributes = FileAttributes.BlockDevice;
+
+                    break;
+                }
 
                 DevInode devInode = _littleEndian
                                         ? Helpers.Marshal.ByteArrayToStructureLittleEndian<DevInode>(devInodeData)
@@ -315,8 +354,16 @@ public sealed partial class Squash
             case SquashInodeType.CharacterDevice:
             case SquashInodeType.ExtendedCharDevice:
             {
-                var devInodeData = new byte[Marshal.SizeOf<DevInode>()];
-                Array.Copy(inodeBlockData, inodeOffset, devInodeData, 0, devInodeData.Length);
+                int size = Marshal.SizeOf<DevInode>();
+
+                errno = ReadInodeData(inodeBlock, inodeOffset, size, out byte[] devInodeData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    stat.Attributes = FileAttributes.CharDevice;
+
+                    break;
+                }
 
                 DevInode devInode = _littleEndian
                                         ? Helpers.Marshal.ByteArrayToStructureLittleEndian<DevInode>(devInodeData)
@@ -336,14 +383,22 @@ public sealed partial class Squash
             case SquashInodeType.Fifo:
             case SquashInodeType.ExtendedFifo:
             {
-                var ipcInodeData = new byte[Marshal.SizeOf<IpcInode>()];
-                Array.Copy(inodeBlockData, inodeOffset, ipcInodeData, 0, ipcInodeData.Length);
+                int size = Marshal.SizeOf<IpcInode>();
+
+                errno = ReadInodeData(inodeBlock, inodeOffset, size, out byte[] ipcInodeData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    stat.Attributes = FileAttributes.Pipe;
+
+                    break;
+                }
 
                 IpcInode ipcInode = _littleEndian
                                         ? Helpers.Marshal.ByteArrayToStructureLittleEndian<IpcInode>(ipcInodeData)
                                         : Helpers.Marshal.ByteArrayToStructureBigEndian<IpcInode>(ipcInodeData);
 
-                stat.Attributes = FileAttributes.FIFO;
+                stat.Attributes = FileAttributes.Pipe;
                 stat.Links      = ipcInode.nlink;
 
                 break;
@@ -352,8 +407,17 @@ public sealed partial class Squash
             case SquashInodeType.Socket:
             case SquashInodeType.ExtendedSocket:
             {
-                var ipcInodeData = new byte[Marshal.SizeOf<IpcInode>()];
-                Array.Copy(inodeBlockData, inodeOffset, ipcInodeData, 0, ipcInodeData.Length);
+                int size = Marshal.SizeOf<IpcInode>();
+
+                errno = ReadInodeData(inodeBlock, inodeOffset, size, out byte[] ipcInodeData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    stat.Attributes = FileAttributes.Socket;
+
+                    break;
+                }
+
 
                 IpcInode ipcInode = _littleEndian
                                         ? Helpers.Marshal.ByteArrayToStructureLittleEndian<IpcInode>(ipcInodeData)

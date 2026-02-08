@@ -42,9 +42,18 @@ public sealed partial class Squash
     /// <param name="position">Absolute byte position of the metadata block</param>
     /// <param name="data">Output buffer containing the decompressed metadata</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadMetadataBlock(ulong position, out byte[] data)
+    ErrorNumber ReadMetadataBlock(ulong position, out byte[] data) =>
+        ReadMetadataBlockWithNext(position, out data, out _);
+
+    /// <summary>Reads a metadata block from the filesystem and returns the next block position</summary>
+    /// <param name="position">Absolute byte position of the metadata block</param>
+    /// <param name="data">Output buffer containing the decompressed metadata</param>
+    /// <param name="nextPosition">Output: Position of the next metadata block</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadMetadataBlockWithNext(ulong position, out byte[] data, out ulong nextPosition)
     {
-        data = null;
+        data         = null;
+        nextPosition = 0;
 
         // Calculate which image sector contains this position
         ulong byteOffset     = _partition.Start * _imagePlugin.Info.SectorSize + position;
@@ -53,8 +62,8 @@ public sealed partial class Squash
 
         // Read enough sectors to get the metadata block header and data
         // Metadata blocks can be up to SQUASHFS_METADATA_SIZE (8192) + 2 bytes header
-        var sectorsToRead = (SQUASHFS_METADATA_SIZE + 2 + offsetInSector + _imagePlugin.Info.SectorSize - 1) /
-                            _imagePlugin.Info.SectorSize;
+        uint sectorsToRead = (SQUASHFS_METADATA_SIZE + 2 + offsetInSector + _imagePlugin.Info.SectorSize - 1) /
+                             _imagePlugin.Info.SectorSize;
 
         ErrorNumber errno = _imagePlugin.ReadSectors(sectorNumber, false, sectorsToRead, out byte[] sectorData, out _);
 
@@ -86,6 +95,9 @@ public sealed partial class Squash
             return ErrorNumber.InvalidArgument;
         }
 
+        // Calculate the position of the next metadata block
+        nextPosition = position + 2 + (ulong)blockSize;
+
         // Extract the block data (skip 2-byte header)
         var blockData = new byte[blockSize];
         Array.Copy(sectorData, offsetInSector + 2, blockData, 0, blockSize);
@@ -111,6 +123,75 @@ public sealed partial class Squash
 
         // Resize to actual decompressed size
         Array.Resize(ref data, decompressedSize);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads inode data starting at a given position, handling block spanning</summary>
+    /// <param name="inodeBlock">Block offset from inode table start</param>
+    /// <param name="inodeOffset">Offset within the metadata block</param>
+    /// <param name="size">Number of bytes to read</param>
+    /// <param name="data">Output buffer containing the inode data</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadInodeData(uint inodeBlock, ushort inodeOffset, int size, out byte[] data)
+    {
+        data = null;
+
+        // Calculate absolute position of the inode
+        ulong inodePosition = _superBlock.inode_table_start + inodeBlock;
+
+        // Read the first metadata block
+        ErrorNumber errno = ReadMetadataBlockWithNext(inodePosition, out byte[] blockData, out ulong nextPosition);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(blockData == null) return ErrorNumber.InvalidArgument;
+
+        int available = blockData.Length - inodeOffset;
+
+        // If all data is in this block, just copy it
+        if(available >= size)
+        {
+            data = new byte[size];
+            Array.Copy(blockData, inodeOffset, data, 0, size);
+
+            return ErrorNumber.NoError;
+        }
+
+        // Data spans multiple blocks - need to read more
+        data = new byte[size];
+        var copied = 0;
+
+        // Copy what we have from the first block
+        if(available > 0)
+        {
+            Array.Copy(blockData, inodeOffset, data, 0, available);
+            copied = available;
+        }
+
+        // Read subsequent blocks until we have all the data
+        while(copied < size)
+        {
+            errno = ReadMetadataBlockWithNext(nextPosition, out blockData, out nextPosition);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error reading continuation metadata block: {0}", errno);
+
+                return errno;
+            }
+
+            if(blockData == null || blockData.Length == 0)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Empty continuation metadata block");
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            int toCopy = Math.Min(blockData.Length, size - copied);
+            Array.Copy(blockData, 0, data, copied, toCopy);
+            copied += toCopy;
+        }
 
         return ErrorNumber.NoError;
     }
