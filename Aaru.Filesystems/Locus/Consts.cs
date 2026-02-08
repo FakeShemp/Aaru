@@ -26,27 +26,12 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-// Commit count
-
-// Disk address
-
-// Fstore
-
-// Global File System number
-
-// Inode number
-
-// Filesystem pack number
-
-// Timestamp
-
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedType.Local
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Locus filesystem</summary>
 public sealed partial class Locus
 {
     const int NICINOD    = 325;

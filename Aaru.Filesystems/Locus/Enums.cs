@@ -26,22 +26,8 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-// Commit count
-
 using System;
 using System.Diagnostics.CodeAnalysis;
-
-// Disk address
-
-// Fstore
-
-// Global File System number
-
-// Inode number
-
-// Filesystem pack number
-
-// Timestamp
 
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedType.Local
@@ -49,7 +35,6 @@ using System.Diagnostics.CodeAnalysis;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Locus filesystem</summary>
 public sealed partial class Locus
 {
 #region Nested type: Flags

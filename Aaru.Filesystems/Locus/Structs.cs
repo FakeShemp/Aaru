@@ -26,8 +26,6 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-// Commit count
-
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Attributes;
@@ -69,7 +67,6 @@ using s_ino_t = short;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Locus filesystem</summary>
 public sealed partial class Locus
 {
 #region Nested type: FsGeneration

@@ -26,8 +26,6 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-// Commit count
-
 using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
@@ -44,17 +42,12 @@ using Aaru.Logging;
 // Inode number
 using Partition = Aaru.CommonTypes.Partition;
 
-// Filesystem pack number
-
-// Timestamp
-
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedType.Local
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Locus filesystem</summary>
 public sealed partial class Locus
 {
 #region IFilesystem Members

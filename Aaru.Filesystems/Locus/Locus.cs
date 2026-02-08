@@ -26,22 +26,10 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-// Commit count
-
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
-
-// Disk address
-
-// Fstore
-
-// Global File System number
-
-// Inode number
-
-// Filesystem pack number
-
-// Timestamp
 
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedType.Local
@@ -49,10 +37,17 @@ using Aaru.CommonTypes.Interfaces;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Locus filesystem</summary>
-public sealed partial class Locus : IFilesystem
+/// <summary>Implements the Locus filesystem</summary>
+public sealed partial class Locus : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "Locus plugin";
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
 #region IFilesystem Members
 
