@@ -31,8 +31,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -41,6 +43,32 @@ namespace Aaru.Filesystems;
 [SuppressMessage("ReSharper", "UnusedType.Local")]
 public sealed partial class Cram : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "CramFS plugin";
+
+    /// <summary>Cached root directory entries</summary>
+    Dictionary<string, DirectoryEntryInfo> _rootDirectoryCache;
+
+    /// <summary>Encoding used for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>Image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Whether filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>The superblock</summary>
+    SuperBlock _superBlock;
+
+    /// <summary>Whether the filesystem is little-endian</summary>
+    bool _littleEndian;
+
+    /// <summary>Base offset for the filesystem (0 or 512 for shifted superblock)</summary>
+    uint _baseOffset;
+
 #region IFilesystem Members
 
     /// <inheritdoc />
