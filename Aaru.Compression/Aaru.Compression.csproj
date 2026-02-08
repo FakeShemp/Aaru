@@ -53,6 +53,7 @@
     <Compile Include="LZFSE.cs"/>
     <Compile Include="LZIP.cs"/>
     <Compile Include="LZMA.cs"/>
+    <Compile Include="LZO.cs"/>
     <Compile Include="LZVN.cs"/>
     <Compile Include="Native.cs"/>
     <Compile Include="Pak\CrushStream.cs"/>
