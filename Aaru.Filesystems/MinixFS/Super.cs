@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : MINIX filesystem plugin.
@@ -26,9 +26,8 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
@@ -36,15 +35,27 @@ namespace Aaru.Filesystems;
 public sealed partial class MinixFS
 {
     /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+        stat = new FileSystemInfo
+        {
+            Blocks         = _zones,
+            FreeBlocks     = 0, // Minix doesn't store free block count in superblock
+            Files          = _ninodes,
+            FreeFiles      = 0, // Minix doesn't store free inode count in superblock
+            FilenameLength = (ushort)_filenameSize,
+            Type = _version == FilesystemVersion.V3
+                       ? FS_TYPE_V3
+                       : _version == FilesystemVersion.V2
+                           ? FS_TYPE_V2
+                           : FS_TYPE_V1,
+            PluginId = Id
+        };
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        return ErrorNumber.NoError;
+    }
 }
