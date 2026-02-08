@@ -31,7 +31,6 @@ using System;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of Acorn's Advanced Data Filing System (ADFS)</summary>
 public sealed partial class AcornADFS
 {
 #region Nested type: FileAttributes

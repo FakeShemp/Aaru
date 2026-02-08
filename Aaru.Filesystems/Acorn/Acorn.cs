@@ -27,15 +27,24 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of Acorn's Advanced Data Filing System (ADFS)</summary>
-public sealed partial class AcornADFS : IFilesystem
+/// <summary>Implements Acorn's Advanced Data Filing System (ADFS)</summary>
+public sealed partial class AcornADFS : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "ADFS Plugin";
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 
 #region IFilesystem Members
 

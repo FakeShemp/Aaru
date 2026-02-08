@@ -38,7 +38,6 @@ using Partition = Aaru.CommonTypes.Partition;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of Acorn's Advanced Data Filing System (ADFS)</summary>
 public sealed partial class AcornADFS
 {
 #region IFilesystem Members
@@ -397,7 +396,7 @@ public sealed partial class AcornADFS
                 else
                     oldFormat = "ADFS-L";
 
-                sbInformation.AppendFormat(Localization.Format_0, oldFormat).AppendLine();
+                sbInformation.AppendFormat(Localization.Format_0,            oldFormat).AppendLine();
                 sbInformation.AppendFormat(Localization._0_bytes_per_sector, imagePlugin.Info.SectorSize).AppendLine();
                 sbInformation.AppendFormat(Localization.Volume_has_0_bytes,  bytes).AppendLine();
 
@@ -521,7 +520,7 @@ public sealed partial class AcornADFS
 
         sbInformation.AppendLine(Localization.Acorn_Advanced_Disc_Filing_System);
         sbInformation.AppendLine();
-        sbInformation.AppendFormat(Localization.Format_0, newFormat).AppendLine();
+        sbInformation.AppendFormat(Localization.Format_0,             newFormat).AppendLine();
         sbInformation.AppendFormat(Localization.Format_version_0,     drSb.format_version).AppendLine();
         sbInformation.AppendFormat(Localization._0_bytes_per_sector,  1 << drSb.log2secsize).AppendLine();
         sbInformation.AppendFormat(Localization._0_sectors_per_track, drSb.spt).AppendLine();
