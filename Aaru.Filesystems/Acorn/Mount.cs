@@ -134,9 +134,15 @@ public sealed partial class AcornADFS
     /// <returns>Error number indicating success or failure</returns>
     ErrorNumber TryOldMapFormat()
     {
+        AaruLogging.Debug(MODULE_NAME, "TryOldMapFormat: partition.Start={0}", _partition.Start);
+
         // Old map format only exists without partitions
         if(_partition.Start != 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "TryOldMapFormat: Partition not at start, skipping");
+
             return ErrorNumber.InvalidArgument;
+        }
 
         ErrorNumber errno = _imagePlugin.ReadSector(0, false, out byte[] sector0, out _);
 
@@ -153,6 +159,9 @@ public sealed partial class AcornADFS
 
         byte          oldChk1 = AcornMapChecksum(sector1, 255);
         OldMapSector1 oldMap1 = Marshal.ByteArrayToStructureLittleEndian<OldMapSector1>(sector1);
+
+        AaruLogging.Debug(MODULE_NAME, "TryOldMapFormat: oldMap0.checksum={0}, oldChk0={1}, oldMap1.checksum={2}, oldChk1={3}",
+                          oldMap0.checksum, oldChk0, oldMap1.checksum, oldChk1);
 
         // According to documentation map1 MUST start on sector 1.
         // On ADFS-D it starts at 0x100, not on sector 1 (0x400)
@@ -211,12 +220,20 @@ public sealed partial class AcornADFS
     /// <returns>Error number indicating success or failure</returns>
     ErrorNumber TryNewMapFormat()
     {
+        AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: Starting");
+
         ErrorNumber errno = _imagePlugin.ReadSector(_partition.Start, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: ReadSector failed with {0}", errno);
+
             return errno;
+        }
 
         byte newChk = NewMapChecksum(sector);
+
+        AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: newChk={0}, sector[0]={1}", newChk, sector[0]);
 
         // Try boot block first
         ulong sbSector      = BOOT_BLOCK_LOCATION / _imagePlugin.Info.SectorSize;
@@ -224,8 +241,14 @@ public sealed partial class AcornADFS
 
         if(BOOT_BLOCK_SIZE % _imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
+        AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: sbSector={0}, sectorsToRead={1}", sbSector, sectorsToRead);
+
         if(sbSector + _partition.Start + sectorsToRead >= _partition.End)
+        {
+            AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: Boot block beyond partition end");
+
             return ErrorNumber.InvalidArgument;
+        }
 
         errno = _imagePlugin.ReadSectors(sbSector + _partition.Start, false, sectorsToRead, out byte[] bootSector,
                                          out _);
@@ -233,43 +256,81 @@ public sealed partial class AcornADFS
         if(errno != ErrorNumber.NoError)
             return errno;
 
+        AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: bootSector.Length={0}", bootSector.Length);
+
         var bootChk = 0;
 
         if(bootSector.Length < 512)
+        {
+            AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: Boot sector too small");
+
             return ErrorNumber.InvalidArgument;
+        }
 
         for(var i = 0; i < 0x1FF; i++)
             bootChk = (bootChk & 0xFF) + (bootChk >> 8) + bootSector[i];
+
+        AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: bootChk={0}, bootSector[0x1FF]={1}", bootChk, bootSector[0x1FF]);
 
         DiscRecord drSb;
 
         // Check if new map checksum is valid
         if(newChk == sector[0] && newChk != 0)
         {
+            AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: Using new map checksum");
             NewMap nmap = Marshal.ByteArrayToStructureLittleEndian<NewMap>(sector);
             drSb = nmap.discRecord;
         }
         // Check if boot block checksum is valid
         else if((bootChk & 0xFF) == bootSector[0x1FF])
         {
+            AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: Using boot block checksum");
             BootBlock bBlock = Marshal.ByteArrayToStructureLittleEndian<BootBlock>(bootSector);
             drSb = bBlock.discRecord;
         }
         else
+        {
+            AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: No valid checksum found");
+
             return ErrorNumber.InvalidArgument;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: log2secsize={0}, idlen={1}, disc_size_high={2}, disc_size={3}",
+                          drSb.log2secsize, drSb.idlen, drSb.disc_size_high, drSb.disc_size);
+
+        AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: reserved is null or empty = {0}",
+                          ArrayHelpers.ArrayIsNullOrEmpty(drSb.reserved));
 
         // Validate disc record
         if(drSb.log2secsize is < 8 or > 10)
+        {
+            AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: Invalid log2secsize");
+
             return ErrorNumber.InvalidArgument;
+        }
 
         if(drSb.idlen < drSb.log2secsize + 3 || drSb.idlen > 19)
+        {
+            AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: Invalid idlen ({0} < {1} or > 19)", drSb.idlen, drSb.log2secsize + 3);
+
             return ErrorNumber.InvalidArgument;
+        }
 
         if(drSb.disc_size_high >> drSb.log2secsize != 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: disc_size_high validation failed ({0} >> {1} = {2})",
+                              drSb.disc_size_high, drSb.log2secsize, drSb.disc_size_high >> drSb.log2secsize);
+
             return ErrorNumber.InvalidArgument;
+        }
 
         if(!ArrayHelpers.ArrayIsNullOrEmpty(drSb.reserved))
+        {
+            AaruLogging.Debug(MODULE_NAME, "TryNewMapFormat: Reserved field not empty (length={0})",
+                              drSb.reserved?.Length ?? -1);
+
             return ErrorNumber.InvalidArgument;
+        }
 
         _discRecord = drSb;
 
@@ -319,18 +380,34 @@ public sealed partial class AcornADFS
     /// <returns>Error number indicating success or failure</returns>
     ErrorNumber ValidateRootDirectory()
     {
+        AaruLogging.Debug(MODULE_NAME, "ValidateRootDirectory: rootAddr={0}, rootSize={1}, isBigDir={2}",
+                          _rootDirectoryAddress, _rootDirectorySize, _isBigDirectory);
+
         ErrorNumber errno = ReadDirectoryData(_rootDirectoryAddress, _rootDirectorySize, out byte[] dirData);
 
         if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ValidateRootDirectory: ReadDirectoryData failed with {0}", errno);
+
             return errno;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "ValidateRootDirectory: dirData.Length={0}", dirData.Length);
 
         if(_isBigDirectory)
         {
             // Check big directory magic
             if(dirData.Length < 8)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ValidateRootDirectory: dirData too short for big directory");
+
                 return ErrorNumber.InvalidArgument;
+            }
 
             uint startMagic = BitConverter.ToUInt32(dirData, 4);
+
+            AaruLogging.Debug(MODULE_NAME, "ValidateRootDirectory: big dir startMagic=0x{0:X8}, expected=0x{1:X8}",
+                              startMagic, BIG_DIR_START_NAME);
 
             if(startMagic != BIG_DIR_START_NAME)
                 return ErrorNumber.InvalidArgument;
@@ -340,6 +417,8 @@ public sealed partial class AcornADFS
             // Check standard directory magic (Hugo or Nick)
             DirectoryHeader header = Marshal.ByteArrayToStructureLittleEndian<DirectoryHeader>(dirData);
 
+            AaruLogging.Debug(MODULE_NAME, "ValidateRootDirectory: magic=0x{0:X8}, OLD=0x{1:X8}, NEW=0x{2:X8}",
+                              header.magic, OLD_DIR_MAGIC, NEW_DIR_MAGIC);
 
             if(header.magic != OLD_DIR_MAGIC && header.magic != NEW_DIR_MAGIC)
                 return ErrorNumber.InvalidArgument;

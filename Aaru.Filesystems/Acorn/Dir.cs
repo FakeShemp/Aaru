@@ -216,43 +216,97 @@ public sealed partial class AcornADFS
                 byteOffset = indAddr; // Root directory - already a byte offset
             else
                 byteOffset = indAddr * 256UL; // Subdirectory - multiply by sector size
+
+            ulong sector       = byteOffset / _imagePlugin.Info.SectorSize + _partition.Start;
+            var   offsetInSect = (int)(byteOffset % _imagePlugin.Info.SectorSize);
+
+            var sectorsToRead = (uint)((offsetInSect + size + _imagePlugin.Info.SectorSize - 1) /
+                                       _imagePlugin.Info.SectorSize);
+
+            if(sector + sectorsToRead > _partition.End) return ErrorNumber.InvalidArgument;
+
+            ErrorNumber errno = _imagePlugin.ReadSectors(sector, false, sectorsToRead, out byte[] sectorData, out _);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            data = new byte[size];
+
+            // For old format directories, when physical sector size > 256 bytes,
+            // the directory data is interleaved - the tail is at the end of the physical sector
+            if(size == OLD_DIRECTORY_SIZE && sectorData.Length > OLD_DIRECTORY_SIZE)
+            {
+                // Old directory: copy first part (1227 bytes), then tail (53 bytes) from end of sector
+                // This matches the logic in Info.cs
+                Array.Copy(sectorData, offsetInSect, data, 0, (int)OLD_DIRECTORY_SIZE - 53);
+                Array.Copy(sectorData, sectorData.Length - 54, data, (int)OLD_DIRECTORY_SIZE - 54, 53);
+            }
+            else if(offsetInSect + size <= sectorData.Length)
+                Array.Copy(sectorData, offsetInSect, data, 0, size);
+            else
+                Array.Copy(sectorData, offsetInSect, data, 0, sectorData.Length - offsetInSect);
+
+            return ErrorNumber.NoError;
         }
-        else
-        {
-            // New format: indirect disc address contains fragment ID and offset
-            // For the root directory, the address from disc record is usually
-            // directly usable as a sector offset after accounting for the map
-            // This is a simplified approach - full implementation would use the map
-            byteOffset = indAddr * (ulong)_blockSize;
-        }
 
-        ulong sector       = byteOffset / _imagePlugin.Info.SectorSize + _partition.Start;
-        var   offsetInSect = (int)(byteOffset % _imagePlugin.Info.SectorSize);
-
-        var sectorsToRead = (uint)((offsetInSect + size + _imagePlugin.Info.SectorSize - 1) /
-                                   _imagePlugin.Info.SectorSize);
-
-        if(sector + sectorsToRead > _partition.End) return ErrorNumber.InvalidArgument;
-
-        ErrorNumber errno = _imagePlugin.ReadSectors(sector, false, sectorsToRead, out byte[] sectorData, out _);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
+        // New format: use the map to look up the fragment
+        // indAddr contains fragment ID in upper bits and offset in lower 8 bits
+        // We need to read the directory sector by sector using MapBlock
         data = new byte[size];
+        var bytesRead = 0;
 
-        // For old format directories, when physical sector size > 256 bytes,
-        // the directory data is interleaved - the tail is at the end of the physical sector
-        if(_isOldMap && size == OLD_DIRECTORY_SIZE && sectorData.Length > OLD_DIRECTORY_SIZE)
+        while(bytesRead < size)
         {
-            // Old directory: copy first part (1227 bytes), then tail (53 bytes) from end of sector
-            // This matches the logic in Info.cs
-            Array.Copy(sectorData, offsetInSect, data, 0, (int)OLD_DIRECTORY_SIZE - 53);
-            Array.Copy(sectorData, sectorData.Length - 54, data, (int)OLD_DIRECTORY_SIZE - 54, 53);
+            // Calculate logical sector within the directory
+            int logicalSector = bytesRead / _blockSize;
+
+            // Map the sector to get physical location
+            ErrorNumber errno = MapBlock(indAddr, (uint)logicalSector, out ulong physicalSector);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // Read the sector - physicalSector is the ADFS sector number
+            // Account for if image sector size differs from ADFS sector size
+            ulong imageSector;
+            int   offsetInImageSector;
+
+            if(_imagePlugin.Info.SectorSize == (uint)_blockSize)
+            {
+                imageSector         = physicalSector + _partition.Start;
+                offsetInImageSector = 0;
+            }
+            else if(_imagePlugin.Info.SectorSize > (uint)_blockSize)
+            {
+                // Image sectors are larger than ADFS sectors
+                ulong adfsSecPerImgSec = _imagePlugin.Info.SectorSize / (uint)_blockSize;
+                imageSector         = physicalSector / adfsSecPerImgSec + _partition.Start;
+                offsetInImageSector = (int)(physicalSector % adfsSecPerImgSec * (uint)_blockSize);
+            }
+            else
+            {
+                // Image sectors are smaller than ADFS sectors
+                ulong imgSecPerAdfsSec = (uint)_blockSize / _imagePlugin.Info.SectorSize;
+                imageSector         = physicalSector * imgSecPerAdfsSec + _partition.Start;
+                offsetInImageSector = 0;
+            }
+
+            errno = _imagePlugin.ReadSector(imageSector, false, out byte[] sectorData, out _);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // Copy data from this sector
+            int offsetInSector = bytesRead % _blockSize;
+            int bytesToCopy    = Math.Min(_blockSize - offsetInSector, (int)size - bytesRead);
+
+            if(offsetInImageSector + offsetInSector + bytesToCopy > sectorData.Length)
+                bytesToCopy = sectorData.Length - offsetInImageSector - offsetInSector;
+
+            if(bytesToCopy <= 0) break;
+
+            Array.Copy(sectorData, offsetInImageSector + offsetInSector, data, bytesRead, bytesToCopy);
+
+            bytesRead += bytesToCopy;
         }
-        else if(offsetInSect + size <= sectorData.Length)
-            Array.Copy(sectorData, offsetInSect, data, 0, size);
-        else
-            Array.Copy(sectorData, offsetInSect, data, 0, sectorData.Length - offsetInSect);
+
 
         return ErrorNumber.NoError;
     }

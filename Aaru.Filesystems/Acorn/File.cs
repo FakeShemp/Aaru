@@ -236,39 +236,19 @@ public sealed partial class AcornADFS
     {
         read = 0;
 
-        // For new map format, we need to map logical blocks to physical blocks
+        // For new map format, we need to map logical sectors to physical sectors
         // indAddr contains: fragment ID in upper 24 bits, offset within fragment in lower 8 bits
-        // The __adfs_block_map function in Linux handles this
 
         long bytesRead     = 0;
         long currentOffset = offset;
 
         while(bytesRead < length)
         {
-            // Calculate logical block number within the file
-            long logicalBlock = currentOffset / _blockSize;
+            // Calculate logical sector within the file
+            var logicalSector = (uint)(currentOffset / _blockSize);
 
-            // Map the logical block to a physical block
-            ErrorNumber errno = MapBlock(indAddr, (uint)logicalBlock, out ulong physicalBlock);
-
-            if(errno != ErrorNumber.NoError)
-            {
-                // If we've read some data, return what we have
-                if(bytesRead > 0) break;
-
-                return errno;
-            }
-
-            // Calculate offset within the block
-            var offsetInBlock = (int)(currentOffset % _blockSize);
-
-            // Read the block
-            ulong sector          = physicalBlock * (ulong)_blockSize / _imagePlugin.Info.SectorSize + _partition.Start;
-            var   sectorsPerBlock = (uint)(_blockSize / (int)_imagePlugin.Info.SectorSize);
-
-            if(sectorsPerBlock == 0) sectorsPerBlock = 1;
-
-            errno = _imagePlugin.ReadSectors(sector, false, sectorsPerBlock, out byte[] blockData, out _);
+            // Map the logical sector to a physical sector
+            ErrorNumber errno = MapBlock(indAddr, logicalSector, out ulong physicalSector);
 
             if(errno != ErrorNumber.NoError)
             {
@@ -278,12 +258,55 @@ public sealed partial class AcornADFS
                 return errno;
             }
 
-            // Calculate how much data to copy from this block
-            long bytesToCopy = Math.Min(_blockSize - offsetInBlock, length - bytesRead);
+            // Calculate offset within the sector
+            var offsetInSector = (int)(currentOffset % _blockSize);
 
-            if(offsetInBlock + bytesToCopy > blockData.Length) bytesToCopy = blockData.Length - offsetInBlock;
+            // Read the sector - physicalSector is already the absolute sector on disk
+            // But we need to account for if image sector size differs from ADFS sector size
+            ulong imageSector;
+            int   offsetInImageSector;
 
-            Array.Copy(blockData, offsetInBlock, buffer, bytesRead, bytesToCopy);
+            if(_imagePlugin.Info.SectorSize == (uint)_blockSize)
+            {
+                imageSector         = physicalSector + _partition.Start;
+                offsetInImageSector = offsetInSector;
+            }
+            else if(_imagePlugin.Info.SectorSize > (uint)_blockSize)
+            {
+                // Image sectors are larger than ADFS sectors
+                ulong adfsSecPerImgSec = _imagePlugin.Info.SectorSize / (uint)_blockSize;
+                imageSector = physicalSector / adfsSecPerImgSec + _partition.Start;
+
+                offsetInImageSector =
+                    (int)(physicalSector % adfsSecPerImgSec * (uint)_blockSize + (ulong)offsetInSector);
+            }
+            else
+            {
+                // Image sectors are smaller than ADFS sectors
+                ulong imgSecPerAdfsSec = (uint)_blockSize / _imagePlugin.Info.SectorSize;
+                imageSector         = physicalSector * imgSecPerAdfsSec + _partition.Start;
+                offsetInImageSector = offsetInSector;
+            }
+
+            errno = _imagePlugin.ReadSector(imageSector, false, out byte[] sectorData, out _);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                // If we've read some data, return what we have
+                if(bytesRead > 0) break;
+
+                return errno;
+            }
+
+            // Calculate how much data to copy from this sector
+            long bytesAvailableInSector =
+                Math.Min(_blockSize - offsetInSector, sectorData.Length - offsetInImageSector);
+
+            long bytesToCopy = Math.Min(bytesAvailableInSector, length - bytesRead);
+
+            if(bytesToCopy <= 0) break;
+
+            Array.Copy(sectorData, offsetInImageSector, buffer, bytesRead, bytesToCopy);
 
             bytesRead     += bytesToCopy;
             currentOffset += bytesToCopy;
@@ -294,116 +317,164 @@ public sealed partial class AcornADFS
         return ErrorNumber.NoError;
     }
 
-    /// <summary>Maps a logical block within a file to a physical block on disk</summary>
+    /// <summary>Maps a logical block within a file to a physical sector on disk</summary>
     /// <param name="indAddr">Indirect disc address of the file</param>
     /// <param name="logicalBlock">Logical block number within the file</param>
-    /// <param name="physicalBlock">Output physical block number</param>
+    /// <param name="physicalSector">Output physical sector number</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber MapBlock(uint indAddr, uint logicalBlock, out ulong physicalBlock)
+    ErrorNumber MapBlock(uint indAddr, uint logicalBlock, out ulong physicalSector)
     {
-        physicalBlock = 0;
+        physicalSector = 0;
 
         // Extract fragment ID and offset from indirect address
         // indAddr format: fragment ID in bits [31:8], offset in bits [7:0]
         uint fragId     = indAddr >> 8;
         uint fragOffset = indAddr & 0xFF;
 
-        // If there's an offset, adjust the logical block
+        // Calculate sector offset within the fragment
+        uint sectorOffset = logicalBlock;
+
+        // If there's an offset in the indirect address, add it
+        // The offset is in units of (1 << log2sharesize) sectors
         if(fragOffset > 0)
         {
-            // The offset is in units of (1 << log2sharesize) sectors
-            // This allows small files to share a fragment with a directory
             int shareSize = _discRecord.flags & 0x0F; // log2sharesize is in lower 4 bits of flags
-            logicalBlock += fragOffset - 1 << shareSize;
+            sectorOffset += fragOffset - 1 << shareSize;
         }
 
         // Look up the fragment in the map
-        return MapLookup(fragId, logicalBlock, out physicalBlock);
+        return MapLookup(fragId, sectorOffset, out physicalSector);
     }
 
     /// <summary>Looks up a fragment ID in the map to find the physical block</summary>
     /// <param name="fragId">Fragment ID to look up</param>
-    /// <param name="blockOffset">Block offset within the fragment</param>
-    /// <param name="physicalBlock">Output physical block number</param>
+    /// <param name="sectorOffset">Sector offset within the fragment</param>
+    /// <param name="physicalBlock">Output physical sector number</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber MapLookup(uint fragId, uint blockOffset, out ulong physicalBlock)
+    ErrorNumber MapLookup(uint fragId, uint sectorOffset, out ulong physicalBlock)
     {
         physicalBlock = 0;
 
-        int nzones     = _discRecord.nzones + (_discRecord.nzones_high << 8);
-        int idlen      = _discRecord.idlen;
-        int sectorSize = 1 << _discRecord.log2secsize;
-        int zoneSpare  = _discRecord.zone_spare;
+        int nzones      = _discRecord.nzones + (_discRecord.nzones_high << 8);
+        int idlen       = _discRecord.idlen;
+        int sectorSize  = 1 << _discRecord.log2secsize;
+        int zoneSpare   = _discRecord.zone_spare;
+        int log2bpmb    = _discRecord.log2bpmb;
+        int log2secsize = _discRecord.log2secsize;
+
+        // s_map2blk is the shift to convert between map bits and sectors
+        int map2blk = log2bpmb - log2secsize;
+
+        // Zone size in bits (excluding zone header and spare)
+        int zoneSize = sectorSize * 8 - zoneSpare;
+
+        // Calculate map address - the map starts near the middle of the disc
+        // map_addr = (nzones >> 1) * zone_size - ((nzones > 1) ? DISC_RECORD_SIZE * 8 : 0)
+        // Then convert from bits to sectors using map2blk
+        int mapAddrBits = (nzones >> 1) * zoneSize - (nzones > 1 ? DISC_RECORD_SIZE * 8 : 0);
+        int mapAddr     = map2blk >= 0 ? mapAddrBits << map2blk : mapAddrBits >> -map2blk;
 
         // Calculate which zone to start searching
         // Root fragment (ID 2) starts in the middle zone
-        // Other fragments start in zone (fragId / ids_per_zone)
-        int idsPerZone = (sectorSize                             * 8 - zoneSpare) / (idlen + 1);
+        int idsPerZone = zoneSize / (idlen + 1);
         int startZone  = fragId == 2 ? nzones / 2 : (int)(fragId / (uint)idsPerZone);
 
         if(startZone >= nzones) startZone = 0;
 
-        // Calculate bits per zone
-        int bitsPerZone = sectorSize * 8 - zoneSpare;
+        // Convert sector offset to map offset
+        uint mapOff = map2blk >= 0 ? sectorOffset >> map2blk : sectorOffset << -map2blk;
 
-        // Search through zones
+        // Search through zones starting from startZone
         for(var zoneCount = 0; zoneCount < nzones; zoneCount++)
         {
             int zone = (startZone + zoneCount) % nzones;
 
+            // Calculate the sector address for this zone
+            ulong zoneSector = (ulong)(mapAddr + zone) + _partition.Start;
+
             // Read the zone
-            ErrorNumber errno =
-                _imagePlugin.ReadSector(_partition.Start + (ulong)zone, false, out byte[] zoneData, out _);
+            ErrorNumber errno = _imagePlugin.ReadSector(zoneSector, false, out byte[] zoneData, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
-            // Calculate zone bit address (for physical block calculation)
-            long zoneBitAddr = zone == 0 ? 0 : (long)(bitsPerZone * zone - DISC_RECORD_SIZE * 8);
+            // Calculate zone layout:
+            // Zone 0: startBit = 32 + DISC_RECORD_SIZE * 8, startBlk = 0
+            // Other zones: startBit = 32, startBlk = zone * zoneSize - DISC_RECORD_SIZE * 8
+            int startBit = zone == 0 ? 32 + DISC_RECORD_SIZE * 8 : 32;
+            int endBit   = 32 + zoneSize;
+            int startBlk = zone == 0 ? 0 : zone * zoneSize - DISC_RECORD_SIZE * 8;
 
             // Search for the fragment in this zone
-            int startBit = zone == 0 ? 32 + DISC_RECORD_SIZE * 8 : 32;
-            int endBit   = Math.Min(bitsPerZone, zoneData.Length * 8);
+            int result = LookupZone(zoneData, idlen, fragId, ref mapOff, startBit, endBit);
 
-            int position = startBit;
-
-            while(position < endBit)
+            if(result >= 0)
             {
-                // Read fragment ID at current position
-                int frag = GetBits(zoneData, position, idlen);
+                // Found! Calculate the physical sector
+                int  mapResult = result - startBit + startBlk;
+                uint secOff    = sectorOffset      - (map2blk >= 0 ? mapOff << map2blk : mapOff >> -map2blk);
 
-                // Find the end of this fragment (next '1' bit)
-                int fragEnd = FindNextSetBit(zoneData, position + idlen, endBit);
+                physicalBlock = secOff + (map2blk >= 0 ? (uint)mapResult << map2blk : (uint)mapResult >> -map2blk);
 
-                if(fragEnd < 0 || fragEnd >= endBit) break;
-
-                int fragLength = fragEnd + 1 - position;
-
-                // Check if this is the fragment we're looking for
-                if(frag == fragId)
-                {
-                    // Calculate how many blocks this fragment spans
-                    int blocksInFrag = fragLength << _discRecord.log2bpmb >> _discRecord.log2secsize;
-
-                    if(blockOffset < blocksInFrag)
-                    {
-                        // Found the block
-                        long bitAddr = zoneBitAddr + position;
-
-                        physicalBlock = (ulong)((bitAddr << _discRecord.log2bpmb >> _discRecord.log2secsize) +
-                                                blockOffset);
-
-                        return ErrorNumber.NoError;
-                    }
-
-                    // Block is in a later extent of this fragment
-                    blockOffset -= (uint)blocksInFrag;
-                }
-
-                position = fragEnd + 1;
+                return ErrorNumber.NoError;
             }
         }
 
         return ErrorNumber.InvalidArgument;
+    }
+
+    /// <summary>Searches a single zone for a fragment ID</summary>
+    /// <param name="zoneData">Zone map data</param>
+    /// <param name="idlen">Fragment ID length in bits</param>
+    /// <param name="fragId">Fragment ID to find</param>
+    /// <param name="offset">Map bit offset to find (modified on return)</param>
+    /// <param name="startBit">Starting bit position</param>
+    /// <param name="endBit">Ending bit position</param>
+    /// <returns>Bit position where found, or -1 if not found</returns>
+    int LookupZone(byte[] zoneData, int idlen, uint fragId, ref uint offset, int startBit, int endBit)
+    {
+        uint idmask = (1u << idlen) - 1;
+
+        // Get the free link at offset 8 (limited to 15 bits)
+        uint freeLink    = (uint)GetBits(zoneData, 8, Math.Min(idlen, 15)) & 0x7FFF;
+        uint freelinkPos = freeLink != 0 ? 8 + freeLink : 0;
+
+        int position = startBit;
+
+        while(position < endBit)
+        {
+            // Read fragment ID at current position
+            uint frag = (uint)GetBits(zoneData, position, idlen) & idmask;
+
+            // Find the end of this fragment (next '1' bit after the fragment ID)
+            int fragEnd = FindNextSetBit(zoneData, position + idlen, endBit);
+
+            if(fragEnd < 0 || fragEnd >= endBit) break;
+
+            int fragLength = fragEnd + 1 - position;
+
+            // Check if we're at the free link position (skip free space entries)
+            if(position == freelinkPos)
+            {
+                // This is a free space entry - update free link and skip
+                freelinkPos += frag & 0x7FFF;
+            }
+            else if(frag == fragId)
+            {
+                // Found our fragment
+                if(offset < fragLength)
+                {
+                    // The offset is within this fragment
+                    return position + (int)offset;
+                }
+
+                // Offset is beyond this fragment extent - there may be more extents
+                offset -= (uint)fragLength;
+            }
+
+            position = fragEnd + 1;
+        }
+
+        return -1; // Not found in this zone
     }
 
     /// <summary>Gets a directory entry by path</summary>
