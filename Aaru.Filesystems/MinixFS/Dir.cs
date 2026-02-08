@@ -28,14 +28,173 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
 public sealed partial class MinixFS
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize path
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath is "" or ".") normalizedPath = "/";
+
+        // Root directory case
+        if(normalizedPath == "/" || string.Equals(normalizedPath, "/", StringComparison.OrdinalIgnoreCase))
+        {
+            if(_rootDirectoryCache.Count == 0) return ErrorNumber.NoSuchFile;
+
+            node = new MinixDirNode
+            {
+                Path     = "/",
+                Position = 0,
+                Entries  = _rootDirectoryCache.Keys.ToArray()
+            };
+
+            return ErrorNumber.NoError;
+        }
+
+        // Subdirectory traversal
+        string pathWithoutLeadingSlash = normalizedPath.StartsWith("/", StringComparison.Ordinal)
+                                             ? normalizedPath[1..]
+                                             : normalizedPath;
+
+        string[] pathComponents = pathWithoutLeadingSlash.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenDir: Traversing path with {0} components", pathComponents.Length);
+
+        // Start from root directory cache
+        Dictionary<string, uint> currentEntries = _rootDirectoryCache;
+
+        // Traverse each path component
+        for(var p = 0; p < pathComponents.Length; p++)
+        {
+            string component = pathComponents[p];
+
+            AaruLogging.Debug(MODULE_NAME, "OpenDir: Navigating to component '{0}'", component);
+
+            // Skip "." and ".." during traversal
+            if(component is "." or "..") continue;
+
+            // Find the component in current directory
+            if(!currentEntries.TryGetValue(component, out uint inodeNumber))
+            {
+                AaruLogging.Debug(MODULE_NAME, "OpenDir: Component '{0}' not found in directory", component);
+
+                return ErrorNumber.NoSuchFile;
+            }
+
+            AaruLogging.Debug(MODULE_NAME, "OpenDir: Component '{0}' found with inode {1}", component, inodeNumber);
+
+            // Read the inode
+            ErrorNumber errno = ReadInode(inodeNumber, out object inodeObj);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "OpenDir: Error reading inode {0}: {1}", inodeNumber, errno);
+
+                return errno;
+            }
+
+            // Check if it's a directory
+            ushort mode = _version == FilesystemVersion.V1
+                              ? ((V1DiskInode)inodeObj).d1_mode
+                              : ((V2DiskInode)inodeObj).d2_mode;
+
+            if((mode & (ushort)InodeMode.TypeMask) != (ushort)InodeMode.Directory)
+            {
+                AaruLogging.Debug(MODULE_NAME, "OpenDir: '{0}' is not a directory (mode=0x{1:X4})", component, mode);
+
+                return ErrorNumber.NotDirectory;
+            }
+
+            // Read directory contents
+            errno = ReadDirectoryContents(inodeNumber, out Dictionary<string, uint> dirEntries);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "OpenDir: Error reading directory contents: {0}", errno);
+
+                return errno;
+            }
+
+            // Filter out "." and ".." entries
+            var filteredEntries = new Dictionary<string, uint>();
+
+            foreach(KeyValuePair<string, uint> entry in dirEntries)
+                if(entry.Key is not ("." or ".."))
+                    filteredEntries[entry.Key] = entry.Value;
+
+            // If this is the last component, we're opening this directory
+            if(p == pathComponents.Length - 1)
+            {
+                node = new MinixDirNode
+                {
+                    Path     = normalizedPath,
+                    Position = 0,
+                    Entries  = filteredEntries.Keys.ToArray()
+                };
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  "OpenDir: Successfully opened directory '{0}' with {1} entries",
+                                  normalizedPath,
+                                  filteredEntries.Count);
+
+                return ErrorNumber.NoError;
+            }
+
+            // Not the last component - move to next level
+            currentEntries = filteredEntries;
+        }
+
+        return ErrorNumber.NoSuchFile;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(node is not MinixDirNode minixNode) return ErrorNumber.InvalidArgument;
+
+        minixNode.Position = -1;
+        minixNode.Entries  = null;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not MinixDirNode minixNode) return ErrorNumber.InvalidArgument;
+
+        if(minixNode.Position < 0) return ErrorNumber.InvalidArgument;
+
+        // End of directory
+        if(minixNode.Position >= minixNode.Entries.Length) return ErrorNumber.NoError;
+
+        // Get current filename and advance position
+        filename = minixNode.Entries[minixNode.Position++];
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Reads the contents of a directory</summary>
     /// <param name="inodeNumber">Inode number of the directory</param>
     /// <param name="entries">Dictionary of filename -> inode number</param>
