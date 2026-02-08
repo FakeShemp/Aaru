@@ -271,16 +271,17 @@ public sealed partial class MinixFS
             sb.AppendLine(minixVersion);
             sb.AppendFormat(Localization._0_chars_in_filename, filenamesize).AppendLine();
 
-            if(mnxSb.s_zones > 0) // On V2
-            {
-                sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, mnxSb.s_zones, mnxSb.s_zones * 1024)
-                  .AppendLine();
-            }
-            else
-            {
-                sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, mnxSb.s_nzones, mnxSb.s_nzones * 1024)
-                  .AppendLine();
-            }
+            // V1 filesystems only have s_nzones (16-bit), s_zones doesn't exist in the on-disk structure
+            // V2 filesystems have both, with s_zones (32-bit) replacing s_nzones for larger volume support
+            bool isV1 = metadata.Type == FS_TYPE_V1;
+
+            uint zones = isV1
+                             ? mnxSb.s_nzones
+                             : mnxSb.s_zones > 0
+                                 ? mnxSb.s_zones
+                                 : mnxSb.s_nzones;
+
+            sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, zones, zones * 1024).AppendLine();
 
             sb.AppendFormat(Localization._0_inodes_in_volume, mnxSb.s_ninodes).AppendLine();
 
@@ -298,7 +299,7 @@ public sealed partial class MinixFS
             sb.AppendFormat(Localization._0_bytes_maximum_per_file, mnxSb.s_max_size).AppendLine();
             sb.AppendFormat(Localization.Filesystem_state_0,        mnxSb.s_state).AppendLine();
             metadata.ClusterSize = 1024;
-            metadata.Clusters    = mnxSb.s_zones > 0 ? mnxSb.s_zones : mnxSb.s_nzones;
+            metadata.Clusters    = zones;
         }
 
         information = sb.ToString();

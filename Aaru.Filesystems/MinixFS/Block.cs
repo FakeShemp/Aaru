@@ -90,12 +90,13 @@ public sealed partial class MinixFS
     /// <param name="physicalBlock">Physical block number on disk (0 for sparse hole)</param>
     /// <returns>Error number indicating success or failure</returns>
     /// <remarks>
-    ///     Based on read_map() in mfs/read.c:
-    ///     - First directZones blocks are direct
-    ///     - Next nr_indirects blocks are in single indirect
-    ///     - Remaining blocks are in double indirect
-    ///     For V1: directZones=7, nr_indirects=512 (1024/2)
-    ///     For V2/V3: directZones=7, nr_indirects=256 or 1024 (blockSize/4)
+    ///     Based on block_to_path() in Linux minix/itree_v1.c and itree_v2.c:
+    ///     - First directZones blocks are direct (zones[0..6])
+    ///     - Next nrIndirects blocks are in single indirect (zones[7])
+    ///     - Next nrIndirects² blocks are in double indirect (zones[8])
+    ///     - For V2/V3 only: remaining blocks are in triple indirect (zones[9])
+    ///     For V1: directZones=7, nrIndirects=512 (1024/2), max depth=3 (no triple)
+    ///     For V2/V3: directZones=7, nrIndirects=blockSize/4, max depth=4 (has triple)
     /// </remarks>
     ErrorNumber ReadMap(uint[] zones, int directZones, int logicalBlock, out int physicalBlock)
     {
@@ -110,9 +111,10 @@ public sealed partial class MinixFS
 
         // Number of indirect pointers per block
         int pointerSize = _version == FilesystemVersion.V1 ? 2 : 4;
-        int nrIndirects = _blockSize / pointerSize;
+        int nrIndirects = _blockSize  / pointerSize;
+        int sqIndirects = nrIndirects * nrIndirects; // nrIndirects²
 
-        // Is position in direct zones?
+        // Is position in direct zones? (zones[0..6])
         if(zone < directZones)
         {
             uint z = zones[zone];
@@ -124,19 +126,19 @@ public sealed partial class MinixFS
             return ErrorNumber.NoError;
         }
 
-        // Not in direct zones - check single or double indirect
+        // Not in direct zones - check single, double, or triple indirect
         int excess = zone - directZones;
 
         uint indirectZone;
 
         if(excess < nrIndirects)
         {
-            // Single indirect block
+            // Single indirect block (zones[directZones] = zones[7])
             indirectZone = zones[directZones];
         }
-        else
+        else if(excess < nrIndirects + sqIndirects)
         {
-            // Double indirect block
+            // Double indirect block (zones[directZones + 1] = zones[8])
             if(directZones + 1 >= zones.Length) return ErrorNumber.InvalidArgument;
 
             uint doubleIndirectZone = zones[directZones + 1];
@@ -154,12 +156,67 @@ public sealed partial class MinixFS
             excess -= nrIndirects;
             int index = excess / nrIndirects;
 
-            if(index >= nrIndirects) return ErrorNumber.InvalidArgument; // Beyond double indirect
-
             // Read zone pointer from double indirect block
             indirectZone = ReadZonePointer(doubleIndirectData, index);
 
             excess %= nrIndirects;
+        }
+        else
+        {
+            // Triple indirect block (zones[directZones + 2] = zones[9])
+            // Only supported on V2/V3 filesystems
+            if(_version == FilesystemVersion.V1)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Block {0} beyond V1 filesystem capacity", logicalBlock);
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            if(directZones + 2 >= zones.Length) return ErrorNumber.InvalidArgument;
+
+            uint tripleIndirectZone = zones[directZones + 2];
+
+            if(tripleIndirectZone == 0) return ErrorNumber.NoError; // Sparse
+
+            // Read triple indirect block
+            var tripleIndirectBlock = (int)(tripleIndirectZone << scale);
+
+            ErrorNumber errno = ReadBlock(tripleIndirectBlock, out byte[] tripleIndirectData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // Calculate indices for triple indirect
+            // excess is now relative to start of triple indirect range
+            excess -= nrIndirects + sqIndirects;
+
+            // First level index: which double indirect block
+            int tripleIndex = excess / sqIndirects;
+
+            if(tripleIndex >= nrIndirects)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Block {0} beyond triple indirect capacity", logicalBlock);
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            uint doubleIndirectZone = ReadZonePointer(tripleIndirectData, tripleIndex);
+
+            if(doubleIndirectZone == 0) return ErrorNumber.NoError; // Sparse
+
+            // Read the double indirect block pointed to by triple indirect
+            var doubleIndirectBlock = (int)(doubleIndirectZone << scale);
+
+            errno = ReadBlock(doubleIndirectBlock, out byte[] doubleIndirectData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // Second level index: which single indirect block within the double indirect
+            int remainder   = excess    % sqIndirects;
+            int doubleIndex = remainder / nrIndirects;
+
+            indirectZone = ReadZonePointer(doubleIndirectData, doubleIndex);
+
+            excess = remainder % nrIndirects;
         }
 
         // Now indirectZone points to single indirect block, excess is index into it

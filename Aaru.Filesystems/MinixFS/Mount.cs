@@ -260,8 +260,16 @@ public sealed partial class MinixFS
             _firstDataZone = sb.s_firstdatazone;
             _logZoneSize   = sb.s_log_zone_size;
             _maxSize       = sb.s_max_size;
-            _zones         = sb.s_zones > 0 ? sb.s_zones : sb.s_nzones;
-            _isClean       = (sb.s_state & (ushort)FilesystemStateFlags.Clean) != 0;
+
+            // V1 filesystems only have s_nzones (16-bit), s_zones doesn't exist in the on-disk structure
+            // V2 filesystems have both, with s_zones (32-bit) replacing s_nzones for larger volume support
+            _zones = _version == FilesystemVersion.V1
+                         ? sb.s_nzones
+                         : sb.s_zones > 0
+                             ? sb.s_zones
+                             : sb.s_nzones;
+
+            _isClean = (sb.s_state & (ushort)FilesystemStateFlags.Clean) != 0;
 
             AaruLogging.Debug(MODULE_NAME, "Detected Minix V1/V2 superblock format");
         }
