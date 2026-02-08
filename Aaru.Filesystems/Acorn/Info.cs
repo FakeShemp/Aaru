@@ -378,6 +378,26 @@ public sealed partial class AcornADFS
 
                 sbInformation.AppendLine(Localization.Acorn_Advanced_Disc_Filing_System);
                 sbInformation.AppendLine();
+
+                // Detect old format variant based on volume size and characteristics
+                // ADFS-S: 160KB (single-sided), ADFS-M: 320KB (double-sided)
+                // ADFS-L: 640KB (double density), ADFS-D: 800KB (double density, different map layout)
+                string oldFormat;
+
+                // ADFS-D has map1 at offset 0x100 in sector 0, not at sector 1
+                // We detected this earlier when oldMap1.checksum didn't match at sector 1
+                bool isAdfsD = imagePlugin.Info.SectorSize >= 512;
+
+                if(isAdfsD && bytes >= 800 * 1024)
+                    oldFormat = "ADFS-D";
+                else if(bytes <= 160 * 1024)
+                    oldFormat = "ADFS-S";
+                else if(bytes <= 320 * 1024)
+                    oldFormat = "ADFS-M";
+                else
+                    oldFormat = "ADFS-L";
+
+                sbInformation.AppendFormat(Localization.Format_0, oldFormat).AppendLine();
                 sbInformation.AppendFormat(Localization._0_bytes_per_sector, imagePlugin.Info.SectorSize).AppendLine();
                 sbInformation.AppendFormat(Localization.Volume_has_0_bytes,  bytes).AppendLine();
 
@@ -483,9 +503,26 @@ public sealed partial class AcornADFS
 
         metadata = new FileSystem();
 
+        // Detect new format variant based on DiscRecord fields
+        // ADFS-E: format_version = 0, no big directories
+        // ADFS-F: format_version = 0, enhanced features
+        // ADFS-F+: flags & 1 (big_flag) set, for discs > 512MB with big directories
+        // ADFS-G: format_version > 0
+        string newFormat;
+
+        if(drSb.format_version > 0)
+            newFormat = "ADFS-G";
+        else if((drSb.flags & 0x01) != 0) // big_flag
+            newFormat = "ADFS-F+";
+        else if(drSb.idlen > 15)
+            newFormat = "ADFS-F";
+        else
+            newFormat = "ADFS-E";
+
         sbInformation.AppendLine(Localization.Acorn_Advanced_Disc_Filing_System);
         sbInformation.AppendLine();
-        sbInformation.AppendFormat(Localization.Version_0,            drSb.format_version).AppendLine();
+        sbInformation.AppendFormat(Localization.Format_0, newFormat).AppendLine();
+        sbInformation.AppendFormat(Localization.Format_version_0,     drSb.format_version).AppendLine();
         sbInformation.AppendFormat(Localization._0_bytes_per_sector,  1 << drSb.log2secsize).AppendLine();
         sbInformation.AppendFormat(Localization._0_sectors_per_track, drSb.spt).AppendLine();
         sbInformation.AppendFormat(Localization._0_heads,             drSb.heads).AppendLine();

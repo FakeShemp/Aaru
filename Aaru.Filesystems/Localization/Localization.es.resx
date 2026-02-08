@@ -25,6 +25,12 @@
     <data name="Acorn_Advanced_Disc_Filing_System" xml:space="preserve">
     <value>Sistema de Ficheros de Disco Avanzado de Acorn</value>
   </data>
+    <data name="Format_0" xml:space="preserve">
+    <value>Formato: {0}</value>
+  </data>
+    <data name="Format_version_0" xml:space="preserve">
+    <value>Versión de formato: {0}</value>
+  </data>
     <data name="Active_root_block_0" xml:space="preserve">
     <value>Bloque raíz activo: {0}</value>
   </data>

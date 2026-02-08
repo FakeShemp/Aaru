@@ -1144,6 +1144,12 @@
     <data name="Acorn_Advanced_Disc_Filing_System" xml:space="preserve">
     <value>Acorn Advanced Disc Filing System</value>
   </data>
+    <data name="Format_0" xml:space="preserve">
+    <value>Format: {0}</value>
+  </data>
+    <data name="Format_version_0" xml:space="preserve">
+    <value>Format version: {0}</value>
+  </data>
     <data name="Volume_has_0_bytes" xml:space="preserve">
     <value>Volume has {0} bytes</value>
   </data>

@@ -2285,6 +2285,18 @@ namespace Aaru.Filesystems {
             }
         }
         
+        internal static string Format_0 {
+            get {
+                return ResourceManager.GetString("Format_0", resourceCulture);
+            }
+        }
+        
+        internal static string Format_version_0 {
+            get {
+                return ResourceManager.GetString("Format_version_0", resourceCulture);
+            }
+        }
+        
         internal static string Volume_has_0_bytes {
             get {
                 return ResourceManager.GetString("Volume_has_0_bytes", resourceCulture);
