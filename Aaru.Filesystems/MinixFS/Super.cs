@@ -41,12 +41,18 @@ public sealed partial class MinixFS
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
+        // Count free inodes by scanning inode bitmap
+        ulong freeInodes = CountFreeBits(IMAP, _imapBlocks, _ninodes);
+
+        // Count free zones by scanning zone bitmap
+        ulong freeZones = CountFreeBits(ZMAP, _zmapBlocks, _zones);
+
         stat = new FileSystemInfo
         {
             Blocks         = _zones,
-            FreeBlocks     = 0, // Minix doesn't store free block count in superblock
+            FreeBlocks     = freeZones,
             Files          = _ninodes,
-            FreeFiles      = 0, // Minix doesn't store free inode count in superblock
+            FreeFiles      = freeInodes,
             FilenameLength = (ushort)_filenameSize,
             Type = _version == FilesystemVersion.V3
                        ? FS_TYPE_V3
@@ -57,5 +63,52 @@ public sealed partial class MinixFS
         };
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Counts free bits in a bitmap</summary>
+    /// <param name="mapType">IMAP for inode bitmap, ZMAP for zone bitmap</param>
+    /// <param name="mapBlocks">Number of blocks in the bitmap</param>
+    /// <param name="maxBits">Maximum number of bits to check</param>
+    /// <returns>Number of free (zero) bits in the bitmap</returns>
+    ulong CountFreeBits(int mapType, int mapBlocks, uint maxBits)
+    {
+        ulong freeBits = 0;
+
+        // Calculate starting block for the bitmap
+        // Layout: boot block (0), superblock (1), inode map, zone map
+        int startBlock = mapType == IMAP ? START_BLOCK : START_BLOCK + _imapBlocks;
+
+        uint bitsChecked = 0;
+
+        for(var block = 0; block < mapBlocks && bitsChecked < maxBits; block++)
+        {
+            ErrorNumber errno = ReadBlock(startBlock + block, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError) continue;
+
+            // Count free bits in this block
+            for(var byteIndex = 0; byteIndex < blockData.Length && bitsChecked < maxBits; byteIndex++)
+            {
+                byte b = blockData[byteIndex];
+
+                for(var bit = 0; bit < 8 && bitsChecked < maxBits; bit++)
+                {
+                    // Bit 0 is always reserved (used), so skip it
+                    if(bitsChecked == 0)
+                    {
+                        bitsChecked++;
+
+                        continue;
+                    }
+
+                    // A zero bit means free
+                    if((b & 1 << bit) == 0) freeBits++;
+
+                    bitsChecked++;
+                }
+            }
+        }
+
+        return freeBits;
     }
 }
