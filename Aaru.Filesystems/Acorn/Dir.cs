@@ -198,14 +198,24 @@ public sealed partial class AcornADFS
 
         if(size == 0) size = _isBigDirectory ? 0 : NEW_DIRECTORY_SIZE;
 
-        // For old formats, indAddr is the direct byte offset (e.g., 0x200 or 0x400)
+        // For old formats, indAddr from directory entries is the disc address / 256
+        // (i.e., sector number in 256-byte sectors), so multiply by 256 to get byte offset.
+        // However, for the root directory, we store the absolute byte offset directly.
         // For new formats, we need to use the map to look up the fragment
         ulong byteOffset;
 
         if(_isOldMap)
         {
-            // Old format: indAddr is already the byte offset
-            byteOffset = indAddr;
+            // Old format: indAddr is the disc address divided by 256
+            // For root directory (0x200 or 0x400), this is the absolute byte offset we stored
+            // For subdirectories, the 3-byte address field is sector_number * 256 / 256 = sector_number
+            // So we need to multiply by 256 to get the byte offset
+            // However, since root directory addresses are stored as absolute byte offsets,
+            // we can detect them by checking if they're at the known fixed locations
+            if(indAddr == OLD_DIRECTORY_LOCATION || indAddr == NEW_DIRECTORY_LOCATION)
+                byteOffset = indAddr; // Root directory - already a byte offset
+            else
+                byteOffset = indAddr * 256UL; // Subdirectory - multiply by sector size
         }
         else
         {
