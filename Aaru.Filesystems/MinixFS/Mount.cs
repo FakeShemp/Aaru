@@ -205,16 +205,32 @@ public sealed partial class MinixFS
                            _                            => FilesystemVersion.V1
                        };
 
-            _filenameSize  = V3_NAME_MAX;
-            _blockSize     = magicV3 is MINIX3_MAGIC or MINIX3_CIGAM ? sb3.s_blocksize : V1_V2_BLOCK_SIZE;
-            _ninodes       = sb3.s_ninodes;
-            _imapBlocks    = sb3.s_imap_blocks;
-            _zmapBlocks    = sb3.s_zmap_blocks;
-            _firstDataZone = sb3.s_firstdatazone;
-            _logZoneSize   = sb3.s_log_zone_size;
-            _maxSize       = sb3.s_max_size;
-            _zones         = sb3.s_zones > 0 ? sb3.s_zones : sb3.s_nzones;
-            _isClean       = (sb3.s_flags & (ushort)FilesystemStateFlags.Clean) != 0;
+            _filenameSize = V3_NAME_MAX;
+            _blockSize    = magicV3 is MINIX3_MAGIC or MINIX3_CIGAM ? sb3.s_blocksize : V1_V2_BLOCK_SIZE;
+            _ninodes      = sb3.s_ninodes;
+            _imapBlocks   = sb3.s_imap_blocks;
+            _zmapBlocks   = sb3.s_zmap_blocks;
+            _logZoneSize  = sb3.s_log_zone_size;
+            _maxSize      = sb3.s_max_size;
+            _zones        = sb3.s_zones > 0 ? sb3.s_zones : sb3.s_nzones;
+            _isClean      = (sb3.s_flags & (ushort)FilesystemStateFlags.Clean) != 0;
+
+            // For V3 filesystems, s_firstdatazone may be 0 if the value was too large to fit
+            // in the 16-bit field. In that case, compute it on the fly like Minix MFS does.
+            if(sb3.s_firstdatazone == 0)
+            {
+                // Calculate inodes per block
+                int inodesPerBlock = _blockSize / V2_INODE_SIZE;
+
+                // offset = START_BLOCK + imap_blocks + zmap_blocks + inode_blocks
+                int start_Block = START_BLOCK + _imapBlocks + _zmapBlocks;
+                start_Block += (int)((_ninodes + inodesPerBlock - 1) / inodesPerBlock);
+
+                // firstdatazone = (offset + (1 << log_zone_size) - 1) >> log_zone_size
+                _firstDataZone = start_Block + (1 << _logZoneSize) - 1 >> _logZoneSize;
+            }
+            else
+                _firstDataZone = sb3.s_firstdatazone;
 
             // Check for mandatory flags that we don't understand
             if((sb3.s_flags & (ushort)MandatoryFlags.Mask) != 0)
