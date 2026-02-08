@@ -211,6 +211,7 @@ Fully supported file-systems (identify and extraction)
 * High Sierra Format
 * ISO9660, including Apple, Amiga, Rock Ridge, Joliet and Romeo extensions
 * Linux extended file system
+* Locus file system
 * MicroDOS file system
 * Microsoft 12-bit File Allocation Table (FAT12), including Atari ST extensions
 * Microsoft 16-bit File Allocation Table (FAT16)
@@ -252,7 +253,6 @@ Supported file systems for identification and information only
 * Linux extended file system 2
 * Linux extended file system 3
 * Linux extended file system 4
-* Locus file system
 * Microsoft New Technology File System (NTFS)
 * Microsoft Resilient File System (ReFS)
 * Minix v2 file system
