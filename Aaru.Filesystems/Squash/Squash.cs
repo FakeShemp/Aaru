@@ -28,8 +28,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -37,6 +39,32 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the squash filesystem</summary>
 public sealed partial class Squash : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "SquashFS plugin";
+
+    /// <summary>Encoding used for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>Image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Whether the filesystem is little-endian</summary>
+    bool _littleEndian;
+
+    /// <summary>Whether filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>Cached root directory entries</summary>
+    Dictionary<string, DirectoryEntryInfo> _rootDirectoryCache;
+
+    /// <summary>Root inode number</summary>
+    uint _rootInode;
+
+    /// <summary>The superblock</summary>
+    SuperBlock _superBlock;
+
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
     /// <inheritdoc />

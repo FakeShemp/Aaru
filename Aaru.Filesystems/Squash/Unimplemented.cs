@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Squash.cs
+// Filename       : Unimplemented.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Squash file system plugin.
@@ -28,8 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -39,14 +37,6 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class Squash
 {
-    /// <inheritdoc />
-    public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
-                             Dictionary<string, string> options,     string    @namespace) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
-
     /// <inheritdoc />
     public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
 
