@@ -192,6 +192,7 @@ Fully supported file-systems (identify and extraction)
 ======================================================
 
 * 3DO Opera file system
+* Acorn Advanced Disc Filing System
 * Amiga Fast File System, with international characters, directory cache and multi-user patches
 * Amiga Original File System, with international characters, directory cache and multi-user patches
 * Apple DOS file system
@@ -234,7 +235,6 @@ Fully supported file-systems (identify and extraction)
 Supported file systems for identification and information only
 ==============================================================
 
-* Acorn Advanced Disc Filing System
 * Alexander Osipov DOS (AO-DOS for Electronika BK-0011) file system
 * Amiga Fast File System v2, untested
 * Apple File System (preliminary detection until on-disk layout is stable)
