@@ -212,44 +212,45 @@ public sealed partial class Locus
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Dinode
+    [SwapEndian]
+    partial struct Dinode
     {
         /// <summary>Mode and type of file</summary>
-        public readonly ushort di_mode;
+        public ushort di_mode;
         /// <summary>Number of links to file</summary>
-        public readonly nlink_t di_nlink;
+        public nlink_t di_nlink;
         /// <summary>Owner's user id</summary>
-        public readonly short di_uid;
+        public short di_uid;
         /// <summary>Owner's group id</summary>
-        public readonly short di_gid;
+        public short di_gid;
         /// <summary>Unique identifier</summary>
-        public readonly ino_uniqid_t di_uniqid;
+        public ino_uniqid_t di_uniqid;
         /// <summary>Filler</summary>
-        public readonly short di_filler;
+        public short di_filler;
         /// <summary>Disk flags</summary>
-        public readonly dflag_t di_dflag;
+        public dflag_t di_dflag;
         /// <summary>Number of bytes in file</summary>
-        public readonly int di_size;
+        public int di_size;
         /// <summary>Time last modified</summary>
-        public readonly time_t di_mtime;
+        public time_t di_mtime;
         /// <summary>Time last accessed</summary>
-        public readonly time_t di_atime;
+        public time_t di_atime;
         /// <summary>Time changed</summary>
-        public readonly time_t di_ctime;
+        public time_t di_ctime;
         /// <summary>GFS commit sequence number</summary>
-        public readonly commitcnt_t di_cmtcnt;
+        public commitcnt_t di_cmtcnt;
         /// <summary>File propagation attributes</summary>
-        public readonly fstore_t di_fstore;
+        public fstore_t di_fstore;
         /// <summary>Version number of this copy of the data</summary>
-        public readonly int di_version;
+        public int di_version;
         /// <summary>Actual number of blocks used</summary>
-        public readonly daddr_t di_blocks;
+        public daddr_t di_blocks;
         /// <summary>Padding for future growth</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 28)]
-        public readonly byte[] di_pad;
+        public byte[] di_pad;
         /// <summary>Disk block addresses</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NADDR)]
-        public readonly daddr_t[] di_addr;
+        public daddr_t[] di_addr;
     }
 
 #endregion

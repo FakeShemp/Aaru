@@ -28,8 +28,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedType.Local
@@ -41,6 +43,51 @@ namespace Aaru.Filesystems;
 public sealed partial class Locus : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "Locus plugin";
+
+    /// <summary>Root inode number (always 2)</summary>
+    const int ROOT_INO = 2;
+
+    /// <summary>Size of disk inode structure (128 bytes for standard, 512 for small block)</summary>
+    const int DINODE_SIZE = 128;
+
+    /// <summary>Size of disk inode structure for smallblock filesystems</summary>
+    const int DINODE_SMALLBLOCK_SIZE = 512;
+
+    /// <summary>Cached inodes (inode number -> inode)</summary>
+    readonly Dictionary<int, Dinode> _inodeCache = new();
+
+    /// <summary>Cached root directory entries (filename -> inode number)</summary>
+    readonly Dictionary<string, int> _rootDirectoryCache = new();
+
+    /// <summary>Whether the filesystem uses big-endian byte order</summary>
+    bool _bigEndian;
+
+    /// <summary>Block size in bytes (1024 or 4096)</summary>
+    int _blockSize;
+
+    /// <summary>Encoding used for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>Image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Calculated inodes per block</summary>
+    int _inodesPerBlock;
+
+    /// <summary>Whether filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>Whether this is a smallblock filesystem</summary>
+    bool _smallBlocks;
+
+    /// <summary>Cached superblock</summary>
+    Superblock _superblock;
+
+    /// <summary>Location of superblock in sectors from partition start</summary>
+    ulong _superblockLocation;
 
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
