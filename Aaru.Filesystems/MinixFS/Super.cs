@@ -42,15 +42,31 @@ public sealed partial class MinixFS
         if(!_mounted) return ErrorNumber.AccessDenied;
 
         // Count free inodes by scanning inode bitmap
-        ulong freeInodes = CountFreeBits(IMAP, _imapBlocks, _ninodes);
+        // Inode 0 is reserved, so we check ninodes + 1 bits but bit 0 is always set
+        ulong freeInodes = CountFreeBits(IMAP, _imapBlocks, _ninodes + 1);
 
         // Count free zones by scanning zone bitmap
-        ulong freeZones = CountFreeBits(ZMAP, _zmapBlocks, _zones);
+        // Zone bitmap only covers data zones: [firstdatazone, nzones)
+        // The number of bits to check is (nzones - firstdatazone + 1)
+        // Bit 0 is reserved (always set), actual data zones start at bit 1
+        uint  dataZoneBits = _zones - (uint)_firstDataZone + 1;
+        ulong freeZones    = CountFreeBits(ZMAP, _zmapBlocks, dataZoneBits);
+
+        // Apply zone scaling: zones may span multiple blocks
+        // s_log_zone_size is log2 of blocks per zone (usually 0)
+        int zoneScale = _logZoneSize;
+
+        // Total data blocks = (nzones - firstdatazone) << log_zone_size
+        // This excludes boot block, superblock, bitmaps, and inode area
+        ulong totalDataBlocks = _zones - (uint)_firstDataZone << zoneScale;
+
+        // Free blocks = free zones << log_zone_size
+        ulong freeBlocks = freeZones << zoneScale;
 
         stat = new FileSystemInfo
         {
-            Blocks         = _zones,
-            FreeBlocks     = freeZones,
+            Blocks         = totalDataBlocks,
+            FreeBlocks     = freeBlocks,
             Files          = _ninodes,
             FreeFiles      = freeInodes,
             FilenameLength = (ushort)_filenameSize,
