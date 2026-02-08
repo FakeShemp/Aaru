@@ -216,6 +216,16 @@ public sealed partial class MinixFS
             _zones         = sb3.s_zones > 0 ? sb3.s_zones : sb3.s_nzones;
             _isClean       = (sb3.s_flags & (ushort)FilesystemStateFlags.Clean) != 0;
 
+            // Check for mandatory flags that we don't understand
+            if((sb3.s_flags & (ushort)MandatoryFlags.Mask) != 0)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Filesystem has mandatory flags (0x{0:X4}) that are not supported",
+                                  sb3.s_flags & (ushort)MandatoryFlags.Mask);
+
+                return ErrorNumber.NotSupported;
+            }
+
             AaruLogging.Debug(MODULE_NAME, "Detected Minix V3 superblock format");
         }
         else if(magicV1V2 is MINIX_MAGIC
