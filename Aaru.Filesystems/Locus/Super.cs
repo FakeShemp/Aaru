@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Locus.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Locus filesystem plugin
@@ -20,18 +20,14 @@
 //     Lesser General Public License for more details.
 //
 //     You should have received a copy of the GNU Lesser General Public
-//     License aint with this library; if not, see <http://www.gnu.org/licenses/>.
+//     License along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 // ----------------------------------------------------------------------------
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
-
-// ReSharper disable UnusedMember.Local
-// ReSharper disable UnusedType.Local
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
@@ -39,15 +35,27 @@ namespace Aaru.Filesystems;
 public sealed partial class Locus
 {
     /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+        // Total inodes = (s_isize - 2) * inodes_per_block
+        // s_isize includes boot block and superblock, so subtract 2
+        long totalInodes = (_superblock.s_isize - 2) * _inodesPerBlock;
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        stat = new FileSystemInfo
+        {
+            Blocks         = (ulong)_superblock.s_fsize,
+            FreeBlocks     = (ulong)_superblock.s_tfree,
+            Files          = (ulong)totalInodes,
+            FreeFiles      = (ulong)_superblock.s_tinode,
+            FilenameLength = NAME_MAX,
+            Type           = FS_TYPE,
+            PluginId       = Id
+        };
+
+        return ErrorNumber.NoError;
+    }
 }
