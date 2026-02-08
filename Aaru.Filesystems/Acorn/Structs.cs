@@ -234,4 +234,90 @@ public sealed partial class AcornADFS
     }
 
 #endregion
+
+#region Nested type: BigDirectoryHeader
+
+    /// <summary>Directory header for F+ (big directory) format</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct BigDirectoryHeader
+    {
+        /// <summary>Master sequence number</summary>
+        public readonly byte startMasSeq;
+
+        /// <summary>Big directory version (3 bytes)</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public readonly byte[] bigDirVersion;
+
+        /// <summary>Start name magic "SBPr"</summary>
+        public readonly uint bigDirStartName;
+
+        /// <summary>Length of directory name in bytes</summary>
+        public readonly uint bigDirNameLen;
+
+        /// <summary>Size of directory in bytes</summary>
+        public readonly uint bigDirSize;
+
+        /// <summary>Number of entries in directory</summary>
+        public readonly uint bigDirEntries;
+
+        /// <summary>Size of all entry names combined</summary>
+        public readonly uint bigDirNameSize;
+
+        /// <summary>Indirect disc address of parent directory</summary>
+        public readonly uint bigDirParent;
+    }
+
+#endregion
+
+#region Nested type: BigDirectoryEntry
+
+    /// <summary>Directory entry for F+ (big directory) format</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct BigDirectoryEntry
+    {
+        /// <summary>RISC OS load address</summary>
+        public readonly uint bigDirLoad;
+
+        /// <summary>RISC OS exec address</summary>
+        public readonly uint bigDirExec;
+
+        /// <summary>File length in bytes</summary>
+        public readonly uint bigDirLen;
+
+        /// <summary>Indirect disc address</summary>
+        public readonly uint bigDirIndAddr;
+
+        /// <summary>File attributes</summary>
+        public readonly uint bigDirAttr;
+
+        /// <summary>Length of object name</summary>
+        public readonly uint bigDirObNameLen;
+
+        /// <summary>Pointer to object name (offset from start of name heap)</summary>
+        public readonly uint bigDirObNamePtr;
+    }
+
+#endregion
+
+#region Nested type: BigDirectoryTail
+
+    /// <summary>Directory tail for F+ (big directory) format</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct BigDirectoryTail
+    {
+        /// <summary>End name magic "oven"</summary>
+        public readonly uint bigDirEndName;
+
+        /// <summary>End master sequence number</summary>
+        public readonly byte bigDirEndMasSeq;
+
+        /// <summary>Reserved bytes</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public readonly byte[] reserved;
+
+        /// <summary>Directory checkbyte</summary>
+        public readonly byte bigDirCheckByte;
+    }
+
+#endregion
 }
