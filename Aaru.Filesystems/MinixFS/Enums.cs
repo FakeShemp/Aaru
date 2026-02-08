@@ -30,9 +30,7 @@ using System;
 
 namespace Aaru.Filesystems;
 
-// Information from the Minix source code
 /// <inheritdoc />
-/// <summary>Implements detection of the MINIX filesystem</summary>
 public sealed partial class MinixFS
 {
 #region Nested type: FilesystemStateFlags

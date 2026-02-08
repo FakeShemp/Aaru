@@ -27,15 +27,24 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
-// Information from the Linux kernel
+// Information from the MINIX source code
 /// <inheritdoc />
-/// <summary>Implements detection of the MINIX filesystem</summary>
-public sealed partial class MinixFS : IFilesystem
+/// <summary>Implements the MINIX filesystem</summary>
+public sealed partial class MinixFS : IReadOnlyFilesystem
 {
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
+
 #region IFilesystem Members
 
     /// <inheritdoc />

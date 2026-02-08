@@ -36,9 +36,7 @@ using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
-// Information from the Linux kernel
 /// <inheritdoc />
-/// <summary>Implements detection of the MINIX filesystem</summary>
 public sealed partial class MinixFS
 {
 #region IFilesystem Members
