@@ -40,6 +40,103 @@ namespace Aaru.Filesystems;
 public sealed partial class MinixFS
 {
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Get file stat to verify it's a symlink
+        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(!stat.Attributes.HasFlag(FileAttributes.Symlink)) return ErrorNumber.InvalidArgument;
+
+        // Look up the file's inode
+        errno = LookupFile(path, out uint inodeNumber);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read the inode
+        errno = ReadInode(inodeNumber, out object inodeObj);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Get file size and zones
+        uint   size;
+        uint[] zones;
+        int    directZones;
+
+        if(_version == FilesystemVersion.V1)
+        {
+            var inode = (V1DiskInode)inodeObj;
+            size = inode.d1_size;
+
+            zones = new uint[inode.d1_zone.Length];
+
+            for(var i = 0; i < inode.d1_zone.Length; i++) zones[i] = inode.d1_zone[i];
+
+            directZones = V1_NR_DZONES;
+        }
+        else
+        {
+            var inode = (V2DiskInode)inodeObj;
+            size        = inode.d2_size;
+            zones       = inode.d2_zone;
+            directZones = V2_NR_DZONES;
+        }
+
+        if(size == 0)
+        {
+            dest = "";
+
+            return ErrorNumber.NoError;
+        }
+
+        // Read symlink data - symlinks are typically small, so read all data
+        var linkData  = new byte[size];
+        var bytesRead = 0;
+
+        // Read direct zones
+        for(var i = 0; i < directZones && bytesRead < size; i++)
+        {
+            if(zones[i] == 0)
+            {
+                // Sparse - shouldn't happen for symlinks but handle it
+                int toFill = Math.Min(_blockSize, (int)(size - bytesRead));
+                bytesRead += toFill;
+
+                continue;
+            }
+
+            errno = ReadBlock((int)zones[i], out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            int toCopy = Math.Min(blockData.Length, (int)(size - bytesRead));
+            Array.Copy(blockData, 0, linkData, bytesRead, toCopy);
+            bytesRead += toCopy;
+        }
+
+        // For longer symlinks, read indirect zones (rare but possible)
+        if(bytesRead < size && directZones < zones.Length && zones[directZones] != 0)
+        {
+            errno = ReadIndirectZone(zones[directZones], ref linkData, ref bytesRead, (int)size, 1);
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+
+        dest = _encoding.GetString(linkData, 0, (int)size).TrimEnd('\0');
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: target='{0}'", dest);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {
         stat = null;
