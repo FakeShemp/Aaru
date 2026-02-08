@@ -210,14 +210,27 @@ public sealed partial class Squash
                     return DecompressZlib(source, destination);
 
                 case SquashCompression.Lzma:
-                    // LZMA in squashfs uses raw LZMA stream without header
-                    // Properties are stored at the start of compressed data
-                    if(source.Length < 5) return -1;
+                    // LZMA in SquashFS has a 13-byte header:
+                    // - Bytes 0-4: LZMA properties (5 bytes)
+                    // - Bytes 5-12: Uncompressed size as 8-byte little-endian
+                    // - Bytes 13+: Compressed data
+                    const int lzmaHeaderSize = 13;
+                    const int lzmaPropsSize  = 5;
 
-                    var lzmaProps = new byte[5];
-                    Array.Copy(source, 0, lzmaProps, 0, 5);
-                    var lzmaData = new byte[source.Length - 5];
-                    Array.Copy(source, 5, lzmaData, 0, lzmaData.Length);
+                    if(source.Length < lzmaHeaderSize)
+                    {
+                        AaruLogging.Debug(MODULE_NAME, "LZMA data too short: {0} bytes", source.Length);
+
+                        return -1;
+                    }
+
+                    // Extract properties (first 5 bytes)
+                    var lzmaProps = new byte[lzmaPropsSize];
+                    Array.Copy(source, 0, lzmaProps, 0, lzmaPropsSize);
+
+                    // Extract compressed data (skip 13-byte header)
+                    var lzmaData = new byte[source.Length - lzmaHeaderSize];
+                    Array.Copy(source, lzmaHeaderSize, lzmaData, 0, lzmaData.Length);
 
                     return LZMA.DecodeBuffer(lzmaData, destination, lzmaProps);
 

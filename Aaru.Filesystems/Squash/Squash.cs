@@ -65,6 +65,7 @@ public sealed partial class Squash : IReadOnlyFilesystem
     /// <summary>The superblock</summary>
     SuperBlock _superBlock;
 
+
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
     /// <inheritdoc />
