@@ -88,4 +88,90 @@ public sealed partial class Locus
     }
 
 #endregion
+
+#region Nested type: DiskFlags
+
+    /// <summary>Disk inode flags (di_dflag)</summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+    [Flags]
+    enum DiskFlags : short
+    {
+        /// <summary>File has been deleted</summary>
+        DIDEL = 0x1,
+        /// <summary>File is stored locally</summary>
+        DISTORE = 0x2,
+        /// <summary>Inode has been allocated to a file</summary>
+        DIALLOC = 0x10,
+        /// <summary>This is a hidden directory</summary>
+        DIHIDDEN = 0x20,
+        /// <summary>This is a BSD 4.3 format, long directory</summary>
+        DILONGDIR = 0x40,
+        /// <summary>This file is a symbolic link</summary>
+        DILINK = 0x80,
+        /// <summary>DISTORE is forced to retain current value</summary>
+        DIFORCE = 0x100,
+        /// <summary>File is used for x286 IPC support</summary>
+        DIXIPC = 0x200,
+        /// <summary>File is mounted on</summary>
+        DIMOUNTEDON = 0x400,
+        /// <summary>File is a socket</summary>
+        DISOCKET = 0x800
+    }
+
+#endregion
+
+#region Nested type: FileMode
+
+    /// <summary>File mode flags (di_mode)</summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+    [Flags]
+    enum FileMode : ushort
+    {
+        /// <summary>Type of file mask</summary>
+        IFMT = 0xF000,
+        /// <summary>FIFO special</summary>
+        IFIFO = 0x1000,
+        /// <summary>Character special</summary>
+        IFCHR = 0x2000,
+        /// <summary>Character multiplex file</summary>
+        IFMPC = 0x3000,
+        /// <summary>Directory</summary>
+        IFDIR = 0x4000,
+        /// <summary>Block special</summary>
+        IFBLK = 0x6000,
+        /// <summary>Block multiplex file</summary>
+        IFMPB = 0x7000,
+        /// <summary>Regular file</summary>
+        IFREG = 0x8000,
+        /// <summary>Set user id on execution</summary>
+        ISUID = 0x800,
+        /// <summary>Set group id on execution</summary>
+        ISGID = 0x400,
+        /// <summary>Save swapped text even after use</summary>
+        ISVTX = 0x200,
+        /// <summary>Read permission</summary>
+        IREAD = 0x100,
+        /// <summary>Write permission</summary>
+        IWRITE = 0x80,
+        /// <summary>Execute permission</summary>
+        IEXEC = 0x40
+    }
+
+#endregion
+
+#region Nested type: SmallBlockFlags
+
+    /// <summary>Small block flags (di_sbflag)</summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+    [Flags]
+    enum SmallBlockFlags : byte
+    {
+        /// <summary>The small block is in use in the disk inode</summary>
+        SBINUSE = 0x1
+    }
+
+#endregion
 }

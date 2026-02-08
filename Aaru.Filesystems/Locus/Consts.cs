@@ -60,4 +60,28 @@ public sealed partial class Locus
     const uint LOCUS_CIGAM_OLD = 0xCCDDEEFF;
 
     const string FS_TYPE = "locus";
+
+    /// <summary>Number of direct block pointers in inode</summary>
+    const int NADDR = 13;
+
+    /// <summary>Number of direct block pointers (NADDR-3)</summary>
+    const int NDADDR = 10;
+
+    /// <summary>Maximum length of directory entry name</summary>
+    const int NAME_MAX = 255;
+
+    /// <summary>Old directory entry name size</summary>
+    const int DIRSIZ = 14;
+
+    /// <summary>Number of commit list entries for old format</summary>
+    const int OLDNCMTLST = 50;
+
+    /// <summary>Number of commit list entries</summary>
+    const int NCMTLST = 200;
+
+    /// <summary>Number of filesystem generation entries</summary>
+    const int NGENLST = 25;
+
+    /// <summary>Small block buffer size in bytes</summary>
+    const int SMBLKSZ = 384;
 }

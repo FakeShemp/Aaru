@@ -51,6 +51,18 @@ using pckno_t = short;
 // Timestamp
 using time_t = int;
 
+// Link count
+using nlink_t = short;
+
+// Disk flags
+using dflag_t = short;
+
+// Inode unique identifier
+using ino_uniqid_t = int;
+
+// Old short inode number
+using s_ino_t = short;
+
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedType.Local
 
@@ -60,6 +72,22 @@ namespace Aaru.Filesystems;
 /// <summary>Implements detection of the Locus filesystem</summary>
 public sealed partial class Locus
 {
+#region Nested type: FsGeneration
+
+    /// <summary>Filesystem generation structure for replicated filesystems</summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct FsGeneration
+    {
+        /// <summary>Low water mark commit count</summary>
+        public readonly commitcnt_t fsg_lwm;
+        /// <summary>Generation time</summary>
+        public readonly time_t fsg_time;
+    }
+
+#endregion
+
 #region Nested type: OldSuperblock
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
@@ -177,6 +205,162 @@ public sealed partial class Locus
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NICFREE)]
         public daddr_t[] su_free; /* free block list for non-replicated filsys */
         public byte s_byteorder;  /* byte order of integers */
+    }
+
+#endregion
+
+#region Nested type: Dinode
+
+    /// <summary>Disk inode structure as it appears on disk</summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Dinode
+    {
+        /// <summary>Mode and type of file</summary>
+        public readonly ushort di_mode;
+        /// <summary>Number of links to file</summary>
+        public readonly nlink_t di_nlink;
+        /// <summary>Owner's user id</summary>
+        public readonly short di_uid;
+        /// <summary>Owner's group id</summary>
+        public readonly short di_gid;
+        /// <summary>Unique identifier</summary>
+        public readonly ino_uniqid_t di_uniqid;
+        /// <summary>Filler</summary>
+        public readonly short di_filler;
+        /// <summary>Disk flags</summary>
+        public readonly dflag_t di_dflag;
+        /// <summary>Number of bytes in file</summary>
+        public readonly int di_size;
+        /// <summary>Time last modified</summary>
+        public readonly time_t di_mtime;
+        /// <summary>Time last accessed</summary>
+        public readonly time_t di_atime;
+        /// <summary>Time changed</summary>
+        public readonly time_t di_ctime;
+        /// <summary>GFS commit sequence number</summary>
+        public readonly commitcnt_t di_cmtcnt;
+        /// <summary>File propagation attributes</summary>
+        public readonly fstore_t di_fstore;
+        /// <summary>Version number of this copy of the data</summary>
+        public readonly int di_version;
+        /// <summary>Actual number of blocks used</summary>
+        public readonly daddr_t di_blocks;
+        /// <summary>Padding for future growth</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 28)]
+        public readonly byte[] di_pad;
+        /// <summary>Disk block addresses</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NADDR)]
+        public readonly daddr_t[] di_addr;
+    }
+
+#endregion
+
+#region Nested type: DinodeSmallBlock
+
+    /// <summary>Disk inode structure with small block support</summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct DinodeSmallBlock
+    {
+        /// <summary>Mode and type of file</summary>
+        public readonly ushort di_mode;
+        /// <summary>Number of links to file</summary>
+        public readonly nlink_t di_nlink;
+        /// <summary>Owner's user id</summary>
+        public readonly short di_uid;
+        /// <summary>Owner's group id</summary>
+        public readonly short di_gid;
+        /// <summary>Unique identifier</summary>
+        public readonly ino_uniqid_t di_uniqid;
+        /// <summary>Filler</summary>
+        public readonly short di_filler;
+        /// <summary>Disk flags</summary>
+        public readonly dflag_t di_dflag;
+        /// <summary>Number of bytes in file</summary>
+        public readonly int di_size;
+        /// <summary>Time last modified</summary>
+        public readonly time_t di_mtime;
+        /// <summary>Time last accessed</summary>
+        public readonly time_t di_atime;
+        /// <summary>Time changed</summary>
+        public readonly time_t di_ctime;
+        /// <summary>GFS commit sequence number</summary>
+        public readonly commitcnt_t di_cmtcnt;
+        /// <summary>File propagation attributes</summary>
+        public readonly fstore_t di_fstore;
+        /// <summary>Version number of this copy of the data</summary>
+        public readonly int di_version;
+        /// <summary>Actual number of blocks used</summary>
+        public readonly daddr_t di_blocks;
+        /// <summary>Padding for future growth</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 27)]
+        public readonly byte[] di_pad;
+        /// <summary>Flags for small blocks</summary>
+        public readonly byte di_sbflag;
+        /// <summary>Disk block addresses</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NADDR)]
+        public readonly daddr_t[] di_addr;
+        /// <summary>Small block buffer (384 bytes)</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = SMBLKSZ)]
+        public readonly byte[] di_sbbuf;
+    }
+
+#endregion
+
+#region Nested type: Direct
+
+    /// <summary>Old System V format directory entry</summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Direct
+    {
+        /// <summary>Inode number</summary>
+        public readonly s_ino_t d_ino;
+        /// <summary>File name (14 bytes max)</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = DIRSIZ)]
+        public readonly byte[] d_name;
+    }
+
+#endregion
+
+#region Nested type: Dirent
+
+    /// <summary>POSIX directory entry structure</summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Dirent
+    {
+        /// <summary>Inode number of file</summary>
+        public readonly ino_t d_ino;
+        /// <summary>Offset to next dir entry or past end of file</summary>
+        public readonly ushort d_reclen;
+        /// <summary>Length of the name field</summary>
+        public readonly ushort d_namlen;
+        /// <summary>Null-terminated file name (variable length, max NAME_MAX+1)</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NAME_MAX + 1)]
+        public readonly byte[] d_name;
+    }
+
+#endregion
+
+#region Nested type: Fblk
+
+    /// <summary>Free block list structure</summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Fblk
+    {
+        /// <summary>Number of free blocks in list</summary>
+        public readonly int df_nfree;
+        /// <summary>Array of free block addresses</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NICFREE)]
+        public readonly daddr_t[] df_free;
     }
 
 #endregion
