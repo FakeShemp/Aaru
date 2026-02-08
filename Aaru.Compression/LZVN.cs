@@ -33,18 +33,76 @@
 // ****************************************************************************/
 
 using System;
+using System.Runtime.InteropServices;
 
 namespace Aaru.Compression;
 
 // ReSharper disable once InconsistentNaming
 /// <summary>Implements the LZVN compression algorithm (Apple's LZVN)</summary>
-public static class LZVN
+public static partial class LZVN
 {
+    /// <summary>Set to <c>true</c> if this algorithm is supported, <c>false</c> otherwise.</summary>
+    public static bool IsSupported => Native.IsSupported;
+
+    /// <summary>
+    /// size_t AARU_CALL AARU_lzvn_decode_buffer(uint8_t *dst_buffer, size_tdst_size, const uint8_t *src_buffer, size_t src_size)
+    /// </summary>
+    /// <param name="dst_buffer">Buffer to write the decompressed data to</param>
+    /// <param name="dst_size">Size of the destination buffer</param>
+    /// <param name="src_buffer">Buffer that contains the compressed data</param>
+    /// <param name="src_size">Size of the source buffer</param>
+    /// <returns></returns>
+    [LibraryImport("libAaru.Compression.Native", SetLastError = true)]
+    private static partial nuint AARU_lzvn_decode_buffer(byte[] dst_buffer, nuint dst_size, byte[] src_buffer, nuint src_size);
+
+    /// <summary>
+    /// AARU_EXPORT size_t AARU_CALL AARU_lzvn_encode_buffer(uint8_t *dst_buffer, size_t dst_size, const uint8_t *src_buffer, size_t src_size, void *scratch_buffer)
+    /// </summary>
+    /// <param name="dst_buffer">Buffer to write the decompressed data to</param>
+    /// <param name="dst_size">Size of the destination buffer</param>
+    /// <param name="src_buffer">Buffer that contains the compressed data</param>
+    /// <param name="src_size">Size of the source buffer</param>
+    /// <param name="scratch_buffer">Scratch buffer</param>
+    /// <returns></returns>
+    [LibraryImport("libAaru.Compression.Native", SetLastError = true)]
+    private static partial nuint AARU_lzvn_encode_buffer(byte[] dst_buffer, nuint  dst_size, in byte[] src_buffer,
+                                                         nuint  src_size,   byte[] scratch_buffer);
+
     /// <summary>Decodes a buffer compressed with LZVN</summary>
     /// <param name="source">Compressed buffer</param>
     /// <param name="destination">Buffer where to write the decoded data</param>
     /// <returns>The number of decoded bytes, or -1 on error</returns>
     public static int DecodeBuffer(byte[] source, byte[] destination)
+    {
+        if(!Native.IsSupported) return DecodeBufferManaged(source, destination);
+
+        if(source == null || destination == null) return -1;
+
+        return (int)AARU_lzvn_decode_buffer(destination, (nuint)destination.Length, source, (nuint)source.Length);
+    }
+
+    /// <summary>
+    /// Compressed a buffer using the LZVN algorithm.
+    /// </summary>
+    /// <param name="source">Buffer with the data to compress.</param>
+    /// <param name="destination">Buffer where to write the compressed data.</param>
+    /// <returns>The size of the compressed data, or -1 on error.</returns>
+    public static long EncodeBuffer(byte[] source, byte[] destination)
+    {
+        if(!Native.IsSupported) return -1;
+
+        if(source == null || destination == null) return -1;
+
+        byte[] scratch = new byte[1048576]; // LZVN requires a 512KB scratch buffer for encoding, let's give it twice that
+
+        return (long)AARU_lzvn_encode_buffer(destination, (nuint)destination.LongLength, in source, (nuint)source.LongLength, scratch);
+    }
+
+    /// <summary>Decodes a buffer compressed with LZVN</summary>
+    /// <param name="source">Compressed buffer</param>
+    /// <param name="destination">Buffer where to write the decoded data</param>
+    /// <returns>The number of decoded bytes, or -1 on error</returns>
+    public static int DecodeBufferManaged(byte[] source, byte[] destination)
     {
         if(source == null || destination == null) return -1;
 
