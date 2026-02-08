@@ -71,4 +71,23 @@ public sealed partial class AcornADFS
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>File node for reading file contents</summary>
+    sealed class AcornFileNode : IFileNode
+    {
+        /// <summary>Current read position within the file</summary>
+        public long Offset { get; set; }
+
+        /// <summary>File length in bytes</summary>
+        public long Length { get; init; }
+
+        /// <summary>Indirect disc address of the file</summary>
+        internal uint IndAddr { get; init; }
+
+        /// <summary>File attributes</summary>
+        internal byte Attributes { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 }
