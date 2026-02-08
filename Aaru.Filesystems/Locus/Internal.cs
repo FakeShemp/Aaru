@@ -45,4 +45,26 @@ public sealed partial class Locus
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>File node for reading file contents with streaming support</summary>
+    sealed class LocusFileNode : IFileNode
+    {
+        /// <summary>The file's inode number</summary>
+        internal int InodeNumber { get; init; }
+
+        /// <summary>The file's inode structure</summary>
+        internal Dinode Inode { get; init; }
+
+        /// <summary>Whether this file uses inline smallblock data</summary>
+        internal bool HasInlineData { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 }
