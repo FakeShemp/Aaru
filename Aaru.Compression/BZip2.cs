@@ -71,7 +71,7 @@ public partial class BZip2
     /// <param name="source">Data to compress</param>
     /// <param name="destination">Buffer to store the compressed data</param>
     /// <param name="blockSize100K">Block size in 100KiB units</param>
-    /// <returns></returns>
+    /// <returns>The size of the compressed data</returns>
     public static int EncodeBuffer(byte[] source, byte[] destination, int blockSize100K)
     {
         var destinationSize = (uint)destination.Length;

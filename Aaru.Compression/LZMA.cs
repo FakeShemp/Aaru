@@ -78,7 +78,7 @@ public partial class LZMA
         return destination.Length;
     }
 
-    /// <summary>Compresses a buffer using BZIP2</summary>
+    /// <summary>Compresses a buffer using LZMA</summary>
     /// <param name="source">Data to compress</param>
     /// <param name="destination">Buffer to store the compressed data</param>
     /// <param name="properties">LZMA stream properties</param>

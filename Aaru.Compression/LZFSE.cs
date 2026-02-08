@@ -58,10 +58,10 @@ public partial class LZFSE
                                                                                  null)
                                                                              : 0;
 
-    /// <summary>Compresses a buffer using BZIP2</summary>
+    /// <summary>Compresses a buffer using LZFSE</summary>
     /// <param name="source">Data to compress</param>
     /// <param name="destination">Buffer to store the compressed data</param>
-    /// <returns></returns>
+    /// <returns>The size of the compressed data</returns>
     public static int EncodeBuffer(byte[] source, byte[] destination) => Native.IsSupported
                                                                              ? (int)
                                                                              AARU_lzfse_encode_buffer(destination,
