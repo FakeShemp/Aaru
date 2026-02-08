@@ -52,8 +52,8 @@ public sealed partial class AcornADFS
         /// <summary>Indirect disc address</summary>
         public uint IndAddr { get; set; }
 
-        /// <summary>File attributes</summary>
-        public byte Attributes { get; set; }
+        /// <summary>File attributes (8-bit for standard directories, 32-bit for big directories)</summary>
+        public uint Attributes { get; set; }
     }
 
     /// <summary>Directory node for enumerating directory contents</summary>
@@ -75,17 +75,16 @@ public sealed partial class AcornADFS
     /// <summary>File node for reading file contents</summary>
     sealed class AcornFileNode : IFileNode
     {
+        /// <summary>Indirect disc address of the file</summary>
+        internal uint IndAddr { get; init; }
+
+        /// <summary>File attributes (8-bit for standard directories, 32-bit for big directories)</summary>
+        internal uint Attributes { get; init; }
         /// <summary>Current read position within the file</summary>
         public long Offset { get; set; }
 
         /// <summary>File length in bytes</summary>
         public long Length { get; init; }
-
-        /// <summary>Indirect disc address of the file</summary>
-        internal uint IndAddr { get; init; }
-
-        /// <summary>File attributes</summary>
-        internal byte Attributes { get; init; }
 
         /// <inheritdoc />
         public string Path { get; init; }

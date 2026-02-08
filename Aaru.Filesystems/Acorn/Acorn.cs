@@ -41,26 +41,53 @@ public sealed partial class AcornADFS : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "ADFS Plugin";
 
-    /// <summary>Cached root directory entries (filename -> DirectoryEntryInfo)</summary>
-    Dictionary<string, DirectoryEntryInfo> _rootDirectoryCache;
+    /// <summary>Block size in bytes (ADFS sector size)</summary>
+    int _blockSize;
+
+    /// <summary>Cached subdirectory entries (indAddr -> entries dictionary)</summary>
+    Dictionary<uint, Dictionary<string, DirectoryEntryInfo>> _directoryCache;
+
+    /// <summary>Disc record (for new formats)</summary>
+    DiscRecord _discRecord;
+
+    /// <summary>Total disc size in bytes</summary>
+    ulong _discSize;
 
     /// <summary>Encoding used for filenames</summary>
     Encoding _encoding;
 
+    /// <summary>IDs per zone</summary>
+    uint _idsPerZone;
+
     /// <summary>Image plugin being accessed</summary>
     IMediaImage _imagePlugin;
 
-    /// <summary>Whether filesystem is mounted</summary>
-    bool _mounted;
+    /// <summary>Image sector size in bytes</summary>
+    uint _imageSectorSize;
 
-    /// <summary>Partition being mounted</summary>
-    Partition _partition;
+    /// <summary>Whether this is a big directory format (F+)</summary>
+    bool _isBigDirectory;
 
     /// <summary>Whether this is an old map format (ADFS-S, ADFS-M, ADFS-L, ADFS-D)</summary>
     bool _isOldMap;
 
-    /// <summary>Disc record (for new formats)</summary>
-    DiscRecord _discRecord;
+    /// <summary>Log2 of bytes per map bit</summary>
+    int _log2BytesPerMapBit;
+
+    /// <summary>Map bits to block shift (log2bpmb - log2secsize)</summary>
+    int _map2blk;
+
+    /// <summary>Cached zone map data (zone index -> zone data)</summary>
+    byte[][] _mapCache;
+
+    /// <summary>Maximum filename length</summary>
+    int _maxNameLen;
+
+    /// <summary>Whether filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Number of zones in the map</summary>
+    int _nzones;
 
     /// <summary>Old map sector 0 (for old formats)</summary>
     OldMapSector0 _oldMap0;
@@ -68,26 +95,20 @@ public sealed partial class AcornADFS : IReadOnlyFilesystem
     /// <summary>Old map sector 1 (for old formats)</summary>
     OldMapSector1 _oldMap1;
 
+    /// <summary>Partition being mounted</summary>
+    Partition _partition;
+
     /// <summary>Root directory indirect disc address</summary>
     uint _rootDirectoryAddress;
+
+    /// <summary>Cached root directory entries (filename -> DirectoryEntryInfo)</summary>
+    Dictionary<string, DirectoryEntryInfo> _rootDirectoryCache;
 
     /// <summary>Root directory size in bytes</summary>
     uint _rootDirectorySize;
 
-    /// <summary>Whether this is a big directory format (F+)</summary>
-    bool _isBigDirectory;
-
-    /// <summary>Block size in bytes</summary>
-    int _blockSize;
-
-    /// <summary>Log2 of bytes per map bit</summary>
-    int _log2BytesPerMapBit;
-
-    /// <summary>Maximum filename length</summary>
-    int _maxNameLen;
-
-    /// <summary>Total disc size in bytes</summary>
-    ulong _discSize;
+    /// <summary>Zone size in bits</summary>
+    int _zoneSize;
 
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }

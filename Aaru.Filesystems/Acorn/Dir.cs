@@ -32,6 +32,7 @@ using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
@@ -154,7 +155,10 @@ public sealed partial class AcornADFS
     /// <returns>Error number indicating success or failure</returns>
     ErrorNumber ReadDirectoryContents(uint indAddr, out Dictionary<string, DirectoryEntryInfo> entries)
     {
-        entries = new Dictionary<string, DirectoryEntryInfo>();
+        // Check cache first
+        if(_directoryCache.TryGetValue(indAddr, out entries)) return ErrorNumber.NoError;
+
+        entries = new Dictionary<string, DirectoryEntryInfo>(StringComparer.OrdinalIgnoreCase);
 
         // Determine directory size based on format
         uint dirSize = _isBigDirectory
@@ -182,9 +186,17 @@ public sealed partial class AcornADFS
 
         if(err != ErrorNumber.NoError) return err;
 
-        if(_isBigDirectory) return ParseBigDirectoryToDict(dirData, entries);
+        if(_isBigDirectory)
+            err = ParseBigDirectoryToDict(dirData, entries);
+        else
+            err = ParseStandardDirectoryToDict(dirData, entries);
 
-        return ParseStandardDirectoryToDict(dirData, entries);
+        if(err != ErrorNumber.NoError) return err;
+
+        // Cache the result (limit cache size to avoid memory issues)
+        if(_directoryCache.Count < 1000) _directoryCache[indAddr] = entries;
+
+        return ErrorNumber.NoError;
     }
 
     /// <summary>Reads directory data from the specified indirect disc address</summary>
@@ -217,11 +229,10 @@ public sealed partial class AcornADFS
             else
                 byteOffset = indAddr * 256UL; // Subdirectory - multiply by sector size
 
-            ulong sector       = byteOffset / _imagePlugin.Info.SectorSize + _partition.Start;
-            var   offsetInSect = (int)(byteOffset % _imagePlugin.Info.SectorSize);
+            ulong sector       = byteOffset / _imageSectorSize + _partition.Start;
+            var   offsetInSect = (int)(byteOffset % _imageSectorSize);
 
-            var sectorsToRead = (uint)((offsetInSect + size + _imagePlugin.Info.SectorSize - 1) /
-                                       _imagePlugin.Info.SectorSize);
+            var sectorsToRead = (uint)((offsetInSect + size + _imageSectorSize - 1) / _imageSectorSize);
 
             if(sector + sectorsToRead > _partition.End) return ErrorNumber.InvalidArgument;
 
@@ -233,12 +244,21 @@ public sealed partial class AcornADFS
 
             // For old format directories, when physical sector size > 256 bytes,
             // the directory data is interleaved - the tail is at the end of the physical sector
+            // The directory structure is:
+            // - Header (5 bytes) + Entries (47 * 26 = 1222 bytes) = 1227 bytes at start
+            // - Tail (53 bytes) at position (sector_size - 54) within the physical sector
             if(size == OLD_DIRECTORY_SIZE && sectorData.Length > OLD_DIRECTORY_SIZE)
             {
-                // Old directory: copy first part (1227 bytes), then tail (53 bytes) from end of sector
-                // This matches the logic in Info.cs
-                Array.Copy(sectorData, offsetInSect, data, 0, (int)OLD_DIRECTORY_SIZE - 53);
-                Array.Copy(sectorData, sectorData.Length - 54, data, (int)OLD_DIRECTORY_SIZE - 54, 53);
+                // Copy the first part (header + entries, 1227 bytes)
+                const int tailSize  = 53;
+                const int headSize  = (int)OLD_DIRECTORY_SIZE - tailSize;
+                int       tailStart = sectorData.Length - tailSize - 1; // -1 for 0-based indexing
+
+                // Copy header and entries
+                Array.Copy(sectorData, offsetInSect, data, 0, headSize);
+
+                // Copy tail from end of physical sector
+                Array.Copy(sectorData, tailStart, data, headSize, tailSize);
             }
             else if(offsetInSect + size <= sectorData.Length)
                 Array.Copy(sectorData, offsetInSect, data, 0, size);
@@ -251,6 +271,12 @@ public sealed partial class AcornADFS
         // New format: use the map to look up the fragment
         // indAddr contains fragment ID in upper bits and offset in lower 8 bits
         // We need to read the directory sector by sector using MapBlock
+        AaruLogging.Debug(MODULE_NAME,
+                          "ReadDirectoryData (new format): indAddr={0}, size={1}, blockSize={2}",
+                          indAddr,
+                          size,
+                          _blockSize);
+
         data = new byte[size];
         var bytesRead = 0;
 
@@ -262,29 +288,42 @@ public sealed partial class AcornADFS
             // Map the sector to get physical location
             ErrorNumber errno = MapBlock(indAddr, (uint)logicalSector, out ulong physicalSector);
 
-            if(errno != ErrorNumber.NoError) return errno;
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "ReadDirectoryData: MapBlock failed for logical sector {0}: {1}",
+                                  logicalSector,
+                                  errno);
+
+                return errno;
+            }
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "ReadDirectoryData: logicalSector={0} -> physicalSector={1}",
+                              logicalSector,
+                              physicalSector);
 
             // Read the sector - physicalSector is the ADFS sector number
             // Account for if image sector size differs from ADFS sector size
             ulong imageSector;
             int   offsetInImageSector;
 
-            if(_imagePlugin.Info.SectorSize == (uint)_blockSize)
+            if(_imageSectorSize == (uint)_blockSize)
             {
                 imageSector         = physicalSector + _partition.Start;
                 offsetInImageSector = 0;
             }
-            else if(_imagePlugin.Info.SectorSize > (uint)_blockSize)
+            else if(_imageSectorSize > (uint)_blockSize)
             {
                 // Image sectors are larger than ADFS sectors
-                ulong adfsSecPerImgSec = _imagePlugin.Info.SectorSize / (uint)_blockSize;
+                ulong adfsSecPerImgSec = _imageSectorSize / (uint)_blockSize;
                 imageSector         = physicalSector / adfsSecPerImgSec + _partition.Start;
                 offsetInImageSector = (int)(physicalSector % adfsSecPerImgSec * (uint)_blockSize);
             }
             else
             {
                 // Image sectors are smaller than ADFS sectors
-                ulong imgSecPerAdfsSec = (uint)_blockSize / _imagePlugin.Info.SectorSize;
+                ulong imgSecPerAdfsSec = (uint)_blockSize / _imageSectorSize;
                 imageSector         = physicalSector * imgSecPerAdfsSec + _partition.Start;
                 offsetInImageSector = 0;
             }
@@ -396,22 +435,48 @@ public sealed partial class AcornADFS
     /// <returns>Error number indicating success or failure</returns>
     ErrorNumber ParseBigDirectoryToDict(byte[] dirData, Dictionary<string, DirectoryEntryInfo> entries)
     {
-        if(dirData.Length < 28) // Minimum header size
-            return ErrorNumber.InvalidArgument;
+        // Minimum size: header (28) + tail (8)
+        if(dirData.Length < 36) return ErrorNumber.InvalidArgument;
 
         // Parse big directory header
         BigDirectoryHeader header = Marshal.ByteArrayToStructureLittleEndian<BigDirectoryHeader>(dirData);
 
+        // Validate header magic
         if(header.bigDirStartName != BIG_DIR_START_NAME) return ErrorNumber.InvalidArgument;
 
-        uint numEntries  = header.bigDirEntries;
-        uint nameHeapOff = 28 + header.bigDirNameLen; // After header + directory name
-        uint entriesOff  = nameHeapOff;
+        // Validate version (must be 0.0.0 according to Linux kernel)
+        if(header.bigDirVersion[0] != 0 || header.bigDirVersion[1] != 0 || header.bigDirVersion[2] != 0)
+            return ErrorNumber.InvalidArgument;
 
-        // Align to 4 bytes
-        if(entriesOff % 4 != 0) entriesOff += 4 - entriesOff % 4;
+        // Validate directory size (must be multiple of 2048 and not exceed 4MB)
+        uint dirSize = header.bigDirSize;
+
+        if(dirSize == 0 || (dirSize & 2047) != 0 || dirSize > 4 * 1024 * 1024) return ErrorNumber.InvalidArgument;
+
+        // Validate tail magic
+        if(dirData.Length >= dirSize)
+        {
+            BigDirectoryTail tail =
+                Marshal.ByteArrayToStructureLittleEndian<BigDirectoryTail>(dirData, (int)(dirSize - 8), 8);
+
+            if(tail.bigDirEndName != BIG_DIR_END_NAME) return ErrorNumber.InvalidArgument;
+
+            // Validate master sequence numbers match
+            if(tail.bigDirEndMasSeq != header.startMasSeq) return ErrorNumber.InvalidArgument;
+        }
+
+        uint numEntries = header.bigDirEntries;
+
+        // Calculate entries offset: header (28 bytes) + directory name (aligned to 4 bytes)
+        uint entriesOff = 28 + (header.bigDirNameLen + 3 & ~3u);
 
         const int bigEntrySize = 28;
+
+        // Validate entries don't overflow
+        if(numEntries > 4 * 1024 * 1024 / bigEntrySize) return ErrorNumber.InvalidArgument;
+
+        // Calculate name heap start (after all entries)
+        uint nameHeapStart = entriesOff + numEntries * bigEntrySize;
 
         for(uint i = 0; i < numEntries; i++)
         {
@@ -444,7 +509,7 @@ public sealed partial class AcornADFS
                 ExecAddr   = entry.bigDirExec,
                 Length     = entry.bigDirLen,
                 IndAddr    = entry.bigDirIndAddr,
-                Attributes = (byte)entry.bigDirAttr
+                Attributes = entry.bigDirAttr
             };
 
             // Don't add duplicate entries

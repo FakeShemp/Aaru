@@ -8,6 +8,15 @@ static class Xattrs
     /// <summary>Extended attribute name for Acorn RISC OS filetype</summary>
     public const string XATTR_ACORN_RISCOS_FILETYPE = "riscos.type";
 
+    /// <summary>Extended attribute name for Acorn RISC OS full 32-bit file attributes (ADFS-G/big directories)</summary>
+    public const string XATTR_ACORN_RISCOS_ATTRIBUTES = "riscos.attr";
+
+    /// <summary>Extended attribute name for Acorn RISC OS load address</summary>
+    public const string XATTR_ACORN_RISCOS_LOAD_ADDR = "riscos.loadaddr";
+
+    /// <summary>Extended attribute name for Acorn RISC OS exec address</summary>
+    public const string XATTR_ACORN_RISCOS_EXEC_ADDR = "riscos.execaddr";
+
     /// <summary>Extended attribute name for the Amiga file comment</summary>
     public const string XATTR_AMIGA_COMMENTS = "amiga.comments";
 

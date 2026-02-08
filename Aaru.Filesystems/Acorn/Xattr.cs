@@ -55,6 +55,17 @@ public sealed partial class AcornADFS
         // RISC OS 12-bit filetype is stored in load_address[19:8] when bits[31:20] == 0xFFF
         if(HasFiletype(entry.LoadAddr)) xattrs.Add(Xattrs.XATTR_ACORN_RISCOS_FILETYPE);
 
+        // Always expose full 32-bit attributes for ADFS-G/big directories, or 8-bit for standard
+        xattrs.Add(Xattrs.XATTR_ACORN_RISCOS_ATTRIBUTES);
+
+        // Expose load/exec addresses for unstamped files (pre-RISC OS or raw binary)
+        // These contain the actual load and execution addresses rather than filetype/timestamp
+        if(!HasFiletype(entry.LoadAddr))
+        {
+            xattrs.Add(Xattrs.XATTR_ACORN_RISCOS_LOAD_ADDR);
+            xattrs.Add(Xattrs.XATTR_ACORN_RISCOS_EXEC_ADDR);
+        }
+
         return ErrorNumber.NoError;
     }
 
@@ -78,6 +89,27 @@ public sealed partial class AcornADFS
                 buf = BitConverter.GetBytes(filetype);
 
                 return ErrorNumber.NoError;
+
+            case Xattrs.XATTR_ACORN_RISCOS_ATTRIBUTES:
+                // Return full 32-bit attributes for ADFS-G, or 8-bit zero-extended for standard
+                buf = BitConverter.GetBytes(entry.Attributes);
+
+                return ErrorNumber.NoError;
+
+            case Xattrs.XATTR_ACORN_RISCOS_LOAD_ADDR:
+                if(HasFiletype(entry.LoadAddr)) return ErrorNumber.NoSuchExtendedAttribute;
+
+                buf = BitConverter.GetBytes(entry.LoadAddr);
+
+                return ErrorNumber.NoError;
+
+            case Xattrs.XATTR_ACORN_RISCOS_EXEC_ADDR:
+                if(HasFiletype(entry.LoadAddr)) return ErrorNumber.NoSuchExtendedAttribute;
+
+                buf = BitConverter.GetBytes(entry.ExecAddr);
+
+                return ErrorNumber.NoError;
+
             default:
                 return ErrorNumber.NoSuchExtendedAttribute;
         }

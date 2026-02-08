@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
@@ -331,6 +332,13 @@ public sealed partial class AcornADFS
         uint fragId     = indAddr >> 8;
         uint fragOffset = indAddr & 0xFF;
 
+        AaruLogging.Debug(MODULE_NAME,
+                          "MapBlock: indAddr={0}, logicalBlock={1}, fragId={2}, fragOffset={3}",
+                          indAddr,
+                          logicalBlock,
+                          fragId,
+                          fragOffset);
+
         // Calculate sector offset within the fragment
         uint sectorOffset = logicalBlock;
 
@@ -340,6 +348,11 @@ public sealed partial class AcornADFS
         {
             int shareSize = _discRecord.flags & 0x0F; // log2sharesize is in lower 4 bits of flags
             sectorOffset += fragOffset - 1 << shareSize;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "MapBlock: shareSize={0}, adjusted sectorOffset={1}",
+                              shareSize,
+                              sectorOffset);
         }
 
         // Look up the fragment in the map
@@ -355,54 +368,85 @@ public sealed partial class AcornADFS
     {
         physicalBlock = 0;
 
-        int nzones      = _discRecord.nzones + (_discRecord.nzones_high << 8);
+        if(_nzones <= 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "MapLookup: _nzones is {0}, invalid", _nzones);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
         int idlen       = _discRecord.idlen;
-        int sectorSize  = 1 << _discRecord.log2secsize;
-        int zoneSpare   = _discRecord.zone_spare;
         int log2bpmb    = _discRecord.log2bpmb;
         int log2secsize = _discRecord.log2secsize;
 
         // s_map2blk is the shift to convert between map bits and sectors
         int map2blk = log2bpmb - log2secsize;
 
-        // Zone size in bits (excluding zone header and spare)
-        int zoneSize = sectorSize * 8 - zoneSpare;
-
-        // Calculate map address - the map starts near the middle of the disc
-        // map_addr = (nzones >> 1) * zone_size - ((nzones > 1) ? DISC_RECORD_SIZE * 8 : 0)
-        // Then convert from bits to sectors using map2blk
-        int mapAddrBits = (nzones >> 1) * zoneSize - (nzones > 1 ? DISC_RECORD_SIZE * 8 : 0);
-        int mapAddr     = map2blk >= 0 ? mapAddrBits << map2blk : mapAddrBits >> -map2blk;
+        AaruLogging.Debug(MODULE_NAME,
+                          "MapLookup: fragId={0}, sectorOffset={1}, nzones={2}, idlen={3}, map2blk={4}",
+                          fragId,
+                          sectorOffset,
+                          _nzones,
+                          idlen,
+                          map2blk);
 
         // Calculate which zone to start searching
         // Root fragment (ID 2) starts in the middle zone
-        int idsPerZone = zoneSize / (idlen + 1);
-        int startZone  = fragId == 2 ? nzones / 2 : (int)(fragId / (uint)idsPerZone);
+        int startZone = fragId == 2 ? _nzones / 2 : (int)(fragId / _idsPerZone);
 
-        if(startZone >= nzones) startZone = 0;
+        if(startZone >= _nzones) startZone = 0;
 
         // Convert sector offset to map offset
         uint mapOff = map2blk >= 0 ? sectorOffset >> map2blk : sectorOffset << -map2blk;
 
+        AaruLogging.Debug(MODULE_NAME,
+                          "MapLookup: startZone={0}, mapOff={1}, idsPerZone={2}",
+                          startZone,
+                          mapOff,
+                          _idsPerZone);
+
         // Search through zones starting from startZone
-        for(var zoneCount = 0; zoneCount < nzones; zoneCount++)
+        for(var zoneCount = 0; zoneCount < _nzones; zoneCount++)
         {
-            int zone = (startZone + zoneCount) % nzones;
+            int zone = (startZone + zoneCount) % _nzones;
 
-            // Calculate the sector address for this zone
-            ulong zoneSector = (ulong)(mapAddr + zone) + _partition.Start;
+            // Use cached zone data if available
+            byte[] zoneData;
 
-            // Read the zone
-            ErrorNumber errno = _imagePlugin.ReadSector(zoneSector, false, out byte[] zoneData, out _);
+            if(_mapCache != null && _mapCache[zone] != null)
+                zoneData = _mapCache[zone];
+            else
+            {
+                AaruLogging.Debug(MODULE_NAME, "MapLookup: Zone {0} not cached, reading from disk", zone);
 
-            if(errno != ErrorNumber.NoError) continue;
+                // Fall back to reading from disk if not cached
+                // Calculate the sector address for this zone following Linux kernel algorithm
+                long mapAddrBits = (long)(_nzones >> 1) * _zoneSize - (_nzones > 1 ? DISC_RECORD_SIZE * 8 : 0);
+                long mapAddrSectors;
+
+                if(map2blk >= 0)
+                    mapAddrSectors = mapAddrBits << map2blk;
+                else
+                    mapAddrSectors = mapAddrBits >> -map2blk;
+
+                var zoneSector = (ulong)(mapAddrSectors + zone);
+
+                ErrorNumber errno = ReadAdfsSector(zoneSector, out zoneData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME, "MapLookup: Failed to read zone {0}: {1}", zone, errno);
+
+                    continue;
+                }
+            }
 
             // Calculate zone layout:
             // Zone 0: startBit = 32 + DISC_RECORD_SIZE * 8, startBlk = 0
             // Other zones: startBit = 32, startBlk = zone * zoneSize - DISC_RECORD_SIZE * 8
             int startBit = zone == 0 ? 32 + DISC_RECORD_SIZE * 8 : 32;
-            int endBit   = 32 + zoneSize;
-            int startBlk = zone == 0 ? 0 : zone * zoneSize - DISC_RECORD_SIZE * 8;
+            int endBit   = 32 + _zoneSize;
+            int startBlk = zone == 0 ? 0 : zone * _zoneSize - DISC_RECORD_SIZE * 8;
 
             // Search for the fragment in this zone
             int result = LookupZone(zoneData, idlen, fragId, ref mapOff, startBit, endBit);
@@ -415,9 +459,17 @@ public sealed partial class AcornADFS
 
                 physicalBlock = secOff + (map2blk >= 0 ? (uint)mapResult << map2blk : (uint)mapResult >> -map2blk);
 
+                AaruLogging.Debug(MODULE_NAME,
+                                  "MapLookup: Found! zone={0}, result={1}, physicalBlock={2}",
+                                  zone,
+                                  result,
+                                  physicalBlock);
+
                 return ErrorNumber.NoError;
             }
         }
+
+        AaruLogging.Debug(MODULE_NAME, "MapLookup: Fragment {0} not found in any zone", fragId);
 
         return ErrorNumber.InvalidArgument;
     }
@@ -434,11 +486,45 @@ public sealed partial class AcornADFS
     {
         uint idmask = (1u << idlen) - 1;
 
-        // Get the free link at offset 8 (limited to 15 bits)
-        uint freeLink    = (uint)GetBits(zoneData, 8, Math.Min(idlen, 15)) & 0x7FFF;
+        // Get the free link at offset 8 (limited to 15 bits per spec)
+        uint freeLink    = (uint)GetBits(zoneData, 8, idlen) & 0x7FFF;
         uint freelinkPos = freeLink != 0 ? 8 + freeLink : 0;
 
-        int position = startBit;
+        AaruLogging.Debug(MODULE_NAME,
+                          "LookupZone: idlen={0}, fragId={1}, offset={2}, startBit={3}, endBit={4}, freeLink={5}, freelinkPos={6}",
+                          idlen,
+                          fragId,
+                          offset,
+                          startBit,
+                          endBit,
+                          freeLink,
+                          freelinkPos);
+
+        // Debug: dump first 16 bytes of zone
+        if(zoneData.Length >= 16)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "LookupZone: zone first 16 bytes: {0:X2} {1:X2} {2:X2} {3:X2} {4:X2} {5:X2} {6:X2} {7:X2} {8:X2} {9:X2} {10:X2} {11:X2} {12:X2} {13:X2} {14:X2} {15:X2}",
+                              zoneData[0],
+                              zoneData[1],
+                              zoneData[2],
+                              zoneData[3],
+                              zoneData[4],
+                              zoneData[5],
+                              zoneData[6],
+                              zoneData[7],
+                              zoneData[8],
+                              zoneData[9],
+                              zoneData[10],
+                              zoneData[11],
+                              zoneData[12],
+                              zoneData[13],
+                              zoneData[14],
+                              zoneData[15]);
+        }
+
+        int position  = startBit;
+        var fragCount = 0;
 
         while(position < endBit)
         {
@@ -448,9 +534,27 @@ public sealed partial class AcornADFS
             // Find the end of this fragment (next '1' bit after the fragment ID)
             int fragEnd = FindNextSetBit(zoneData, position + idlen, endBit);
 
-            if(fragEnd < 0 || fragEnd >= endBit) break;
+            if(fragEnd < 0 || fragEnd >= endBit)
+            {
+                AaruLogging.Debug(MODULE_NAME, "LookupZone: No end bit found at position {0}, breaking", position);
+
+                break;
+            }
 
             int fragLength = fragEnd + 1 - position;
+
+            // Log first few fragments for debugging
+            if(fragCount < 5)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "LookupZone: pos={0}, frag={1}, fragEnd={2}, fragLen={3}",
+                                  position,
+                                  frag,
+                                  fragEnd,
+                                  fragLength);
+            }
+
+            fragCount++;
 
             // Check if we're at the free link position (skip free space entries)
             if(position == freelinkPos)
@@ -461,6 +565,13 @@ public sealed partial class AcornADFS
             else if(frag == fragId)
             {
                 // Found our fragment
+                AaruLogging.Debug(MODULE_NAME,
+                                  "LookupZone: Found fragId={0} at pos={1}, length={2}, offset={3}",
+                                  fragId,
+                                  position,
+                                  fragLength,
+                                  offset);
+
                 if(offset < fragLength)
                 {
                     // The offset is within this fragment
@@ -473,6 +584,8 @@ public sealed partial class AcornADFS
 
             position = fragEnd + 1;
         }
+
+        AaruLogging.Debug(MODULE_NAME, "LookupZone: Scanned {0} fragments, not found", fragCount);
 
         return -1; // Not found in this zone
     }
@@ -563,8 +676,8 @@ public sealed partial class AcornADFS
             Links     = 1
         };
 
-        // Set attributes
-        var attrs = (FileAttributes)entry.Attributes;
+        // Set attributes (only low 8 bits are used for standard RISC OS attributes)
+        var attrs = (FileAttributes)(byte)entry.Attributes;
 
         info.Attributes = attrs.HasFlag(FileAttributes.Directory)
                               ? CommonTypes.Structs.FileAttributes.Directory

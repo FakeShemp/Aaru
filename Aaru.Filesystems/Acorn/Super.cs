@@ -105,30 +105,39 @@ public sealed partial class AcornADFS
         // Each zone contains a bitstream where fragments are identified by their fragment ID
         // Free space is tracked as a linked list starting at offset 8 in each zone
 
-        // For now, scan each zone and count free bits in the fragment list
-        int nzones = _discRecord.nzones + (_discRecord.nzones_high << 8);
-
-        if(nzones == 0) return 0;
+        if(_nzones == 0) return 0;
 
         ulong totalFreeBits = 0;
         int   idlen         = _discRecord.idlen;
-        int   zoneSpare     = _discRecord.zone_spare;
-        int   sectorSize    = 1 << _discRecord.log2secsize;
 
-        // Calculate bits per zone (excluding zone header and spare bits)
-        int bitsPerZone = sectorSize * 8 - zoneSpare;
-
-        // Start sector for first zone (after boot block for partitioned disks)
-        ulong zoneSector = _partition.Start;
-
-        for(var zone = 0; zone < nzones; zone++)
+        for(var zone = 0; zone < _nzones; zone++)
         {
-            ErrorNumber errno = _imagePlugin.ReadSector(zoneSector + (ulong)zone, false, out byte[] zoneData, out _);
+            byte[] zoneData;
 
-            if(errno != ErrorNumber.NoError) continue;
+            // Use cached zone data if available
+            if(_mapCache != null && _mapCache[zone] != null)
+                zoneData = _mapCache[zone];
+            else
+            {
+                // Fall back to reading from disk
+                int map2blk = _discRecord.log2bpmb - _discRecord.log2secsize;
+
+                long mapAddr = (_nzones >> 1) * _zoneSize - (_nzones > 1 ? DISC_RECORD_SIZE * 8 : 0);
+
+                if(map2blk >= 0)
+                    mapAddr <<= map2blk;
+                else
+                    mapAddr >>= -map2blk;
+
+                ulong zoneSector = (ulong)(mapAddr / _blockSize) + (uint)zone;
+
+                ErrorNumber errno = ReadAdfsSector(zoneSector, out zoneData);
+
+                if(errno != ErrorNumber.NoError) continue;
+            }
 
             // Scan the free list in this zone
-            totalFreeBits += ScanZoneFreeSpace(zoneData, idlen, bitsPerZone);
+            totalFreeBits += ScanZoneFreeSpace(zoneData, idlen, _zoneSize);
         }
 
         // Convert free bits to free blocks
