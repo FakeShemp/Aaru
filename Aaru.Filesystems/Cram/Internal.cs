@@ -66,17 +66,21 @@ public sealed partial class Cram
     sealed class CramFileNode : IFileNode
     {
         /// <summary>The cramfs inode</summary>
-        internal Inode Inode { get; init; }
+        internal Inode Inode { get; set; }
 
-        /// <summary>Byte offset of data in the filesystem</summary>
-        internal uint DataOffset { get; init; }
+        /// <summary>Byte offset of block pointers in the filesystem (inode.Offset &lt;&lt; 2)</summary>
+        internal uint BlockPtrOffset { get; set; }
+
+        /// <summary>Number of blocks in the file (ceiling of size / PAGE_SIZE)</summary>
+        internal uint BlockCount { get; set; }
+
         /// <inheritdoc />
-        public string Path { get; init; }
+        public string Path { get; set; }
 
         /// <summary>Current read position within the file</summary>
         public long Offset { get; set; }
 
         /// <summary>File length in bytes</summary>
-        public long Length { get; init; }
+        public long Length { get; set; }
     }
 }

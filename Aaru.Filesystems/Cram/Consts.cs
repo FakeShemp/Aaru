@@ -98,4 +98,42 @@ public sealed partial class Cram
     const int CRAMFS_BLK_DIRECT_PTR_SHIFT = 2;
 
 #endregion
+
+#region POSIX file type constants
+
+    /// <summary>File type mask</summary>
+    const ushort S_IFMT = 0xF000;
+
+    /// <summary>Socket</summary>
+    const ushort S_IFSOCK = 0xC000;
+
+    /// <summary>Symbolic link</summary>
+    const ushort S_IFLNK = 0xA000;
+
+    /// <summary>Regular file</summary>
+    const ushort S_IFREG = 0x8000;
+
+    /// <summary>Block device</summary>
+    const ushort S_IFBLK = 0x6000;
+
+    /// <summary>Directory</summary>
+    const ushort S_IFDIR = 0x4000;
+
+    /// <summary>Character device</summary>
+    const ushort S_IFCHR = 0x2000;
+
+    /// <summary>FIFO (named pipe)</summary>
+    const ushort S_IFIFO = 0x1000;
+
+    /// <summary>Permission bits mask</summary>
+    const ushort S_IPERM = 0x0FFF;
+
+#endregion
+
+#region Page size
+
+    /// <summary>CramFS page size (4KB)</summary>
+    const int PAGE_SIZE = 4096;
+
+#endregion
 }
