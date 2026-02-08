@@ -207,6 +207,7 @@ Fully supported file-systems (identify and extraction)
 * CD-i file system
 * Commodore 1540/1541/1571/1581 filesystems
 * CP/M file system
+* Cram file system
 * DEC Files-11 (aka ODS)
 * DEC RT-11 file system
 * High Sierra Format
@@ -242,7 +243,6 @@ Supported file systems for identification and information only
 * BSD Unix File System 2 (UFS2)
 * B-tree file system (btrfs)
 * Coherent UNIX file system
-* Cram file system
 * dump(8) (Old historic BSD, AIX, UFS and UFS2 types)
 * ECMA-67: 130mm Flexible Disk Cartridge Labelling and File Structure for Information Interchange
 * Flash-Friendly File System (F2FS)
