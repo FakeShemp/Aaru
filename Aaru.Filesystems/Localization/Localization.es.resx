@@ -434,6 +434,33 @@
     <data name="Cram_Name" xml:space="preserve">
     <value>Sistema de ficheros Cram</value>
   </data>
+    <data name="Cram_CRC_0" xml:space="preserve">
+    <value>CRC: 0x{0:X8}</value>
+  </data>
+    <data name="Cram_Flags_0" xml:space="preserve">
+    <value>Banderas: 0x{0:X8}</value>
+  </data>
+    <data name="Cram_Flag_FsIdVersion2" xml:space="preserve">
+    <value>  - FSID versión 2</value>
+  </data>
+    <data name="Cram_Flag_SortedDirs" xml:space="preserve">
+    <value>  - Directorios ordenados</value>
+  </data>
+    <data name="Cram_Flag_Holes" xml:space="preserve">
+    <value>  - Soporte de ficheros dispersos (huecos)</value>
+  </data>
+    <data name="Cram_Flag_ShiftedRootOffset" xml:space="preserve">
+    <value>  - Desplazamiento de raíz modificado</value>
+  </data>
+    <data name="Cram_Flag_ExtBlockPointers" xml:space="preserve">
+    <value>  - Punteros de bloque extendidos</value>
+  </data>
+    <data name="Cram_Root_directory_mode_0" xml:space="preserve">
+    <value>Modo del directorio raíz: 0{0}</value>
+  </data>
+    <data name="Cram_Root_directory_size_0_bytes" xml:space="preserve">
+    <value>Tamaño del directorio raíz: {0} bytes</value>
+  </data>
     <data name="Created_on_0" xml:space="preserve">
     <value>Creado el {0}</value>
   </data>

@@ -2978,6 +2978,60 @@ namespace Aaru.Filesystems {
             }
         }
         
+        internal static string Cram_CRC_0 {
+            get {
+                return ResourceManager.GetString("Cram_CRC_0", resourceCulture);
+            }
+        }
+        
+        internal static string Cram_Flags_0 {
+            get {
+                return ResourceManager.GetString("Cram_Flags_0", resourceCulture);
+            }
+        }
+        
+        internal static string Cram_Flag_FsIdVersion2 {
+            get {
+                return ResourceManager.GetString("Cram_Flag_FsIdVersion2", resourceCulture);
+            }
+        }
+        
+        internal static string Cram_Flag_SortedDirs {
+            get {
+                return ResourceManager.GetString("Cram_Flag_SortedDirs", resourceCulture);
+            }
+        }
+        
+        internal static string Cram_Flag_Holes {
+            get {
+                return ResourceManager.GetString("Cram_Flag_Holes", resourceCulture);
+            }
+        }
+        
+        internal static string Cram_Flag_ShiftedRootOffset {
+            get {
+                return ResourceManager.GetString("Cram_Flag_ShiftedRootOffset", resourceCulture);
+            }
+        }
+        
+        internal static string Cram_Flag_ExtBlockPointers {
+            get {
+                return ResourceManager.GetString("Cram_Flag_ExtBlockPointers", resourceCulture);
+            }
+        }
+        
+        internal static string Cram_Root_directory_mode_0 {
+            get {
+                return ResourceManager.GetString("Cram_Root_directory_mode_0", resourceCulture);
+            }
+        }
+        
+        internal static string Cram_Root_directory_size_0_bytes {
+            get {
+                return ResourceManager.GetString("Cram_Root_directory_size_0_bytes", resourceCulture);
+            }
+        }
+        
         internal static string Little_endian {
             get {
                 return ResourceManager.GetString("Little_endian", resourceCulture);

@@ -1493,6 +1493,33 @@
     <data name="Cram_file_system" xml:space="preserve">
     <value>Cram file system</value>
   </data>
+    <data name="Cram_CRC_0" xml:space="preserve">
+    <value>CRC: 0x{0:X8}</value>
+  </data>
+    <data name="Cram_Flags_0" xml:space="preserve">
+    <value>Flags: 0x{0:X8}</value>
+  </data>
+    <data name="Cram_Flag_FsIdVersion2" xml:space="preserve">
+    <value>  - FSID version 2</value>
+  </data>
+    <data name="Cram_Flag_SortedDirs" xml:space="preserve">
+    <value>  - Sorted directories</value>
+  </data>
+    <data name="Cram_Flag_Holes" xml:space="preserve">
+    <value>  - Sparse file support (holes)</value>
+  </data>
+    <data name="Cram_Flag_ShiftedRootOffset" xml:space="preserve">
+    <value>  - Shifted root offset</value>
+  </data>
+    <data name="Cram_Flag_ExtBlockPointers" xml:space="preserve">
+    <value>  - Extended block pointers</value>
+  </data>
+    <data name="Cram_Root_directory_mode_0" xml:space="preserve">
+    <value>Root directory mode: 0{0}</value>
+  </data>
+    <data name="Cram_Root_directory_size_0_bytes" xml:space="preserve">
+    <value>Root directory size: {0} bytes</value>
+  </data>
     <data name="Little_endian" xml:space="preserve">
     <value>Little-endian</value>
   </data>
