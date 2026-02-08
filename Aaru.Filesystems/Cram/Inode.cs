@@ -36,23 +36,28 @@ public sealed partial class Cram
     /// <summary>Converts a cramfs inode to a FileEntryInfo structure</summary>
     /// <param name="inode">The cramfs inode</param>
     /// <returns>FileEntryInfo with the file's metadata</returns>
-    static FileEntryInfo InodeToFileEntryInfo(Inode inode)
+    FileEntryInfo InodeToFileEntryInfo(Inode inode)
     {
+        ushort mode = GetInodeMode(inode);
+        ushort uid  = GetInodeUid(inode);
+        uint   size = GetInodeSize(inode);
+        byte   gid  = GetInodeGid(inode);
+
         var info = new FileEntryInfo
         {
             Attributes = FileAttributes.None,
             BlockSize  = 4096, // CramFS uses 4K pages
-            Length     = inode.Size,
-            UID        = inode.Uid,
-            GID        = inode.Gid,
-            Mode       = (uint)(inode.Mode & S_IPERM)
+            Length     = size,
+            UID        = uid,
+            GID        = gid,
+            Mode       = (uint)(mode & S_IPERM)
         };
 
         // CramFS doesn't store timestamps
         // Links count is not stored in cramfs
 
         // Determine file type from mode
-        var fileType = (ushort)(inode.Mode & S_IFMT);
+        var fileType = (ushort)(mode & S_IFMT);
 
         switch(fileType)
         {
@@ -73,9 +78,8 @@ public sealed partial class Cram
 
                 // For device files, Size field contains device number (i_rdev)
                 // Major = bits 8-15, Minor = bits 0-7
-                uint chrDev   = inode.Size;
-                uint chrMajor = chrDev >> 8 & 0xFF;
-                uint chrMinor = chrDev      & 0xFF;
+                uint chrMajor = size >> 8 & 0xFF;
+                uint chrMinor = size      & 0xFF;
                 info.DeviceNo = (ulong)chrMajor << 32 | chrMinor;
 
                 break;
@@ -84,9 +88,8 @@ public sealed partial class Cram
 
                 // For device files, Size field contains device number (i_rdev)
                 // Major = bits 8-15, Minor = bits 0-7
-                uint blkDev   = inode.Size;
-                uint blkMajor = blkDev >> 8 & 0xFF;
-                uint blkMinor = blkDev      & 0xFF;
+                uint blkMajor = size >> 8 & 0xFF;
+                uint blkMinor = size      & 0xFF;
                 info.DeviceNo = (ulong)blkMajor << 32 | blkMinor;
 
                 break;
@@ -105,7 +108,7 @@ public sealed partial class Cram
         }
 
         // Calculate blocks (size / block size, rounded up)
-        info.Blocks = (inode.Size + 4095) / 4096;
+        info.Blocks = (size + 4095) / 4096;
 
         return info;
     }

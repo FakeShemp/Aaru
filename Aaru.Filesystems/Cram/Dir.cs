@@ -102,19 +102,19 @@ public sealed partial class Cram
             AaruLogging.Debug(MODULE_NAME, "OpenDir: Component '{0}' found", component);
 
             // Check if it's a directory
-            if(!IsDirectory(entry.Inode.Mode))
+            if(!IsDirectory(GetInodeMode(entry.Inode)))
             {
                 AaruLogging.Debug(MODULE_NAME,
                                   "OpenDir: '{0}' is not a directory (mode=0x{1:X4})",
                                   component,
-                                  entry.Inode.Mode);
+                                  GetInodeMode(entry.Inode));
 
                 return ErrorNumber.NotDirectory;
             }
 
             // Read directory contents
-            uint dirOffset = entry.Inode.Offset << 2;
-            uint dirSize   = entry.Inode.Size;
+            uint dirOffset = GetInodeOffset(entry.Inode) << 2;
+            uint dirSize   = GetInodeSize(entry.Inode);
 
             var dirEntries = new Dictionary<string, DirectoryEntryInfo>(StringComparer.Ordinal);
 
@@ -220,7 +220,7 @@ public sealed partial class Cram
                               : Marshal.ByteArrayToStructureBigEndian<Inode>(inodeData);
 
             // Name length is stored as (actual_length + 3) / 4, so multiply by 4 to get padded length
-            int nameLen = inode.NameLen << 2;
+            int nameLen = GetInodeNameLen(inode) << 2;
 
             if(nameLen == 0)
             {

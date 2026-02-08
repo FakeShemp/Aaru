@@ -75,9 +75,9 @@ public sealed partial class Cram
         }
 
         // Validate root inode is a directory
-        if(!IsDirectory(_superBlock.root.Mode))
+        if(!IsDirectory(GetInodeMode(_superBlock.root)))
         {
-            AaruLogging.Debug(MODULE_NAME, "Root is not a directory, mode: 0x{0:X4}", _superBlock.root.Mode);
+            AaruLogging.Debug(MODULE_NAME, "Root is not a directory, mode: 0x{0:X4}", GetInodeMode(_superBlock.root));
 
             return ErrorNumber.InvalidArgument;
         }
@@ -232,8 +232,8 @@ public sealed partial class Cram
     ErrorNumber LoadRootDirectory()
     {
         // Root directory offset is in the root inode
-        uint rootOffset = _superBlock.root.Offset << 2;
-        uint rootSize   = _superBlock.root.Size;
+        uint rootOffset = GetInodeOffset(_superBlock.root) << 2;
+        uint rootSize   = GetInodeSize(_superBlock.root);
 
         AaruLogging.Debug(MODULE_NAME, "Root directory offset: {0}, size: {1}", rootOffset, rootSize);
 

@@ -98,7 +98,7 @@ public sealed partial class Cram
             }
 
             // Not the last component - must be a directory
-            if(!IsDirectory(entry.Inode.Mode))
+            if(!IsDirectory(GetInodeMode(entry.Inode)))
             {
                 AaruLogging.Debug(MODULE_NAME, "Stat: '{0}' is not a directory", component);
 
@@ -106,8 +106,8 @@ public sealed partial class Cram
             }
 
             // Read directory contents for next iteration
-            uint dirOffset = entry.Inode.Offset << 2;
-            uint dirSize   = entry.Inode.Size;
+            uint dirOffset = GetInodeOffset(entry.Inode) << 2;
+            uint dirSize   = GetInodeSize(entry.Inode);
 
             var dirEntries = new Dictionary<string, DirectoryEntryInfo>(StringComparer.Ordinal);
 
@@ -165,7 +165,7 @@ public sealed partial class Cram
             return errno;
         }
 
-        uint size       = entry.Inode.Size;
+        uint size       = GetInodeSize(entry.Inode);
         uint blockCount = (size + PAGE_SIZE - 1) / PAGE_SIZE;
 
         node = new CramFileNode
@@ -174,7 +174,7 @@ public sealed partial class Cram
             Length         = size,
             Offset         = 0,
             Inode          = entry.Inode,
-            BlockPtrOffset = entry.Inode.Offset << 2,
+            BlockPtrOffset = GetInodeOffset(entry.Inode) << 2,
             BlockCount     = blockCount
         };
 
@@ -219,7 +219,7 @@ public sealed partial class Cram
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        uint size = entry.Inode.Size;
+        uint size = GetInodeSize(entry.Inode);
 
         if(size == 0)
         {
@@ -238,7 +238,7 @@ public sealed partial class Cram
             Length         = size,
             Offset         = 0,
             Inode          = entry.Inode,
-            BlockPtrOffset = entry.Inode.Offset << 2,
+            BlockPtrOffset = GetInodeOffset(entry.Inode) << 2,
             BlockCount     = blockCount
         };
 
@@ -381,11 +381,11 @@ public sealed partial class Cram
             }
 
             // Not the last component - must be a directory
-            if(!IsDirectory(foundEntry.Inode.Mode)) return ErrorNumber.NotDirectory;
+            if(!IsDirectory(GetInodeMode(foundEntry.Inode))) return ErrorNumber.NotDirectory;
 
             // Read directory contents for next iteration
-            uint dirOffset = foundEntry.Inode.Offset << 2;
-            uint dirSize   = foundEntry.Inode.Size;
+            uint dirOffset = GetInodeOffset(foundEntry.Inode) << 2;
+            uint dirSize   = GetInodeSize(foundEntry.Inode);
 
             var dirEntries = new Dictionary<string, DirectoryEntryInfo>(StringComparer.Ordinal);
 

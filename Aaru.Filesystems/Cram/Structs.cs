@@ -42,44 +42,28 @@ public sealed partial class Cram
 
     /// <summary>CramFS inode structure</summary>
     /// <remarks>
-    ///     The inode uses bit fields:
-    ///     - mode: 16 bits (file mode/permissions)
-    ///     - uid: 16 bits (user ID)
-    ///     - size: 24 bits (file size, or i_rdev for device files)
-    ///     - gid: 8 bits (group ID)
-    ///     - namelen: 6 bits (name length divided by 4, rounded up)
-    ///     - offset: 26 bits (data offset divided by 4)
+    ///     The inode uses bit fields that are laid out differently on big-endian vs little-endian systems:
+    ///     Little-endian layout:
+    ///     - modeUid: mode (16 bits) | uid (16 bits)
+    ///     - sizeGid: size (24 bits) | gid (8 bits)
+    ///     - namelenOffset: namelen (6 bits) | offset (26 bits)
+    ///     Big-endian layout:
+    ///     - modeUid: uid (16 bits) | mode (16 bits)
+    ///     - sizeGid: gid (8 bits) | size (24 bits)
+    ///     - namelenOffset: offset (26 bits) | namelen (6 bits)
     /// </remarks>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
     partial struct Inode
     {
-        /// <summary>Lower 32 bits: mode (16 bits) | uid (16 bits)</summary>
+        /// <summary>Combined mode and uid field</summary>
         public uint modeUid;
 
-        /// <summary>Middle 32 bits: size (24 bits) | gid (8 bits)</summary>
+        /// <summary>Combined size and gid field</summary>
         public uint sizeGid;
 
-        /// <summary>Upper 32 bits: namelen (6 bits) | offset (26 bits)</summary>
+        /// <summary>Combined namelen and offset field</summary>
         public uint namelenOffset;
-
-        /// <summary>Gets the file mode (permissions and type)</summary>
-        public ushort Mode => (ushort)(modeUid & 0xFFFF);
-
-        /// <summary>Gets the user ID</summary>
-        public ushort Uid => (ushort)(modeUid >> 16);
-
-        /// <summary>Gets the file size (or device number for device files)</summary>
-        public uint Size => sizeGid & 0xFFFFFF;
-
-        /// <summary>Gets the group ID</summary>
-        public byte Gid => (byte)(sizeGid >> 24);
-
-        /// <summary>Gets the name length (actual length = namelen * 4)</summary>
-        public byte NameLen => (byte)(namelenOffset & 0x3F);
-
-        /// <summary>Gets the data offset (actual offset = offset * 4)</summary>
-        public uint Offset => namelenOffset >> 6;
     }
 
 #endregion

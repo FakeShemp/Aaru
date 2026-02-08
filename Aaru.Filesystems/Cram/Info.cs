@@ -124,10 +124,14 @@ public sealed partial class Cram
         }
 
         // Display root inode information
-        sbInformation.AppendFormat(Localization.Cram_Root_directory_mode_0, Convert.ToString(crSb.root.Mode, 8))
-                     .AppendLine();
+        // Bit extraction depends on endianness - LE: mode in low bits, BE: mode in high bits
+        ushort rootMode = littleEndian ? (ushort)(crSb.root.modeUid & 0xFFFF) : (ushort)(crSb.root.modeUid >> 16);
 
-        sbInformation.AppendFormat(Localization.Cram_Root_directory_size_0_bytes, crSb.root.Size).AppendLine();
+        uint rootSize = littleEndian ? crSb.root.sizeGid & 0xFFFFFF : crSb.root.sizeGid >> 8;
+
+        sbInformation.AppendFormat(Localization.Cram_Root_directory_mode_0, Convert.ToString(rootMode, 8)).AppendLine();
+
+        sbInformation.AppendFormat(Localization.Cram_Root_directory_size_0_bytes, rootSize).AppendLine();
 
         information = sbInformation.ToString();
 
