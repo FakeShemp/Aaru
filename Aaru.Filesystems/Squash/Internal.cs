@@ -26,6 +26,9 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
+using Aaru.CommonTypes.Interfaces;
+
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
@@ -50,6 +53,26 @@ public sealed partial class Squash
 
         /// <summary>Offset within the inode block</summary>
         public ushort InodeOffset { get; init; }
+    }
+
+#endregion
+
+#region Nested type: SquashDirNode
+
+    /// <summary>Directory node for traversing directories</summary>
+    sealed class SquashDirNode : IDirNode
+    {
+        /// <summary>Current position in the directory listing</summary>
+        public int Position { get; set; }
+
+        /// <summary>Cached directory entries</summary>
+        public Dictionary<string, DirectoryEntryInfo> Entries { get; set; }
+
+        /// <summary>Entry names for enumeration</summary>
+        public string[] EntryNames { get; set; }
+
+        /// <inheritdoc />
+        public string Path { get; set; }
     }
 
 #endregion
