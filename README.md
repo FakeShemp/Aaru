@@ -218,6 +218,7 @@ Fully supported file-systems (identify and extraction)
 * Microsoft 32-bit File Allocation Table (FAT32), including FAT+ extension
 * Microsoft Extended File Allocation Table (exFAT)
 * Microsoft/IBM High Performance File System (HPFS)
+* Minix v1/v2/v3 file systems
 * OS-9 Random Block File
 * Professional File System
 * QNX4 filesystems
@@ -255,8 +256,6 @@ Supported file systems for identification and information only
 * Linux extended file system 4
 * Microsoft New Technology File System (NTFS)
 * Microsoft Resilient File System (ReFS)
-* Minix v2 file system
-* Minix v3 file system
 * NEC PC-Engine executable
 * NEC PC-FX executable
 * NILFS2
