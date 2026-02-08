@@ -114,4 +114,35 @@ public sealed partial class MinixFS
 
         return ErrorNumber.NoError;
     }
+
+    /// <summary>Reads a zone pointer from an indirect block</summary>
+    /// <param name="blockData">The indirect block data</param>
+    /// <param name="index">Index of the pointer to read</param>
+    /// <returns>The zone number</returns>
+    uint ReadZonePointer(byte[] blockData, int index)
+    {
+        if(_version == FilesystemVersion.V1)
+        {
+            int offset = index * 2;
+
+            if(offset + 2 > blockData.Length) return 0;
+
+            return _littleEndian
+                       ? BitConverter.ToUInt16(blockData, offset)
+                       : (ushort)(blockData[offset] << 8 | blockData[offset + 1]);
+        }
+        else
+        {
+            int offset = index * 4;
+
+            if(offset + 4 > blockData.Length) return 0;
+
+            return _littleEndian
+                       ? BitConverter.ToUInt32(blockData, offset)
+                       : (uint)(blockData[offset]     << 24 |
+                                blockData[offset + 1] << 16 |
+                                blockData[offset + 2] << 8  |
+                                blockData[offset + 3]);
+        }
+    }
 }

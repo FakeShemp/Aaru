@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -137,6 +138,193 @@ public sealed partial class MinixFS
         }
 
         return ErrorNumber.NoSuchFile;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(string.IsNullOrEmpty(path) || path == "/") return ErrorNumber.IsDirectory;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: path='{0}'", path);
+
+        // Get file stat to verify it exists and determine its type
+        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: Stat failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Check it's not a directory
+        if(stat.Attributes.HasFlag(FileAttributes.Directory))
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: path is a directory");
+
+            return ErrorNumber.IsDirectory;
+        }
+
+        // Look up the file's inode
+        errno = LookupFile(path, out uint inodeNumber);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: LookupFile failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Read the inode
+        errno = ReadInode(inodeNumber, out object inodeObj);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: ReadInode failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Extract zone pointers and file size
+        uint[] zones;
+        uint   size;
+        int    directZones;
+
+        if(_version == FilesystemVersion.V1)
+        {
+            var inode = (V1DiskInode)inodeObj;
+            size = inode.d1_size;
+
+            // Convert ushort[] to uint[]
+            zones = new uint[inode.d1_zone.Length];
+
+            for(var i = 0; i < inode.d1_zone.Length; i++) zones[i] = inode.d1_zone[i];
+
+            directZones = V1_NR_DZONES;
+        }
+        else
+        {
+            var inode = (V2DiskInode)inodeObj;
+            size        = inode.d2_size;
+            zones       = inode.d2_zone;
+            directZones = V2_NR_DZONES;
+        }
+
+        node = new MinixFileNode
+        {
+            Path        = path,
+            Length      = size,
+            Offset      = 0,
+            InodeNumber = inodeNumber,
+            Zones       = zones,
+            DirectZones = directZones
+        };
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: success, size={0}", size);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not MinixFileNode) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not MinixFileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        if(buffer == null) return ErrorNumber.InvalidArgument;
+
+        if(fileNode.Offset < 0 || fileNode.Offset >= fileNode.Length) return ErrorNumber.InvalidArgument;
+
+        // Clamp read length to remaining file size and buffer size
+        long toRead = length;
+
+        if(fileNode.Offset + toRead > fileNode.Length) toRead = fileNode.Length - fileNode.Offset;
+
+        if(toRead <= 0) return ErrorNumber.NoError;
+
+        if(toRead > buffer.Length) toRead = buffer.Length;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: offset={0}, length={1}, toRead={2}", fileNode.Offset, length, toRead);
+
+        long bytesRead     = 0;
+        long currentOffset = fileNode.Offset;
+
+        while(bytesRead < toRead)
+        {
+            // Calculate logical block number within the file
+            var logicalBlock = (int)(currentOffset / _blockSize);
+
+            // Map logical block to physical block (zone)
+            ErrorNumber errno = ReadMap(fileNode.Zones, fileNode.DirectZones, logicalBlock, out int physicalBlock);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadFile: ReadMap failed for block {0}: {1}", logicalBlock, errno);
+
+                // If we've read some data, return what we have
+                if(bytesRead > 0) break;
+
+                return errno;
+            }
+
+            // Calculate offset within the block
+            var offsetInBlock = (int)(currentOffset % _blockSize);
+
+            byte[] blockData;
+
+            if(physicalBlock == 0)
+            {
+                // Sparse file hole - return zeros
+                blockData = new byte[_blockSize];
+            }
+            else
+            {
+                // Read the block
+                errno = ReadBlock(physicalBlock, out blockData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "ReadFile: ReadBlock failed for block {0}: {1}",
+                                      physicalBlock,
+                                      errno);
+
+                    // If we've read some data, return what we have
+                    if(bytesRead > 0) break;
+
+                    return errno;
+                }
+            }
+
+            // Calculate how much data to copy from this block
+            long bytesToCopy = Math.Min(_blockSize - offsetInBlock, toRead - bytesRead);
+            Array.Copy(blockData, offsetInBlock, buffer, bytesRead, bytesToCopy);
+
+            bytesRead     += bytesToCopy;
+            currentOffset += bytesToCopy;
+        }
+
+        read            =  bytesRead;
+        fileNode.Offset += bytesRead;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: read {0} bytes, new offset={1}", read, fileNode.Offset);
+
+        return ErrorNumber.NoError;
     }
 
     /// <summary>Converts an inode to a FileEntryInfo structure</summary>
@@ -295,5 +483,77 @@ public sealed partial class MinixFS
         info.Blocks = (size + _blockSize - 1) / _blockSize;
 
         return info;
+    }
+
+    /// <summary>Looks up a file by path and returns its inode number</summary>
+    /// <param name="path">Path to the file</param>
+    /// <param name="inodeNumber">The inode number of the file</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber LookupFile(string path, out uint inodeNumber)
+    {
+        inodeNumber = 0;
+
+        // Normalize path
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath is "" or ".") normalizedPath = "/";
+
+        if(normalizedPath == "/")
+        {
+            inodeNumber = ROOT_INODE;
+
+            return ErrorNumber.NoError;
+        }
+
+        // Remove leading slash
+        string pathWithoutLeadingSlash = normalizedPath.StartsWith("/", StringComparison.Ordinal)
+                                             ? normalizedPath[1..]
+                                             : normalizedPath;
+
+        string[] pathComponents = pathWithoutLeadingSlash.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
+
+        // Start from root directory cache
+        Dictionary<string, uint> currentEntries = _rootDirectoryCache;
+
+        // Traverse path to find the file
+        for(var p = 0; p < pathComponents.Length; p++)
+        {
+            string component = pathComponents[p];
+
+            // Skip "." and ".."
+            if(component is "." or "..") continue;
+
+            // Find the component in current directory
+            if(!currentEntries.TryGetValue(component, out uint foundInodeNumber)) return ErrorNumber.NoSuchFile;
+
+            // If this is the last component, we found it
+            if(p == pathComponents.Length - 1)
+            {
+                inodeNumber = foundInodeNumber;
+
+                return ErrorNumber.NoError;
+            }
+
+            // Not the last component - read directory contents for next iteration
+            ErrorNumber errno = ReadInode(foundInodeNumber, out object inodeObj);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            ushort mode = _version == FilesystemVersion.V1
+                              ? ((V1DiskInode)inodeObj).d1_mode
+                              : ((V2DiskInode)inodeObj).d2_mode;
+
+            if((mode & (ushort)InodeMode.TypeMask) != (ushort)InodeMode.Directory) return ErrorNumber.NotDirectory;
+
+            errno = ReadDirectoryContents(foundInodeNumber, out Dictionary<string, uint> dirEntries);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            currentEntries = dirEntries;
+        }
+
+        return ErrorNumber.NoSuchFile;
     }
 }

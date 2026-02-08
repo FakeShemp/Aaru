@@ -45,4 +45,26 @@ public sealed partial class MinixFS
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>File node for reading file contents</summary>
+    sealed class MinixFileNode : IFileNode
+    {
+        /// <summary>The file's inode number</summary>
+        internal uint InodeNumber { get; init; }
+
+        /// <summary>The file's zone pointers (converted to uint for both V1 and V2)</summary>
+        internal uint[] Zones { get; init; }
+
+        /// <summary>Number of direct zones for this filesystem version</summary>
+        internal int DirectZones { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+    }
 }
