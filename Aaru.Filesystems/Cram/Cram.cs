@@ -29,15 +29,17 @@
 // ReSharper disable UnusedMember.Local
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the CRAM filesystem</summary>
+/// <summary>Implements the CRAM filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedType.Local")]
-public sealed partial class Cram : IFilesystem
+public sealed partial class Cram : IReadOnlyFilesystem
 {
 #region IFilesystem Members
 
@@ -51,4 +53,11 @@ public sealed partial class Cram : IFilesystem
     public string Author => Authors.NataliaPortillo;
 
 #endregion
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions { get; } = [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces { get; } = [];
 }

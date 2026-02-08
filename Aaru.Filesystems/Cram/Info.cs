@@ -40,7 +40,6 @@ using Partition = Aaru.CommonTypes.Partition;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the CRAM filesystem</summary>
 [SuppressMessage("ReSharper", "UnusedType.Local")]
 public sealed partial class Cram
 {
