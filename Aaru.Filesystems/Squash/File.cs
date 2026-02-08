@@ -317,6 +317,79 @@ public sealed partial class Squash
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(string.IsNullOrEmpty(path) || path == "/") return ErrorNumber.InvalidArgument;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Look up the symlink in the directory tree
+        ErrorNumber errno = LookupFile(path, out DirectoryEntryInfo entry);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: LookupFile failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Check it's a symlink
+        if(entry.Type is not SquashInodeType.Symlink and not SquashInodeType.ExtendedSymlink)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: path is not a symlink, type={0}", entry.Type);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Read the symlink inode
+        int symlinkInodeSize = Marshal.SizeOf<SymlinkInode>();
+
+        errno = ReadInodeData(entry.InodeBlock, entry.InodeOffset, symlinkInodeSize, out byte[] inodeData);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: ReadInodeData failed with {0}", errno);
+
+            return errno;
+        }
+
+        SymlinkInode symlinkInode = _littleEndian
+                                        ? Helpers.Marshal.ByteArrayToStructureLittleEndian<SymlinkInode>(inodeData)
+                                        : Helpers.Marshal.ByteArrayToStructureBigEndian<SymlinkInode>(inodeData);
+
+        if(symlinkInode.symlink_size == 0)
+        {
+            dest = string.Empty;
+
+            return ErrorNumber.NoError;
+        }
+
+        // The symlink target data immediately follows the inode structure in the metadata
+        // Read the inode data plus the symlink target
+        int totalSize = symlinkInodeSize + (int)symlinkInode.symlink_size;
+
+        errno = ReadInodeData(entry.InodeBlock, entry.InodeOffset, totalSize, out byte[] fullData);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: ReadInodeData (with target) failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Extract the symlink target (after the inode structure)
+        dest = _encoding.GetString(fullData, symlinkInodeSize, (int)symlinkInode.symlink_size);
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: target='{0}'", dest);
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Reads a file inode and creates a file node</summary>
     /// <param name="inodeBlock">Block containing the inode (relative to inode table)</param>
     /// <param name="inodeOffset">Offset within the metadata block</param>
