@@ -227,6 +227,7 @@ Fully supported file-systems (identify and extraction)
 * QNX6 filesystems
 * SGI Extent File System (EFS)
 * SmartFileSystem
+* Squash file system
 * U.C.S.D Pascal file system
 * Universal Disk Format (UDF)
 * UNIX boot file system
@@ -263,7 +264,6 @@ Supported file systems for identification and information only
 * Reiser file systems
 * SGI XFS
 * SolarOS file system
-* Squash file system
 * UNICOS file system
 * UNIX System V file system
 * UNIX Version 7 file system
