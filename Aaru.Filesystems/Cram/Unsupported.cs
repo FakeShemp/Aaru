@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Unsupported.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Cram file system plugin.
@@ -26,36 +26,22 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-// ReSharper disable UnusedMember.Local
-
-using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-[SuppressMessage("ReSharper", "UnusedType.Local")]
 public sealed partial class Cram
 {
     /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+    public ErrorNumber ListXAttr(string path, out List<string> xattrs)
+    {
+        xattrs = [];
+
+        return ErrorNumber.NotSupported;
+    }
 
     /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => ErrorNumber.NotSupported;
 }
