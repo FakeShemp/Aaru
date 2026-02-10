@@ -36,6 +36,7 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
+using Marshal = Aaru.Helpers.Marshal;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -325,9 +326,6 @@ public sealed partial class SysVfs
 
         if(xenix || xenix3)
         {
-            var xenix_strings = new byte[6];
-            var xnx_sb        = new XenixSuperBlock();
-
             errno = imagePlugin.ReadSectors((ulong)start + partition.Start,
                                             false,
                                             sb_size_in_sectors,
@@ -336,163 +334,205 @@ public sealed partial class SysVfs
 
             if(errno != ErrorNumber.NoError) return;
 
-            if(xenix3)
-            {
-                xnx_sb.s_isize   = BitConverter.ToUInt16(sb_sector, 0x000);
-                xnx_sb.s_fsize   = BitConverter.ToInt32(sb_sector, 0x002);
-                xnx_sb.s_nfree   = BitConverter.ToInt16(sb_sector, 0x006);
-                xnx_sb.s_ninode  = BitConverter.ToInt16(sb_sector, 0x0D0);
-                xnx_sb.s_flock   = (sbyte)sb_sector[0x19A];
-                xnx_sb.s_ilock   = (sbyte)sb_sector[0x19B];
-                xnx_sb.s_fmod    = (sbyte)sb_sector[0x19C];
-                xnx_sb.s_ronly   = (sbyte)sb_sector[0x19D];
-                xnx_sb.s_time    = BitConverter.ToInt32(sb_sector, 0x19E);
-                xnx_sb.s_tfree   = BitConverter.ToInt32(sb_sector, 0x1A2);
-                xnx_sb.s_tinode  = BitConverter.ToUInt16(sb_sector, 0x1A6);
-                xnx_sb.s_cylblks = BitConverter.ToInt16(sb_sector, 0x1A8);
-                xnx_sb.s_gapblks = BitConverter.ToInt16(sb_sector, 0x1AA);
-                xnx_sb.s_dinfo0  = BitConverter.ToInt16(sb_sector, 0x1AC);
-                xnx_sb.s_dinfo1  = BitConverter.ToInt16(sb_sector, 0x1AE);
-                Array.Copy(sb_sector, 0x1B0, xnx_sb.s_fname, 0, 6);
-                Array.Copy(sb_sector, 0x1B6, xnx_sb.s_fpack, 0, 6);
-                xnx_sb.s_clean = sb_sector[0x1BC];
-                xnx_sb.s_magic = BitConverter.ToUInt32(sb_sector, 0x1F0);
-                xnx_sb.s_type  = (FsType)BitConverter.ToInt32(sb_sector, 0x1F4);
-            }
-            else
-            {
-                xnx_sb.s_isize   = BitConverter.ToUInt16(sb_sector, 0x000);
-                xnx_sb.s_fsize   = BitConverter.ToInt32(sb_sector, 0x002);
-                xnx_sb.s_nfree   = BitConverter.ToInt16(sb_sector, 0x006);
-                xnx_sb.s_ninode  = BitConverter.ToInt16(sb_sector, 0x198);
-                xnx_sb.s_flock   = (sbyte)sb_sector[0x262];
-                xnx_sb.s_ilock   = (sbyte)sb_sector[0x263];
-                xnx_sb.s_fmod    = (sbyte)sb_sector[0x264];
-                xnx_sb.s_ronly   = (sbyte)sb_sector[0x265];
-                xnx_sb.s_time    = BitConverter.ToInt32(sb_sector, 0x266);
-                xnx_sb.s_tfree   = BitConverter.ToInt32(sb_sector, 0x26A);
-                xnx_sb.s_tinode  = BitConverter.ToUInt16(sb_sector, 0x26E);
-                xnx_sb.s_cylblks = BitConverter.ToInt16(sb_sector, 0x270);
-                xnx_sb.s_gapblks = BitConverter.ToInt16(sb_sector, 0x272);
-                xnx_sb.s_dinfo0  = BitConverter.ToInt16(sb_sector, 0x274);
-                xnx_sb.s_dinfo1  = BitConverter.ToInt16(sb_sector, 0x276);
-                Array.Copy(sb_sector, 0x278, xnx_sb.s_fname, 0, 6);
-                Array.Copy(sb_sector, 0x27E, xnx_sb.s_fpack, 0, 6);
-                xnx_sb.s_clean = sb_sector[0x284];
-                xnx_sb.s_magic = BitConverter.ToUInt32(sb_sector, 0x3F8);
-                xnx_sb.s_type  = (FsType)BitConverter.ToInt32(sb_sector, 0x3FC);
-            }
-
-            if(bigEndian)
-            {
-                xnx_sb.s_isize   = Swapping.Swap(xnx_sb.s_isize);
-                xnx_sb.s_fsize   = Swapping.Swap(xnx_sb.s_fsize);
-                xnx_sb.s_nfree   = Swapping.Swap(xnx_sb.s_nfree);
-                xnx_sb.s_ninode  = Swapping.Swap(xnx_sb.s_ninode);
-                xnx_sb.s_time    = Swapping.Swap(xnx_sb.s_time);
-                xnx_sb.s_tfree   = Swapping.Swap(xnx_sb.s_tfree);
-                xnx_sb.s_tinode  = Swapping.Swap(xnx_sb.s_tinode);
-                xnx_sb.s_cylblks = Swapping.Swap(xnx_sb.s_cylblks);
-                xnx_sb.s_gapblks = Swapping.Swap(xnx_sb.s_gapblks);
-                xnx_sb.s_dinfo0  = Swapping.Swap(xnx_sb.s_dinfo0);
-                xnx_sb.s_dinfo1  = Swapping.Swap(xnx_sb.s_dinfo1);
-                xnx_sb.s_magic   = Swapping.Swap(xnx_sb.s_magic);
-                xnx_sb.s_type    = (FsType)Swapping.Swap((uint)xnx_sb.s_type);
-            }
-
             uint bs = 512;
             sb.AppendLine(Localization.XENIX_filesystem);
             metadata.Type = FS_TYPE_XENIX;
 
-            switch(xnx_sb.s_type)
+            if(xenix3)
             {
-                case FsType.Fs_512:
-                    sb.AppendLine(Localization._512_bytes_per_block);
-                    metadata.ClusterSize = 512;
+                Xenix3SuperBlock xnx3_sb = bigEndian
+                                               ? Marshal.ByteArrayToStructureBigEndian<Xenix3SuperBlock>(sb_sector)
+                                               : Marshal.ByteArrayToStructureLittleEndian<Xenix3SuperBlock>(sb_sector);
 
-                    break;
-                case FsType.Fs_1024:
-                    sb.AppendLine(Localization._1024_bytes_per_block);
-                    bs                   = 1024;
-                    metadata.ClusterSize = 1024;
-
-                    break;
-                case FsType.Fs_2048:
-                    sb.AppendLine(Localization._2048_bytes_per_block);
-                    bs                   = 2048;
-                    metadata.ClusterSize = 2048;
-
-                    break;
-                default:
-                    sb.AppendFormat(Localization.Unknown_s_type_value_0, xnx_sb.s_type).AppendLine();
-
-                    break;
-            }
-
-            if(imagePlugin.Info.SectorSize is 2336 or 2352 or 2448)
-            {
-                if(bs != 2048)
+                switch(xnx3_sb.s_type)
                 {
-                    sb.AppendFormat(Localization
-                                       .WARNING_Filesystem_indicates_0_bytes_block_while_device_indicates_1_bytes_block,
-                                    bs,
-                                    2048)
-                      .AppendLine();
+                    case FsType.Fs_512:
+                        sb.AppendLine(Localization._512_bytes_per_block);
+                        metadata.ClusterSize = 512;
+
+                        break;
+                    case FsType.Fs_1024:
+                        sb.AppendLine(Localization._1024_bytes_per_block);
+                        bs                   = 1024;
+                        metadata.ClusterSize = 1024;
+
+                        break;
+                    case FsType.Fs_2048:
+                        sb.AppendLine(Localization._2048_bytes_per_block);
+                        bs                   = 2048;
+                        metadata.ClusterSize = 2048;
+
+                        break;
+                    default:
+                        sb.AppendFormat(Localization.Unknown_s_type_value_0, xnx3_sb.s_type).AppendLine();
+
+                        break;
+                }
+
+                if(imagePlugin.Info.SectorSize is 2336 or 2352 or 2448)
+                {
+                    if(bs != 2048)
+                    {
+                        sb.AppendFormat(Localization
+                                           .WARNING_Filesystem_indicates_0_bytes_block_while_device_indicates_1_bytes_block,
+                                        bs,
+                                        2048)
+                          .AppendLine();
+                    }
+                }
+                else
+                {
+                    if(bs != imagePlugin.Info.SectorSize)
+                    {
+                        sb.AppendFormat(Localization
+                                           .WARNING_Filesystem_indicates_0_bytes_block_while_device_indicates_1_bytes_block,
+                                        bs,
+                                        imagePlugin.Info.SectorSize)
+                          .AppendLine();
+                    }
+                }
+
+                sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, xnx3_sb.s_fsize, xnx3_sb.s_fsize * bs)
+                  .AppendLine();
+
+                sb.AppendFormat(Localization._0_free_zones_on_volume_1_bytes, xnx3_sb.s_tfree, xnx3_sb.s_tfree * bs)
+                  .AppendLine();
+
+                sb.AppendFormat(Localization._0_free_blocks_on_list_1_bytes, xnx3_sb.s_nfree, xnx3_sb.s_nfree * bs)
+                  .AppendLine();
+
+                sb.AppendFormat(Localization._0_blocks_per_cylinder_1_bytes, xnx3_sb.s_cylblks, xnx3_sb.s_cylblks * bs)
+                  .AppendLine();
+
+                sb.AppendFormat(Localization._0_blocks_per_gap_1_bytes, xnx3_sb.s_gapblks, xnx3_sb.s_gapblks * bs)
+                  .AppendLine();
+
+                sb.AppendFormat(Localization.First_data_zone_0,        xnx3_sb.s_isize).AppendLine();
+                sb.AppendFormat(Localization._0_free_inodes_on_volume, xnx3_sb.s_tinode).AppendLine();
+                sb.AppendFormat(Localization._0_free_inodes_on_list,   xnx3_sb.s_ninode).AppendLine();
+
+                if(xnx3_sb.s_flock > 0) sb.AppendLine(Localization.Free_block_list_is_locked);
+
+                if(xnx3_sb.s_ilock > 0) sb.AppendLine(Localization.inode_cache_is_locked);
+
+                if(xnx3_sb.s_fmod > 0) sb.AppendLine(Localization.Superblock_is_being_modified);
+
+                if(xnx3_sb.s_ronly > 0) sb.AppendLine(Localization.Volume_is_mounted_read_only);
+
+                sb.AppendFormat(Localization.Superblock_last_updated_on_0, DateHandlers.UnixToDateTime(xnx3_sb.s_time))
+                  .AppendLine();
+
+                if(xnx3_sb.s_time != 0) metadata.ModificationDate = DateHandlers.UnixToDateTime(xnx3_sb.s_time);
+
+                sb.AppendFormat(Localization.Volume_name_0, StringHandlers.CToString(xnx3_sb.s_fname)).AppendLine();
+                metadata.VolumeName = StringHandlers.CToString(xnx3_sb.s_fname);
+                sb.AppendFormat(Localization.Pack_name_0, StringHandlers.CToString(xnx3_sb.s_fpack)).AppendLine();
+
+                if(xnx3_sb.s_clean == 0x46)
+                    sb.AppendLine(Localization.Volume_is_clean);
+                else
+                {
+                    sb.AppendLine(Localization.Volume_is_dirty);
+                    metadata.Dirty = true;
                 }
             }
             else
             {
-                if(bs != imagePlugin.Info.SectorSize)
+                XenixSuperBlock xnx_sb = bigEndian
+                                             ? Marshal.ByteArrayToStructureBigEndian<XenixSuperBlock>(sb_sector)
+                                             : Marshal.ByteArrayToStructureLittleEndian<XenixSuperBlock>(sb_sector);
+
+                switch(xnx_sb.s_type)
                 {
-                    sb.AppendFormat(Localization
-                                       .WARNING_Filesystem_indicates_0_bytes_block_while_device_indicates_1_bytes_block,
-                                    bs,
-                                    imagePlugin.Info.SectorSize)
-                      .AppendLine();
+                    case FsType.Fs_512:
+                        sb.AppendLine(Localization._512_bytes_per_block);
+                        metadata.ClusterSize = 512;
+
+                        break;
+                    case FsType.Fs_1024:
+                        sb.AppendLine(Localization._1024_bytes_per_block);
+                        bs                   = 1024;
+                        metadata.ClusterSize = 1024;
+
+                        break;
+                    case FsType.Fs_2048:
+                        sb.AppendLine(Localization._2048_bytes_per_block);
+                        bs                   = 2048;
+                        metadata.ClusterSize = 2048;
+
+                        break;
+                    default:
+                        sb.AppendFormat(Localization.Unknown_s_type_value_0, xnx_sb.s_type).AppendLine();
+
+                        break;
                 }
-            }
 
-            sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, xnx_sb.s_fsize, xnx_sb.s_fsize * bs).AppendLine();
+                if(imagePlugin.Info.SectorSize is 2336 or 2352 or 2448)
+                {
+                    if(bs != 2048)
+                    {
+                        sb.AppendFormat(Localization
+                                           .WARNING_Filesystem_indicates_0_bytes_block_while_device_indicates_1_bytes_block,
+                                        bs,
+                                        2048)
+                          .AppendLine();
+                    }
+                }
+                else
+                {
+                    if(bs != imagePlugin.Info.SectorSize)
+                    {
+                        sb.AppendFormat(Localization
+                                           .WARNING_Filesystem_indicates_0_bytes_block_while_device_indicates_1_bytes_block,
+                                        bs,
+                                        imagePlugin.Info.SectorSize)
+                          .AppendLine();
+                    }
+                }
 
-            sb.AppendFormat(Localization._0_free_zones_on_volume_1_bytes, xnx_sb.s_tfree, xnx_sb.s_tfree * bs)
-              .AppendLine();
+                sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, xnx_sb.s_fsize, xnx_sb.s_fsize * bs)
+                  .AppendLine();
 
-            sb.AppendFormat(Localization._0_free_blocks_on_list_1_bytes, xnx_sb.s_nfree, xnx_sb.s_nfree * bs)
-              .AppendLine();
+                sb.AppendFormat(Localization._0_free_zones_on_volume_1_bytes, xnx_sb.s_tfree, xnx_sb.s_tfree * bs)
+                  .AppendLine();
 
-            sb.AppendFormat(Localization._0_blocks_per_cylinder_1_bytes, xnx_sb.s_cylblks, xnx_sb.s_cylblks * bs)
-              .AppendLine();
+                sb.AppendFormat(Localization._0_free_blocks_on_list_1_bytes, xnx_sb.s_nfree, xnx_sb.s_nfree * bs)
+                  .AppendLine();
 
-            sb.AppendFormat(Localization._0_blocks_per_gap_1_bytes, xnx_sb.s_gapblks, xnx_sb.s_gapblks * bs)
-              .AppendLine();
+                sb.AppendFormat(Localization._0_blocks_per_cylinder_1_bytes, xnx_sb.s_cylblks, xnx_sb.s_cylblks * bs)
+                  .AppendLine();
 
-            sb.AppendFormat(Localization.First_data_zone_0,        xnx_sb.s_isize).AppendLine();
-            sb.AppendFormat(Localization._0_free_inodes_on_volume, xnx_sb.s_tinode).AppendLine();
-            sb.AppendFormat(Localization._0_free_inodes_on_list,   xnx_sb.s_ninode).AppendLine();
+                sb.AppendFormat(Localization._0_blocks_per_gap_1_bytes, xnx_sb.s_gapblks, xnx_sb.s_gapblks * bs)
+                  .AppendLine();
 
-            if(xnx_sb.s_flock > 0) sb.AppendLine(Localization.Free_block_list_is_locked);
+                sb.AppendFormat(Localization.First_data_zone_0,        xnx_sb.s_isize).AppendLine();
+                sb.AppendFormat(Localization._0_free_inodes_on_volume, xnx_sb.s_tinode).AppendLine();
+                sb.AppendFormat(Localization._0_free_inodes_on_list,   xnx_sb.s_ninode).AppendLine();
 
-            if(xnx_sb.s_ilock > 0) sb.AppendLine(Localization.inode_cache_is_locked);
+                if(xnx_sb.s_flock > 0) sb.AppendLine(Localization.Free_block_list_is_locked);
 
-            if(xnx_sb.s_fmod > 0) sb.AppendLine(Localization.Superblock_is_being_modified);
+                if(xnx_sb.s_ilock > 0) sb.AppendLine(Localization.inode_cache_is_locked);
 
-            if(xnx_sb.s_ronly > 0) sb.AppendLine(Localization.Volume_is_mounted_read_only);
+                if(xnx_sb.s_fmod > 0) sb.AppendLine(Localization.Superblock_is_being_modified);
 
-            sb.AppendFormat(Localization.Superblock_last_updated_on_0, DateHandlers.UnixToDateTime(xnx_sb.s_time))
-              .AppendLine();
+                if(xnx_sb.s_ronly > 0) sb.AppendLine(Localization.Volume_is_mounted_read_only);
 
-            if(xnx_sb.s_time != 0) metadata.ModificationDate = DateHandlers.UnixToDateTime(xnx_sb.s_time);
+                sb.AppendFormat(Localization.Superblock_last_updated_on_0, DateHandlers.UnixToDateTime(xnx_sb.s_time))
+                  .AppendLine();
 
-            sb.AppendFormat(Localization.Volume_name_0, StringHandlers.CToString(xnx_sb.s_fname)).AppendLine();
-            metadata.VolumeName = StringHandlers.CToString(xnx_sb.s_fname);
-            sb.AppendFormat(Localization.Pack_name_0, StringHandlers.CToString(xnx_sb.s_fpack)).AppendLine();
+                if(xnx_sb.s_time != 0) metadata.ModificationDate = DateHandlers.UnixToDateTime(xnx_sb.s_time);
 
-            if(xnx_sb.s_clean == 0x46)
-                sb.AppendLine(Localization.Volume_is_clean);
-            else
-            {
-                sb.AppendLine(Localization.Volume_is_dirty);
-                metadata.Dirty = true;
+                sb.AppendFormat(Localization.Volume_name_0, StringHandlers.CToString(xnx_sb.s_fname)).AppendLine();
+                metadata.VolumeName = StringHandlers.CToString(xnx_sb.s_fname);
+                sb.AppendFormat(Localization.Pack_name_0, StringHandlers.CToString(xnx_sb.s_fpack)).AppendLine();
+
+                if(xnx_sb.s_clean == 0x46)
+                    sb.AppendLine(Localization.Volume_is_clean);
+                else
+                {
+                    sb.AppendLine(Localization.Volume_is_dirty);
+                    metadata.Dirty = true;
+                }
             }
         }
 
@@ -506,18 +546,14 @@ public sealed partial class SysVfs
 
             if(errno != ErrorNumber.NoError) return;
 
-            var sysv_strings = new byte[6];
+            // First, read the type to determine which structure to use
+            var tempType = (FsType)BitConverter.ToUInt32(sb_sector, 0x1FC + offset);
 
-            var sysv_sb = new SystemVRelease4SuperBlock
-            {
-                s_type = (FsType)BitConverter.ToUInt32(sb_sector, 0x1FC + offset)
-            };
-
-            if(bigEndian) sysv_sb.s_type = (FsType)Swapping.Swap((uint)sysv_sb.s_type);
+            if(bigEndian) tempType = (FsType)Swapping.Swap((uint)tempType);
 
             uint bs = 512;
 
-            switch(sysv_sb.s_type)
+            switch(tempType)
             {
                 case FsType.Fs_512:
                     metadata.ClusterSize = 512;
@@ -544,129 +580,143 @@ public sealed partial class SysVfs
 
                     break;
                 default:
-                    sb.AppendFormat(Localization.Unknown_s_type_value_0, sysv_sb.s_type).AppendLine();
+                    sb.AppendFormat(Localization.Unknown_s_type_value_0, tempType).AppendLine();
 
                     break;
             }
 
-            sysv_sb.s_fsize = BitConverter.ToInt32(sb_sector, 0x002 + offset);
+            // Read s_fsize to determine if it's Release 4 or Release 2
+            var tempFsize = BitConverter.ToInt32(sb_sector, 0x002 + offset);
 
-            if(bigEndian) sysv_sb.s_fsize = Swapping.Swap(sysv_sb.s_fsize);
+            if(bigEndian) tempFsize = Swapping.Swap(tempFsize);
 
-            bool sysvr4 = sysv_sb.s_fsize * bs <= 0 || sysv_sb.s_fsize * bs != (long)partition.Size;
+            bool sysvr4 = tempFsize * bs <= 0 || tempFsize * bs != (long)partition.Size;
 
             if(sysvr4)
             {
-                sysv_sb.s_isize   = BitConverter.ToUInt16(sb_sector, 0x000 + offset);
-                sysv_sb.s_state   = BitConverter.ToInt32(sb_sector, 0x1F4  + offset);
-                sysv_sb.s_magic   = BitConverter.ToUInt32(sb_sector, 0x1F8 + offset);
-                sysv_sb.s_fsize   = BitConverter.ToInt32(sb_sector, 0x004  + offset);
-                sysv_sb.s_nfree   = BitConverter.ToInt16(sb_sector, 0x008  + offset);
-                sysv_sb.s_ninode  = BitConverter.ToInt16(sb_sector, 0x0D4  + offset);
-                sysv_sb.s_flock   = (sbyte)sb_sector[0x1A0 + offset];
-                sysv_sb.s_ilock   = (sbyte)sb_sector[0x1A1 + offset];
-                sysv_sb.s_fmod    = (sbyte)sb_sector[0x1A2 + offset];
-                sysv_sb.s_ronly   = (sbyte)sb_sector[0x1A3 + offset];
-                sysv_sb.s_time    = BitConverter.ToInt32(sb_sector, 0x1A4 + offset);
-                sysv_sb.s_cylblks = BitConverter.ToInt16(sb_sector, 0x1A8 + offset);
-                sysv_sb.s_gapblks = BitConverter.ToInt16(sb_sector, 0x1AA + offset);
-                sysv_sb.s_dinfo0  = BitConverter.ToInt16(sb_sector, 0x1AC + offset);
-                sysv_sb.s_dinfo1  = BitConverter.ToInt16(sb_sector, 0x1AE + offset);
-                sysv_sb.s_tfree   = BitConverter.ToInt32(sb_sector, 0x1B0 + offset);
-                sysv_sb.s_tinode  = BitConverter.ToInt16(sb_sector, 0x1B4 + offset);
-                Array.Copy(sb_sector, 0x1B6 + offset, sysv_sb.s_fname, 0, 6);
-                Array.Copy(sb_sector, 0x1BC + offset, sysv_sb.s_fpack, 0, 6);
+                // Use the sector data with offset for SystemVRelease4SuperBlock
+                var offsetBuffer = new byte[sb_sector.Length - offset];
+                Array.Copy(sb_sector, offset, offsetBuffer, 0, offsetBuffer.Length);
+
+                SystemVRelease4SuperBlock sysv_sb = bigEndian
+                                                        ? Marshal.ByteArrayToStructureBigEndian<
+                                                            SystemVRelease4SuperBlock>(offsetBuffer)
+                                                        : Marshal.ByteArrayToStructureLittleEndian<
+                                                            SystemVRelease4SuperBlock>(offsetBuffer);
+
                 sb.AppendLine(Localization.System_V_Release_4_filesystem);
                 metadata.Type = FS_TYPE_SVR4;
+
+                sb.AppendFormat(Localization._0_bytes_per_block, bs).AppendLine();
+
+                metadata.Clusters = (ulong)sysv_sb.s_fsize;
+
+                sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, sysv_sb.s_fsize, sysv_sb.s_fsize * bs)
+                  .AppendLine();
+
+                sb.AppendFormat(Localization._0_free_zones_on_volume_1_bytes, sysv_sb.s_tfree, sysv_sb.s_tfree * bs)
+                  .AppendLine();
+
+                sb.AppendFormat(Localization._0_free_blocks_on_list_1_bytes, sysv_sb.s_nfree, sysv_sb.s_nfree * bs)
+                  .AppendLine();
+
+                sb.AppendFormat(Localization._0_blocks_per_cylinder_1_bytes, sysv_sb.s_cylblks, sysv_sb.s_cylblks * bs)
+                  .AppendLine();
+
+                sb.AppendFormat(Localization._0_blocks_per_gap_1_bytes, sysv_sb.s_gapblks, sysv_sb.s_gapblks * bs)
+                  .AppendLine();
+
+                sb.AppendFormat(Localization.First_data_zone_0,        sysv_sb.s_isize).AppendLine();
+                sb.AppendFormat(Localization._0_free_inodes_on_volume, sysv_sb.s_tinode).AppendLine();
+                sb.AppendFormat(Localization._0_free_inodes_on_list,   sysv_sb.s_ninode).AppendLine();
+
+                if(sysv_sb.s_flock > 0) sb.AppendLine(Localization.Free_block_list_is_locked);
+
+                if(sysv_sb.s_ilock > 0) sb.AppendLine(Localization.inode_cache_is_locked);
+
+                if(sysv_sb.s_fmod > 0) sb.AppendLine(Localization.Superblock_is_being_modified);
+
+                if(sysv_sb.s_ronly > 0) sb.AppendLine(Localization.Volume_is_mounted_read_only);
+
+                sb.AppendFormat(Localization.Superblock_last_updated_on_0, DateHandlers.UnixToDateTime(sysv_sb.s_time))
+                  .AppendLine();
+
+                if(sysv_sb.s_time != 0) metadata.ModificationDate = DateHandlers.UnixToDateTime(sysv_sb.s_time);
+
+                sb.AppendFormat(Localization.Volume_name_0, StringHandlers.CToString(sysv_sb.s_fname)).AppendLine();
+                metadata.VolumeName = StringHandlers.CToString(sysv_sb.s_fname);
+                sb.AppendFormat(Localization.Pack_name_0, StringHandlers.CToString(sysv_sb.s_fpack)).AppendLine();
+
+                if(sysv_sb.s_state == 0x7C269D38 - sysv_sb.s_time)
+                    sb.AppendLine(Localization.Volume_is_clean);
+                else
+                {
+                    sb.AppendLine(Localization.Volume_is_dirty);
+                    metadata.Dirty = true;
+                }
             }
             else
             {
-                sysv_sb.s_isize   = BitConverter.ToUInt16(sb_sector, 0x000 + offset);
-                sysv_sb.s_state   = BitConverter.ToInt32(sb_sector, 0x1F4  + offset);
-                sysv_sb.s_magic   = BitConverter.ToUInt32(sb_sector, 0x1F8 + offset);
-                sysv_sb.s_fsize   = BitConverter.ToInt32(sb_sector, 0x002  + offset);
-                sysv_sb.s_nfree   = BitConverter.ToInt16(sb_sector, 0x006  + offset);
-                sysv_sb.s_ninode  = BitConverter.ToInt16(sb_sector, 0x0D0  + offset);
-                sysv_sb.s_flock   = (sbyte)sb_sector[0x19A + offset];
-                sysv_sb.s_ilock   = (sbyte)sb_sector[0x19B + offset];
-                sysv_sb.s_fmod    = (sbyte)sb_sector[0x19C + offset];
-                sysv_sb.s_ronly   = (sbyte)sb_sector[0x19D + offset];
-                sysv_sb.s_time    = BitConverter.ToInt32(sb_sector, 0x19E + offset);
-                sysv_sb.s_cylblks = BitConverter.ToInt16(sb_sector, 0x1A2 + offset);
-                sysv_sb.s_gapblks = BitConverter.ToInt16(sb_sector, 0x1A4 + offset);
-                sysv_sb.s_dinfo0  = BitConverter.ToInt16(sb_sector, 0x1A6 + offset);
-                sysv_sb.s_dinfo1  = BitConverter.ToInt16(sb_sector, 0x1A8 + offset);
-                sysv_sb.s_tfree   = BitConverter.ToInt32(sb_sector, 0x1AA + offset);
-                sysv_sb.s_tinode  = BitConverter.ToInt16(sb_sector, 0x1AE + offset);
-                Array.Copy(sb_sector, 0x1B0 + offset, sysv_sb.s_fname, 0, 6);
-                Array.Copy(sb_sector, 0x1B6 + offset, sysv_sb.s_fpack, 0, 6);
+                // Use the sector data with offset for SystemVRelease2SuperBlock
+                var offsetBuffer = new byte[sb_sector.Length - offset];
+                Array.Copy(sb_sector, offset, offsetBuffer, 0, offsetBuffer.Length);
+
+                SystemVRelease2SuperBlock sysv_sb = bigEndian
+                                                        ? Marshal.ByteArrayToStructureBigEndian<
+                                                            SystemVRelease2SuperBlock>(offsetBuffer)
+                                                        : Marshal.ByteArrayToStructureLittleEndian<
+                                                            SystemVRelease2SuperBlock>(offsetBuffer);
+
                 sb.AppendLine(Localization.System_V_Release_2_filesystem);
                 metadata.Type = FS_TYPE_SVR2;
-            }
 
-            if(bigEndian)
-            {
-                sysv_sb.s_isize   = Swapping.Swap(sysv_sb.s_isize);
-                sysv_sb.s_state   = Swapping.Swap(sysv_sb.s_state);
-                sysv_sb.s_magic   = Swapping.Swap(sysv_sb.s_magic);
-                sysv_sb.s_fsize   = Swapping.Swap(sysv_sb.s_fsize);
-                sysv_sb.s_nfree   = Swapping.Swap(sysv_sb.s_nfree);
-                sysv_sb.s_ninode  = Swapping.Swap(sysv_sb.s_ninode);
-                sysv_sb.s_time    = Swapping.Swap(sysv_sb.s_time);
-                sysv_sb.s_cylblks = Swapping.Swap(sysv_sb.s_cylblks);
-                sysv_sb.s_gapblks = Swapping.Swap(sysv_sb.s_gapblks);
-                sysv_sb.s_dinfo0  = Swapping.Swap(sysv_sb.s_dinfo0);
-                sysv_sb.s_dinfo1  = Swapping.Swap(sysv_sb.s_dinfo1);
-                sysv_sb.s_tfree   = Swapping.Swap(sysv_sb.s_tfree);
-                sysv_sb.s_tinode  = Swapping.Swap(sysv_sb.s_tinode);
-            }
+                sb.AppendFormat(Localization._0_bytes_per_block, bs).AppendLine();
 
-            sb.AppendFormat(Localization._0_bytes_per_block, bs).AppendLine();
+                metadata.Clusters = (ulong)sysv_sb.s_fsize;
 
-            metadata.Clusters = (ulong)sysv_sb.s_fsize;
+                sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, sysv_sb.s_fsize, sysv_sb.s_fsize * bs)
+                  .AppendLine();
 
-            sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, sysv_sb.s_fsize, sysv_sb.s_fsize * bs)
-              .AppendLine();
+                sb.AppendFormat(Localization._0_free_zones_on_volume_1_bytes, sysv_sb.s_tfree, sysv_sb.s_tfree * bs)
+                  .AppendLine();
 
-            sb.AppendFormat(Localization._0_free_zones_on_volume_1_bytes, sysv_sb.s_tfree, sysv_sb.s_tfree * bs)
-              .AppendLine();
+                sb.AppendFormat(Localization._0_free_blocks_on_list_1_bytes, sysv_sb.s_nfree, sysv_sb.s_nfree * bs)
+                  .AppendLine();
 
-            sb.AppendFormat(Localization._0_free_blocks_on_list_1_bytes, sysv_sb.s_nfree, sysv_sb.s_nfree * bs)
-              .AppendLine();
+                sb.AppendFormat(Localization._0_blocks_per_cylinder_1_bytes, sysv_sb.s_cylblks, sysv_sb.s_cylblks * bs)
+                  .AppendLine();
 
-            sb.AppendFormat(Localization._0_blocks_per_cylinder_1_bytes, sysv_sb.s_cylblks, sysv_sb.s_cylblks * bs)
-              .AppendLine();
+                sb.AppendFormat(Localization._0_blocks_per_gap_1_bytes, sysv_sb.s_gapblks, sysv_sb.s_gapblks * bs)
+                  .AppendLine();
 
-            sb.AppendFormat(Localization._0_blocks_per_gap_1_bytes, sysv_sb.s_gapblks, sysv_sb.s_gapblks * bs)
-              .AppendLine();
+                sb.AppendFormat(Localization.First_data_zone_0,        sysv_sb.s_isize).AppendLine();
+                sb.AppendFormat(Localization._0_free_inodes_on_volume, sysv_sb.s_tinode).AppendLine();
+                sb.AppendFormat(Localization._0_free_inodes_on_list,   sysv_sb.s_ninode).AppendLine();
 
-            sb.AppendFormat(Localization.First_data_zone_0,        sysv_sb.s_isize).AppendLine();
-            sb.AppendFormat(Localization._0_free_inodes_on_volume, sysv_sb.s_tinode).AppendLine();
-            sb.AppendFormat(Localization._0_free_inodes_on_list,   sysv_sb.s_ninode).AppendLine();
+                if(sysv_sb.s_flock > 0) sb.AppendLine(Localization.Free_block_list_is_locked);
 
-            if(sysv_sb.s_flock > 0) sb.AppendLine(Localization.Free_block_list_is_locked);
+                if(sysv_sb.s_ilock > 0) sb.AppendLine(Localization.inode_cache_is_locked);
 
-            if(sysv_sb.s_ilock > 0) sb.AppendLine(Localization.inode_cache_is_locked);
+                if(sysv_sb.s_fmod > 0) sb.AppendLine(Localization.Superblock_is_being_modified);
 
-            if(sysv_sb.s_fmod > 0) sb.AppendLine(Localization.Superblock_is_being_modified);
+                if(sysv_sb.s_ronly > 0) sb.AppendLine(Localization.Volume_is_mounted_read_only);
 
-            if(sysv_sb.s_ronly > 0) sb.AppendLine(Localization.Volume_is_mounted_read_only);
+                sb.AppendFormat(Localization.Superblock_last_updated_on_0, DateHandlers.UnixToDateTime(sysv_sb.s_time))
+                  .AppendLine();
 
-            sb.AppendFormat(Localization.Superblock_last_updated_on_0, DateHandlers.UnixToDateTime(sysv_sb.s_time))
-              .AppendLine();
+                if(sysv_sb.s_time != 0) metadata.ModificationDate = DateHandlers.UnixToDateTime(sysv_sb.s_time);
 
-            if(sysv_sb.s_time != 0) metadata.ModificationDate = DateHandlers.UnixToDateTime(sysv_sb.s_time);
+                sb.AppendFormat(Localization.Volume_name_0, StringHandlers.CToString(sysv_sb.s_fname)).AppendLine();
+                metadata.VolumeName = StringHandlers.CToString(sysv_sb.s_fname);
+                sb.AppendFormat(Localization.Pack_name_0, StringHandlers.CToString(sysv_sb.s_fpack)).AppendLine();
 
-            sb.AppendFormat(Localization.Volume_name_0, StringHandlers.CToString(sysv_sb.s_fname)).AppendLine();
-            metadata.VolumeName = StringHandlers.CToString(sysv_sb.s_fname);
-            sb.AppendFormat(Localization.Pack_name_0, StringHandlers.CToString(sysv_sb.s_fpack)).AppendLine();
-
-            if(sysv_sb.s_state == 0x7C269D38 - sysv_sb.s_time)
-                sb.AppendLine(Localization.Volume_is_clean);
-            else
-            {
-                sb.AppendLine(Localization.Volume_is_dirty);
-                metadata.Dirty = true;
+                if(sysv_sb.s_state == 0x7C269D38 - sysv_sb.s_time)
+                    sb.AppendLine(Localization.Volume_is_clean);
+                else
+                {
+                    sb.AppendLine(Localization.Volume_is_dirty);
+                    metadata.Dirty = true;
+                }
             }
         }
 
@@ -680,24 +730,8 @@ public sealed partial class SysVfs
 
             if(errno != ErrorNumber.NoError) return;
 
-            var coh_sb      = new CoherentSuperBlock();
-            var coh_strings = new byte[6];
-
-            coh_sb.s_isize  = BitConverter.ToUInt16(sb_sector, 0x000);
-            coh_sb.s_fsize  = (int)Swapping.PDPFromLittleEndian(BitConverter.ToUInt32(sb_sector, 0x002));
-            coh_sb.s_nfree  = BitConverter.ToInt16(sb_sector, 0x006);
-            coh_sb.s_ninode = BitConverter.ToInt16(sb_sector, 0x108);
-            coh_sb.s_flock  = (sbyte)sb_sector[0x1D2];
-            coh_sb.s_ilock  = (sbyte)sb_sector[0x1D3];
-            coh_sb.s_fmod   = (sbyte)sb_sector[0x1D4];
-            coh_sb.s_ronly  = (sbyte)sb_sector[0x1D5];
-            coh_sb.s_time   = (int)Swapping.PDPFromLittleEndian(BitConverter.ToUInt32(sb_sector, 0x1D6));
-            coh_sb.s_tfree  = (int)Swapping.PDPFromLittleEndian(BitConverter.ToUInt32(sb_sector, 0x1DA));
-            coh_sb.s_tinode = BitConverter.ToUInt16(sb_sector, 0x1DE);
-            coh_sb.s_m      = BitConverter.ToInt16(sb_sector, 0x1E0);
-            coh_sb.s_n      = BitConverter.ToInt16(sb_sector, 0x1E2);
-            Array.Copy(sb_sector, 0x1E4, coh_sb.s_fname, 0, 6);
-            Array.Copy(sb_sector, 0x1EA, coh_sb.s_fpack, 0, 6);
+            // Coherent uses PDP-endian, the [SwapPdpEndian] attribute handles this
+            CoherentSuperBlock coh_sb = Marshal.ByteArrayToStructurePdpEndian<CoherentSuperBlock>(sb_sector);
 
             metadata.Type        = FS_TYPE_COHERENT;
             metadata.ClusterSize = 512;
@@ -754,24 +788,8 @@ public sealed partial class SysVfs
 
             if(errno != ErrorNumber.NoError) return;
 
-            var v7_sb        = new UNIX7thEditionSuperBlock();
-            var sys7_strings = new byte[6];
-
-            v7_sb.s_isize  = BitConverter.ToUInt16(sb_sector, 0x000);
-            v7_sb.s_fsize  = BitConverter.ToUInt32(sb_sector, 0x002);
-            v7_sb.s_nfree  = BitConverter.ToInt16(sb_sector, 0x006);
-            v7_sb.s_ninode = BitConverter.ToInt16(sb_sector, 0x0D0);
-            v7_sb.s_flock  = (sbyte)sb_sector[0x19A];
-            v7_sb.s_ilock  = (sbyte)sb_sector[0x19B];
-            v7_sb.s_fmod   = (sbyte)sb_sector[0x19C];
-            v7_sb.s_ronly  = (sbyte)sb_sector[0x19D];
-            v7_sb.s_time   = BitConverter.ToInt32(sb_sector, 0x19E);
-            v7_sb.s_tfree  = BitConverter.ToInt32(sb_sector, 0x1A2);
-            v7_sb.s_tinode = BitConverter.ToUInt16(sb_sector, 0x1A6);
-            v7_sb.s_m      = BitConverter.ToInt16(sb_sector, 0x1A8);
-            v7_sb.s_n      = BitConverter.ToInt16(sb_sector, 0x1AA);
-            Array.Copy(sb_sector, 0x1AC, v7_sb.s_fname, 0, 6);
-            Array.Copy(sb_sector, 0x1B2, v7_sb.s_fpack, 0, 6);
+            UNIX7thEditionSuperBlock v7_sb =
+                Marshal.ByteArrayToStructureLittleEndian<UNIX7thEditionSuperBlock>(sb_sector);
 
             metadata.Type        = FS_TYPE_UNIX7;
             metadata.ClusterSize = 512;
