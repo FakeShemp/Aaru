@@ -40,10 +40,14 @@ namespace Aaru.Filesystems;
 [SuppressMessage("ReSharper", "UnusedType.Local")]
 public sealed partial class SysVfs
 {
+    /// <summary>Magic number for XENIX</summary>
     const uint XENIX_MAGIC = 0x002B5544;
+    /// <summary>Byte swapped magic number for XENIX</summary>
     const uint XENIX_CIGAM = 0x44552B00;
-    const uint SYSV_MAGIC  = 0xFD187E20;
-    const uint SYSV_CIGAM  = 0x207E18FD;
+    /// <summary>Magic number for System V</summary>
+    const uint SYSV_MAGIC = 0xFD187E20;
+    /// <summary>Byte swapped magic number for System V</summary>
+    const uint SYSV_CIGAM = 0x207E18FD;
 
     // Rest have no magic.
     // Per a Linux kernel, Coherent fs has following:
@@ -66,4 +70,33 @@ public sealed partial class SysVfs
     const string FS_TYPE_SVR2     = "sysv_r2";
     const string FS_TYPE_COHERENT = "coherent";
     const string FS_TYPE_UNIX7    = "unix7fs";
+
+    /// <summary>Number of superblock inodes</summary>
+    const int NICINOD = 100;
+    /// <summary>Number of superblock free inodes (Coherent)</summary>
+    const int COH_NICFREE = 64;
+    /// <summary>Number of superblock free inodes (XENIX 3)</summary>
+    const int XNX_NICFREE = 100;
+    /// <summary>Number of superblock free inodes</summary>
+    const int NICFREE = 50;
+    /// <summary>Number of superblock free inodes in archaic filesystems when block size is 1024 bytes</summary>
+    const int NICFREE_CL2 = 178;
+    /// <summary>Number of superblock free inodes in archaic filesystems when block size is 2048 bytes</summary>
+    const int NICFREE_CL4 = 434;
+    /// <summary>Filler for XENIX superblock</summary>
+    const int NSBFILL = 371;
+    /// <summary>Filler for XENIX 3 superblock</summary>
+    const int XNX3_NSBFILL = 51;
+
+    /// <summary>Clean filesystem</summary>
+    const uint FS_OKAY = 0x7c269d38;
+    /// <summary>Active filesystem</summary>
+    const uint FS_ACTIVE = 0x5e72d81a;
+    /// <summary>Bad root</summary>
+    const uint FS_BAD = 0xcb096f43;
+    /// <summary>Filesystem corrupted by a bad block</summary>
+    const uint FS_BADBLK = 0xbadbc14b;
+
+    /// <summary>Maximum size of a filename</summary>
+    const int DIRSIZE = 14;
 }

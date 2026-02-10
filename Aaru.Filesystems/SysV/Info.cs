@@ -339,52 +339,48 @@ public sealed partial class SysVfs
             if(xenix3)
             {
                 xnx_sb.s_isize   = BitConverter.ToUInt16(sb_sector, 0x000);
-                xnx_sb.s_fsize   = BitConverter.ToUInt32(sb_sector, 0x002);
-                xnx_sb.s_nfree   = BitConverter.ToUInt16(sb_sector, 0x006);
-                xnx_sb.s_ninode  = BitConverter.ToUInt16(sb_sector, 0x0D0);
-                xnx_sb.s_flock   = sb_sector[0x19A];
-                xnx_sb.s_ilock   = sb_sector[0x19B];
-                xnx_sb.s_fmod    = sb_sector[0x19C];
-                xnx_sb.s_ronly   = sb_sector[0x19D];
+                xnx_sb.s_fsize   = BitConverter.ToInt32(sb_sector, 0x002);
+                xnx_sb.s_nfree   = BitConverter.ToInt16(sb_sector, 0x006);
+                xnx_sb.s_ninode  = BitConverter.ToInt16(sb_sector, 0x0D0);
+                xnx_sb.s_flock   = (sbyte)sb_sector[0x19A];
+                xnx_sb.s_ilock   = (sbyte)sb_sector[0x19B];
+                xnx_sb.s_fmod    = (sbyte)sb_sector[0x19C];
+                xnx_sb.s_ronly   = (sbyte)sb_sector[0x19D];
                 xnx_sb.s_time    = BitConverter.ToInt32(sb_sector, 0x19E);
-                xnx_sb.s_tfree   = BitConverter.ToUInt32(sb_sector, 0x1A2);
+                xnx_sb.s_tfree   = BitConverter.ToInt32(sb_sector, 0x1A2);
                 xnx_sb.s_tinode  = BitConverter.ToUInt16(sb_sector, 0x1A6);
-                xnx_sb.s_cylblks = BitConverter.ToUInt16(sb_sector, 0x1A8);
-                xnx_sb.s_gapblks = BitConverter.ToUInt16(sb_sector, 0x1AA);
-                xnx_sb.s_dinfo0  = BitConverter.ToUInt16(sb_sector, 0x1AC);
-                xnx_sb.s_dinfo1  = BitConverter.ToUInt16(sb_sector, 0x1AE);
-                Array.Copy(sb_sector, 0x1B0, xenix_strings, 0, 6);
-                xnx_sb.s_fname = StringHandlers.CToString(xenix_strings, encoding);
-                Array.Copy(sb_sector, 0x1B6, xenix_strings, 0, 6);
-                xnx_sb.s_fpack = StringHandlers.CToString(xenix_strings, encoding);
+                xnx_sb.s_cylblks = BitConverter.ToInt16(sb_sector, 0x1A8);
+                xnx_sb.s_gapblks = BitConverter.ToInt16(sb_sector, 0x1AA);
+                xnx_sb.s_dinfo0  = BitConverter.ToInt16(sb_sector, 0x1AC);
+                xnx_sb.s_dinfo1  = BitConverter.ToInt16(sb_sector, 0x1AE);
+                Array.Copy(sb_sector, 0x1B0, xnx_sb.s_fname, 0, 6);
+                Array.Copy(sb_sector, 0x1B6, xnx_sb.s_fpack, 0, 6);
                 xnx_sb.s_clean = sb_sector[0x1BC];
                 xnx_sb.s_magic = BitConverter.ToUInt32(sb_sector, 0x1F0);
-                xnx_sb.s_type  = BitConverter.ToUInt32(sb_sector, 0x1F4);
+                xnx_sb.s_type  = (FsType)BitConverter.ToInt32(sb_sector, 0x1F4);
             }
             else
             {
                 xnx_sb.s_isize   = BitConverter.ToUInt16(sb_sector, 0x000);
-                xnx_sb.s_fsize   = BitConverter.ToUInt32(sb_sector, 0x002);
-                xnx_sb.s_nfree   = BitConverter.ToUInt16(sb_sector, 0x006);
-                xnx_sb.s_ninode  = BitConverter.ToUInt16(sb_sector, 0x198);
-                xnx_sb.s_flock   = sb_sector[0x262];
-                xnx_sb.s_ilock   = sb_sector[0x263];
-                xnx_sb.s_fmod    = sb_sector[0x264];
-                xnx_sb.s_ronly   = sb_sector[0x265];
+                xnx_sb.s_fsize   = BitConverter.ToInt32(sb_sector, 0x002);
+                xnx_sb.s_nfree   = BitConverter.ToInt16(sb_sector, 0x006);
+                xnx_sb.s_ninode  = BitConverter.ToInt16(sb_sector, 0x198);
+                xnx_sb.s_flock   = (sbyte)sb_sector[0x262];
+                xnx_sb.s_ilock   = (sbyte)sb_sector[0x263];
+                xnx_sb.s_fmod    = (sbyte)sb_sector[0x264];
+                xnx_sb.s_ronly   = (sbyte)sb_sector[0x265];
                 xnx_sb.s_time    = BitConverter.ToInt32(sb_sector, 0x266);
-                xnx_sb.s_tfree   = BitConverter.ToUInt32(sb_sector, 0x26A);
+                xnx_sb.s_tfree   = BitConverter.ToInt32(sb_sector, 0x26A);
                 xnx_sb.s_tinode  = BitConverter.ToUInt16(sb_sector, 0x26E);
-                xnx_sb.s_cylblks = BitConverter.ToUInt16(sb_sector, 0x270);
-                xnx_sb.s_gapblks = BitConverter.ToUInt16(sb_sector, 0x272);
-                xnx_sb.s_dinfo0  = BitConverter.ToUInt16(sb_sector, 0x274);
-                xnx_sb.s_dinfo1  = BitConverter.ToUInt16(sb_sector, 0x276);
-                Array.Copy(sb_sector, 0x278, xenix_strings, 0, 6);
-                xnx_sb.s_fname = StringHandlers.CToString(xenix_strings, encoding);
-                Array.Copy(sb_sector, 0x27E, xenix_strings, 0, 6);
-                xnx_sb.s_fpack = StringHandlers.CToString(xenix_strings, encoding);
+                xnx_sb.s_cylblks = BitConverter.ToInt16(sb_sector, 0x270);
+                xnx_sb.s_gapblks = BitConverter.ToInt16(sb_sector, 0x272);
+                xnx_sb.s_dinfo0  = BitConverter.ToInt16(sb_sector, 0x274);
+                xnx_sb.s_dinfo1  = BitConverter.ToInt16(sb_sector, 0x276);
+                Array.Copy(sb_sector, 0x278, xnx_sb.s_fname, 0, 6);
+                Array.Copy(sb_sector, 0x27E, xnx_sb.s_fpack, 0, 6);
                 xnx_sb.s_clean = sb_sector[0x284];
                 xnx_sb.s_magic = BitConverter.ToUInt32(sb_sector, 0x3F8);
-                xnx_sb.s_type  = BitConverter.ToUInt32(sb_sector, 0x3FC);
+                xnx_sb.s_type  = (FsType)BitConverter.ToInt32(sb_sector, 0x3FC);
             }
 
             if(bigEndian)
@@ -401,7 +397,7 @@ public sealed partial class SysVfs
                 xnx_sb.s_dinfo0  = Swapping.Swap(xnx_sb.s_dinfo0);
                 xnx_sb.s_dinfo1  = Swapping.Swap(xnx_sb.s_dinfo1);
                 xnx_sb.s_magic   = Swapping.Swap(xnx_sb.s_magic);
-                xnx_sb.s_type    = Swapping.Swap(xnx_sb.s_type);
+                xnx_sb.s_type    = (FsType)Swapping.Swap((uint)xnx_sb.s_type);
             }
 
             uint bs = 512;
@@ -410,18 +406,18 @@ public sealed partial class SysVfs
 
             switch(xnx_sb.s_type)
             {
-                case 1:
+                case FsType.Fs_512:
                     sb.AppendLine(Localization._512_bytes_per_block);
                     metadata.ClusterSize = 512;
 
                     break;
-                case 2:
+                case FsType.Fs_1024:
                     sb.AppendLine(Localization._1024_bytes_per_block);
                     bs                   = 1024;
                     metadata.ClusterSize = 1024;
 
                     break;
-                case 3:
+                case FsType.Fs_2048:
                     sb.AppendLine(Localization._2048_bytes_per_block);
                     bs                   = 2048;
                     metadata.ClusterSize = 2048;
@@ -487,9 +483,9 @@ public sealed partial class SysVfs
 
             if(xnx_sb.s_time != 0) metadata.ModificationDate = DateHandlers.UnixToDateTime(xnx_sb.s_time);
 
-            sb.AppendFormat(Localization.Volume_name_0, xnx_sb.s_fname).AppendLine();
-            metadata.VolumeName = xnx_sb.s_fname;
-            sb.AppendFormat(Localization.Pack_name_0, xnx_sb.s_fpack).AppendLine();
+            sb.AppendFormat(Localization.Volume_name_0, StringHandlers.CToString(xnx_sb.s_fname)).AppendLine();
+            metadata.VolumeName = StringHandlers.CToString(xnx_sb.s_fname);
+            sb.AppendFormat(Localization.Pack_name_0, StringHandlers.CToString(xnx_sb.s_fpack)).AppendLine();
 
             if(xnx_sb.s_clean == 0x46)
                 sb.AppendLine(Localization.Volume_is_clean);
@@ -514,27 +510,37 @@ public sealed partial class SysVfs
 
             var sysv_sb = new SystemVRelease4SuperBlock
             {
-                s_type = BitConverter.ToUInt32(sb_sector, 0x1FC + offset)
+                s_type = (FsType)BitConverter.ToUInt32(sb_sector, 0x1FC + offset)
             };
 
-            if(bigEndian) sysv_sb.s_type = Swapping.Swap(sysv_sb.s_type);
+            if(bigEndian) sysv_sb.s_type = (FsType)Swapping.Swap((uint)sysv_sb.s_type);
 
             uint bs = 512;
 
             switch(sysv_sb.s_type)
             {
-                case 1:
+                case FsType.Fs_512:
                     metadata.ClusterSize = 512;
 
                     break;
-                case 2:
+                case FsType.Fs_1024:
                     bs                   = 1024;
                     metadata.ClusterSize = 1024;
 
                     break;
-                case 3:
+                case FsType.Fs_2048:
                     bs                   = 2048;
                     metadata.ClusterSize = 2048;
+
+                    break;
+                case FsType.Fs_4096:
+                    bs                   = 4096;
+                    metadata.ClusterSize = 4096;
+
+                    break;
+                case FsType.Fs_8192:
+                    bs                   = 8192;
+                    metadata.ClusterSize = 8192;
 
                     break;
                 default:
@@ -543,61 +549,57 @@ public sealed partial class SysVfs
                     break;
             }
 
-            sysv_sb.s_fsize = BitConverter.ToUInt32(sb_sector, 0x002 + offset);
+            sysv_sb.s_fsize = BitConverter.ToInt32(sb_sector, 0x002 + offset);
 
             if(bigEndian) sysv_sb.s_fsize = Swapping.Swap(sysv_sb.s_fsize);
 
-            bool sysvr4 = sysv_sb.s_fsize * bs <= 0 || sysv_sb.s_fsize * bs != partition.Size;
+            bool sysvr4 = sysv_sb.s_fsize * bs <= 0 || sysv_sb.s_fsize * bs != (long)partition.Size;
 
             if(sysvr4)
             {
                 sysv_sb.s_isize   = BitConverter.ToUInt16(sb_sector, 0x000 + offset);
-                sysv_sb.s_state   = BitConverter.ToUInt32(sb_sector, 0x1F4 + offset);
+                sysv_sb.s_state   = BitConverter.ToInt32(sb_sector, 0x1F4  + offset);
                 sysv_sb.s_magic   = BitConverter.ToUInt32(sb_sector, 0x1F8 + offset);
-                sysv_sb.s_fsize   = BitConverter.ToUInt32(sb_sector, 0x004 + offset);
-                sysv_sb.s_nfree   = BitConverter.ToUInt16(sb_sector, 0x008 + offset);
-                sysv_sb.s_ninode  = BitConverter.ToUInt16(sb_sector, 0x0D4 + offset);
-                sysv_sb.s_flock   = sb_sector[0x1A0                        + offset];
-                sysv_sb.s_ilock   = sb_sector[0x1A1                        + offset];
-                sysv_sb.s_fmod    = sb_sector[0x1A2                        + offset];
-                sysv_sb.s_ronly   = sb_sector[0x1A3                        + offset];
-                sysv_sb.s_time    = BitConverter.ToUInt32(sb_sector, 0x1A4 + offset);
-                sysv_sb.s_cylblks = BitConverter.ToUInt16(sb_sector, 0x1A8 + offset);
-                sysv_sb.s_gapblks = BitConverter.ToUInt16(sb_sector, 0x1AA + offset);
-                sysv_sb.s_dinfo0  = BitConverter.ToUInt16(sb_sector, 0x1AC + offset);
-                sysv_sb.s_dinfo1  = BitConverter.ToUInt16(sb_sector, 0x1AE + offset);
-                sysv_sb.s_tfree   = BitConverter.ToUInt32(sb_sector, 0x1B0 + offset);
-                sysv_sb.s_tinode  = BitConverter.ToUInt16(sb_sector, 0x1B4 + offset);
-                Array.Copy(sb_sector, 0x1B6 + offset, sysv_strings, 0, 6);
-                sysv_sb.s_fname = StringHandlers.CToString(sysv_strings, encoding);
-                Array.Copy(sb_sector, 0x1BC + offset, sysv_strings, 0, 6);
-                sysv_sb.s_fpack = StringHandlers.CToString(sysv_strings, encoding);
+                sysv_sb.s_fsize   = BitConverter.ToInt32(sb_sector, 0x004  + offset);
+                sysv_sb.s_nfree   = BitConverter.ToInt16(sb_sector, 0x008  + offset);
+                sysv_sb.s_ninode  = BitConverter.ToInt16(sb_sector, 0x0D4  + offset);
+                sysv_sb.s_flock   = (sbyte)sb_sector[0x1A0 + offset];
+                sysv_sb.s_ilock   = (sbyte)sb_sector[0x1A1 + offset];
+                sysv_sb.s_fmod    = (sbyte)sb_sector[0x1A2 + offset];
+                sysv_sb.s_ronly   = (sbyte)sb_sector[0x1A3 + offset];
+                sysv_sb.s_time    = BitConverter.ToInt32(sb_sector, 0x1A4 + offset);
+                sysv_sb.s_cylblks = BitConverter.ToInt16(sb_sector, 0x1A8 + offset);
+                sysv_sb.s_gapblks = BitConverter.ToInt16(sb_sector, 0x1AA + offset);
+                sysv_sb.s_dinfo0  = BitConverter.ToInt16(sb_sector, 0x1AC + offset);
+                sysv_sb.s_dinfo1  = BitConverter.ToInt16(sb_sector, 0x1AE + offset);
+                sysv_sb.s_tfree   = BitConverter.ToInt32(sb_sector, 0x1B0 + offset);
+                sysv_sb.s_tinode  = BitConverter.ToInt16(sb_sector, 0x1B4 + offset);
+                Array.Copy(sb_sector, 0x1B6 + offset, sysv_sb.s_fname, 0, 6);
+                Array.Copy(sb_sector, 0x1BC + offset, sysv_sb.s_fpack, 0, 6);
                 sb.AppendLine(Localization.System_V_Release_4_filesystem);
                 metadata.Type = FS_TYPE_SVR4;
             }
             else
             {
                 sysv_sb.s_isize   = BitConverter.ToUInt16(sb_sector, 0x000 + offset);
-                sysv_sb.s_state   = BitConverter.ToUInt32(sb_sector, 0x1F4 + offset);
+                sysv_sb.s_state   = BitConverter.ToInt32(sb_sector, 0x1F4  + offset);
                 sysv_sb.s_magic   = BitConverter.ToUInt32(sb_sector, 0x1F8 + offset);
-                sysv_sb.s_fsize   = BitConverter.ToUInt32(sb_sector, 0x002 + offset);
-                sysv_sb.s_nfree   = BitConverter.ToUInt16(sb_sector, 0x006 + offset);
-                sysv_sb.s_ninode  = BitConverter.ToUInt16(sb_sector, 0x0D0 + offset);
-                sysv_sb.s_flock   = sb_sector[0x19A                        + offset];
-                sysv_sb.s_ilock   = sb_sector[0x19B                        + offset];
-                sysv_sb.s_fmod    = sb_sector[0x19C                        + offset];
-                sysv_sb.s_ronly   = sb_sector[0x19D                        + offset];
-                sysv_sb.s_time    = BitConverter.ToUInt32(sb_sector, 0x19E + offset);
-                sysv_sb.s_cylblks = BitConverter.ToUInt16(sb_sector, 0x1A2 + offset);
-                sysv_sb.s_gapblks = BitConverter.ToUInt16(sb_sector, 0x1A4 + offset);
-                sysv_sb.s_dinfo0  = BitConverter.ToUInt16(sb_sector, 0x1A6 + offset);
-                sysv_sb.s_dinfo1  = BitConverter.ToUInt16(sb_sector, 0x1A8 + offset);
-                sysv_sb.s_tfree   = BitConverter.ToUInt32(sb_sector, 0x1AA + offset);
-                sysv_sb.s_tinode  = BitConverter.ToUInt16(sb_sector, 0x1AE + offset);
-                Array.Copy(sb_sector, 0x1B0 + offset, sysv_strings, 0, 6);
-                sysv_sb.s_fname = StringHandlers.CToString(sysv_strings, encoding);
-                Array.Copy(sb_sector, 0x1B6 + offset, sysv_strings, 0, 6);
-                sysv_sb.s_fpack = StringHandlers.CToString(sysv_strings, encoding);
+                sysv_sb.s_fsize   = BitConverter.ToInt32(sb_sector, 0x002  + offset);
+                sysv_sb.s_nfree   = BitConverter.ToInt16(sb_sector, 0x006  + offset);
+                sysv_sb.s_ninode  = BitConverter.ToInt16(sb_sector, 0x0D0  + offset);
+                sysv_sb.s_flock   = (sbyte)sb_sector[0x19A + offset];
+                sysv_sb.s_ilock   = (sbyte)sb_sector[0x19B + offset];
+                sysv_sb.s_fmod    = (sbyte)sb_sector[0x19C + offset];
+                sysv_sb.s_ronly   = (sbyte)sb_sector[0x19D + offset];
+                sysv_sb.s_time    = BitConverter.ToInt32(sb_sector, 0x19E + offset);
+                sysv_sb.s_cylblks = BitConverter.ToInt16(sb_sector, 0x1A2 + offset);
+                sysv_sb.s_gapblks = BitConverter.ToInt16(sb_sector, 0x1A4 + offset);
+                sysv_sb.s_dinfo0  = BitConverter.ToInt16(sb_sector, 0x1A6 + offset);
+                sysv_sb.s_dinfo1  = BitConverter.ToInt16(sb_sector, 0x1A8 + offset);
+                sysv_sb.s_tfree   = BitConverter.ToInt32(sb_sector, 0x1AA + offset);
+                sysv_sb.s_tinode  = BitConverter.ToInt16(sb_sector, 0x1AE + offset);
+                Array.Copy(sb_sector, 0x1B0 + offset, sysv_sb.s_fname, 0, 6);
+                Array.Copy(sb_sector, 0x1B6 + offset, sysv_sb.s_fpack, 0, 6);
                 sb.AppendLine(Localization.System_V_Release_2_filesystem);
                 metadata.Type = FS_TYPE_SVR2;
             }
@@ -621,7 +623,7 @@ public sealed partial class SysVfs
 
             sb.AppendFormat(Localization._0_bytes_per_block, bs).AppendLine();
 
-            metadata.Clusters = sysv_sb.s_fsize;
+            metadata.Clusters = (ulong)sysv_sb.s_fsize;
 
             sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, sysv_sb.s_fsize, sysv_sb.s_fsize * bs)
               .AppendLine();
@@ -650,15 +652,14 @@ public sealed partial class SysVfs
 
             if(sysv_sb.s_ronly > 0) sb.AppendLine(Localization.Volume_is_mounted_read_only);
 
-            sb.AppendFormat(Localization.Superblock_last_updated_on_0,
-                            DateHandlers.UnixUnsignedToDateTime(sysv_sb.s_time))
+            sb.AppendFormat(Localization.Superblock_last_updated_on_0, DateHandlers.UnixToDateTime(sysv_sb.s_time))
               .AppendLine();
 
-            if(sysv_sb.s_time != 0) metadata.ModificationDate = DateHandlers.UnixUnsignedToDateTime(sysv_sb.s_time);
+            if(sysv_sb.s_time != 0) metadata.ModificationDate = DateHandlers.UnixToDateTime(sysv_sb.s_time);
 
-            sb.AppendFormat(Localization.Volume_name_0, sysv_sb.s_fname).AppendLine();
-            metadata.VolumeName = sysv_sb.s_fname;
-            sb.AppendFormat(Localization.Pack_name_0, sysv_sb.s_fpack).AppendLine();
+            sb.AppendFormat(Localization.Volume_name_0, StringHandlers.CToString(sysv_sb.s_fname)).AppendLine();
+            metadata.VolumeName = StringHandlers.CToString(sysv_sb.s_fname);
+            sb.AppendFormat(Localization.Pack_name_0, StringHandlers.CToString(sysv_sb.s_fpack)).AppendLine();
 
             if(sysv_sb.s_state == 0x7C269D38 - sysv_sb.s_time)
                 sb.AppendLine(Localization.Volume_is_clean);
@@ -683,26 +684,24 @@ public sealed partial class SysVfs
             var coh_strings = new byte[6];
 
             coh_sb.s_isize  = BitConverter.ToUInt16(sb_sector, 0x000);
-            coh_sb.s_fsize  = Swapping.PDPFromLittleEndian(BitConverter.ToUInt32(sb_sector, 0x002));
-            coh_sb.s_nfree  = BitConverter.ToUInt16(sb_sector, 0x006);
-            coh_sb.s_ninode = BitConverter.ToUInt16(sb_sector, 0x108);
-            coh_sb.s_flock  = sb_sector[0x1D2];
-            coh_sb.s_ilock  = sb_sector[0x1D3];
-            coh_sb.s_fmod   = sb_sector[0x1D4];
-            coh_sb.s_ronly  = sb_sector[0x1D5];
-            coh_sb.s_time   = Swapping.PDPFromLittleEndian(BitConverter.ToUInt32(sb_sector, 0x1D6));
-            coh_sb.s_tfree  = Swapping.PDPFromLittleEndian(BitConverter.ToUInt32(sb_sector, 0x1DA));
+            coh_sb.s_fsize  = (int)Swapping.PDPFromLittleEndian(BitConverter.ToUInt32(sb_sector, 0x002));
+            coh_sb.s_nfree  = BitConverter.ToInt16(sb_sector, 0x006);
+            coh_sb.s_ninode = BitConverter.ToInt16(sb_sector, 0x108);
+            coh_sb.s_flock  = (sbyte)sb_sector[0x1D2];
+            coh_sb.s_ilock  = (sbyte)sb_sector[0x1D3];
+            coh_sb.s_fmod   = (sbyte)sb_sector[0x1D4];
+            coh_sb.s_ronly  = (sbyte)sb_sector[0x1D5];
+            coh_sb.s_time   = (int)Swapping.PDPFromLittleEndian(BitConverter.ToUInt32(sb_sector, 0x1D6));
+            coh_sb.s_tfree  = (int)Swapping.PDPFromLittleEndian(BitConverter.ToUInt32(sb_sector, 0x1DA));
             coh_sb.s_tinode = BitConverter.ToUInt16(sb_sector, 0x1DE);
-            coh_sb.s_int_m  = BitConverter.ToUInt16(sb_sector, 0x1E0);
-            coh_sb.s_int_n  = BitConverter.ToUInt16(sb_sector, 0x1E2);
-            Array.Copy(sb_sector, 0x1E4, coh_strings, 0, 6);
-            coh_sb.s_fname = StringHandlers.CToString(coh_strings, encoding);
-            Array.Copy(sb_sector, 0x1EA, coh_strings, 0, 6);
-            coh_sb.s_fpack = StringHandlers.CToString(coh_strings, encoding);
+            coh_sb.s_m      = BitConverter.ToInt16(sb_sector, 0x1E0);
+            coh_sb.s_n      = BitConverter.ToInt16(sb_sector, 0x1E2);
+            Array.Copy(sb_sector, 0x1E4, coh_sb.s_fname, 0, 6);
+            Array.Copy(sb_sector, 0x1EA, coh_sb.s_fpack, 0, 6);
 
             metadata.Type        = FS_TYPE_COHERENT;
             metadata.ClusterSize = 512;
-            metadata.Clusters    = coh_sb.s_fsize;
+            metadata.Clusters    = (ulong)coh_sb.s_fsize;
 
             sb.AppendLine(Localization.Coherent_UNIX_filesystem);
 
@@ -735,15 +734,14 @@ public sealed partial class SysVfs
 
             if(coh_sb.s_ronly > 0) sb.AppendLine(Localization.Volume_is_mounted_read_only);
 
-            sb.AppendFormat(Localization.Superblock_last_updated_on_0,
-                            DateHandlers.UnixUnsignedToDateTime(coh_sb.s_time))
+            sb.AppendFormat(Localization.Superblock_last_updated_on_0, DateHandlers.UnixToDateTime(coh_sb.s_time))
               .AppendLine();
 
-            if(coh_sb.s_time != 0) metadata.ModificationDate = DateHandlers.UnixUnsignedToDateTime(coh_sb.s_time);
+            if(coh_sb.s_time != 0) metadata.ModificationDate = DateHandlers.UnixToDateTime(coh_sb.s_time);
 
-            sb.AppendFormat(Localization.Volume_name_0, coh_sb.s_fname).AppendLine();
-            metadata.VolumeName = coh_sb.s_fname;
-            sb.AppendFormat(Localization.Pack_name_0, coh_sb.s_fpack).AppendLine();
+            sb.AppendFormat(Localization.Volume_name_0, StringHandlers.CToString(coh_sb.s_fname)).AppendLine();
+            metadata.VolumeName = StringHandlers.CToString(coh_sb.s_fname);
+            sb.AppendFormat(Localization.Pack_name_0, StringHandlers.CToString(coh_sb.s_fpack)).AppendLine();
         }
 
         if(sys7th)
@@ -761,21 +759,19 @@ public sealed partial class SysVfs
 
             v7_sb.s_isize  = BitConverter.ToUInt16(sb_sector, 0x000);
             v7_sb.s_fsize  = BitConverter.ToUInt32(sb_sector, 0x002);
-            v7_sb.s_nfree  = BitConverter.ToUInt16(sb_sector, 0x006);
-            v7_sb.s_ninode = BitConverter.ToUInt16(sb_sector, 0x0D0);
-            v7_sb.s_flock  = sb_sector[0x19A];
-            v7_sb.s_ilock  = sb_sector[0x19B];
-            v7_sb.s_fmod   = sb_sector[0x19C];
-            v7_sb.s_ronly  = sb_sector[0x19D];
-            v7_sb.s_time   = BitConverter.ToUInt32(sb_sector, 0x19E);
-            v7_sb.s_tfree  = BitConverter.ToUInt32(sb_sector, 0x1A2);
+            v7_sb.s_nfree  = BitConverter.ToInt16(sb_sector, 0x006);
+            v7_sb.s_ninode = BitConverter.ToInt16(sb_sector, 0x0D0);
+            v7_sb.s_flock  = (sbyte)sb_sector[0x19A];
+            v7_sb.s_ilock  = (sbyte)sb_sector[0x19B];
+            v7_sb.s_fmod   = (sbyte)sb_sector[0x19C];
+            v7_sb.s_ronly  = (sbyte)sb_sector[0x19D];
+            v7_sb.s_time   = BitConverter.ToInt32(sb_sector, 0x19E);
+            v7_sb.s_tfree  = BitConverter.ToInt32(sb_sector, 0x1A2);
             v7_sb.s_tinode = BitConverter.ToUInt16(sb_sector, 0x1A6);
-            v7_sb.s_int_m  = BitConverter.ToUInt16(sb_sector, 0x1A8);
-            v7_sb.s_int_n  = BitConverter.ToUInt16(sb_sector, 0x1AA);
-            Array.Copy(sb_sector, 0x1AC, sys7_strings, 0, 6);
-            v7_sb.s_fname = StringHandlers.CToString(sys7_strings, encoding);
-            Array.Copy(sb_sector, 0x1B2, sys7_strings, 0, 6);
-            v7_sb.s_fpack = StringHandlers.CToString(sys7_strings, encoding);
+            v7_sb.s_m      = BitConverter.ToInt16(sb_sector, 0x1A8);
+            v7_sb.s_n      = BitConverter.ToInt16(sb_sector, 0x1AA);
+            Array.Copy(sb_sector, 0x1AC, v7_sb.s_fname, 0, 6);
+            Array.Copy(sb_sector, 0x1B2, v7_sb.s_fpack, 0, 6);
 
             metadata.Type        = FS_TYPE_UNIX7;
             metadata.ClusterSize = 512;
@@ -811,15 +807,14 @@ public sealed partial class SysVfs
 
             if(v7_sb.s_ronly > 0) sb.AppendLine(Localization.Volume_is_mounted_read_only);
 
-            sb.AppendFormat(Localization.Superblock_last_updated_on_0,
-                            DateHandlers.UnixUnsignedToDateTime(v7_sb.s_time))
+            sb.AppendFormat(Localization.Superblock_last_updated_on_0, DateHandlers.UnixToDateTime(v7_sb.s_time))
               .AppendLine();
 
-            if(v7_sb.s_time != 0) metadata.ModificationDate = DateHandlers.UnixUnsignedToDateTime(v7_sb.s_time);
+            if(v7_sb.s_time != 0) metadata.ModificationDate = DateHandlers.UnixToDateTime(v7_sb.s_time);
 
-            sb.AppendFormat(Localization.Volume_name_0, v7_sb.s_fname).AppendLine();
-            metadata.VolumeName = v7_sb.s_fname;
-            sb.AppendFormat(Localization.Pack_name_0, v7_sb.s_fpack).AppendLine();
+            sb.AppendFormat(Localization.Volume_name_0, StringHandlers.CToString(v7_sb.s_fname)).AppendLine();
+            metadata.VolumeName = StringHandlers.CToString(v7_sb.s_fname);
+            sb.AppendFormat(Localization.Pack_name_0, StringHandlers.CToString(v7_sb.s_fpack)).AppendLine();
         }
 
         information = sb.ToString();
