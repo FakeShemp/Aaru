@@ -1885,6 +1885,13 @@ public enum ScsiCommands : byte
 
 #endregion HL-DT-ST vendor commands
 
+#region OmniDrive vendor commands
+
+    /// <summary>Reads raw DVD sectors directly by LBA/PSN (OmniDrive firmware)</summary>
+    ReadOmniDrive = 0xC0,
+
+#endregion OmniDrive vendor commands
+
 #region NEC vendor commands
 
     /// <summary>Reads CD-DA data</summary>

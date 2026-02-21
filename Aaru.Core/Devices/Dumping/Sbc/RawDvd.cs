@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Cache.cs
+// Filename       : RawDvd.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // --[ License ] --------------------------------------------------------------
@@ -44,8 +44,8 @@ namespace Aaru.Core.Devices.Dumping;
 partial class Dump
 {
     /// <summary>
-    ///     Dumps data when dumping from a SCSI Block Commands compliant device,
-    ///     and reads the data from the device cache
+    ///     Dumps raw DVD sectors (2064-byte frames) when dumping from a SCSI Block Commands compliant device.
+    ///     Supports HL-DT-ST, ReadBuffer 3C, and OmniDrive raw reading methods.
     /// </summary>
     /// <param name="blocks">Media blocks</param>
     /// <param name="maxBlocksToRead">Maximum number of blocks to read in a single command</param>
@@ -62,7 +62,7 @@ partial class Dump
     /// <param name="imageWriteDuration">Total time spent writing to image</param>
     /// <param name="newTrim">Set if we need to start a trim</param>
     /// <param name="discKey">The DVD disc key</param>
-    void ReadCacheData(in ulong     blocks, in uint maxBlocksToRead, in uint blockSize, DumpHardware currentTry,
+    void ReadRawDvdData(in ulong     blocks, in uint maxBlocksToRead, in uint blockSize, DumpHardware currentTry,
                        ExtentsULong extents, ref double currentSpeed, ref double minSpeed, ref double maxSpeed,
                        ref double   totalDuration, Reader scsiReader, MhddLog mhddLog, IbgLog ibgLog,
                        ref double   imageWriteDuration, ref bool newTrim, byte[] discKey)

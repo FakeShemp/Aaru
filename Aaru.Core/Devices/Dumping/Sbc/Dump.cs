@@ -324,6 +324,7 @@ partial class Dump
                 scsiReader.otp        = decodedPfi is { Layers: 1, TrackPath: false };
 
                 if(scsiReader.HldtstReadRaw) blocksToRead = 1;
+                if(scsiReader.OmniDriveReadRaw) blocksToRead = 31;
 
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_raw_bytes_1_cooked_bytes_per_sector,
                                                    longBlockSize,
@@ -804,9 +805,9 @@ partial class Dump
         {
             mediaTags.TryGetValue(MediaTagType.DVD_DiscKey_Decrypted, out byte[] discKey);
 
-            if(scsiReader.HldtstReadRaw || scsiReader.ReadBuffer3CReadRaw)
+            if(scsiReader.HldtstReadRaw || scsiReader.ReadBuffer3CReadRaw || scsiReader.OmniDriveReadRaw)
             {
-                ReadCacheData(blocks,
+                ReadRawDvdData(blocks,
                               blocksToRead,
                               blockSize,
                               currentTry,
@@ -905,6 +906,7 @@ partial class Dump
 
            // Unnecessary since keys are already in raw data
            !scsiReader.ReadBuffer3CReadRaw &&
+           !scsiReader.OmniDriveReadRaw &&
            !scsiReader.HldtstReadRaw &&
            mediaTag is not null)
             RetryTitleKeys(dvdDecrypt, mediaTag, ref totalDuration);

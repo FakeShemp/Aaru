@@ -3271,6 +3271,9 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <data name="Using_MMC_READ_CD_command" xml:space="preserve">
         <value>[slateblue1]Usando comando [fuchsia]MMC READ CD[/].[/]</value>
     </data>
+    <data name="Using_OmniDrive_raw_DVD_reading" xml:space="preserve">
+        <value>[slateblue1]Usando lectura de [fuchsia]DVD sin procesar de OmniDrive[/].[/]</value>
+    </data>
     <data name="Using_Plextor_raw_DVD_reading" xml:space="preserve">
         <value>[slateblue1]Usando lectura de [fuchsia]DVD sin procesar de Plextor[/].[/]</value>
     </data>
