@@ -1022,6 +1022,12 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Contains_a_media_of_0_sectors_with_a_maximum_sector_size_of_1_bytes_etc", resourceCulture);
             }
         }
+
+        public static string Image_has_0_leadin_and_1_leadout_sectors_WithMarkup {
+            get {
+                return ResourceManager.GetString("Image_has_0_leadin_and_1_leadout_sectors_WithMarkup", resourceCulture);
+            }
+        }
         
         public static string Contains_a_media_of_type_0_and_XML_type_1 {
             get {
