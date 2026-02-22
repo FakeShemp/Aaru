@@ -25,6 +25,7 @@
 // Copyright © 2020-2026 Rebecca Wallander
 // ****************************************************************************/
 
+using System;
 using System.Linq;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
@@ -86,12 +87,12 @@ partial class Dump
             // TODO: This is very ugly and there probably exist a more elegant way to solve this issue.
             scsiReader.ReadBlock(out _, _resume.NextBlock - _resume.NextBlock % 96 + 1, out _, out _, out _);
 
-        // Phase 1: Lead-in (negative LBA) — OmniDrive only
+        // Phase 1: Lead-in (negative LBA) — OmniDrive only. Read from nominalNegativeSectors up to -1.
         if(nominalNegativeSectors > 0)
         {
             UpdateStatus?.Invoke(Localization.Core.Reading_lead_in_sectors);
 
-            for(ulong sectorAddress = 1; sectorAddress <= nominalNegativeSectors; sectorAddress += blocksToRead)
+            for(ulong sectorAddress = nominalNegativeSectors; sectorAddress >= 1;)
             {
                 if(_aborted)
                 {
@@ -101,8 +102,7 @@ partial class Dump
                     break;
                 }
 
-                uint toRead = (uint)nominalNegativeSectors - (uint)sectorAddress + 1;
-                if(toRead > blocksToRead) toRead = blocksToRead;
+                uint toRead = (uint)Math.Min(sectorAddress, blocksToRead);
 
                 if(currentSpeed > maxSpeed && currentSpeed > 0) maxSpeed = currentSpeed;
                 if(currentSpeed < minSpeed && currentSpeed > 0) minSpeed = currentSpeed;
@@ -111,21 +111,29 @@ partial class Dump
                                                      sectorAddress,
                                                      nominalNegativeSectors,
                                                      ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()),
-                                       (long)sectorAddress,
+                                       (long)(nominalNegativeSectors - sectorAddress + toRead),
                                        (long)nominalNegativeSectors);
 
-                sense         =  scsiReader.ReadBlocks(out buffer, sectorAddress, toRead, out double cmdDuration, out _,
+                sense =  scsiReader.ReadBlocks(out buffer, sectorAddress, toRead, out double cmdDuration, out _,
                                                        out _, true);
+
                 totalDuration += cmdDuration;
 
                 if(!sense && !_dev.Error)
                 {
-                    mhddLog.Write((ulong)(-(long)sectorAddress), cmdDuration, toRead);
-                    ibgLog.Write((ulong)(-(long)sectorAddress), currentSpeed * 1024);
+                    mhddLog.Write((ulong)-(long)sectorAddress, cmdDuration, toRead);
+                    ibgLog.Write((ulong)-(long)sectorAddress, currentSpeed * 1024);
+
+                    // ReadBlocks returns sectors in logical order (-4096, -4095, ...); WriteSectorsLong expects
+                    // ascending block order (4094, 4095, 4096). Reverse the 2064-byte chunks.
+                    byte[] writeBuffer = new byte[buffer.Length];
+                    for(uint i = 0; i < toRead; i++)
+                        Array.Copy(buffer, (int)(i * blockSize), writeBuffer, (int)((toRead - 1 - i) * blockSize),
+                                  (int)blockSize);
 
                     _writeStopwatch.Restart();
-                    outputFormat.WriteSectorsLong(buffer,
-                                                  sectorAddress,
+                    outputFormat.WriteSectorsLong(writeBuffer,
+                                                  sectorAddress - toRead + 1,
                                                   true,
                                                   toRead,
                                                   Enumerable.Repeat(SectorStatus.Dumped, (int)toRead).ToArray());
@@ -146,6 +154,8 @@ partial class Dump
                     _writeStopwatch.Stop();
                 }
 
+                if(sectorAddress <= 1) break;
+                sectorAddress -= toRead;
                 sectorSpeedStart += toRead;
                 double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
                 if(elapsed > 0)
