@@ -1,4 +1,4 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
@@ -149,7 +149,7 @@ sealed partial class Reader
         ReadBlocks(out buffer, block, 1, out duration, out recoveredError, out blankCheck);
 
     internal bool ReadBlocks(out byte[] buffer, ulong block, uint count, out double duration, out bool recoveredError,
-                             out bool   blankCheck)
+                             out bool   blankCheck, bool negative = false)
     {
         switch(_dev.Type)
         {
@@ -159,7 +159,8 @@ sealed partial class Reader
                 return AtaReadBlocks(out buffer, block, count, out duration, out recoveredError);
             case DeviceType.ATAPI:
             case DeviceType.SCSI:
-                return ScsiReadBlocks(out buffer, block, count, out duration, out recoveredError, out blankCheck);
+                return ScsiReadBlocks(out buffer, block, count, out duration, out recoveredError, out blankCheck,
+                                      negative);
             default:
                 buffer         = null;
                 duration       = 0d;

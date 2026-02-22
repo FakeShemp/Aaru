@@ -783,7 +783,7 @@ sealed partial class Reader
     }
 
     bool ScsiReadBlocks(out byte[] buffer, ulong block, uint count, out double duration, out bool recoveredError,
-                        out bool   blankCheck)
+                        out bool   blankCheck, bool negative = false)
     {
         bool               sense;
         ReadOnlySpan<byte> senseBuf;
@@ -847,9 +847,10 @@ sealed partial class Reader
             }
             else if(OmniDriveReadRaw)
             {
+                uint lba = negative ? (uint)(-(long)block) : (uint)block;
                 sense = _dev.OmniDriveReadRawDvd(out buffer,
                                                  out senseBuf,
-                                                 (uint)block,
+                                                 lba,
                                                  count,
                                                  _timeout,
                                                  out duration);

@@ -78,6 +78,7 @@ partial class Dump
         byte               scsiDensityCode    = 0;
         var                containsFloppyPage = false;
         const ushort       sbcProfile         = 0x0001;
+        const uint         DvdLeadinSectors   = 4096; // Usable Lead-in before LBA 0 per DVD spec (PSN 0x02F000–0x02FFFF)
         double             totalDuration      = 0;
         double             currentSpeed       = 0;
         double             maxSpeed           = double.MinValue;
@@ -398,6 +399,14 @@ partial class Dump
                 PFI.PhysicalFormatInformation? decodedPfi = PFI.Decode(pfi, dskType);
 
                 if(decodedPfi.HasValue) nominalNegativeSectors = decodedPfi.Value.DataAreaStartPSN;
+
+                if(scsiReader.OmniDriveReadRaw &&
+                   decodedPfi.HasValue &&
+                   ((dskType >= MediaType.DVDROM && dskType <= MediaType.DVDDownload)
+                   || dskType != MediaType.PS2DVD
+                   || dskType != MediaType.PS3DVD
+                   || dskType != MediaType.Nuon))
+                    nominalNegativeSectors = Math.Min(nominalNegativeSectors, DvdLeadinSectors);
 
                 mediaTags.TryGetValue(MediaTagType.BD_DI, out byte[] di);
                 DI.DiscInformation? decodedDi = DI.Decode(di);
@@ -807,6 +816,16 @@ partial class Dump
 
             if(scsiReader.HldtstReadRaw || scsiReader.ReadBuffer3CReadRaw || scsiReader.OmniDriveReadRaw)
             {
+                uint nominalForRawDvd = 0;
+                uint overflowForRawDvd = 0;
+                if(scsiReader.OmniDriveReadRaw && outputFormat is IWritableOpticalImage optImg)
+                {
+                    if(optImg.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreNegativeSectors))
+                        nominalForRawDvd = nominalNegativeSectors;
+                    if(optImg.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreOverflowSectors))
+                        overflowForRawDvd = 100u;
+                }
+
                 ReadRawDvdData(blocks,
                               blocksToRead,
                               blockSize,
@@ -821,7 +840,9 @@ partial class Dump
                               ibgLog,
                               ref imageWriteDuration,
                               ref newTrim,
-                              discKey ?? null);
+                              discKey ?? null,
+                              nominalForRawDvd,
+                              overflowForRawDvd);
             }
             else
             {

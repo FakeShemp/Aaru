@@ -6922,5 +6922,23 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Media_tag_0_present_in_primary_image_will_be_lost", resourceCulture);
             }
         }
+
+        public static string Reading_lead_in_sectors {
+            get {
+                return ResourceManager.GetString("Reading_lead_in_sectors", resourceCulture);
+            }
+        }
+
+        public static string Reading_lead_out_sectors {
+            get {
+                return ResourceManager.GetString("Reading_lead_out_sectors", resourceCulture);
+            }
+        }
+
+        public static string Reading_data_sectors {
+            get {
+                return ResourceManager.GetString("Reading_data_sectors", resourceCulture);
+            }
+        }
     }
 }

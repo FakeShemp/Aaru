@@ -3532,4 +3532,13 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="Media_tag_0_present_in_primary_image_will_be_lost" xml:space="preserve">
         <value>[red]Media tag {0} present in primary image will be lost in output format. Not continuing...[/]</value>
     </data>
+    <data name="Reading_lead_in_sectors" xml:space="preserve">
+      <value>[slateblue1]Reading lead-in sectors...[/]</value>
+    </data>
+    <data name="Reading_lead_out_sectors" xml:space="preserve">
+      <value>[slateblue1]Reading lead-out sectors...[/]</value>
+    </data>
+    <data name="Reading_data_sectors" xml:space="preserve">
+      <value>[slateblue1]Reading data sectors...[/]</value>
+    </data>
 </root>
