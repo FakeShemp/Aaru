@@ -109,6 +109,16 @@ public sealed partial class Reiser
     const ushort S_ISGID  = 0x0400; // set-group-ID
     const ushort S_ISVTX  = 0x0200; // sticky bit
 
+    // Persistent inode flags stored in StatDataV2.sd_attrs (ext2-compatible)
+    const ushort REISERFS_SECRM_FL     = 0x0001; // secure deletion
+    const ushort REISERFS_UNRM_FL      = 0x0002; // undelete
+    const ushort REISERFS_SYNC_FL      = 0x0008; // synchronous writes
+    const ushort REISERFS_IMMUTABLE_FL = 0x0010; // immutable file
+    const ushort REISERFS_APPEND_FL    = 0x0020; // append-only
+    const ushort REISERFS_NODUMP_FL    = 0x0040; // no dump
+    const ushort REISERFS_NOATIME_FL   = 0x0080; // no access time update
+    const ushort REISERFS_NOTAIL_FL    = 0x8000; // no tail packing
+
     // Maximum tree height
     const int MAX_HEIGHT = 5;
 

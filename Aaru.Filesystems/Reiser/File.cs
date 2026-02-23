@@ -387,6 +387,13 @@ public sealed partial class Reiser
 
             stat.Attributes = ModeToAttributes(sd.sd_mode);
 
+            // Map persistent inode flags from sd_attrs
+            if((sd.sd_attrs & REISERFS_IMMUTABLE_FL) != 0) stat.Attributes |= FileAttributes.Immutable;
+            if((sd.sd_attrs & REISERFS_APPEND_FL)    != 0) stat.Attributes |= FileAttributes.AppendOnly;
+            if((sd.sd_attrs & REISERFS_SYNC_FL)      != 0) stat.Attributes |= FileAttributes.Sync;
+            if((sd.sd_attrs & REISERFS_NOATIME_FL)   != 0) stat.Attributes |= FileAttributes.NoAccessTime;
+            if((sd.sd_attrs & REISERFS_NODUMP_FL)    != 0) stat.Attributes |= FileAttributes.NoDump;
+
             // Device files
             var fileType = (ushort)(sd.sd_mode & S_IFMT);
 
