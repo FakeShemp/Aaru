@@ -65,6 +65,9 @@ public sealed partial class Reiser : IReadOnlyFilesystem
     /// <summary>Cached superblock</summary>
     Superblock _superblock;
 
+    /// <summary>Cached xattr root directory entries (dirname → (dirId, objectId)), or null if xattrs unavailable</summary>
+    Dictionary<string, (uint dirId, uint objectId)> _xattrRootEntries;
+
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
 

@@ -93,6 +93,12 @@ public sealed partial class Reiser
 
         AaruLogging.Debug(MODULE_NAME, "Root directory loaded with {0} entries", _rootDirectoryCache.Count);
 
+        // Try to locate the xattr root: /.reiserfs_priv/xattrs
+        // Only v3.6 format supports xattrs
+        _xattrRootEntries = null;
+
+        if(_keyVersion == KEY_FORMAT_3_6) LoadXattrRoot();
+
         // Build metadata
         Metadata = new FileSystem
         {
@@ -125,8 +131,10 @@ public sealed partial class Reiser
 
         _rootDirectoryCache?.Clear();
         _blockCache?.Clear();
+        _xattrRootEntries?.Clear();
         _rootDirectoryCache = null;
         _blockCache         = null;
+        _xattrRootEntries   = null;
         _mounted            = false;
         _imagePlugin        = null;
         _partition          = default(Partition);
@@ -277,5 +285,59 @@ public sealed partial class Reiser
         AaruLogging.Debug(MODULE_NAME, "Cached {0} root directory entries", _rootDirectoryCache.Count);
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Attempts to locate the xattr root directory at <c>/.reiserfs_priv/xattrs</c>
+    ///     and caches its entries for later use. Failure is not fatal — the filesystem
+    ///     simply won't report any extended attributes.
+    /// </summary>
+    void LoadXattrRoot()
+    {
+        // Look for .reiserfs_priv in the root directory (including hidden entries)
+        ErrorNumber errno = ReadDirectoryEntries(REISERFS_ROOT_PARENT_OBJECTID,
+                                                 REISERFS_ROOT_OBJECTID,
+                                                 out Dictionary<string, (uint dirId, uint objectId)> rootAll);
+
+        if(errno != ErrorNumber.NoError) return;
+
+        if(!rootAll.TryGetValue(PRIVROOT_NAME, out (uint dirId, uint objectId) privRoot))
+        {
+            AaruLogging.Debug(MODULE_NAME, "No .reiserfs_priv directory found — xattrs not available");
+
+            return;
+        }
+
+        // Read the privroot directory to find the xattrs subdirectory
+        errno = ReadDirectoryEntries(privRoot.dirId,
+                                     privRoot.objectId,
+                                     out Dictionary<string, (uint dirId, uint objectId)> privEntries);
+
+        if(errno != ErrorNumber.NoError) return;
+
+        if(!privEntries.TryGetValue(XAROOT_NAME, out (uint dirId, uint objectId) xaRoot))
+        {
+            AaruLogging.Debug(MODULE_NAME, "No xattrs directory inside .reiserfs_priv — xattrs not available");
+
+            return;
+        }
+
+        // Read the xattr root directory — each entry is named <OBJECTID_HEX>.<GENERATION_HEX>
+        errno = ReadDirectoryEntries(xaRoot.dirId,
+                                     xaRoot.objectId,
+                                     out Dictionary<string, (uint dirId, uint objectId)> xaEntries);
+
+        if(errno != ErrorNumber.NoError) return;
+
+        _xattrRootEntries = new Dictionary<string, (uint dirId, uint objectId)>();
+
+        foreach(KeyValuePair<string, (uint dirId, uint objectId)> entry in xaEntries)
+        {
+            if(entry.Key is "." or "..") continue;
+
+            _xattrRootEntries[entry.Key] = entry.Value;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "Xattr root loaded with {0} per-object directories", _xattrRootEntries.Count);
     }
 }

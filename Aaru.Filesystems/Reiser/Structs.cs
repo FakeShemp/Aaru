@@ -399,4 +399,21 @@ public sealed partial class Reiser
     }
 
 #endregion
+
+#region Nested type: XattrHeader
+
+    /// <summary>
+    ///     Header prepended to each xattr file's data. Contains a magic number
+    ///     for identification and a hash of the value for integrity checking.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct XattrHeader
+    {
+        /// <summary>Magic number for identification (REISERFS_XATTR_MAGIC = 0x52465841 "RFXA").</summary>
+        public readonly uint h_magic;
+        /// <summary>Hash of the xattr value.</summary>
+        public readonly uint h_hash;
+    }
+
+#endregion
 }

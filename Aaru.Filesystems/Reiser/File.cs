@@ -214,4 +214,242 @@ public sealed partial class Reiser
                    _        => FileAttributes.None
                };
     }
+
+    /// <summary>Looks up an object's (dirId, objectId) by traversing a path from a given directory</summary>
+    /// <param name="pathComponents">Path components to traverse</param>
+    /// <param name="startEntries">Directory entries to start from</param>
+    /// <param name="dirId">Resolved directory (packing locality) id</param>
+    /// <param name="objectId">Resolved object id</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber LookupObject(string[] pathComponents, Dictionary<string, (uint dirId, uint objectId)> startEntries,
+                             out uint dirId,          out uint                                        objectId)
+    {
+        dirId    = 0;
+        objectId = 0;
+
+        Dictionary<string, (uint dirId, uint objectId)> currentEntries = startEntries;
+
+        for(var i = 0; i < pathComponents.Length; i++)
+        {
+            string component = pathComponents[i];
+
+            if(component is "." or "..") continue;
+
+            if(!currentEntries.TryGetValue(component, out (uint dirId, uint objectId) target))
+                return ErrorNumber.NoSuchFile;
+
+            // Last component — found it
+            if(i == pathComponents.Length - 1)
+            {
+                dirId    = target.dirId;
+                objectId = target.objectId;
+
+                return ErrorNumber.NoError;
+            }
+
+            // Intermediate — must be a directory
+            ErrorNumber errno = ReadObjectMode(target.dirId, target.objectId, out ushort mode);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if((mode & S_IFMT) != S_IFDIR) return ErrorNumber.NotDirectory;
+
+            errno = ReadDirectoryEntries(target.dirId,
+                                         target.objectId,
+                                         out Dictionary<string, (uint dirId, uint objectId)> subEntries);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            currentEntries = subEntries;
+        }
+
+        return ErrorNumber.NoSuchFile;
+    }
+
+    /// <summary>Resolves a filesystem path to its (dirId, objectId) pair</summary>
+    /// <param name="path">The path to resolve</param>
+    /// <param name="dirId">Resolved directory (packing locality) id</param>
+    /// <param name="objectId">Resolved object id</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ResolvePath(string path, out uint dirId, out uint objectId)
+    {
+        dirId    = 0;
+        objectId = 0;
+
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath is "" or ".") normalizedPath = "/";
+
+        // Root directory
+        if(normalizedPath is "/")
+        {
+            dirId    = REISERFS_ROOT_PARENT_OBJECTID;
+            objectId = REISERFS_ROOT_OBJECTID;
+
+            return ErrorNumber.NoError;
+        }
+
+        string stripped = normalizedPath.StartsWith("/", StringComparison.Ordinal)
+                              ? normalizedPath[1..]
+                              : normalizedPath;
+
+        string[] components = stripped.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        return components.Length == 0
+                   ? ErrorNumber.InvalidArgument
+                   : LookupObject(components, _rootDirectoryCache, out dirId, out objectId);
+    }
+
+    /// <summary>Reads the generation number from a v2 object's stat data</summary>
+    /// <param name="dirId">Directory (packing locality) id</param>
+    /// <param name="objectId">Object id</param>
+    /// <param name="generation">The generation number, or 0 if unavailable</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadObjectGeneration(uint dirId, uint objectId, out uint generation)
+    {
+        generation = 0;
+
+        ErrorNumber errno = SearchByKey(dirId, objectId, 0, TYPE_STAT_DATA, out byte[] leaf, out int index);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(index < 0) return ErrorNumber.NoSuchFile;
+
+        ItemHead ih  = ReadItemHead(leaf, BLKH_SIZE + index * IH_SIZE);
+        int      ver = GetItemKeyVersion(ih.ih_version);
+
+        if(ih.ih_item_location + ih.ih_item_len > leaf.Length) return ErrorNumber.InvalidArgument;
+
+        if(ver == KEY_FORMAT_3_6 && ih.ih_item_len >= Marshal.SizeOf<StatDataV2>())
+        {
+            StatDataV2 sd =
+                Marshal.ByteArrayToStructureLittleEndian<StatDataV2>(leaf,
+                                                                     ih.ih_item_location,
+                                                                     Marshal.SizeOf<StatDataV2>());
+
+            var fileType = (ushort)(sd.sd_mode & S_IFMT);
+
+            // For device files the kernel uses k_dir_id as generation
+            generation = fileType is S_IFCHR or S_IFBLK ? dirId : sd.sd_rdev_or_generation;
+        }
+        else
+        {
+            // v1 objects use k_dir_id as generation
+            generation = dirId;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads the entire contents of a file given its (dirId, objectId)</summary>
+    /// <param name="dirId">Directory (packing locality) id</param>
+    /// <param name="objectId">Object id</param>
+    /// <param name="data">The file data</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadFileData(uint dirId, uint objectId, out byte[] data)
+    {
+        data = null;
+
+        // Get file size from stat data
+        ErrorNumber errno = ReadStatData(dirId, objectId, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(stat.Length == 0)
+        {
+            data = [];
+
+            return ErrorNumber.NoError;
+        }
+
+        data = new byte[stat.Length];
+        long bytesRead = 0;
+
+        // Read all data items for this object, starting at offset 1
+        // (ReiserFS offsets are 1-based for file data)
+        ulong currentOffset = 1;
+
+        while(bytesRead < stat.Length)
+        {
+            // Try direct items first (inline data in leaf nodes)
+            errno = SearchByKey(dirId, objectId, currentOffset, TYPE_DIRECT, out byte[] leaf, out int index);
+
+            if(errno == ErrorNumber.NoError && index >= 0)
+            {
+                ItemHead ih        = ReadItemHead(leaf, BLKH_SIZE + index * IH_SIZE);
+                int      ihVersion = GetItemKeyVersion(ih.ih_version);
+                int      ihType    = GetKeyType(ih.ih_key, ihVersion);
+
+                if(ih.ih_key.k_dir_id == dirId && ih.ih_key.k_objectid == objectId && ihType == TYPE_DIRECT)
+                {
+                    if(ih.ih_item_location + ih.ih_item_len <= leaf.Length)
+                    {
+                        ulong itemOffset = GetKeyOffset(ih.ih_key, ihVersion);
+
+                        // ReiserFS file offsets are 1-based
+                        var filePos = (long)(itemOffset - 1);
+
+                        if(filePos >= 0 && filePos < stat.Length)
+                        {
+                            var toCopy = (int)Math.Min(ih.ih_item_len, stat.Length - filePos);
+                            Array.Copy(leaf, ih.ih_item_location, data, filePos, toCopy);
+                            bytesRead = Math.Max(bytesRead, filePos + toCopy);
+                        }
+                    }
+
+                    currentOffset = GetKeyOffset(ih.ih_key, ihVersion) + ih.ih_item_len;
+
+                    continue;
+                }
+            }
+
+            // Try indirect items (array of block pointers)
+            errno = SearchByKey(dirId, objectId, currentOffset, TYPE_INDIRECT, out leaf, out index);
+
+            if(errno == ErrorNumber.NoError && index >= 0)
+            {
+                ItemHead ih        = ReadItemHead(leaf, BLKH_SIZE + index * IH_SIZE);
+                int      ihVersion = GetItemKeyVersion(ih.ih_version);
+                int      ihType    = GetKeyType(ih.ih_key, ihVersion);
+
+                if(ih.ih_key.k_dir_id == dirId && ih.ih_key.k_objectid == objectId && ihType == TYPE_INDIRECT)
+                {
+                    if(ih.ih_item_location + ih.ih_item_len <= leaf.Length)
+                    {
+                        ulong itemOffset = GetKeyOffset(ih.ih_key, ihVersion);
+                        var   filePos    = (long)(itemOffset - 1);
+                        int   ptrCount   = ih.ih_item_len / 4;
+
+                        for(var p = 0; p < ptrCount && filePos + p * _blockSize < stat.Length; p++)
+                        {
+                            var blockPtr = BitConverter.ToUInt32(leaf, ih.ih_item_location + p * 4);
+
+                            if(blockPtr == 0) continue;
+
+                            ErrorNumber blkErr = ReadBlock(blockPtr, out byte[] blockData);
+
+                            if(blkErr != ErrorNumber.NoError) continue;
+
+                            long destPos = filePos + p * _blockSize;
+                            var  toCopy  = (int)Math.Min(_blockSize, stat.Length - destPos);
+
+                            if(destPos < 0 || destPos >= stat.Length) continue;
+
+                            Array.Copy(blockData, 0, data, destPos, toCopy);
+                            bytesRead = Math.Max(bytesRead, destPos + toCopy);
+                        }
+                    }
+
+                    currentOffset = GetKeyOffset(ih.ih_key, ihVersion) + (ulong)(ih.ih_item_len / 4 * _blockSize);
+
+                    continue;
+                }
+            }
+
+            // No more data items found
+            break;
+        }
+
+        return ErrorNumber.NoError;
+    }
 }

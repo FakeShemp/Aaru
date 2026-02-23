@@ -112,6 +112,12 @@ public sealed partial class Reiser
     // Maximum tree height
     const int MAX_HEIGHT = 5;
 
+    // Xattr support
+    const string PRIVROOT_NAME        = ".reiserfs_priv";
+    const string XAROOT_NAME          = "xattrs";
+    const uint   REISERFS_XATTR_MAGIC = 0x52465841; // "RFXA"
+    const int    XATTR_HEADER_SIZE    = 8;          // sizeof(XattrHeader): 4+4
+
     // Journal description block magic
     static readonly byte[] JOURNAL_DESC_MAGIC = "ReIsErLB"u8.ToArray();
 
