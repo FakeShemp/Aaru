@@ -164,6 +164,39 @@ public sealed partial class Reiser
     }
 
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Resolve the path
+        ErrorNumber errno = ResolvePath(path, out uint dirId, out uint objectId);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Verify it's a symlink
+        errno = ReadObjectMode(dirId, objectId, out ushort mode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if((mode & S_IFMT) != S_IFLNK) return ErrorNumber.InvalidArgument;
+
+        // Symlinks store their target as regular file data — always small
+        errno = ReadFileData(dirId, objectId, out byte[] linkData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        dest = _encoding.GetString(linkData).TrimEnd('\0');
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: target='{0}'", dest);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
     {
         read = 0;
