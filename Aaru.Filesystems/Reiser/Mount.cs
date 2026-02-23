@@ -274,10 +274,10 @@ public sealed partial class Reiser
             return errno;
         }
 
-        // Cache entries (skip . and ..)
+        // Cache entries (skip . and .. and the hidden .reiserfs_priv private root)
         foreach(KeyValuePair<string, (uint dirId, uint objectId)> entry in entries)
         {
-            if(entry.Key is "." or "..") continue;
+            if(entry.Key is "." or ".." or PRIVROOT_NAME) continue;
 
             _rootDirectoryCache[entry.Key] = entry.Value;
         }
