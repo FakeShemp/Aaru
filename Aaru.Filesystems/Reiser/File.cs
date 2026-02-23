@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -115,6 +116,195 @@ public sealed partial class Reiser
         }
 
         return ErrorNumber.NoSuchFile;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(string.IsNullOrEmpty(path) || path == "/") return ErrorNumber.IsDirectory;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: path='{0}'", path);
+
+        // Resolve object
+        ErrorNumber errno = ResolvePath(path, out uint dirId, out uint objectId);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read stat data to get size and verify it's not a directory
+        errno = ReadStatData(dirId, objectId, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(stat.Attributes.HasFlag(FileAttributes.Directory)) return ErrorNumber.IsDirectory;
+
+        node = new ReiserFileNode
+        {
+            Path     = path,
+            Length   = stat.Length,
+            Offset   = 0,
+            DirId    = dirId,
+            ObjectId = objectId
+        };
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: success, size={0}", stat.Length);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not ReiserFileNode) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not ReiserFileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        if(buffer == null) return ErrorNumber.InvalidArgument;
+
+        if(fileNode.Offset < 0 || fileNode.Offset >= fileNode.Length) return ErrorNumber.InvalidArgument;
+
+        // Clamp to remaining file size and buffer capacity
+        long toRead = length;
+
+        if(fileNode.Offset + toRead > fileNode.Length) toRead = fileNode.Length - fileNode.Offset;
+
+        if(toRead <= 0) return ErrorNumber.NoError;
+
+        if(toRead > buffer.Length) toRead = buffer.Length;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: offset={0}, length={1}, toRead={2}", fileNode.Offset, length, toRead);
+
+        long bytesRead     = 0;
+        long currentOffset = fileNode.Offset;
+
+        while(bytesRead < toRead)
+        {
+            // ReiserFS file data offsets are 1-based in the key
+            ulong keyOffset = (ulong)currentOffset + 1;
+
+            // First try to find a direct item at this offset
+            ErrorNumber errno = SearchByKey(fileNode.DirId,
+                                            fileNode.ObjectId,
+                                            keyOffset,
+                                            TYPE_DIRECT,
+                                            out byte[] leaf,
+                                            out int index);
+
+            if(errno == ErrorNumber.NoError && index >= 0)
+            {
+                ItemHead ih        = ReadItemHead(leaf, BLKH_SIZE + index * IH_SIZE);
+                int      ihVersion = GetItemKeyVersion(ih.ih_version);
+                int      ihType    = GetKeyType(ih.ih_key, ihVersion);
+
+                if(ih.ih_key.k_dir_id                   == fileNode.DirId    &&
+                   ih.ih_key.k_objectid                 == fileNode.ObjectId &&
+                   ihType                               == TYPE_DIRECT       &&
+                   ih.ih_item_location + ih.ih_item_len <= leaf.Length)
+                {
+                    ulong itemOffset = GetKeyOffset(ih.ih_key, ihVersion);
+                    var   filePos    = (long)(itemOffset - 1);
+
+                    // Calculate where we are within this item
+                    var skipInItem = (int)(currentOffset - filePos);
+
+                    if(skipInItem >= 0 && skipInItem < ih.ih_item_len)
+                    {
+                        int available = ih.ih_item_len - skipInItem;
+                        var toCopy    = (int)Math.Min(available, toRead - bytesRead);
+                        Array.Copy(leaf, ih.ih_item_location + skipInItem, buffer, bytesRead, toCopy);
+                        bytesRead     += toCopy;
+                        currentOffset += toCopy;
+
+                        continue;
+                    }
+                }
+            }
+
+            // Try indirect item (array of block pointers)
+            errno = SearchByKey(fileNode.DirId, fileNode.ObjectId, keyOffset, TYPE_INDIRECT, out leaf, out index);
+
+            if(errno == ErrorNumber.NoError && index >= 0)
+            {
+                ItemHead ih        = ReadItemHead(leaf, BLKH_SIZE + index * IH_SIZE);
+                int      ihVersion = GetItemKeyVersion(ih.ih_version);
+                int      ihType    = GetKeyType(ih.ih_key, ihVersion);
+
+                if(ih.ih_key.k_dir_id                   == fileNode.DirId    &&
+                   ih.ih_key.k_objectid                 == fileNode.ObjectId &&
+                   ihType                               == TYPE_INDIRECT     &&
+                   ih.ih_item_location + ih.ih_item_len <= leaf.Length)
+                {
+                    ulong itemOffset = GetKeyOffset(ih.ih_key, ihVersion);
+                    var   filePos    = (long)(itemOffset - 1);
+                    int   ptrCount   = ih.ih_item_len / 4;
+
+                    // Which block pointer within this item covers currentOffset?
+                    long offsetInItem = currentOffset - filePos;
+
+                    if(offsetInItem >= 0)
+                    {
+                        var ptrIndex = (int)(offsetInItem / _blockSize);
+
+                        while(ptrIndex < ptrCount && bytesRead < toRead)
+                        {
+                            var blockPtr = BitConverter.ToUInt32(leaf, ih.ih_item_location + ptrIndex * 4);
+
+                            byte[] blockData;
+
+                            if(blockPtr == 0)
+                            {
+                                // Sparse hole — return zeros
+                                blockData = new byte[_blockSize];
+                            }
+                            else
+                            {
+                                ErrorNumber blkErr = ReadBlock(blockPtr, out blockData);
+
+                                if(blkErr != ErrorNumber.NoError)
+                                {
+                                    if(bytesRead > 0) break;
+
+                                    return blkErr;
+                                }
+                            }
+
+                            var offsetInBlock = (int)(currentOffset - (filePos + ptrIndex * (long)_blockSize));
+                            int available     = _blockSize - offsetInBlock;
+                            var toCopy        = (int)Math.Min(available, toRead - bytesRead);
+                            Array.Copy(blockData, offsetInBlock, buffer, bytesRead, toCopy);
+                            bytesRead     += toCopy;
+                            currentOffset += toCopy;
+                            ptrIndex++;
+                        }
+
+                        continue;
+                    }
+                }
+            }
+
+            // No data item found — end of readable data
+            break;
+        }
+
+        read            =  bytesRead;
+        fileNode.Offset += bytesRead;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: read {0} bytes, new offset={1}", read, fileNode.Offset);
+
+        return ErrorNumber.NoError;
     }
 
     /// <summary>Reads the stat data for an object and returns a populated FileEntryInfo</summary>

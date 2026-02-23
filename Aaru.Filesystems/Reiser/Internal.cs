@@ -44,4 +44,23 @@ public sealed partial class Reiser
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>File node for streaming reads without caching full file contents</summary>
+    sealed class ReiserFileNode : IFileNode
+    {
+        /// <summary>Directory (packing locality) id used for S+tree lookups</summary>
+        internal uint DirId { get; init; }
+
+        /// <summary>Object id used for S+tree lookups</summary>
+        internal uint ObjectId { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+    }
 }
