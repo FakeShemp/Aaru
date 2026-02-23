@@ -42,7 +42,8 @@ public sealed partial class Reiser
 
         stat = new FileSystemInfo
         {
-            Blocks         = _superblock.block_count,
+            // The kernel computes: f_blocks = block_count - bmap_nr - 1
+            Blocks         = _superblock.block_count - _superblock.bmap_nr - 1,
             FreeBlocks     = _superblock.free_blocks,
             FilenameLength = REISERFS_MAX_NAME,
             Type           = FS_TYPE,
