@@ -52,6 +52,19 @@ public sealed partial class Reiser
         return 0;
     }
 
+    /// <summary>
+    ///     Compares only the short key (dir_id, object_id) of two keys.
+    ///     Mirrors the kernel's <c>comp_short_keys</c>.
+    /// </summary>
+    static int CompareShortKeys(uint aDirId, uint aObjId, uint bDirId, uint bObjId)
+    {
+        if(aDirId != bDirId) return aDirId < bDirId ? -1 : 1;
+
+        if(aObjId != bObjId) return aObjId < bObjId ? -1 : 1;
+
+        return 0;
+    }
+
     /// <summary>Extracts the offset from an on-disk key, interpreting the version correctly</summary>
     static ulong GetKeyOffset(in Key key, int version)
     {
@@ -94,19 +107,33 @@ public sealed partial class Reiser
 
     /// <summary>
     ///     Searches the S+tree for the item matching the given key, or the closest item
-    ///     with a key less than the search key.
+    ///     with a key less than the search key. Maintains a tree path for subsequent
+    ///     <see cref="GetRKey" /> calls. Mirrors the kernel's <c>search_by_key</c>.
     /// </summary>
-    /// <param name="dirId">Directory (packing locality) id</param>
-    /// <param name="objectId">Object id</param>
-    /// <param name="offset">Offset component of the key</param>
-    /// <param name="type">Type component of the key</param>
-    /// <param name="leafBlock">The leaf node block data containing the found item</param>
-    /// <param name="itemIndex">Index of the found item within the leaf node, or -1 if not found</param>
-    /// <returns>Error number indicating success or failure</returns>
     ErrorNumber SearchByKey(uint dirId, uint objectId, ulong offset, int type, out byte[] leafBlock, out int itemIndex)
+    {
+        TreePath ignored = null;
+
+        return SearchByKey(dirId, objectId, offset, type, out leafBlock, out itemIndex, ref ignored);
+    }
+
+    /// <summary>
+    ///     Searches the S+tree for the item matching the given key, or the closest item
+    ///     with a key less than the search key. Maintains a tree path for subsequent
+    ///     <see cref="GetRKey" /> calls. Mirrors the kernel's <c>search_by_key</c>.
+    /// </summary>
+    ErrorNumber SearchByKey(uint dirId, uint objectId, ulong offset, int type, out byte[] leafBlock, out int itemIndex,
+                            ref TreePath path)
     {
         leafBlock = null;
         itemIndex = -1;
+
+        // Allocate/reset path
+        path = new TreePath
+        {
+            Elements = new PathElement[MAX_HEIGHT + 1],
+            Length   = -1
+        };
 
         uint currentBlock = _superblock.root_block;
 
@@ -118,17 +145,24 @@ public sealed partial class Reiser
 
             if(blockData.Length < BLKH_SIZE) return ErrorNumber.InvalidArgument;
 
-            // Parse block header
             BlockHead blkHead = ReadBlockHead(blockData);
 
             if(blkHead.blk_nr_item == 0) return ErrorNumber.NoSuchFile;
+
+            // Record this node in the path
+            path.Length++;
+
+            path.Elements[path.Length] = new PathElement
+            {
+                BlockData = blockData,
+                Position  = 0
+            };
 
             if(blkHead.blk_level == DISK_LEAF_NODE_LEVEL)
             {
                 // Leaf node: binary search through item headers
                 leafBlock = blockData;
 
-                // Binary search for matching or closest-lesser key
                 var lo   = 0;
                 int hi   = blkHead.blk_nr_item - 1;
                 int best = -1;
@@ -154,7 +188,8 @@ public sealed partial class Reiser
                     switch(cmp)
                     {
                         case 0:
-                            itemIndex = mid;
+                            itemIndex                           = mid;
+                            path.Elements[path.Length].Position = mid;
 
                             return ErrorNumber.NoError;
                         case > 0:
@@ -169,24 +204,22 @@ public sealed partial class Reiser
                     }
                 }
 
-                // If we didn't find an exact match, return the closest lesser item
-                itemIndex = best;
+                itemIndex                           = best;
+                path.Elements[path.Length].Position = best;
 
                 return best >= 0 ? ErrorNumber.NoError : ErrorNumber.NoSuchFile;
             }
 
             // Internal node: binary search through keys to find which child to follow
-            // Internal node layout: [BlockHead][Key * blkNrItem][DiskChild * (blkNrItem + 1)]
             var lo2  = 0;
             int hi2  = blkHead.blk_nr_item - 1;
-            var pos2 = 0; // Default to leftmost child
+            var pos2 = 0;
 
             while(lo2 <= hi2)
             {
                 int mid2    = (lo2 + hi2) / 2;
                 Key nodeKey = ReadKey(blockData, BLKH_SIZE + mid2 * KEY_SIZE);
 
-                // For internal node keys, determine version by inspecting the key itself
                 int nodeKeyVersion = DetermineKeyVersion(nodeKey);
 
                 ulong nodeKeyOffset = GetKeyOffset(nodeKey, nodeKeyVersion);
@@ -218,7 +251,9 @@ public sealed partial class Reiser
                     hi2 = mid2 - 1;
             }
 
-            // Read the disk child pointer at position pos2
+            // Record position chosen in this internal node
+            path.Elements[path.Length].Position = pos2;
+
             int dcOffset = BLKH_SIZE + blkHead.blk_nr_item * KEY_SIZE + pos2 * DC_SIZE;
 
             if(dcOffset + DC_SIZE > blockData.Length) return ErrorNumber.InvalidArgument;
@@ -233,6 +268,36 @@ public sealed partial class Reiser
         AaruLogging.Debug(MODULE_NAME, "Tree traversal exceeded maximum height");
 
         return ErrorNumber.InvalidArgument;
+    }
+
+    /// <summary>
+    ///     Gets the right delimiting key by walking up the tree path.
+    ///     Mirrors the kernel's <c>get_rkey</c>.
+    ///     Returns null if the item is at the rightmost edge of the tree (equivalent to MAX_KEY),
+    ///     or if the path is invalid (equivalent to MIN_KEY treated as "continue with next_pos").
+    /// </summary>
+    static Key? GetRKey(TreePath path)
+    {
+        if(path?.Elements == null || path.Length < 1) return null;
+
+        // Walk up from the leaf's parent toward the root
+        // path.Length is the leaf level index
+        // path.Length - 1 is the leaf's parent, etc.
+        for(int pathOffset = path.Length - 1; pathOffset >= 0; pathOffset--)
+        {
+            PathElement parent = path.Elements[pathOffset];
+
+            if(parent?.BlockData == null) return new Key(); // MIN_KEY equivalent (all zeros)
+
+            BlockHead parentHead = ReadBlockHead(parent.BlockData);
+
+            // If position in parent is not the last one, return the delimiting key
+            if(parent.Position < parentHead.blk_nr_item)
+                return ReadKey(parent.BlockData, BLKH_SIZE + parent.Position * KEY_SIZE);
+        }
+
+        // Reached the root — return null to signify MAX_KEY (rightmost edge)
+        return null;
     }
 
     /// <summary>Reads a Key struct from raw block data at the given offset</summary>
@@ -263,5 +328,28 @@ public sealed partial class Reiser
         var type = (int)(key.k_offset_v2 >> 60);
 
         return type is TYPE_DIRECT or TYPE_INDIRECT or TYPE_DIRENTRY ? KEY_FORMAT_3_6 : KEY_FORMAT_3_5;
+    }
+
+    /// <summary>
+    ///     Element in a tree path, recording a node and the position taken within it.
+    ///     Mirrors the kernel's <c>struct path_element</c>.
+    /// </summary>
+    sealed class PathElement
+    {
+        /// <summary>Block data of this node</summary>
+        public byte[] BlockData;
+
+        /// <summary>Position (key/child index) chosen within this node</summary>
+        public int Position;
+    }
+
+    /// <summary>
+    ///     Tree path from root to leaf, recording every node visited during a search.
+    ///     Mirrors the kernel's <c>struct treepath</c>.
+    /// </summary>
+    sealed class TreePath
+    {
+        public PathElement[] Elements;
+        public int           Length; // Number of valid elements (0-based index of last)
     }
 }

@@ -149,79 +149,64 @@ public sealed partial class Reiser
         return ErrorNumber.NoSuchFile;
     }
 
+
     /// <inheritdoc />
-    public ErrorNumber CloseDir(IDirNode node)
-    {
-        if(node is not ReiserDirNode reiserNode) return ErrorNumber.InvalidArgument;
-
-        reiserNode.Position = -1;
-        reiserNode.Entries  = null;
-
-        return ErrorNumber.NoError;
-    }
+    public ErrorNumber CloseDir(IDirNode node) => ErrorNumber.NoError;
 
     /// <inheritdoc />
     public ErrorNumber ReadDir(IDirNode node, out string filename)
     {
         filename = null;
 
-        if(!_mounted) return ErrorNumber.AccessDenied;
+        if(node is not ReiserDirNode dirNode) return ErrorNumber.InvalidArgument;
 
-        if(node is not ReiserDirNode reiserNode) return ErrorNumber.InvalidArgument;
+        if(dirNode.Position >= dirNode.Entries.Length) return ErrorNumber.NoError; // No more entries, filename is null
 
-        if(reiserNode.Position < 0) return ErrorNumber.InvalidArgument;
-
-        // End of directory
-        if(reiserNode.Position >= reiserNode.Entries.Length) return ErrorNumber.NoError;
-
-        filename = reiserNode.Entries[reiserNode.Position++];
+        filename = dirNode.Entries[dirNode.Position];
+        dirNode.Position++;
 
         return ErrorNumber.NoError;
     }
 
-    /// <summary>Reads the mode (file type and permissions) from an object's stat data</summary>
-    /// <param name="dirId">Directory (packing locality) id</param>
-    /// <param name="objectId">Object id</param>
-    /// <param name="mode">The mode field from the stat data</param>
-    /// <returns>Error number indicating success or failure</returns>
+    /// <summary>Reads the mode field from an object's stat data</summary>
     ErrorNumber ReadObjectMode(uint dirId, uint objectId, out ushort mode)
     {
         mode = 0;
 
-        ErrorNumber errno = SearchByKey(dirId, objectId, 0, TYPE_STAT_DATA, out byte[] leaf, out int index);
+        // Search for the stat data item for this object
+        ErrorNumber errno = SearchByKey(dirId, objectId, 0, TYPE_STAT_DATA, out byte[] leafBlock, out int itemIndex);
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        if(index < 0) return ErrorNumber.NoSuchFile;
+        if(itemIndex < 0) return ErrorNumber.NoSuchFile;
 
-        ItemHead ih  = ReadItemHead(leaf, BLKH_SIZE + index * IH_SIZE);
-        int      ver = GetItemKeyVersion(ih.ih_version);
+        BlockHead blkHead = ReadBlockHead(leafBlock);
 
-        if(ih.ih_item_location + ih.ih_item_len > leaf.Length) return ErrorNumber.InvalidArgument;
+        if(itemIndex >= blkHead.blk_nr_item) return ErrorNumber.NoSuchFile;
 
-        if(ver == KEY_FORMAT_3_6 && ih.ih_item_len >= Marshal.SizeOf<StatDataV2>())
-        {
-            StatDataV2 sd =
-                Marshal.ByteArrayToStructureLittleEndian<StatDataV2>(leaf,
-                                                                     ih.ih_item_location,
-                                                                     Marshal.SizeOf<StatDataV2>());
+        ItemHead ih = ReadItemHead(leafBlock, BLKH_SIZE + itemIndex * IH_SIZE);
 
-            mode = sd.sd_mode;
-        }
-        else
-        {
-            StatDataV1 sd =
-                Marshal.ByteArrayToStructureLittleEndian<StatDataV1>(leaf,
-                                                                     ih.ih_item_location,
-                                                                     Marshal.SizeOf<StatDataV1>());
+        // Verify this is the stat data item
+        if(ih.ih_key.k_dir_id != dirId || ih.ih_key.k_objectid != objectId) return ErrorNumber.NoSuchFile;
 
-            mode = sd.sd_mode;
-        }
+        int ihType = GetKeyType(ih.ih_key, GetItemKeyVersion(ih.ih_version));
+
+        if(ihType != TYPE_STAT_DATA) return ErrorNumber.NoSuchFile;
+
+        if(ih.ih_item_location + 2 > leafBlock.Length) return ErrorNumber.NoSuchFile;
+
+        // Mode is at offset 0 in the stat data (first 2 bytes)
+        mode = BitConverter.ToUInt16(leafBlock, ih.ih_item_location);
 
         return ErrorNumber.NoError;
     }
 
-    /// <summary>Reads all directory entry items for a given object and returns the entries</summary>
+    /// <summary>
+    ///     Reads all directory entries for the given directory object.
+    ///     Mirrors the kernel's <c>reiserfs_readdir_inode</c> exactly:
+    ///     one item per iteration, tree path maintained, right delimiting key
+    ///     used for leaf-boundary continuation.
+    /// </summary>
     /// <param name="dirId">Directory (packing locality) id of the directory</param>
     /// <param name="objectId">Object id of the directory</param>
     /// <param name="entries">Parsed directory entries (filename -> (dirId, objectId) of target)</param>
@@ -231,157 +216,145 @@ public sealed partial class Reiser
     {
         entries = new Dictionary<string, (uint dirId, uint objectId)>();
 
-        // Search for the first directory item at DOT_OFFSET
-        ErrorNumber errno = SearchByKey(dirId,
-                                        objectId,
-                                        DOT_OFFSET,
-                                        TYPE_DIRENTRY,
-                                        out byte[] leafBlock,
-                                        out int itemIndex);
+        ulong nextPos  = DOT_OFFSET;
+        var   foundAny = false;
 
-        if(errno != ErrorNumber.NoError) return errno;
+        TreePath path = null;
 
-        if(itemIndex < 0) return ErrorNumber.NoSuchFile;
-
-        // Track the last offset we've processed to search for continuation items
-        ulong lastOffset = 0;
-
-        // Read all directory items for this object from this leaf
-        BlockHead blkHead = ReadBlockHead(leafBlock);
-
-        for(int i = itemIndex; i < blkHead.blk_nr_item; i++)
+        while(true)
         {
-            ItemHead ih        = ReadItemHead(leafBlock, BLKH_SIZE + i * IH_SIZE);
-            int      ihVersion = GetItemKeyVersion(ih.ih_version);
+            ErrorNumber errno = SearchByKey(dirId,
+                                            objectId,
+                                            nextPos,
+                                            TYPE_DIRENTRY,
+                                            out byte[] leafBlock,
+                                            out int itemIndex,
+                                            ref path);
 
-            // Check this item still belongs to our directory object
+            if(errno != ErrorNumber.NoError) break;
+
+            if(itemIndex < 0) break;
+
+            BlockHead blkHead = ReadBlockHead(leafBlock);
+
+            if(itemIndex >= blkHead.blk_nr_item) break;
+
+            ItemHead ih = ReadItemHead(leafBlock, BLKH_SIZE + itemIndex * IH_SIZE);
+
             if(ih.ih_key.k_dir_id != dirId || ih.ih_key.k_objectid != objectId) break;
 
-            // Check it's a directory entry item
-            int ihType = GetKeyType(ih.ih_key, ihVersion);
+            int ihVersion = GetItemKeyVersion(ih.ih_version);
+            int ihType    = GetKeyType(ih.ih_key, ihVersion);
 
             if(ihType != TYPE_DIRENTRY) break;
 
-            if(ih.ih_item_location + ih.ih_item_len > leafBlock.Length) continue;
+            if(ih.ih_item_location + ih.ih_item_len > leafBlock.Length) break;
 
-            // Parse each directory entry header within this item
-            ParseDirectoryItem(leafBlock,
-                               ih.ih_item_location,
-                               ih.ih_item_len,
-                               ih.ih_free_space_or_entry_count,
-                               entries);
+            int entryNum =
+                BinarySearchEntries(leafBlock, ih.ih_item_location, ih.ih_free_space_or_entry_count, nextPos);
 
-            lastOffset = GetKeyOffset(ih.ih_key, ihVersion);
-        }
-
-        // There may be additional directory items in subsequent leaf nodes.
-        // Keep searching with increasing offsets until no more directory items are found.
-        while(true)
-        {
-            errno = SearchByKey(dirId, objectId, lastOffset + 1, TYPE_DIRENTRY, out byte[] nextLeaf, out int nextIndex);
-
-            if(errno != ErrorNumber.NoError || nextIndex < 0) break;
-
-            BlockHead nextBlkHead = ReadBlockHead(nextLeaf);
-            var       foundMore   = false;
-
-            for(int i = nextIndex; i < nextBlkHead.blk_nr_item; i++)
+            if(entryNum < ih.ih_free_space_or_entry_count)
             {
-                ItemHead nextIh        = ReadItemHead(nextLeaf, BLKH_SIZE + i * IH_SIZE);
-                int      nextIhVersion = GetItemKeyVersion(nextIh.ih_version);
+                for(int e = entryNum; e < ih.ih_free_space_or_entry_count; e++)
+                {
+                    int dehOff = ih.ih_item_location + e * DEH_SIZE;
 
-                if(nextIh.ih_key.k_dir_id != dirId || nextIh.ih_key.k_objectid != objectId) break;
+                    if(dehOff + DEH_SIZE > leafBlock.Length) break;
 
-                int nextIhType = GetKeyType(nextIh.ih_key, nextIhVersion);
+                    DirectoryEntryHead deh = ReadDirEntryHead(leafBlock, dehOff);
 
-                if(nextIhType != TYPE_DIRENTRY) break;
+                    if((deh.deh_state & 1 << DEH_VISIBLE) == 0) continue;
 
-                ulong nextOffset = GetKeyOffset(nextIh.ih_key, nextIhVersion);
+                    int nameStart = ih.ih_item_location + deh.deh_location;
+                    int nameLen;
 
-                if(nextOffset <= lastOffset) break;
+                    if(e == 0)
+                        nameLen = ih.ih_item_len - deh.deh_location;
+                    else
+                    {
+                        DirectoryEntryHead prevDeh =
+                            ReadDirEntryHead(leafBlock, ih.ih_item_location + (e - 1) * DEH_SIZE);
 
-                if(nextIh.ih_item_location + nextIh.ih_item_len > nextLeaf.Length) continue;
+                        nameLen = prevDeh.deh_location - deh.deh_location;
+                    }
 
-                ParseDirectoryItem(nextLeaf,
-                                   nextIh.ih_item_location,
-                                   nextIh.ih_item_len,
-                                   nextIh.ih_free_space_or_entry_count,
-                                   entries);
+                    if(nameLen <= 0 || nameStart < 0 || nameStart >= leafBlock.Length) continue;
 
-                lastOffset = nextOffset;
-                foundMore  = true;
+                    if(nameLen > REISERFS_MAX_NAME) continue;
+
+                    if(nameStart + nameLen > leafBlock.Length) nameLen = leafBlock.Length - nameStart;
+
+                    if(nameLen <= 0) continue;
+
+                    var nameBytes = new byte[nameLen];
+                    Array.Copy(leafBlock, nameStart, nameBytes, 0, nameLen);
+
+                    string name = StringHandlers.CToString(nameBytes, _encoding);
+
+                    if(string.IsNullOrEmpty(name)) continue;
+
+                    entries[name] = (deh.deh_dir_id, deh.deh_objectid);
+                    foundAny      = true;
+
+                    nextPos = deh.deh_offset + 1;
+                }
             }
 
-            if(!foundMore) break;
+            // End of directory reached if not last item in leaf
+            if(itemIndex != blkHead.blk_nr_item - 1) break;
+
+            // Get right delimiting key from tree path
+            Key? rkey = GetRKey(path);
+
+            // rkey == MIN_KEY (all zeros) — continue with next_pos
+            if(rkey.HasValue && rkey.Value.k_dir_id == 0 && rkey.Value.k_objectid == 0 && rkey.Value.k_offset_v2 == 0)
+                continue;
+
+            // rkey == MAX_KEY (null) — rightmost edge of tree, continue with next_pos
+            if(!rkey.HasValue) continue;
+
+            // rkey belongs to a different object — directory end
+            if(CompareShortKeys(rkey.Value.k_dir_id, rkey.Value.k_objectid, dirId, objectId) != 0) break;
+
+            // Directory continues in the right neighboring block
+            nextPos = GetKeyOffset(rkey.Value, KEY_FORMAT_3_5);
         }
+
+        if(!foundAny) return ErrorNumber.NoSuchFile;
 
         return ErrorNumber.NoError;
-    }
-
-    /// <summary>Parses directory entry headers and names from a directory item body</summary>
-    /// <param name="blockData">Block data containing the item</param>
-    /// <param name="itemLocation">Offset of the item body within the block</param>
-    /// <param name="itemLen">Length of the item body</param>
-    /// <param name="entryCount">Number of directory entry headers in this item</param>
-    /// <param name="entries">Dictionary to add parsed entries to</param>
-    void ParseDirectoryItem(byte[] blockData, int itemLocation, int itemLen, int entryCount,
-                            Dictionary<string, (uint dirId, uint objectId)> entries)
-    {
-        if(entryCount == 0) return;
-
-        // Directory item body layout:
-        // [DEH_0][DEH_1]...[DEH_N-1]  (entry headers, packed at start of item body)
-        // ...name data...              (names stored at offsets given by deh_location, relative to item start)
-        // Names are stored from the end of the item backward.
-
-        for(var e = 0; e < entryCount; e++)
-        {
-            int dehOff = itemLocation + e * DEH_SIZE;
-
-            if(dehOff + DEH_SIZE > blockData.Length) break;
-
-            DirectoryEntryHead deh = ReadDirEntryHead(blockData, dehOff);
-
-            // Check if entry is visible
-            if((deh.deh_state & 1 << DEH_VISIBLE) == 0) continue;
-
-            // Calculate name boundaries
-            int nameStart = itemLocation + deh.deh_location;
-            int nameEnd;
-
-            if(e == 0)
-            {
-                // First entry (entries are stored backward):
-                // name extends from deh_location to end of item
-                nameEnd = itemLocation + itemLen;
-            }
-            else
-            {
-                // Name ends at the previous entry's deh_location
-                DirectoryEntryHead prevDeh = ReadDirEntryHead(blockData, itemLocation + (e - 1) * DEH_SIZE);
-                nameEnd = itemLocation + prevDeh.deh_location;
-            }
-
-            if(nameStart < 0 || nameStart >= blockData.Length || nameEnd <= nameStart) continue;
-
-            int nameLen = Math.Min(nameEnd - nameStart, REISERFS_MAX_NAME);
-
-            if(nameStart + nameLen > blockData.Length) nameLen = blockData.Length - nameStart;
-
-            if(nameLen <= 0) continue;
-
-            var nameBytes = new byte[nameLen];
-            Array.Copy(blockData, nameStart, nameBytes, 0, nameLen);
-
-            string name = StringHandlers.CToString(nameBytes, _encoding);
-
-            if(string.IsNullOrEmpty(name)) continue;
-
-            entries[name] = (deh.deh_dir_id, deh.deh_objectid);
-        }
     }
 
     /// <summary>Reads a DirectoryEntryHead struct from raw block data at the given offset</summary>
     static DirectoryEntryHead ReadDirEntryHead(byte[] data, int offset) =>
         Marshal.ByteArrayToStructureLittleEndian<DirectoryEntryHead>(data, offset, DEH_SIZE);
+
+    /// <summary>Binary search to find the entry index to start from within a directory item</summary>
+    /// <param name="blockData">Block containing the item</param>
+    /// <param name="itemLocation">Location of item body in block</param>
+    /// <param name="entryCount">Number of entries in the item</param>
+    /// <param name="searchOffset">The offset to search for</param>
+    /// <returns>Entry index to start processing from</returns>
+    static int BinarySearchEntries(byte[] blockData, int itemLocation, int entryCount, ulong searchOffset)
+    {
+        var lo     = 0;
+        int hi     = entryCount - 1;
+        int result = entryCount; // Default: past the end
+
+        while(lo <= hi)
+        {
+            int                mid = (lo + hi) / 2;
+            DirectoryEntryHead deh = ReadDirEntryHead(blockData, itemLocation + mid * DEH_SIZE);
+
+            if(deh.deh_offset >= searchOffset)
+            {
+                result = mid;
+                hi     = mid - 1;
+            }
+            else
+                lo = mid + 1;
+        }
+
+        return result;
+    }
 }
