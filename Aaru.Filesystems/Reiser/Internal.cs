@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Internal.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Reiser filesystem plugin
@@ -26,38 +26,22 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class Reiser
 {
-    /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
+    /// <summary>Directory node for enumerating directory contents</summary>
+    sealed class ReiserDirNode : IDirNode
+    {
+        /// <summary>Current position in the directory enumeration (entry index)</summary>
+        internal int Position { get; set; }
 
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
+        /// <summary>Array of directory entry names in this directory</summary>
+        internal string[] Entries { get; set; }
 
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 }
