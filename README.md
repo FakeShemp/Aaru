@@ -225,6 +225,7 @@ Fully supported file-systems (identify and extraction)
 * Professional File System
 * QNX4 filesystems
 * QNX6 filesystems
+* Reiser v3 file systems
 * SGI Extent File System (EFS)
 * SmartFileSystem
 * Squash file system
@@ -261,7 +262,7 @@ Supported file systems for identification and information only
 * NEC PC-FX executable
 * NILFS2
 * Nintendo optical filesystems (GameCube and Wii)
-* Reiser file systems
+* Reiser v4 file system
 * SGI XFS
 * SolarOS file system
 * UNICOS file system
