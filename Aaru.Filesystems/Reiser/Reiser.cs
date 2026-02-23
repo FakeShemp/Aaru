@@ -28,8 +28,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -37,10 +39,38 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the Reiser v3 filesystem</summary>
 public sealed partial class Reiser : IReadOnlyFilesystem
 {
+    /// <summary>Block cache to avoid re-reading disk blocks during tree traversal</summary>
+    Dictionary<uint, byte[]> _blockCache;
+
+    /// <summary>Block size in bytes</summary>
+    int _blockSize;
+
+    /// <summary>Encoding used for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>Image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Key version: KEY_FORMAT_3_5 or KEY_FORMAT_3_6</summary>
+    int _keyVersion;
+
+    /// <summary>Whether filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Partition being mounted</summary>
+    Partition _partition;
+    /// <summary>Cached root directory entries (filename → (dirId, objectId))</summary>
+    Dictionary<string, (uint dirId, uint objectId)> _rootDirectoryCache;
+
+    /// <summary>Cached superblock</summary>
+    Superblock _superblock;
+
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
+
     /// <inheritdoc />
     public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces => [];
 
