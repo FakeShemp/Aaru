@@ -31,8 +31,6 @@ using System.Runtime.InteropServices;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the Reiser v3 filesystem</summary>
 public sealed partial class Reiser
 {
 #region Nested type: JournalParameters

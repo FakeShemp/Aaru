@@ -28,8 +28,6 @@
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the Reiser v3 filesystem</summary>
 public sealed partial class Reiser
 {
     const uint REISER_SUPER_OFFSET = 0x10000;
