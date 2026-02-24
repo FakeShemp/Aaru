@@ -36,8 +36,6 @@ using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the Reiser v4 filesystem</summary>
 public sealed partial class Reiser4
 {
 #region IFilesystem Members

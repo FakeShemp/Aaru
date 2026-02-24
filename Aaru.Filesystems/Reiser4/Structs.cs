@@ -31,8 +31,6 @@ using System.Runtime.InteropServices;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the Reiser v4 filesystem</summary>
 public sealed partial class Reiser4
 {
 #region Nested type: Superblock
@@ -577,6 +575,7 @@ public sealed partial class Reiser4
     {
         /// <summary>Secret key size in bits.</summary>
         public readonly ushort keysize;
+
         // Followed by variable-length keyid bytes.
     }
 
@@ -611,6 +610,7 @@ public sealed partial class Reiser4
     {
         /// <summary>Number of additional plugin slots associated with this object.</summary>
         public readonly ushort plugins_no;
+
         // Followed by plugins_no PluginSlot entries.
     }
 
@@ -711,6 +711,7 @@ public sealed partial class Reiser4
     {
         /// <summary>Key id of the target object's stat-data.</summary>
         public readonly ObjKeyId id;
+
         // Followed by null-terminated file name.
     }
 
@@ -727,6 +728,7 @@ public sealed partial class Reiser4
     {
         /// <summary>Key id of the target object's stat-data (large key variant).</summary>
         public readonly ObjKeyIdLarge id;
+
         // Followed by null-terminated file name.
     }
 
@@ -777,6 +779,7 @@ public sealed partial class Reiser4
     {
         /// <summary>Number of directory entries in this compound directory item.</summary>
         public readonly ushort num_of_entries;
+
         // Followed by num_of_entries CdeUnitHeader (or CdeUnitHeaderLarge) entries.
     }
 
@@ -797,6 +800,7 @@ public sealed partial class Reiser4
         ///     Value 0xFF indicates an unprepped disk cluster.
         /// </summary>
         public readonly byte cluster_shift;
+
         // Followed by variable-length compressed body.
     }
 
