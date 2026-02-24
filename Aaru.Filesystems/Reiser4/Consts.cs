@@ -86,6 +86,12 @@ public sealed partial class Reiser4
     // Leaf node level
     const byte LEAF_LEVEL = 1;
 
+    // Twig node level (where extent items live)
+    const byte TWIG_LEVEL = 2;
+
+    // Size of an on-disk extent descriptor (start + width, each 8 bytes)
+    const int EXTENT_SIZE = 16;
+
     // Longname marker bit (in ordering/objectid field)
     const ulong LONGNAME_MARK  = 0x0100000000000000UL;
     const ulong FIBRATION_MASK = 0xFF00000000000000UL;

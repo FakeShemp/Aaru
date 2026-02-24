@@ -201,36 +201,37 @@ public sealed partial class Reiser4
 
     /// <summary>
     ///     Searches the reiser4 S+tree for items matching the given key.
-    ///     Finds the leaf node containing the item with the greatest key &lt;= search key.
+    ///     Finds the node at the specified stop level containing the item with the greatest key &lt;= search key.
     /// </summary>
     /// <param name="searchKey">Key to search for</param>
-    /// <param name="leafData">Output: raw data of the leaf node found</param>
-    /// <param name="itemPos">Output: position of the best-match item within the leaf</param>
+    /// <param name="nodeData">Output: raw data of the node found</param>
+    /// <param name="itemPos">Output: position of the best-match item within the node</param>
+    /// <param name="stopLevel">Tree level to stop at (LEAF_LEVEL=1 for tails/stat-data, TWIG_LEVEL=2 for extents)</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber SearchByKey(LargeKey searchKey, out byte[] leafData, out int itemPos)
+    ErrorNumber SearchByKey(LargeKey searchKey, out byte[] nodeData, out int itemPos, byte stopLevel = LEAF_LEVEL)
     {
-        leafData = null;
+        nodeData = null;
         itemPos  = -1;
 
         ulong currentBlock = _format40Sb.root_block;
 
         for(var level = 0; level < REISER4_MAX_TREE_HEIGHT; level++)
         {
-            ErrorNumber errno = ReadBlock(currentBlock, out byte[] nodeData);
+            ErrorNumber errno = ReadBlock(currentBlock, out byte[] blockData);
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            if(nodeData.Length < Marshal.SizeOf<Node40Header>()) return ErrorNumber.InvalidArgument;
+            if(blockData.Length < Marshal.SizeOf<Node40Header>()) return ErrorNumber.InvalidArgument;
 
             // Parse node header
-            Node40Header nh = Marshal.ByteArrayToStructureLittleEndian<Node40Header>(nodeData);
+            Node40Header nh = Marshal.ByteArrayToStructureLittleEndian<Node40Header>(blockData);
 
             if(nh.nr_items == 0) return ErrorNumber.NoSuchFile;
 
-            if(nh.level == LEAF_LEVEL)
+            if(nh.level <= stopLevel)
             {
-                // Leaf node: binary search through item headers
-                leafData = nodeData;
+                // Target level: binary search through item headers
+                nodeData = blockData;
                 var lo   = 0;
                 int hi   = nh.nr_items - 1;
                 int best = -1;
@@ -239,7 +240,7 @@ public sealed partial class Reiser4
                 {
                     int mid = (lo + hi) / 2;
 
-                    ReadItemHeader(nodeData, mid, nh.nr_items, out LargeKey midKey, out _, out _, out _);
+                    ReadItemHeader(blockData, mid, nh.nr_items, out LargeKey midKey, out _, out _, out _);
 
                     int cmp = CompareKeys(searchKey, midKey);
 
@@ -251,7 +252,7 @@ public sealed partial class Reiser4
 
                             while(best > 0)
                             {
-                                ReadItemHeader(nodeData,
+                                ReadItemHeader(blockData,
                                                best - 1,
                                                nh.nr_items,
                                                out LargeKey prevKey,
@@ -293,7 +294,7 @@ public sealed partial class Reiser4
             {
                 int mid2 = (lo2 + hi2) / 2;
 
-                ReadItemHeader(nodeData, mid2, nh.nr_items, out LargeKey midKey, out _, out _, out _);
+                ReadItemHeader(blockData, mid2, nh.nr_items, out LargeKey midKey, out _, out _, out _);
 
                 int cmp2 = CompareKeys(searchKey, midKey);
 
@@ -307,11 +308,11 @@ public sealed partial class Reiser4
             }
 
             // Read the internal item body at pos2 to get the child block pointer
-            ReadItemHeader(nodeData, pos2, nh.nr_items, out _, out ushort bodyOff, out _, out _);
+            ReadItemHeader(blockData, pos2, nh.nr_items, out _, out ushort bodyOff, out _, out _);
 
-            if(bodyOff + 8 > nodeData.Length) return ErrorNumber.InvalidArgument;
+            if(bodyOff + 8 > blockData.Length) return ErrorNumber.InvalidArgument;
 
-            currentBlock = BitConverter.ToUInt64(nodeData, bodyOff);
+            currentBlock = BitConverter.ToUInt64(blockData, bodyOff);
 
             if(currentBlock == 0) return ErrorNumber.NoSuchFile;
         }

@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -66,6 +67,519 @@ public sealed partial class Reiser4
         if(errno != ErrorNumber.NoError) return errno;
 
         return ReadStatData(targetKey, out stat);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(string.IsNullOrEmpty(path) || path == "/") return ErrorNumber.IsDirectory;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: path='{0}'", path);
+
+        // Resolve path to stat-data key
+        ErrorNumber errno = ResolvePath(path, out LargeKey statDataKey);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read stat data to get size and verify it's not a directory
+        errno = ReadStatData(statDataKey, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(stat.Attributes.HasFlag(FileAttributes.Directory)) return ErrorNumber.IsDirectory;
+
+        node = new Reiser4FileNode
+        {
+            Path        = path,
+            Length      = stat.Length,
+            Offset      = 0,
+            StatDataKey = statDataKey
+        };
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: success, size={0}", stat.Length);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not Reiser4FileNode) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Resolve the path
+        ErrorNumber errno = ResolvePath(path, out LargeKey statDataKey);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Verify it's a symlink
+        errno = ReadObjectMode(statDataKey, out ushort mode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if((mode & S_IFMT) != S_IFLNK) return ErrorNumber.InvalidArgument;
+
+        // Check if symlink target is in the stat-data SYMLINK extension
+        errno = ReadSymlinkFromStatData(statDataKey, out dest);
+
+        if(errno == ErrorNumber.NoError && dest != null) return ErrorNumber.NoError;
+
+        // Otherwise read file body
+        errno = ReadAllFileData(statDataKey, out byte[] linkData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        dest = _encoding.GetString(linkData).TrimEnd('\0');
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: target='{0}'", dest);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not Reiser4FileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        if(buffer == null) return ErrorNumber.InvalidArgument;
+
+        if(fileNode.Offset < 0 || fileNode.Offset >= fileNode.Length) return ErrorNumber.InvalidArgument;
+
+        // Clamp to remaining file size and buffer capacity
+        long toRead = length;
+
+        if(fileNode.Offset + toRead > fileNode.Length) toRead = fileNode.Length - fileNode.Offset;
+
+        if(toRead <= 0) return ErrorNumber.NoError;
+
+        if(toRead > buffer.Length) toRead = buffer.Length;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: offset={0}, length={1}, toRead={2}", fileNode.Offset, length, toRead);
+
+        long bytesRead     = 0;
+        long currentOffset = fileNode.Offset;
+
+        while(bytesRead < toRead)
+        {
+            // Build a file body key for the current offset
+            LargeKey bodyKey = BuildFileBodyKey(fileNode.StatDataKey, (ulong)currentOffset);
+
+            // First try to find a tail (formatting) item at leaf level
+            ErrorNumber errno = SearchByKey(bodyKey, out byte[] leafData, out int itemPos);
+
+            if(errno == ErrorNumber.NoError && itemPos >= 0)
+            {
+                Node40Header nh = Marshal.ByteArrayToStructureLittleEndian<Node40Header>(leafData);
+
+                if(itemPos < nh.nr_items)
+                {
+                    ReadItemHeader(leafData,
+                                   itemPos,
+                                   nh.nr_items,
+                                   out LargeKey itemKey,
+                                   out ushort bodyOff,
+                                   out _,
+                                   out ushort pluginId);
+
+                    if(pluginId == FORMATTING_ID && KeyMatchesFileBody(itemKey, fileNode.StatDataKey))
+                    {
+                        int itemLen = GetItemLength(leafData, itemPos, nh.nr_items, nh.free_space_start);
+
+                        ulong itemOffset = GetKeyOffset(itemKey);
+
+                        // Calculate position within this tail item
+                        var skipInItem = (int)((ulong)currentOffset - itemOffset);
+
+                        if(skipInItem >= 0 && skipInItem < itemLen)
+                        {
+                            int available = itemLen - skipInItem;
+                            var toCopy    = (int)Math.Min(available, toRead - bytesRead);
+
+                            Array.Copy(leafData, bodyOff + skipInItem, buffer, bytesRead, toCopy);
+
+                            bytesRead     += toCopy;
+                            currentOffset += toCopy;
+
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            // Try extent item at twig level
+            errno = SearchByKey(bodyKey, out byte[] twigData, out itemPos, TWIG_LEVEL);
+
+            if(errno == ErrorNumber.NoError && itemPos >= 0)
+            {
+                Node40Header nh = Marshal.ByteArrayToStructureLittleEndian<Node40Header>(twigData);
+
+                if(itemPos < nh.nr_items)
+                {
+                    ReadItemHeader(twigData,
+                                   itemPos,
+                                   nh.nr_items,
+                                   out LargeKey itemKey,
+                                   out ushort bodyOff,
+                                   out _,
+                                   out ushort pluginId);
+
+                    if(pluginId == EXTENT_POINTER_ID && KeyMatchesFileBody(itemKey, fileNode.StatDataKey))
+                    {
+                        int itemLen = GetItemLength(twigData, itemPos, nh.nr_items, nh.free_space_start);
+
+                        long copied = ReadFromExtentItem(twigData,
+                                                         bodyOff,
+                                                         itemLen,
+                                                         itemKey,
+                                                         currentOffset,
+                                                         buffer,
+                                                         bytesRead,
+                                                         toRead - bytesRead);
+
+                        if(copied > 0)
+                        {
+                            bytesRead     += copied;
+                            currentOffset += copied;
+
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            // No data found at this offset — end of readable data
+            break;
+        }
+
+        read            =  bytesRead;
+        fileNode.Offset += bytesRead;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: read {0} bytes, new offset={1}", read, fileNode.Offset);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Builds a file body key from a stat-data key and a byte offset.
+    ///     The body key uses the same locality/ordering/objectid but with KEY_BODY_MINOR type
+    ///     and the offset in the last element.
+    /// </summary>
+    LargeKey BuildFileBodyKey(LargeKey statDataKey, ulong offset)
+    {
+        // Replace type: clear old type, set KEY_BODY_MINOR
+        ulong el0 = statDataKey.el0 & KEY_LOCALITY_MASK | KEY_BODY_MINOR;
+
+        if(_largeKeys)
+        {
+            return new LargeKey
+            {
+                el0 = el0,
+                el1 = statDataKey.el1, // ordering
+                el2 = statDataKey.el2, // objectid
+                el3 = offset
+            };
+        }
+
+        return new LargeKey
+        {
+            el0 = el0,
+            el1 = statDataKey.el1, // objectid
+            el2 = offset,
+            el3 = 0
+        };
+    }
+
+    /// <summary>
+    ///     Checks whether an item key belongs to the same file as the given stat-data key
+    ///     by comparing locality, ordering (for large keys), and objectid.
+    /// </summary>
+    bool KeyMatchesFileBody(LargeKey itemKey, LargeKey statDataKey)
+    {
+        // Locality must match (upper 60 bits of el0)
+        if((itemKey.el0 & KEY_LOCALITY_MASK) != (statDataKey.el0 & KEY_LOCALITY_MASK)) return false;
+
+        if(_largeKeys)
+        {
+            // Ordering and objectid must match
+            return itemKey.el1                       == statDataKey.el1 &&
+                   (itemKey.el2 & KEY_OBJECTID_MASK) == (statDataKey.el2 & KEY_OBJECTID_MASK);
+        }
+
+        // Short keys: objectid must match
+        return (itemKey.el1 & KEY_OBJECTID_MASK) == (statDataKey.el1 & KEY_OBJECTID_MASK);
+    }
+
+    /// <summary>Extracts the offset field from a file body key</summary>
+    ulong GetKeyOffset(LargeKey key) => _largeKeys ? key.el3 : key.el2;
+
+    /// <summary>
+    ///     Reads data from an extent item (array of extent descriptors).
+    ///     Each extent has a start block and width (number of blocks).
+    ///     Returns the number of bytes actually copied.
+    /// </summary>
+    long ReadFromExtentItem(byte[] nodeData, int bodyOff, int itemLen, LargeKey itemKey, long fileOffset, byte[] buffer,
+                            long   bufferOffset, long maxBytes)
+    {
+        ulong itemFileOffset = GetKeyOffset(itemKey);
+        int   extentCount    = itemLen / EXTENT_SIZE;
+
+        if(extentCount <= 0) return 0;
+
+        long bytesRead            = 0;
+        var  currentExtentFileOff = (long)itemFileOffset;
+
+        for(var i = 0; i < extentCount && bytesRead < maxBytes; i++)
+        {
+            int off = bodyOff + i * EXTENT_SIZE;
+
+            if(off + EXTENT_SIZE > nodeData.Length) break;
+
+            var start = BitConverter.ToUInt64(nodeData, off);
+            var width = BitConverter.ToUInt64(nodeData, off + 8);
+
+            var extentBytes = (long)(width * _blockSize);
+
+            // Check if the requested offset falls within this extent
+            if(fileOffset < currentExtentFileOff + extentBytes && fileOffset >= currentExtentFileOff)
+            {
+                long offsetInExtent = fileOffset - currentExtentFileOff;
+
+                // start == 0 means a hole (sparse file)
+                if(start == 0)
+                {
+                    long available = extentBytes - offsetInExtent;
+                    var  toCopy    = (int)Math.Min(available, maxBytes - bytesRead);
+
+                    Array.Clear(buffer, (int)(bufferOffset + bytesRead), toCopy);
+
+                    bytesRead  += toCopy;
+                    fileOffset += toCopy;
+                }
+                else
+                {
+                    // Read blocks from the extent
+                    var blockInExtent = offsetInExtent / _blockSize;
+                    var offsetInBlock = (int)(offsetInExtent % _blockSize);
+
+                    while(blockInExtent < (long)width && bytesRead < maxBytes)
+                    {
+                        ulong blockNum = start + (ulong)blockInExtent;
+
+                        ErrorNumber blkErr = ReadBlock(blockNum, out byte[] blockData);
+
+                        if(blkErr != ErrorNumber.NoError) return bytesRead;
+
+                        int available = (int)_blockSize - offsetInBlock;
+                        var toCopy    = (int)Math.Min(available, maxBytes - bytesRead);
+
+                        Array.Copy(blockData, offsetInBlock, buffer, bufferOffset + bytesRead, toCopy);
+
+                        bytesRead     += toCopy;
+                        fileOffset    += toCopy;
+                        offsetInBlock =  0;
+                        blockInExtent++;
+                    }
+                }
+            }
+
+            currentExtentFileOff += extentBytes;
+        }
+
+        return bytesRead;
+    }
+
+    /// <summary>
+    ///     Reads the symlink target from the SYMLINK_STAT extension in the stat-data.
+    ///     Reiser4 symlinks store their target as a null-terminated string in the stat-data itself.
+    /// </summary>
+    ErrorNumber ReadSymlinkFromStatData(LargeKey statDataKey, out string target)
+    {
+        target = null;
+
+        ErrorNumber errno = SearchByKey(statDataKey, out byte[] leafData, out int itemPos);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(itemPos < 0) return ErrorNumber.NoSuchFile;
+
+        Node40Header nh = Marshal.ByteArrayToStructureLittleEndian<Node40Header>(leafData);
+
+        if(itemPos >= nh.nr_items) return ErrorNumber.NoSuchFile;
+
+        ReadItemHeader(leafData, itemPos, nh.nr_items, out _, out ushort bodyOff, out _, out ushort pluginId);
+
+        if(pluginId != STATIC_STAT_DATA_ID) return ErrorNumber.NoSuchFile;
+
+        int sdLen = GetItemLength(leafData, itemPos, nh.nr_items, nh.free_space_start);
+
+        if(sdLen < Marshal.SizeOf<StatDataBase>()) return ErrorNumber.InvalidArgument;
+
+        StatDataBase sdBase =
+            Marshal.ByteArrayToStructureLittleEndian<StatDataBase>(leafData, bodyOff, Marshal.SizeOf<StatDataBase>());
+
+        if((sdBase.extmask & SD_SYMLINK) == 0) return ErrorNumber.NotSupported;
+
+        // Walk through extensions to find the symlink extension
+        int sdOff = bodyOff + Marshal.SizeOf<StatDataBase>();
+
+        if((sdBase.extmask & SD_LIGHT_WEIGHT) != 0) sdOff += Marshal.SizeOf<LightWeightStat>();
+
+        if((sdBase.extmask & SD_UNIX) != 0) sdOff += Marshal.SizeOf<UnixStat>();
+
+        if((sdBase.extmask & SD_LARGE_TIMES) != 0) sdOff += Marshal.SizeOf<LargeTimesStat>();
+
+        // Now we should be at the symlink extension — it's a null-terminated string
+        if(sdOff >= bodyOff + sdLen) return ErrorNumber.InvalidArgument;
+
+        int maxLen = bodyOff + sdLen - sdOff;
+        var len    = 0;
+
+        for(int j = sdOff; j < sdOff + maxLen && j < leafData.Length; j++)
+        {
+            if(leafData[j] == 0) break;
+
+            len++;
+        }
+
+        if(len > 0) target = _encoding.GetString(leafData, sdOff, len);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Reads all file body data for an object. Used for symlinks and small files.
+    ///     Tries tail items first, then extents.
+    /// </summary>
+    ErrorNumber ReadAllFileData(LargeKey statDataKey, out byte[] data)
+    {
+        data = null;
+
+        // Get file size from stat data
+        ErrorNumber errno = ReadStatData(statDataKey, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(stat.Length <= 0)
+        {
+            data = [];
+
+            return ErrorNumber.NoError;
+        }
+
+        data = new byte[stat.Length];
+
+        // Use the same logic as ReadFile
+        long bytesRead     = 0;
+        long currentOffset = 0;
+
+        while(bytesRead < stat.Length)
+        {
+            LargeKey bodyKey = BuildFileBodyKey(statDataKey, (ulong)currentOffset);
+
+            // Try tail item
+            errno = SearchByKey(bodyKey, out byte[] leafData, out int itemPos);
+
+            if(errno == ErrorNumber.NoError && itemPos >= 0)
+            {
+                Node40Header nh = Marshal.ByteArrayToStructureLittleEndian<Node40Header>(leafData);
+
+                if(itemPos < nh.nr_items)
+                {
+                    ReadItemHeader(leafData,
+                                   itemPos,
+                                   nh.nr_items,
+                                   out LargeKey itemKey,
+                                   out ushort bodyOff,
+                                   out _,
+                                   out ushort pluginId);
+
+                    if(pluginId == FORMATTING_ID && KeyMatchesFileBody(itemKey, statDataKey))
+                    {
+                        int itemLen = GetItemLength(leafData, itemPos, nh.nr_items, nh.free_space_start);
+
+                        ulong itemOffset = GetKeyOffset(itemKey);
+                        var   skip       = (int)((ulong)currentOffset - itemOffset);
+
+                        if(skip >= 0 && skip < itemLen)
+                        {
+                            int available = itemLen - skip;
+                            var toCopy    = (int)Math.Min(available, stat.Length - bytesRead);
+
+                            Array.Copy(leafData, bodyOff + skip, data, bytesRead, toCopy);
+
+                            bytesRead     += toCopy;
+                            currentOffset += toCopy;
+
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            // Try extent item
+            errno = SearchByKey(bodyKey, out byte[] twigData, out itemPos, TWIG_LEVEL);
+
+            if(errno == ErrorNumber.NoError && itemPos >= 0)
+            {
+                Node40Header nh = Marshal.ByteArrayToStructureLittleEndian<Node40Header>(twigData);
+
+                if(itemPos < nh.nr_items)
+                {
+                    ReadItemHeader(twigData,
+                                   itemPos,
+                                   nh.nr_items,
+                                   out LargeKey itemKey,
+                                   out ushort bodyOff,
+                                   out _,
+                                   out ushort pluginId);
+
+                    if(pluginId == EXTENT_POINTER_ID && KeyMatchesFileBody(itemKey, statDataKey))
+                    {
+                        int itemLen = GetItemLength(twigData, itemPos, nh.nr_items, nh.free_space_start);
+
+                        long copied = ReadFromExtentItem(twigData,
+                                                         bodyOff,
+                                                         itemLen,
+                                                         itemKey,
+                                                         currentOffset,
+                                                         data,
+                                                         bytesRead,
+                                                         stat.Length - bytesRead);
+
+                        if(copied > 0)
+                        {
+                            bytesRead     += copied;
+                            currentOffset += copied;
+
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            break;
+        }
+
+        return ErrorNumber.NoError;
     }
 
     /// <summary>Resolves a filesystem path to the stat-data key of the target object</summary>
