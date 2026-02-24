@@ -116,7 +116,7 @@ public sealed partial class JFS
 
 #region Nested type: XTreeHeader
 
-    /// <summary>XTree page/root header. 24 bytes.</summary>
+    /// <summary>XTree page/root header. 32 bytes.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     readonly struct XTreeHeader
     {

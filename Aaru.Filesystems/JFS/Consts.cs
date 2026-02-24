@@ -35,7 +35,75 @@ public sealed partial class JFS
     const uint JFS_BOOT_BLOCKS_SIZE = 0x8000;
     const uint JFS_MAGIC            = 0x3153464A;
 
-    const string FS_TYPE = "jfs";
+    const string FS_TYPE     = "jfs";
+    const string MODULE_NAME = "JFS plugin";
+
+    /// <summary>Byte offset of the aggregate inode table (AITBL_OFF)</summary>
+    const long AITBL_OFF = 0xB000;
+
+    /// <summary>On-disk inode size in bytes (DISIZE)</summary>
+    const int DISIZE = 512;
+
+    /// <summary>Page size in bytes</summary>
+    const int PSIZE = 4096;
+
+    /// <summary>log2(PSIZE)</summary>
+    const int L2PSIZE = 12;
+
+    /// <summary>Number of inodes per 4K page</summary>
+    const int INOSPERPAGE = 8;
+
+    /// <summary>log2(INOSPERPAGE)</summary>
+    const int L2INOSPERPAGE = 3;
+
+    /// <summary>Number of disk inodes per extent</summary>
+    const int INOSPEREXT = 32;
+
+    /// <summary>log2(INOSPEREXT)</summary>
+    const int L2INOSPEREXT = 5;
+
+    /// <summary>Number of disk inodes per IAG</summary>
+    const int INOSPERIAG = 4096;
+
+    /// <summary>log2(INOSPERIAG)</summary>
+    const int L2INOSPERIAG = 12;
+
+    /// <summary>Fileset inode map inode number in aggregate inode table</summary>
+    const int FILESYSTEM_I = 16;
+
+    /// <summary>Fileset root inode number</summary>
+    const int ROOT_I = 2;
+
+    /// <summary>First xtree data entry index (slots 0-1 are the header)</summary>
+    const int XTENTRYSTART = 2;
+
+    /// <summary>Max xad entries in xtree root (in inode)</summary>
+    const int XTROOTMAXSLOT = 18;
+
+    /// <summary>Max xad entries in xtree page</summary>
+    const int XTPAGEMAXSLOT = 256;
+
+    /// <summary>dtroot max slots</summary>
+    const int DTROOTMAXSLOT = 9;
+
+    /// <summary>dtpage max slots for 4K pages</summary>
+    const int DTPAGEMAXSLOT = 128;
+
+    /// <summary>dtslot size in bytes</summary>
+    const int DTSLOTSIZE = 32;
+
+    /// <summary>Name characters per ldtentry head segment (with dir_index)</summary>
+    const int DTLHDRDATALEN = 11;
+
+    /// <summary>Name characters per ldtentry head segment (legacy, without dir_index)</summary>
+    const int DTLHDRDATALEN_LEGACY = 13;
+
+    /// <summary>XAD slot size</summary>
+    const int XTSLOTSIZE = 16;
+
+    // B+-tree flags
+    const byte BT_LEAF     = 0x02;
+    const byte BT_INTERNAL = 0x04;
 
     /// <summary>Number of disk inode extent per IAG</summary>
     const int EXTSPERIAG = 128;

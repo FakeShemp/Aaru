@@ -28,8 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -38,14 +36,6 @@ namespace Aaru.Filesystems;
 
 public sealed partial class JFS
 {
-    /// <inheritdoc />
-    public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
-                             Dictionary<string, string> options,     string    @namespace) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
-
     /// <inheritdoc />
     public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
 
