@@ -38,4 +38,28 @@ public sealed partial class JFS
     const uint JFS_MAGIC            = 0x3153464A;
 
     const string FS_TYPE = "jfs";
+
+    /// <summary>Number of disk inode extent per IAG</summary>
+    const int EXTSPERIAG = 128;
+
+    /// <summary>Number of words per summary map</summary>
+    const int SMAPSZ = 4;
+
+    /// <summary>Maximum number of allocation groups</summary>
+    const int MAXAG = 128;
+
+    /// <summary>Size of a dmap tree</summary>
+    const int TREESIZE = 256 + 64 + 16 + 4 + 1; // 341
+
+    /// <summary>Size of a dmapctl tree</summary>
+    const int CTLTREESIZE = 1024 + 256 + 64 + 16 + 4 + 1; // 1365
+
+    /// <summary>Number of leaves per dmap tree</summary>
+    const int LPERDMAP = 256;
+
+    /// <summary>Maximum number of active file systems sharing the log</summary>
+    const int MAX_ACTIVE = 128;
+
+    /// <summary>Log page size in bytes</summary>
+    const int LOGPSIZE = 4096;
 }
