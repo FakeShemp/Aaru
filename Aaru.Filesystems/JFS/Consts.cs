@@ -30,8 +30,6 @@
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of IBM's Journaled File System</summary>
 public sealed partial class JFS
 {
     const uint JFS_BOOT_BLOCKS_SIZE = 0x8000;

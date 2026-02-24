@@ -33,8 +33,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of IBM's Journaled File System</summary>
 public sealed partial class JFS
 {
 #region Nested type: Flags

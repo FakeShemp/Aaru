@@ -34,8 +34,6 @@ using System.Runtime.InteropServices;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of IBM's Journaled File System</summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public sealed partial class JFS
 {

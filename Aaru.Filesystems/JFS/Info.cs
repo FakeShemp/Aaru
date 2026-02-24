@@ -37,8 +37,6 @@ using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of IBM's Journaled File System</summary>
 public sealed partial class JFS
 {
 #region IFilesystem Members

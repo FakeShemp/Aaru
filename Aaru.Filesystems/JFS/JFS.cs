@@ -29,14 +29,23 @@
 // ReSharper disable UnusedMember.Local
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of IBM's Journaled File System</summary>
-public sealed partial class JFS : IFilesystem
+/// <summary>Implements IBM's Journaled File System</summary>
+public sealed partial class JFS : IReadOnlyFilesystem
 {
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces => [];
+
 #region IFilesystem Members
 
     /// <inheritdoc />
