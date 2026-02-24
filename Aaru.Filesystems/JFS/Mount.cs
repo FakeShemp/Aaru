@@ -119,6 +119,8 @@ public sealed partial class JFS
 
         _rootDirectoryCache.Clear();
         _superblock  = default(SuperBlock);
+        _fsInode     = default(Inode);
+        _l2nbperpage = 0;
         _imagePlugin = null;
         _encoding    = null;
         _mounted     = false;
@@ -214,7 +216,7 @@ public sealed partial class JFS
         _rootDirectoryCache.Clear();
 
         // Step 1: Read the FILESYSTEM_I inode (inode 16) from the fixed aggregate inode table
-        ErrorNumber errno = ReadAggregateInode(FILESYSTEM_I, out Inode fsInode);
+        ErrorNumber errno = ReadAggregateInode(FILESYSTEM_I, out _fsInode);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -225,92 +227,22 @@ public sealed partial class JFS
 
         AaruLogging.Debug(MODULE_NAME,
                           "FILESYSTEM_I inode read, di_number={0}, di_nlink={1}",
-                          fsInode.di_number,
-                          fsInode.di_nlink);
+                          _fsInode.di_number,
+                          _fsInode.di_nlink);
 
-        // Step 2: Navigate the FILESYSTEM_I's xtree to find IAG 0 (which contains ROOT_I = inode 2)
-        // IAG 0 is at logical block (0 + 1) << l2nbperpage = 1 << l2nbperpage
-        int  l2nbperpage     = L2PSIZE - _superblock.s_l2bsize;
-        long iagLogicalBlock = (long)(0 + 1) << l2nbperpage;
+        _l2nbperpage = L2PSIZE - _superblock.s_l2bsize;
 
-        AaruLogging.Debug(MODULE_NAME, "l2nbperpage={0}, IAG 0 logical block={1}", l2nbperpage, iagLogicalBlock);
+        AaruLogging.Debug(MODULE_NAME, "l2nbperpage={0}", _l2nbperpage);
 
-        errno = XTreeLookup(fsInode.di_u, false, iagLogicalBlock, out long iagPhysicalBlock);
+        // Step 2: Read the root directory inode (inode 2 in the fileset)
+        errno = ReadFilesetInode(ROOT_I, out Inode rootInode);
 
         if(errno != ErrorNumber.NoError)
         {
-            AaruLogging.Debug(MODULE_NAME, "Error looking up IAG 0 in xtree: {0}", errno);
+            AaruLogging.Debug(MODULE_NAME, "Error reading root inode: {0}", errno);
 
             return errno;
         }
-
-        AaruLogging.Debug(MODULE_NAME, "IAG 0 at physical block {0}", iagPhysicalBlock);
-
-        // Step 3: Read IAG 0
-        errno = ReadFsBlock(iagPhysicalBlock, out byte[] iagData);
-
-        if(errno != ErrorNumber.NoError)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Error reading IAG 0: {0}", errno);
-
-            return errno;
-        }
-
-        InodeAllocationGroup iag = Marshal.ByteArrayToStructureLittleEndian<InodeAllocationGroup>(iagData);
-
-        // Step 4: Find the inode extent containing ROOT_I (inode 2)
-        // ino within IAG = ROOT_I & (INOSPERIAG - 1) = 2
-        // extno = ino >> L2INOSPEREXT = 2 >> 5 = 0
-        int inoInIag = ROOT_I & INOSPERIAG - 1;
-        int extno    = inoInIag >> L2INOSPEREXT;
-
-        AaruLogging.Debug(MODULE_NAME, "Root inode extent index: {0}", extno);
-
-        Extent rootExtent = iag.inoext[extno];
-
-        ulong rootExtAddr = ExtentAddress(rootExtent);
-        uint  rootExtLen  = ExtentLength(rootExtent);
-
-        if(rootExtAddr == 0 || rootExtLen == 0)
-        {
-            AaruLogging.Debug(MODULE_NAME,
-                              "Root inode extent is not backed (addr={0}, len={1})",
-                              rootExtAddr,
-                              rootExtLen);
-
-            return ErrorNumber.InvalidArgument;
-        }
-
-        AaruLogging.Debug(MODULE_NAME, "Root inode extent: addr={0}, len={1}", rootExtAddr, rootExtLen);
-
-        // Step 5: Read inode 2 from the inode extent
-        // blkno = INOPBLK(&inoext[extno], ino, l2nbperpage)
-        //       = addressPXD + (((ino & (INOSPEREXT-1)) >> L2INOSPERPAGE) << l2nbperpage)
-        int  pageInExtent = (inoInIag & INOSPEREXT - 1) >> L2INOSPERPAGE;
-        long blkno        = (long)rootExtAddr + (pageInExtent << l2nbperpage);
-        int  relInode     = inoInIag & INOSPERPAGE - 1; // inode within the page
-
-        AaruLogging.Debug(MODULE_NAME,
-                          "Root inode at block {0}, relative inode {1} (offset {2} bytes)",
-                          blkno,
-                          relInode,
-                          relInode * DISIZE);
-
-        // Read the full 4K page containing the inode
-        errno = ReadBytes(blkno * _superblock.s_bsize, PSIZE, out byte[] inodePage);
-
-        if(errno != ErrorNumber.NoError)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Error reading root inode page: {0}", errno);
-
-            return errno;
-        }
-
-        // Extract the root inode from the page
-        var rootInodeData = new byte[DISIZE];
-        Array.Copy(inodePage, relInode * DISIZE, rootInodeData, 0, DISIZE);
-
-        Inode rootInode = Marshal.ByteArrayToStructureLittleEndian<Inode>(rootInodeData);
 
         AaruLogging.Debug(MODULE_NAME,
                           "Root inode: di_number={0}, di_mode=0x{1:X8}, di_size={2}, di_nlink={3}",
@@ -327,7 +259,7 @@ public sealed partial class JFS
             return ErrorNumber.InvalidArgument;
         }
 
-        // Step 6: Parse the dtree root in the root inode's extension area
+        // Step 3: Parse the dtree root in the root inode's extension area
         errno = ParseDtreeRoot(rootInode.di_u, out Dictionary<string, uint> entries);
 
         if(errno != ErrorNumber.NoError)

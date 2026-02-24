@@ -46,8 +46,15 @@ public sealed partial class JFS : IReadOnlyFilesystem
 
     /// <summary>The encoding to use for text data</summary>
     Encoding _encoding;
+
+    /// <summary>The cached fileset inode (FILESYSTEM_I) used to look up fileset inodes</summary>
+    Inode _fsInode;
+
     /// <summary>The media image plugin used to read from the device</summary>
     IMediaImage _imagePlugin;
+
+    /// <summary>log2 of blocks per page (L2PSIZE - s_l2bsize)</summary>
+    int _l2nbperpage;
 
     /// <summary>Indicates if the filesystem is currently mounted</summary>
     bool _mounted;
