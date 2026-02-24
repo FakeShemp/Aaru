@@ -344,16 +344,16 @@ public sealed partial class Reiser4
     ///     Used when FORMAT40_LARGE_KEYS flag is set in format40_disk_super_block.flags.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct LargeKey
+    struct LargeKey
     {
         /// <summary>Element 0: locality (upper 60 bits) and type/minor locality (lower 4 bits).</summary>
-        public readonly ulong el0;
+        public ulong el0;
         /// <summary>Element 1: ordering.</summary>
-        public readonly ulong el1;
+        public ulong el1;
         /// <summary>Element 2: band (upper 4 bits) and objectid (lower 60 bits).</summary>
-        public readonly ulong el2;
+        public ulong el2;
         /// <summary>Element 3: offset or name hash.</summary>
-        public readonly ulong el3;
+        public ulong el3;
     }
 
 #endregion
