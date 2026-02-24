@@ -56,7 +56,7 @@ public sealed partial class Reiser4
             };
         }
 
-        // For non-large keys we still store in LargeKey with el3=0 so comparison works uniformly
+        // For non-large keys we still store LargeKey with el3=0 so comparison works uniformly
         return new LargeKey
         {
             el0 = FORMAT40_ROOT_LOCALITY << KEY_LOCALITY_SHIFT | KEY_SD_MINOR,
@@ -96,7 +96,7 @@ public sealed partial class Reiser4
     ///     Compares two keys element-by-element, as reiser4 does.
     ///     Returns negative if a &lt; b, 0 if equal, positive if a &gt; b.
     /// </summary>
-    int CompareKeys(in LargeKey a, in LargeKey b)
+    int CompareKeys(LargeKey a, LargeKey b)
     {
         if(a.el0 != b.el0) return a.el0 < b.el0 ? -1 : 1;
         if(a.el1 != b.el1) return a.el1 < b.el1 ? -1 : 1;
@@ -112,7 +112,7 @@ public sealed partial class Reiser4
     /// <summary>
     ///     Checks whether the locality+type of the key matches the given values.
     /// </summary>
-    static bool KeyLocalityTypeMatch(in LargeKey key, ulong locality, ulong type)
+    static bool KeyLocalityTypeMatch(LargeKey key, ulong locality, ulong type)
     {
         ulong keyLocality = (key.el0 & KEY_LOCALITY_MASK) >> KEY_LOCALITY_SHIFT;
         ulong keyType     = key.el0 & KEY_TYPE_MASK;
@@ -121,13 +121,13 @@ public sealed partial class Reiser4
     }
 
     /// <summary>Extracts the locality field from a key</summary>
-    static ulong GetKeyLocality(in LargeKey key) => (key.el0 & KEY_LOCALITY_MASK) >> KEY_LOCALITY_SHIFT;
+    static ulong GetKeyLocality(LargeKey key) => (key.el0 & KEY_LOCALITY_MASK) >> KEY_LOCALITY_SHIFT;
 
     /// <summary>Extracts the type/minor-locality field from a key</summary>
-    static ulong GetKeyType(in LargeKey key) => key.el0 & KEY_TYPE_MASK;
+    static ulong GetKeyType(LargeKey key) => key.el0 & KEY_TYPE_MASK;
 
     /// <summary>Extracts the objectid field from a large key (lower 60 bits of el[2])</summary>
-    static ulong GetKeyObjectId(in LargeKey key) => key.el2 & KEY_OBJECTID_MASK;
+    static ulong GetKeyObjectId(LargeKey key) => key.el2 & KEY_OBJECTID_MASK;
 
     /// <summary>
     ///     Reads an item header from raw node data at the given position index.
@@ -207,7 +207,7 @@ public sealed partial class Reiser4
     /// <param name="leafData">Output: raw data of the leaf node found</param>
     /// <param name="itemPos">Output: position of the best-match item within the leaf</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber SearchByKey(in LargeKey searchKey, out byte[] leafData, out int itemPos)
+    ErrorNumber SearchByKey(LargeKey searchKey, out byte[] leafData, out int itemPos)
     {
         leafData = null;
         itemPos  = -1;
@@ -368,8 +368,7 @@ public sealed partial class Reiser4
     /// <summary>
     ///     Parses a compound directory entry item (CDE) and adds entries to the dictionary.
     /// </summary>
-    void ParseCdeItem(byte[]                       data, int itemOffset, int itemLen, in LargeKey itemKey,
-                      Dictionary<string, LargeKey> entries)
+    void ParseCdeItem(byte[] data, int itemOffset, int itemLen, LargeKey itemKey, Dictionary<string, LargeKey> entries)
     {
         if(itemLen < 2) return;
 
@@ -434,8 +433,7 @@ public sealed partial class Reiser4
     ///     Parses a simple directory entry item (SDE) and adds it to the dictionary.
     ///     A simple directory entry item contains exactly one entry.
     /// </summary>
-    void ParseSdeItem(byte[]                       data, int itemOffset, int itemLen, in LargeKey itemKey,
-                      Dictionary<string, LargeKey> entries)
+    void ParseSdeItem(byte[] data, int itemOffset, int itemLen, LargeKey itemKey, Dictionary<string, LargeKey> entries)
     {
         int objKeyIdSize = _largeKeys ? 24 : 16;
 
@@ -484,7 +482,7 @@ public sealed partial class Reiser4
     ///     Reconstructs the full directory entry key from the de_id stored in a CDE unit header
     ///     and the item key (which provides the locality). Mirrors extract_key_from_de_id().
     /// </summary>
-    LargeKey ReadEntryKeyFromUnitHeader(byte[] data, int unitHeaderOffset, in LargeKey itemKey)
+    LargeKey ReadEntryKeyFromUnitHeader(byte[] data, int unitHeaderOffset, LargeKey itemKey)
     {
         // The de_id stores the portion of the key starting from el[1] (skipping el[0] = locality+type)
         // For large keys: de_id = ordering(8) + objectid(8) + offset(8) = 24 bytes → el[1], el[2], el[3]
@@ -516,7 +514,7 @@ public sealed partial class Reiser4
     ///     encoded in the key, while long names are stored as null-terminated strings after
     ///     the obj_key_id in the entry body.
     /// </summary>
-    string ExtractEntryName(byte[] data, int nameStart, int nameEnd, in LargeKey entryKey)
+    string ExtractEntryName(byte[] data, int nameStart, int nameEnd, LargeKey entryKey)
     {
         bool isLongName = IsLongNameKey(entryKey);
 
@@ -545,7 +543,7 @@ public sealed partial class Reiser4
     /// <summary>
     ///     Returns true if the directory entry key indicates a long name (H bit set).
     /// </summary>
-    bool IsLongNameKey(in LargeKey key) =>
+    bool IsLongNameKey(LargeKey key) =>
 
         // H bit is in el[1] (ordering for large keys, objectid for short keys)
         (key.el1 & LONGNAME_MARK) != 0;
@@ -554,7 +552,7 @@ public sealed partial class Reiser4
     ///     Extracts a short file name encoded in the key.
     ///     Mirrors extract_name_from_key() in kassign.c.
     /// </summary>
-    string ExtractNameFromKey(in LargeKey key)
+    string ExtractNameFromKey(LargeKey key)
     {
         var buf = new char[32];
         var pos = 0;
