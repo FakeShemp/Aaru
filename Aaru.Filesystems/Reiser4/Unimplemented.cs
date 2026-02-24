@@ -45,8 +45,6 @@ public sealed partial class Reiser4
     /// <inheritdoc />
     public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
