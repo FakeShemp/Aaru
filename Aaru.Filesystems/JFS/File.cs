@@ -177,6 +177,101 @@ public sealed partial class JFS
     }
 
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Resolve the path to its inode
+        ErrorNumber errno = GetInodeForPath(path, out Inode inode);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: GetInodeForPath failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Verify it's a symbolic link (S_IFLNK = 0xA000)
+        if((inode.di_mode & 0xF000) != 0xA000)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: path is not a symbolic link (mode=0x{0:X4})", inode.di_mode);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        var size = (int)inode.di_size;
+
+        if(size == 0)
+        {
+            dest = "";
+
+            return ErrorNumber.NoError;
+        }
+
+        // Fast symlink: target stored inline in inode extension area
+        if(size < IDATASIZE)
+        {
+            if(inode.di_u is null || inode.di_u.Length < FASTSYMLINK_OFFSET + size)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadLink: inode extension area too small for fast symlink");
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            dest = _encoding.GetString(inode.di_u, FASTSYMLINK_OFFSET, size).TrimEnd('\0');
+
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: fast symlink target='{0}'", dest);
+
+            return ErrorNumber.NoError;
+        }
+
+        // Regular symlink: target stored as file data, read via xtree
+        var linkData      = new byte[size];
+        var bytesRead     = 0;
+        var currentOffset = 0;
+
+        while(bytesRead < size)
+        {
+            long logicalBlock  = currentOffset / _superblock.s_bsize;
+            var  offsetInBlock = (int)(currentOffset % _superblock.s_bsize);
+
+            errno = XTreeLookup(inode.di_u, false, logicalBlock, out long physicalBlock);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadLink: XTreeLookup failed for block {0}: {1}", logicalBlock, errno);
+
+                return errno;
+            }
+
+            errno = ReadFsBlock(physicalBlock, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadLink: ReadFsBlock failed for block {0}: {1}", physicalBlock, errno);
+
+                return errno;
+            }
+
+            var bytesToCopy = (int)Math.Min(_superblock.s_bsize - offsetInBlock, size - bytesRead);
+            Array.Copy(blockData, offsetInBlock, linkData, bytesRead, bytesToCopy);
+
+            bytesRead     += bytesToCopy;
+            currentOffset += bytesToCopy;
+        }
+
+        dest = _encoding.GetString(linkData, 0, size).TrimEnd('\0');
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: symlink target='{0}'", dest);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {
         stat = null;

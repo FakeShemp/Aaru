@@ -160,6 +160,15 @@ public sealed partial class JFS
     /// <summary>Size of inline EA area in bytes</summary>
     const int INLINEEA_SIZE = 128;
 
+    /// <summary>
+    ///     Offset of fast symlink data within inode extension area (di_u).
+    ///     Layout: _data[96] + unused[16] + dxd[16] = 128 bytes before _fastsymlink
+    /// </summary>
+    const int FASTSYMLINK_OFFSET = 128;
+
+    /// <summary>Size of inline data area in the inode (IDATASIZE = _fastsymlink[128] + _inlineea[128])</summary>
+    const int IDATASIZE = 256;
+
     /// <summary>Prefix for unknown-namespace OS/2 attributes</summary>
     const string XATTR_OS2_PREFIX = "os2.";
 }
