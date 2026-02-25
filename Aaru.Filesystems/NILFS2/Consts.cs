@@ -136,4 +136,42 @@ public sealed partial class NILFS2
 
     /// <summary>Linux operating system code</summary>
     const int NILFS2_OS_LINUX = 0;
+
+    // Inode flags (from Linux FS_*_FL)
+
+    /// <summary>Secure deletion (not used by NILFS2)</summary>
+    const uint NILFS2_SECRM_FL = 0x00000001;
+
+    /// <summary>Undelete (not used by NILFS2)</summary>
+    const uint NILFS2_UNRM_FL = 0x00000002;
+
+    /// <summary>Compress file (not used by NILFS2)</summary>
+    const uint NILFS2_COMPR_FL = 0x00000004;
+
+    /// <summary>Synchronous updates</summary>
+    const uint NILFS2_SYNC_FL = 0x00000008;
+
+    /// <summary>Immutable file</summary>
+    const uint NILFS2_IMMUTABLE_FL = 0x00000010;
+
+    /// <summary>Writes to file may only append</summary>
+    const uint NILFS2_APPEND_FL = 0x00000020;
+
+    /// <summary>Do not dump file</summary>
+    const uint NILFS2_NODUMP_FL = 0x00000040;
+
+    /// <summary>Do not update atime</summary>
+    const uint NILFS2_NOATIME_FL = 0x00000080;
+
+    /// <summary>Directory is indexed with hash trees (not used by NILFS2)</summary>
+    const uint NILFS2_INDEX_FL = 0x00001000;
+
+    /// <summary>File tail should not be merged (not used by NILFS2)</summary>
+    const uint NILFS2_NOTAIL_FL = 0x00008000;
+
+    /// <summary>Synchronous directory modifications</summary>
+    const uint NILFS2_DIRSYNC_FL = 0x00010000;
+
+    /// <summary>Top of directory hierarchies</summary>
+    const uint NILFS2_TOPDIR_FL = 0x00020000;
 }
