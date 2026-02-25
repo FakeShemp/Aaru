@@ -498,8 +498,9 @@ public sealed partial class NILFS2
 
         if((inode.flags & NILFS2_SYNC_FL) != 0) attributes |= FileAttributes.Sync;
 
-        return new FileEntryInfo
         if((inode.flags & NILFS2_DIRSYNC_FL) != 0) attributes |= FileAttributes.Sync;
+
+        var info = new FileEntryInfo
         {
             Attributes          = attributes,
             Inode               = inodeNumber,
@@ -514,5 +515,13 @@ public sealed partial class NILFS2
             LastWriteTimeUtc    = DateHandlers.UnixUnsignedToDateTime((uint)inode.mtime, inode.mtime_nsec),
             StatusChangeTimeUtc = DateHandlers.UnixUnsignedToDateTime((uint)inode.ctime, inode.ctime_nsec)
         };
+
+        // For character and block device inodes, decode the device number from bmap[0]
+        // The kernel uses huge_decode_dev(le64_to_cpu(raw_inode->i_device_code)) where
+        // i_device_code is an alias for i_bmap[0]
+        if((inode.mode & 0xF000) is 0x2000 or 0x6000 && inode.bmap is { Length: > 0 })
+            info.DeviceNo = inode.bmap[0];
+
+        return info;
     }
 }
