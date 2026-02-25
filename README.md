@@ -222,6 +222,7 @@ Fully supported file-systems (identify and extraction)
 * Microsoft Extended File Allocation Table (exFAT)
 * Microsoft/IBM High Performance File System (HPFS)
 * Minix v1/v2/v3 file systems
+* NILFS2
 * OS-9 Random Block File
 * Professional File System
 * QNX4 filesystems
@@ -261,7 +262,6 @@ Supported file systems for identification and information only
 * Microsoft Resilient File System (ReFS)
 * NEC PC-Engine executable
 * NEC PC-FX executable
-* NILFS2
 * Nintendo optical filesystems (GameCube and Wii)
 * SGI XFS
 * SolarOS file system
