@@ -150,6 +150,17 @@ public sealed partial class JFS
                 break;
             }
 
+            // physicalBlock == 0 means XAD_NOTRECORDED (sparse hole) — fill with zeros
+            if(physicalBlock == 0)
+            {
+                long bytesToZero = Math.Min(_superblock.s_bsize - offsetInBlock, toRead - bytesRead);
+                Array.Clear(buffer, (int)bytesRead, (int)bytesToZero);
+                bytesRead     += bytesToZero;
+                currentOffset += bytesToZero;
+
+                continue;
+            }
+
             // Read the physical block
             errno = ReadFsBlock(physicalBlock, out byte[] blockData);
 
