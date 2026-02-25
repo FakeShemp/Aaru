@@ -513,7 +513,10 @@ public sealed partial class NILFS2
             Mode                = (uint)(inode.mode & 0x0FFF),
             CreationTimeUtc     = DateHandlers.UnixUnsignedToDateTime((uint)inode.ctime, inode.ctime_nsec),
             LastWriteTimeUtc    = DateHandlers.UnixUnsignedToDateTime((uint)inode.mtime, inode.mtime_nsec),
-            StatusChangeTimeUtc = DateHandlers.UnixUnsignedToDateTime((uint)inode.ctime, inode.ctime_nsec)
+            StatusChangeTimeUtc = DateHandlers.UnixUnsignedToDateTime((uint)inode.ctime, inode.ctime_nsec),
+
+            // NILFS2 has no separate atime field; the kernel copies mtime to atime (inode.c:413-414)
+            AccessTimeUtc = DateHandlers.UnixUnsignedToDateTime((uint)inode.mtime, inode.mtime_nsec)
         };
 
         // For character and block device inodes, decode the device number from bmap[0]
