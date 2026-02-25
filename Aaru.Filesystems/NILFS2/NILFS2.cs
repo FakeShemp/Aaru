@@ -29,14 +29,23 @@
 // ReSharper disable UnusedMember.Local
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the New Implementation of a Log-structured File System v2</summary>
-public sealed partial class NILFS2 : IFilesystem
+/// <summary>Implements the New Implementation of a Log-structured File System v2</summary>
+public sealed partial class NILFS2 : IReadOnlyFilesystem
 {
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces => [];
+
 #region IFilesystem Members
 
     /// <inheritdoc />

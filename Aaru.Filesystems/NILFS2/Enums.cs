@@ -32,8 +32,6 @@ using System;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the New Implementation of a Log-structured File System v2</summary>
 public sealed partial class NILFS2
 {
 #region Nested type: State
