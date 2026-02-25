@@ -30,8 +30,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -39,6 +41,32 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the New Implementation of a Log-structured File System v2</summary>
 public sealed partial class NILFS2 : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "NILFS2 plugin";
+
+    /// <summary>The filesystem block size in bytes</summary>
+    uint _blockSize;
+
+    /// <summary>Cached DAT inode from the super root, used for virtual-to-physical block translation</summary>
+    Inode _datInode;
+
+    /// <summary>The encoding used for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>The image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Whether the filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>The partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>Cached root directory entries (filename to directory entry info)</summary>
+    Dictionary<string, DirectoryEntryInfo> _rootDirectoryCache;
+
+    /// <summary>The cached superblock</summary>
+    Superblock _superblock;
+
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
     /// <inheritdoc />
