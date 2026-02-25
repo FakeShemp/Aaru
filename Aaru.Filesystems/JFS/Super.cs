@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : IBM JFS filesystem plugin
@@ -26,24 +26,38 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
+/// <inheritdoc />
+/// <summary>Implements detection of IBM's Journaled File System</summary>
 public sealed partial class JFS
 {
     /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+        stat = new FileSystemInfo
+        {
+            Blocks         = _superblock.s_size / _superblock.s_bsize,
+            FilenameLength = JFS_NAME_MAX,
+            FreeBlocks     = 0, // Would require parsing the block allocation map
+            Files          = 0, // Would require parsing the inode allocation map
+            FreeFiles      = 0, // Would require parsing the inode allocation map
+            PluginId       = Id,
+            Type           = FS_TYPE,
+            Id =
+            {
+                IsGuid = true,
+                uuid   = _superblock.s_uuid
+            }
+        };
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        return ErrorNumber.NoError;
+    }
 }

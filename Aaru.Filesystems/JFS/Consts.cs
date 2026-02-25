@@ -38,6 +38,9 @@ public sealed partial class JFS
     const string FS_TYPE     = "jfs";
     const string MODULE_NAME = "JFS plugin";
 
+    /// <summary>Maximum filename length in JFS</summary>
+    const ushort JFS_NAME_MAX = 255;
+
     /// <summary>Byte offset of the aggregate inode table (AITBL_OFF)</summary>
     const long AITBL_OFF = 0xB000;
 
