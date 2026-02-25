@@ -105,8 +105,31 @@ public sealed partial class JFS
     const int XTSLOTSIZE = 16;
 
     // B+-tree flags
+    const byte BT_ROOT     = 0x01;
     const byte BT_LEAF     = 0x02;
     const byte BT_INTERNAL = 0x04;
+    const byte BT_RIGHTMOST = 0x10;
+    const byte BT_LEFTMOST  = 0x20;
+    const byte BT_SWAPPED   = 0x80;
+
+    /// <summary>Maximum B+-tree height (xtree and dtree)</summary>
+    const int MAXTREEHEIGHT = 8;
+
+    // XAD (extent allocation descriptor) flags
+    /// <summary>XAD flag: new extent</summary>
+    const byte XAD_NEW = 0x01;
+
+    /// <summary>XAD flag: extended</summary>
+    const byte XAD_EXTENDED = 0x02;
+
+    /// <summary>XAD flag: compressed with recorded length</summary>
+    const byte XAD_COMPRESSED = 0x04;
+
+    /// <summary>XAD flag: allocated but not recorded (sparse hole)</summary>
+    const byte XAD_NOTRECORDED = 0x08;
+
+    /// <summary>XAD flag: copy-on-write</summary>
+    const byte XAD_COW = 0x10;
 
     /// <summary>Number of disk inode extent per IAG</summary>
     const int EXTSPERIAG = 128;
@@ -171,4 +194,58 @@ public sealed partial class JFS
 
     /// <summary>Prefix for unknown-namespace OS/2 attributes</summary>
     const string XATTR_OS2_PREFIX = "os2.";
+
+    /// <summary>
+    ///     Offset of di_rdev (device number) within inode extension area (di_u).
+    ///     Layout: _data[96] + unused[16] + dxd[16] = 128 bytes before _rdev (4 bytes, le32)
+    /// </summary>
+    const int RDEV_OFFSET = FASTSYMLINK_OFFSET;
+
+    // Extended mode bits in di_mode (on-disk inode)
+
+    /// <summary>Journalled file</summary>
+    const uint IFJOURNAL = 0x00010000;
+
+    /// <summary>Sparse file enabled</summary>
+    const uint ISPARSE = 0x00020000;
+
+    /// <summary>File open for pager swap space</summary>
+    const uint ISWAPFILE = 0x00800000;
+
+    // OS/2 extended attributes in di_mode
+
+    /// <summary>No write access to file (OS/2)</summary>
+    const uint IREADONLY = 0x02000000;
+
+    /// <summary>Hidden file (OS/2)</summary>
+    const uint IHIDDEN = 0x04000000;
+
+    /// <summary>System file (OS/2)</summary>
+    const uint ISYSTEM = 0x08000000;
+
+    /// <summary>Directory shadow (OS/2)</summary>
+    const uint IDIRECTORY = 0x20000000;
+
+    /// <summary>File archive bit (OS/2)</summary>
+    const uint IARCHIVE = 0x40000000;
+
+    /// <summary>Non-8.3 filename format (OS/2)</summary>
+    const uint INEWNAME = 0x80000000;
+
+    // Linux extended flags in di_mode
+
+    /// <summary>Do not update atime</summary>
+    const uint JFS_NOATIME_FL = 0x00080000;
+
+    /// <summary>Dirsync behaviour</summary>
+    const uint JFS_DIRSYNC_FL = 0x00100000;
+
+    /// <summary>Synchronous updates</summary>
+    const uint JFS_SYNC_FL = 0x00200000;
+
+    /// <summary>Writes to file may only append</summary>
+    const uint JFS_APPEND_FL = 0x01000000;
+
+    /// <summary>Immutable file</summary>
+    const uint JFS_IMMUTABLE_FL = 0x02000000;
 }
