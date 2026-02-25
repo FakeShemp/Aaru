@@ -26,6 +26,9 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
+using Aaru.CommonTypes.Interfaces;
+
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
@@ -45,6 +48,26 @@ public sealed partial class NILFS2
 
         /// <summary>Entry type</summary>
         public FileType Type { get; init; }
+    }
+
+#endregion
+
+#region Nested type: Nilfs2DirNode
+
+    /// <summary>Directory node for traversing directories</summary>
+    sealed class Nilfs2DirNode : IDirNode
+    {
+        /// <summary>Current position in the directory listing</summary>
+        public int Position { get; set; }
+
+        /// <summary>Cached directory entries</summary>
+        public Dictionary<string, DirectoryEntryInfo> Entries { get; set; }
+
+        /// <summary>Entry names for ordered enumeration</summary>
+        public string[] EntryNames { get; set; }
+
+        /// <inheritdoc />
+        public string Path { get; set; }
     }
 
 #endregion

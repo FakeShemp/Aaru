@@ -52,6 +52,9 @@ public sealed partial class NILFS2 : IReadOnlyFilesystem
     /// <summary>The encoding used for filenames</summary>
     Encoding _encoding;
 
+    /// <summary>Cached ifile inode from the latest checkpoint, used to read arbitrary inodes</summary>
+    Inode _ifileInode;
+
     /// <summary>The image plugin being accessed</summary>
     IMediaImage _imagePlugin;
 

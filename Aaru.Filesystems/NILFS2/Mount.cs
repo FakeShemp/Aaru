@@ -95,6 +95,9 @@ public sealed partial class NILFS2
 
         AaruLogging.Debug(MODULE_NAME, "Checkpoint {0} read successfully", checkpoint.cno);
 
+        // Cache the ifile inode for later inode lookups (subdirectory traversal, etc.)
+        _ifileInode = checkpoint.ifile_inode;
+
         // Step 4: Read the root directory inode (inode 2) from the ifile
         errno = ReadInodeFromIfile(checkpoint.ifile_inode, NILFS2_ROOT_INO, out Inode rootInode);
 
@@ -156,6 +159,7 @@ public sealed partial class NILFS2
         _partition   = default(Partition);
         _superblock  = default(Superblock);
         _datInode    = default(Inode);
+        _ifileInode  = default(Inode);
         _encoding    = null;
         _blockSize   = 0;
         Metadata     = null;
@@ -342,62 +346,9 @@ public sealed partial class NILFS2
 
         _rootDirectoryCache.Clear();
 
-        ulong dirSize      = rootInode.size;
-        ulong bytesRead    = 0;
-        ulong logicalBlock = 0;
+        ErrorNumber errno = ReadDirectoryEntries(rootInode, _rootDirectoryCache);
 
-        while(bytesRead < dirSize)
-        {
-            // Root directory is a regular file, needs DAT translation
-            ErrorNumber errno = ReadLogicalBlock(rootInode, logicalBlock, false, out byte[] blockData);
-
-            if(errno != ErrorNumber.NoError)
-            {
-                AaruLogging.Debug(MODULE_NAME, "Error reading root directory block {0}: {1}", logicalBlock, errno);
-
-                return errno;
-            }
-
-            uint offset = 0;
-
-            while(offset < _blockSize && bytesRead < dirSize)
-            {
-                // Minimum directory entry is 12 bytes (inode(8) + rec_len(2) + name_len(1) + file_type(1))
-                if(offset + 12 > blockData.Length) break;
-
-                var  entInode = BitConverter.ToUInt64(blockData, (int)offset);
-                var  recLen   = BitConverter.ToUInt16(blockData, (int)offset + 8);
-                byte nameLen  = blockData[(int)offset                        + 10];
-                var  fileType = (FileType)blockData[(int)offset + 11];
-
-                if(recLen < 12)
-                {
-                    AaruLogging.Debug(MODULE_NAME,
-                                      "Invalid directory entry rec_len: {0} at offset {1}",
-                                      recLen,
-                                      offset);
-
-                    break;
-                }
-
-                if(entInode != 0 && nameLen > 0 && offset + 12 + nameLen <= blockData.Length)
-                {
-                    string name = _encoding.GetString(blockData, (int)offset + 12, nameLen);
-
-                    _rootDirectoryCache[name] = new DirectoryEntryInfo
-                    {
-                        Name        = name,
-                        InodeNumber = entInode,
-                        Type        = fileType
-                    };
-                }
-
-                offset    += recLen;
-                bytesRead += recLen;
-            }
-
-            logicalBlock++;
-        }
+        if(errno != ErrorNumber.NoError) return errno;
 
         AaruLogging.Debug(MODULE_NAME, "Cached {0} root directory entries", _rootDirectoryCache.Count);
 
