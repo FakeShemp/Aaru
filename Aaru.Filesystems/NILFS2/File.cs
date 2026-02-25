@@ -42,6 +42,82 @@ namespace Aaru.Filesystems;
 public sealed partial class NILFS2
 {
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Verify it's a symlink
+        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: Stat failed with {0}", errno);
+
+            return errno;
+        }
+
+        if(!stat.Attributes.HasFlag(FileAttributes.Symlink))
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: path is not a symbolic link");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Resolve path to inode number
+        errno = LookupInode(path, out ulong inodeNumber);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: LookupInode failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Read the inode
+        errno = ReadInodeFromIfile(_ifileInode, inodeNumber, out Inode inode);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: ReadInodeFromIfile failed with {0}", errno);
+
+            return errno;
+        }
+
+        if(inode.size == 0)
+        {
+            dest = string.Empty;
+
+            return ErrorNumber.NoError;
+        }
+
+        // NILFS2 uses "slow symlinks" (page_symlink): the target is stored as regular
+        // file data in the inode's data blocks. The kernel limits symlink targets to
+        // one block size, so reading logical block 0 is sufficient.
+        errno = ReadLogicalBlock(inode, 0, false, out byte[] blockData);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: ReadLogicalBlock failed with {0}", errno);
+
+            return errno;
+        }
+
+        // The target is a null-terminated string, clamped to inode size
+        var maxLen = (int)Math.Min(inode.size, _blockSize);
+        dest = StringHandlers.CToString(blockData, _encoding);
+
+        if(dest.Length > maxLen) dest = dest[..maxLen];
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: target='{0}'", dest);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {
         stat = null;
