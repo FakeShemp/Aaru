@@ -35,6 +35,9 @@ public sealed partial class NILFS2
     const ushort NILFS2_MAGIC        = 0x3434;
     const uint   NILFS2_SUPER_OFFSET = 1024;
 
+    /// <summary>Invalid block map pointer (unused/hole)</summary>
+    const ulong NILFS2_BMAP_INVALID_PTR = 0;
+
     const string FS_TYPE = "nilfs2";
 
     /// <summary>Number of entries in inode block mapping array</summary>
