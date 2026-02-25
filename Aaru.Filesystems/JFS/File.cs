@@ -423,8 +423,10 @@ public sealed partial class JFS
             CreationTimeUtc     = DateHandlers.UnixUnsignedToDateTime(inode.di_otime.tv_sec, inode.di_otime.tv_nsec)
         };
 
+        uint mode = inode.di_mode;
+
         // Determine file type from di_mode (S_IFMT mask = 0xF000)
-        info.Attributes = (inode.di_mode & 0xF000) switch
+        info.Attributes = (mode & 0xF000) switch
                           {
                               0x4000 => FileAttributes.Directory,   // S_IFDIR
                               0x8000 => FileAttributes.File,        // S_IFREG
@@ -435,6 +437,24 @@ public sealed partial class JFS
                               0xC000 => FileAttributes.Socket,      // S_IFSOCK
                               _      => FileAttributes.File
                           };
+
+        // For char/block device inodes, extract di_rdev from extension area
+        if(((mode & 0xF000) == 0x2000 || (mode & 0xF000) == 0x6000) &&
+           inode.di_u is { Length: >= RDEV_OFFSET + 4 })
+        {
+            uint rdev = BitConverter.ToUInt32(inode.di_u, RDEV_OFFSET);
+            info.DeviceNo = rdev;
+        }
+
+        // Map OS/2 extended attributes from di_mode upper bits
+        if((mode & IREADONLY) != 0) info.Attributes |= FileAttributes.ReadOnly;
+        if((mode & IHIDDEN)   != 0) info.Attributes |= FileAttributes.Hidden;
+        if((mode & ISYSTEM)   != 0) info.Attributes |= FileAttributes.System;
+        if((mode & IARCHIVE)  != 0) info.Attributes |= FileAttributes.Archive;
+
+        // Map Linux extended flags from di_mode
+        if((mode & JFS_IMMUTABLE_FL) != 0) info.Attributes |= FileAttributes.Immutable;
+        if((mode & JFS_APPEND_FL)    != 0) info.Attributes |= FileAttributes.AppendOnly;
 
         return info;
     }
