@@ -128,4 +128,35 @@ public sealed partial class JFS
 
     /// <summary>Log page size in bytes</summary>
     const int LOGPSIZE = 4096;
+
+    // DataExtent (dxd_t) flags
+    /// <summary>DXD flag: B+-tree index</summary>
+    const byte DXD_INDEX = 0x80;
+
+    /// <summary>DXD flag: in-line data extent</summary>
+    const byte DXD_INLINE = 0x40;
+
+    /// <summary>DXD flag: out-of-line single extent</summary>
+    const byte DXD_EXTENT = 0x20;
+
+    /// <summary>DXD flag: out-of-line file (inode)</summary>
+    const byte DXD_FILE = 0x10;
+
+    /// <summary>DXD flag: inconsistency detected</summary>
+    const byte DXD_CORRUPT = 0x08;
+
+    /// <summary>Extended mode bit: inline EA area free</summary>
+    const uint INLINEEA = 0x00040000;
+
+    /// <summary>
+    ///     Offset of inline EA data within inode extension area (di_u).
+    ///     Layout: _data[96] + unused[16] + dxd[16] + _fastsymlink/rdev[128] + _inlineea[128]
+    /// </summary>
+    const int INLINEEA_OFFSET = 256;
+
+    /// <summary>Size of inline EA area in bytes</summary>
+    const int INLINEEA_SIZE = 128;
+
+    /// <summary>Prefix for unknown-namespace OS/2 attributes</summary>
+    const string XATTR_OS2_PREFIX = "os2.";
 }

@@ -48,8 +48,7 @@ public sealed partial class JFS
         // dtroot starts at offset 96 in di_u (after dir_table_slot[12])
         const int dtOffset = 96;
 
-        // Parse dtroot header (32 bytes = 1 slot)
-        // DASD(16) + flag(1) + nextindex(1) + freecnt(1) + freelist(1) + idotdot(4) + stbl(8)
+        // ...existing code for header parsing...
         byte dtrootFlag      = extensionData[dtOffset + 16];
         byte dtrootNextindex = extensionData[dtOffset + 17];
 
@@ -62,17 +61,14 @@ public sealed partial class JFS
             return ErrorNumber.NoError;
         }
 
-        // Check if this is a leaf root (should always be for inline dtree)
         if((dtrootFlag & BT_LEAF) == 0)
         {
-            // The root dtree is internal - entries are in external pages
             AaruLogging.Debug(MODULE_NAME, "Root dtree is internal, reading external pages...");
 
             return ParseDtreeInternalRoot(extensionData, dtOffset, dtrootNextindex, out entries);
         }
 
-        // Read the sorted entry index table
-        // stbl is at dtOffset + 24 (after DASD(16) + flag(1) + nextindex(1) + freecnt(1) + freelist(1) + idotdot(4))
+        // Leaf root - read entries inline
         int stblOffset = dtOffset + 24;
 
         bool hasIndex    = _superblock.s_flags.HasFlag(Flags.DirIndex);
@@ -84,31 +80,25 @@ public sealed partial class JFS
 
             if(slotIdx < 0 || slotIdx >= DTROOTMAXSLOT) continue;
 
-            // The slot is at dtOffset + slotIdx * DTSLOTSIZE
             int slotOffset = dtOffset + slotIdx * DTSLOTSIZE;
 
-            // Parse ldtentry: inumber(4) + next(1) + namlen(1) + name(22 or 26) [+ index(4)]
             var  inumber = BitConverter.ToUInt32(extensionData, slotOffset);
             var  next    = (sbyte)extensionData[slotOffset + 4];
             byte namlen  = extensionData[slotOffset + 5];
 
-            // Read name characters from the first segment
             int charsInHead = Math.Min(namlen, headDataLen);
             var nameChars   = new char[namlen];
 
             for(var c = 0; c < charsInHead; c++)
                 nameChars[c] = (char)BitConverter.ToUInt16(extensionData, slotOffset + 6 + c * 2);
 
-            // Follow continuation slots for remaining characters
             int charsCopied = charsInHead;
 
             while(next >= 0 && charsCopied < namlen && next < DTROOTMAXSLOT)
             {
                 int contSlotOffset = dtOffset + next * DTSLOTSIZE;
-
-                // dtslot: next(1) + cnt(1) + name[15](30)
-                var contNext = (sbyte)extensionData[contSlotOffset];
-                int cnt      = Math.Min(namlen - charsCopied, 15);
+                var contNext       = (sbyte)extensionData[contSlotOffset];
+                int cnt            = Math.Min(namlen - charsCopied, 15);
 
                 for(var c = 0; c < cnt && charsCopied < namlen; c++, charsCopied++)
                     nameChars[charsCopied] = (char)BitConverter.ToUInt16(extensionData, contSlotOffset + 2 + c * 2);
@@ -132,9 +122,10 @@ public sealed partial class JFS
     {
         entries = new Dictionary<string, uint>(StringComparer.Ordinal);
 
+        var visited = new HashSet<long>();
+
         int stblOffset = dtOffset + 24;
 
-        // Each stbl entry in an internal root points to an idtentry which has a child extent
         for(var i = 0; i < nextindex && i < 8; i++)
         {
             int slotIdx = (sbyte)extensionData[stblOffset + i];
@@ -143,24 +134,28 @@ public sealed partial class JFS
 
             int slotOffset = dtOffset + slotIdx * DTSLOTSIZE;
 
-            // idtentry: xd(8) + next(1) + namlen(1) + name(22)
-            // The xd (pxd_t) at the start gives the child page address
-            var   lenAddr   = BitConverter.ToUInt32(extensionData, slotOffset);
-            var   addr2     = BitConverter.ToUInt32(extensionData, slotOffset + 4);
-            ulong n         = lenAddr & ~0xFFFFFFu;
-            var   childAddr = (long)((n << 8) + addr2);
+            // idtentry: xd (pxd_t, 8 bytes) at the start — extract address using pxd formula
+            long childAddr = PxdAddress(BitConverter.ToUInt32(extensionData, slotOffset),
+                                        BitConverter.ToUInt32(extensionData, slotOffset + 4));
 
             if(childAddr <= 0) continue;
 
+            if(!visited.Add(childAddr))
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "DTree internal root: skipping already-visited block {0}",
+                                  childAddr);
+
+                continue;
+            }
+
             AaruLogging.Debug(MODULE_NAME, "DTree internal root: following child page at block {0}", childAddr);
 
-            // Read the child dtree page
             ErrorNumber errno = ReadBytes(childAddr * _superblock.s_bsize, PSIZE, out byte[] childPage);
 
             if(errno != ErrorNumber.NoError) continue;
 
-            // Parse child page recursively
-            errno = ParseDtreePage(childPage, entries);
+            errno = ParseDtreePage(childPage, entries, visited);
 
             if(errno != ErrorNumber.NoError)
             {
@@ -172,10 +167,8 @@ public sealed partial class JFS
     }
 
     /// <summary>Parses a dtree page (leaf or internal) and collects directory entries</summary>
-    ErrorNumber ParseDtreePage(byte[] pageData, Dictionary<string, uint> entries)
+    ErrorNumber ParseDtreePage(byte[] pageData, Dictionary<string, uint> entries, HashSet<long> visited)
     {
-        // dtpage header: next(8) + prev(8) + flag(1) + nextindex(1) + freecnt(1) + freelist(1)
-        //                + maxslot(1) + stblindex(1) + rsrvd(2) + self(8) = 32 bytes
         byte flag      = pageData[16];
         byte nextindex = pageData[17];
         byte maxslot   = pageData[20];
@@ -190,79 +183,13 @@ public sealed partial class JFS
 
         if((flag & BT_LEAF) != 0)
         {
-            // Leaf page - extract entries
-            // stbl is at slot[stblindex]
-            int stblByteOffset = stblindex * DTSLOTSIZE;
-
-            bool hasIndex    = _superblock.s_flags.HasFlag(Flags.DirIndex);
-            int  headDataLen = hasIndex ? DTLHDRDATALEN : DTLHDRDATALEN_LEGACY;
-
-            for(var i = 0; i < nextindex; i++)
-            {
-                if(stblByteOffset + i >= pageData.Length) break;
-
-                int slotIdx = (sbyte)pageData[stblByteOffset + i];
-
-                if(slotIdx < 0 || slotIdx >= maxslot) continue;
-
-                int slotOffset = slotIdx * DTSLOTSIZE;
-
-                if(slotOffset + 6 > pageData.Length) continue;
-
-                var  inumber = BitConverter.ToUInt32(pageData, slotOffset);
-                var  next    = (sbyte)pageData[slotOffset + 4];
-                byte namlen  = pageData[slotOffset + 5];
-
-                if(namlen == 0 || inumber == 0) continue;
-
-                int charsInHead = Math.Min(namlen, headDataLen);
-                var nameChars   = new char[namlen];
-
-                for(var c = 0; c < charsInHead && slotOffset + 6 + c * 2 + 1 < pageData.Length; c++)
-                    nameChars[c] = (char)BitConverter.ToUInt16(pageData, slotOffset + 6 + c * 2);
-
-                int charsCopied = charsInHead;
-
-                while(next >= 0 && charsCopied < namlen && next < maxslot)
-                {
-                    int contSlotOffset = next * DTSLOTSIZE;
-
-                    if(contSlotOffset + 2 >= pageData.Length) break;
-
-                    var contNext = (sbyte)pageData[contSlotOffset];
-                    int cnt      = Math.Min(namlen - charsCopied, 15);
-
-                    for(var c = 0; c < cnt && charsCopied < namlen; c++, charsCopied++)
-                    {
-                        if(contSlotOffset + 2 + c * 2 + 1 >= pageData.Length) break;
-
-                        nameChars[charsCopied] = (char)BitConverter.ToUInt16(pageData, contSlotOffset + 2 + c * 2);
-                    }
-
-                    next = contNext;
-                }
-
-                var name = new string(nameChars, 0, Math.Min(charsCopied, namlen));
-
-                if(!string.IsNullOrEmpty(name)) entries[name] = inumber;
-            }
-
-            // Follow next sibling page if present
-            var nextPage = BitConverter.ToUInt64(pageData, 0);
-
-            if(nextPage != 0)
-            {
-                ErrorNumber errno = ReadBytes((long)nextPage * _superblock.s_bsize, PSIZE, out byte[] nextPageData);
-
-                if(errno == ErrorNumber.NoError) ParseDtreePage(nextPageData, entries);
-            }
+            ParseDtreeLeafPage(pageData, nextindex, maxslot, stblindex, entries);
 
             return ErrorNumber.NoError;
         }
 
         if((flag & BT_INTERNAL) != 0)
         {
-            // Internal page - follow child pointers
             int stblByteOffset = stblindex * DTSLOTSIZE;
 
             for(var i = 0; i < nextindex; i++)
@@ -277,17 +204,26 @@ public sealed partial class JFS
 
                 if(slotOffset + 8 > pageData.Length) continue;
 
-                // idtentry: xd(8) + ...
-                var   lenAddr   = BitConverter.ToUInt32(pageData, slotOffset);
-                var   addr2     = BitConverter.ToUInt32(pageData, slotOffset + 4);
-                ulong addrN     = lenAddr & ~0xFFFFFFu;
-                var   childAddr = (long)((addrN << 8) + addr2);
+                // idtentry: xd (pxd_t, 8 bytes) at the start — extract address using pxd formula
+                long childAddr = PxdAddress(BitConverter.ToUInt32(pageData, slotOffset),
+                                            BitConverter.ToUInt32(pageData, slotOffset + 4));
 
                 if(childAddr <= 0) continue;
 
+                if(!visited.Add(childAddr))
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "DTree page: skipping already-visited block {0}",
+                                      childAddr);
+
+                    continue;
+                }
+
+                AaruLogging.Debug(MODULE_NAME, "DTree page: following child at block {0}", childAddr);
+
                 ErrorNumber errno = ReadBytes(childAddr * _superblock.s_bsize, PSIZE, out byte[] childPage);
 
-                if(errno == ErrorNumber.NoError) ParseDtreePage(childPage, entries);
+                if(errno == ErrorNumber.NoError) ParseDtreePage(childPage, entries, visited);
             }
 
             return ErrorNumber.NoError;
@@ -296,5 +232,66 @@ public sealed partial class JFS
         AaruLogging.Debug(MODULE_NAME, "DTree page has unknown flag: 0x{0:X2}", flag);
 
         return ErrorNumber.InvalidArgument;
+    }
+
+    /// <summary>Extracts directory entries from a single dtree leaf page</summary>
+    void ParseDtreeLeafPage(byte[] pageData, byte nextindex, byte maxslot, byte stblindex,
+                            Dictionary<string, uint> entries)
+    {
+        // ...existing code stays the same...
+        int stblByteOffset = stblindex * DTSLOTSIZE;
+
+        bool hasIndex    = _superblock.s_flags.HasFlag(Flags.DirIndex);
+        int  headDataLen = hasIndex ? DTLHDRDATALEN : DTLHDRDATALEN_LEGACY;
+
+        for(var i = 0; i < nextindex; i++)
+        {
+            if(stblByteOffset + i >= pageData.Length) break;
+
+            int slotIdx = (sbyte)pageData[stblByteOffset + i];
+
+            if(slotIdx < 0 || slotIdx >= maxslot) continue;
+
+            int slotOffset = slotIdx * DTSLOTSIZE;
+
+            if(slotOffset + 6 > pageData.Length) continue;
+
+            var  inumber = BitConverter.ToUInt32(pageData, slotOffset);
+            var  next    = (sbyte)pageData[slotOffset + 4];
+            byte namlen  = pageData[slotOffset + 5];
+
+            if(namlen == 0 || inumber == 0) continue;
+
+            int charsInHead = Math.Min(namlen, headDataLen);
+            var nameChars   = new char[namlen];
+
+            for(var c = 0; c < charsInHead && slotOffset + 6 + c * 2 + 1 < pageData.Length; c++)
+                nameChars[c] = (char)BitConverter.ToUInt16(pageData, slotOffset + 6 + c * 2);
+
+            int charsCopied = charsInHead;
+
+            while(next >= 0 && charsCopied < namlen && next < maxslot)
+            {
+                int contSlotOffset = next * DTSLOTSIZE;
+
+                if(contSlotOffset + 2 >= pageData.Length) break;
+
+                var contNext = (sbyte)pageData[contSlotOffset];
+                int cnt      = Math.Min(namlen - charsCopied, 15);
+
+                for(var c = 0; c < cnt && charsCopied < namlen; c++, charsCopied++)
+                {
+                    if(contSlotOffset + 2 + c * 2 + 1 >= pageData.Length) break;
+
+                    nameChars[charsCopied] = (char)BitConverter.ToUInt16(pageData, contSlotOffset + 2 + c * 2);
+                }
+
+                next = contNext;
+            }
+
+            var name = new string(nameChars, 0, Math.Min(charsCopied, namlen));
+
+            if(!string.IsNullOrEmpty(name)) entries[name] = inumber;
+        }
     }
 }

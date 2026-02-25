@@ -42,4 +42,15 @@ public sealed partial class JFS
 
     /// <summary>Extracts the 24-bit length from a physical extent descriptor (pxd_t)</summary>
     static uint ExtentLength(Extent pxd) => pxd.len_addr & 0xFFFFFF;
+
+    /// <summary>Extracts the 40-bit address from raw pxd_t fields</summary>
+    /// <param name="lenAddr">The len_addr field (lower 24 bits = length, upper 8 bits = high address byte)</param>
+    /// <param name="addr2">The addr2 field (lower 32 bits of address)</param>
+    /// <returns>The 40-bit block address</returns>
+    static long PxdAddress(uint lenAddr, uint addr2)
+    {
+        ulong n = lenAddr & ~0xFFFFFFu;
+
+        return (long)((n << 8) + addr2);
+    }
 }
