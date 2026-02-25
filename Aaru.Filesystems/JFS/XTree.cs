@@ -129,12 +129,27 @@ public sealed partial class JFS
         {
             int xadOffset = baseOffset + i * XTSLOTSIZE;
 
+            byte  xadFlag = data[xadOffset];
             long  xadOff  = XadOffset(data, xadOffset);
             uint  xadLen  = XadLength(data, xadOffset);
             ulong xadAddr = XadAddress(data, xadOffset);
 
             if(logicalBlock >= xadOff && logicalBlock < xadOff + xadLen)
             {
+                // XAD_NOTRECORDED means the extent is allocated but contains no data (sparse hole)
+                if((xadFlag & XAD_NOTRECORDED) != 0)
+                {
+                    physicalBlock = 0;
+
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "XTree leaf: xad[{0}] off={1}, len={2} is XAD_NOTRECORDED (sparse hole)",
+                                      i,
+                                      xadOff,
+                                      xadLen);
+
+                    return ErrorNumber.NoError;
+                }
+
                 physicalBlock = (long)(xadAddr + (ulong)(logicalBlock - xadOff));
 
                 AaruLogging.Debug(MODULE_NAME,
@@ -156,9 +171,16 @@ public sealed partial class JFS
 
     /// <summary>Searches an internal xtree node to find the child page, then searches the child</summary>
     ErrorNumber XTreeSearchInternal(byte[]   data, int baseOffset, int nextindex, int maxSlots, long logicalBlock,
-                                    out long physicalBlock)
+                                    out long physicalBlock, int depth = 0)
     {
         physicalBlock = -1;
+
+        if(depth >= MAXTREEHEIGHT)
+        {
+            AaruLogging.Debug(MODULE_NAME, "XTree exceeded maximum tree height ({0})", MAXTREEHEIGHT);
+
+            return ErrorNumber.InvalidArgument;
+        }
 
         // In internal nodes, xad entries point to child pages
         // Find the last entry whose offset <= logicalBlock
@@ -201,9 +223,19 @@ public sealed partial class JFS
         if((childFlag & BT_LEAF) != 0)
             return XTreeSearchLeaf(childPage, 0, childNextindex, XTPAGEMAXSLOT, logicalBlock, out physicalBlock);
 
-        // If still internal, we'd need to recurse deeper - for now return error
-        AaruLogging.Debug(MODULE_NAME, "XTree has more than 2 levels, not supported");
+        if((childFlag & BT_INTERNAL) != 0)
+        {
+            return XTreeSearchInternal(childPage,
+                                       0,
+                                       childNextindex,
+                                       XTPAGEMAXSLOT,
+                                       logicalBlock,
+                                       out physicalBlock,
+                                       depth + 1);
+        }
 
-        return ErrorNumber.NotSupported;
+        AaruLogging.Debug(MODULE_NAME, "XTree child page has unknown flag: 0x{0:X2}", childFlag);
+
+        return ErrorNumber.InvalidArgument;
     }
 }
