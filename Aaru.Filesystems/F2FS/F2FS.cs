@@ -27,15 +27,17 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the Flash-Friendly File System (F2FS)</summary>
+/// <summary>Implements the Flash-Friendly File System (F2FS)</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
-public sealed partial class F2FS : IFilesystem
+public sealed partial class F2FS : IReadOnlyFilesystem
 {
 #region IFilesystem Members
 
@@ -49,4 +51,11 @@ public sealed partial class F2FS : IFilesystem
     public string Author => Authors.NataliaPortillo;
 
 #endregion
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces => [];
 }

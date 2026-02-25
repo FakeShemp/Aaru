@@ -36,8 +36,6 @@ using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the Flash-Friendly File System (F2FS)</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public sealed partial class F2FS
 {

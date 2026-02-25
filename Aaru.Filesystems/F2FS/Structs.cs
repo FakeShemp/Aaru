@@ -32,8 +32,6 @@ using System.Runtime.InteropServices;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the Flash-Friendly File System (F2FS)</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public sealed partial class F2FS
 {
@@ -61,61 +59,61 @@ public sealed partial class F2FS
     readonly struct Superblock
     {
         /// <summary>Magic Number</summary>
-        public readonly uint   magic;
+        public readonly uint magic;
         /// <summary>Major Version</summary>
         public readonly ushort major_ver;
         /// <summary>Minor Version</summary>
         public readonly ushort minor_ver;
         /// <summary>log2 sector size in bytes</summary>
-        public readonly uint   log_sectorsize;
+        public readonly uint log_sectorsize;
         /// <summary>log2 # of sectors per block</summary>
-        public readonly uint   log_sectors_per_block;
+        public readonly uint log_sectors_per_block;
         /// <summary>log2 block size in bytes</summary>
-        public readonly uint   log_blocksize;
+        public readonly uint log_blocksize;
         /// <summary>log2 # of blocks per segment</summary>
-        public readonly uint   log_blocks_per_seg;
+        public readonly uint log_blocks_per_seg;
         /// <summary># of segments per section</summary>
-        public readonly uint   segs_per_sec;
+        public readonly uint segs_per_sec;
         /// <summary># of sections per zone</summary>
-        public readonly uint   secs_per_zone;
+        public readonly uint secs_per_zone;
         /// <summary>checksum offset inside super block</summary>
-        public readonly uint   checksum_offset;
+        public readonly uint checksum_offset;
         /// <summary>total # of user blocks</summary>
-        public readonly ulong  block_count;
+        public readonly ulong block_count;
         /// <summary>total # of sections</summary>
-        public readonly uint   section_count;
+        public readonly uint section_count;
         /// <summary>total # of segments</summary>
-        public readonly uint   segment_count;
+        public readonly uint segment_count;
         /// <summary># of segments for checkpoint</summary>
-        public readonly uint   segment_count_ckpt;
+        public readonly uint segment_count_ckpt;
         /// <summary># of segments for SIT</summary>
-        public readonly uint   segment_count_sit;
+        public readonly uint segment_count_sit;
         /// <summary># of segments for NAT</summary>
-        public readonly uint   segment_count_nat;
+        public readonly uint segment_count_nat;
         /// <summary># of segments for SSA</summary>
-        public readonly uint   segment_count_ssa;
+        public readonly uint segment_count_ssa;
         /// <summary># of segments for main area</summary>
-        public readonly uint   segment_count_main;
+        public readonly uint segment_count_main;
         /// <summary>start block address of segment 0</summary>
-        public readonly uint   segment0_blkaddr;
+        public readonly uint segment0_blkaddr;
         /// <summary>start block address of checkpoint</summary>
-        public readonly uint   cp_blkaddr;
+        public readonly uint cp_blkaddr;
         /// <summary>start block address of SIT</summary>
-        public readonly uint   sit_blkaddr;
+        public readonly uint sit_blkaddr;
         /// <summary>start block address of NAT</summary>
-        public readonly uint   nat_blkaddr;
+        public readonly uint nat_blkaddr;
         /// <summary>start block address of SSA</summary>
-        public readonly uint   ssa_blkaddr;
+        public readonly uint ssa_blkaddr;
         /// <summary>start block address of main area</summary>
-        public readonly uint   main_blkaddr;
+        public readonly uint main_blkaddr;
         /// <summary>root inode number</summary>
-        public readonly uint   root_ino;
+        public readonly uint root_ino;
         /// <summary>node inode number</summary>
-        public readonly uint   node_ino;
+        public readonly uint node_ino;
         /// <summary>meta inode number</summary>
-        public readonly uint   meta_ino;
+        public readonly uint meta_ino;
         /// <summary>128-bit uuid for volume</summary>
-        public readonly Guid   uuid;
+        public readonly Guid uuid;
         /// <summary>volume name (UTF-16LE, MAX_VOLUME_NAME characters)</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAX_VOLUME_NAME * 2)]
         public readonly byte[] volume_name;
