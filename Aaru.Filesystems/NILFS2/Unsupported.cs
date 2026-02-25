@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Unsupported.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : NILFS2 filesystem plugin.
@@ -26,19 +26,21 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-// ReSharper disable UnusedMember.Local
-
-using System;
+using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class NILFS2
 {
     /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+    public ErrorNumber ListXAttr(string path, out List<string> xattrs)
+    {
+        xattrs = [];
+
+        return ErrorNumber.NotSupported;
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => ErrorNumber.NotSupported;
 }
