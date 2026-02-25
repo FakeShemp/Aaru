@@ -216,7 +216,47 @@ public sealed partial class NILFS2
 
         _superblock = Marshal.ByteArrayToStructureLittleEndian<Superblock>(sector);
 
-        if(_superblock.magic != NILFS2_MAGIC)
+        bool primaryValid = _superblock.magic == NILFS2_MAGIC;
+
+        // Try the secondary superblock at NILFS_SB2_OFFSET_BYTES(devsize) = (((devsize >> 12) - 1) << 12)
+        // The kernel reads both copies and uses the one with the higher s_last_cno
+        ulong partitionSize = (_partition.End - _partition.Start + 1) * _imagePlugin.Info.SectorSize;
+
+        if(partitionSize >= NILFS2_SEG_MIN_BLOCKS * NILFS2_MIN_BLOCK_SIZE + 4096)
+        {
+            ulong sb2Offset = ((partitionSize >> 12) - 1) << 12;
+            uint  sb2Addr   = (uint)(sb2Offset / _imagePlugin.Info.SectorSize);
+
+            if(_partition.Start + sb2Addr + sbSize < _partition.End)
+            {
+                ErrorNumber sb2Errno =
+                    _imagePlugin.ReadSectors(_partition.Start + sb2Addr, false, sbSize, out byte[] sector2, out _);
+
+                if(sb2Errno == ErrorNumber.NoError && sector2.Length >= Marshal.SizeOf<Superblock>())
+                {
+                    Superblock sb2 = Marshal.ByteArrayToStructureLittleEndian<Superblock>(sector2);
+
+                    if(sb2.magic == NILFS2_MAGIC)
+                    {
+                        // Use the secondary superblock if the primary is invalid,
+                        // or if the secondary has a newer checkpoint number
+                        if(!primaryValid || sb2.last_cno > _superblock.last_cno)
+                        {
+                            AaruLogging.Debug(MODULE_NAME,
+                                              "Using secondary superblock (primary valid={0}, sb1 cno={1}, sb2 cno={2})",
+                                              primaryValid,
+                                              _superblock.last_cno,
+                                              sb2.last_cno);
+
+                            _superblock  = sb2;
+                            primaryValid = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(!primaryValid)
         {
             AaruLogging.Debug(MODULE_NAME,
                               "Invalid magic: 0x{0:X4}, expected 0x{1:X4}",

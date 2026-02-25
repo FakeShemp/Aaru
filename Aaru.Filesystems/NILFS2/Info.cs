@@ -64,7 +64,27 @@ public sealed partial class NILFS2
 
         Superblock nilfsSb = Marshal.ByteArrayToStructureLittleEndian<Superblock>(sector);
 
-        return nilfsSb.magic == NILFS2_MAGIC;
+        if(nilfsSb.magic == NILFS2_MAGIC) return true;
+
+        // Try secondary superblock at NILFS_SB2_OFFSET_BYTES(devsize) = (((devsize >> 12) - 1) << 12)
+        ulong partitionSize = (partition.End - partition.Start + 1) * imagePlugin.Info.SectorSize;
+
+        if(partitionSize < NILFS2_SEG_MIN_BLOCKS * NILFS2_MIN_BLOCK_SIZE + 4096) return false;
+
+        ulong sb2Offset = ((partitionSize >> 12) - 1) << 12;
+        uint  sb2Addr   = (uint)(sb2Offset / imagePlugin.Info.SectorSize);
+
+        if(partition.Start + sb2Addr + sbSize >= partition.End) return false;
+
+        errno = imagePlugin.ReadSectors(partition.Start + sb2Addr, false, sbSize, out byte[] sector2, out _);
+
+        if(errno != ErrorNumber.NoError) return false;
+
+        if(sector2.Length < Marshal.SizeOf<Superblock>()) return false;
+
+        Superblock nilfsSb2 = Marshal.ByteArrayToStructureLittleEndian<Superblock>(sector2);
+
+        return nilfsSb2.magic == NILFS2_MAGIC;
     }
 
     /// <inheritdoc />
@@ -93,7 +113,35 @@ public sealed partial class NILFS2
 
         Superblock nilfsSb = Marshal.ByteArrayToStructureLittleEndian<Superblock>(sector);
 
-        if(nilfsSb.magic != NILFS2_MAGIC) return;
+        bool primaryValid = nilfsSb.magic == NILFS2_MAGIC;
+
+        // Try the secondary superblock at NILFS_SB2_OFFSET_BYTES(devsize) = (((devsize >> 12) - 1) << 12)
+        ulong partitionSize = (partition.End - partition.Start + 1) * imagePlugin.Info.SectorSize;
+
+        if(partitionSize >= NILFS2_SEG_MIN_BLOCKS * NILFS2_MIN_BLOCK_SIZE + 4096)
+        {
+            ulong sb2Offset = ((partitionSize >> 12) - 1) << 12;
+            uint  sb2Addr   = (uint)(sb2Offset / imagePlugin.Info.SectorSize);
+
+            if(partition.Start + sb2Addr + sbSize < partition.End)
+            {
+                ErrorNumber sb2Errno =
+                    imagePlugin.ReadSectors(partition.Start + sb2Addr, false, sbSize, out byte[] sector2, out _);
+
+                if(sb2Errno == ErrorNumber.NoError && sector2.Length >= Marshal.SizeOf<Superblock>())
+                {
+                    Superblock sb2 = Marshal.ByteArrayToStructureLittleEndian<Superblock>(sector2);
+
+                    if(sb2.magic == NILFS2_MAGIC && (!primaryValid || sb2.last_cno > nilfsSb.last_cno))
+                    {
+                        nilfsSb      = sb2;
+                        primaryValid = true;
+                    }
+                }
+            }
+        }
+
+        if(!primaryValid) return;
 
         var sb = new StringBuilder();
 
