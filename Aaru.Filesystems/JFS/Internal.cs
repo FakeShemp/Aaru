@@ -46,4 +46,21 @@ public sealed partial class JFS
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <inheritdoc />
+    /// <summary>File node for tracking open file state in JFS</summary>
+    sealed class JfsFileNode : IFileNode
+    {
+        /// <summary>The file's inode containing metadata and extent tree</summary>
+        internal Inode Inode { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 }

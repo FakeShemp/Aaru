@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -39,6 +40,142 @@ namespace Aaru.Filesystems;
 /// <summary>Implements detection of IBM's Journaled File System</summary>
 public sealed partial class JFS
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: path='{0}'", path);
+
+        // Resolve the path to its inode
+        ErrorNumber errno = GetInodeForPath(path, out Inode inode);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: GetInodeForPath failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Check if it's a directory
+        if((inode.di_mode & 0xF000) == 0x4000)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: path is a directory");
+
+            return ErrorNumber.IsDirectory;
+        }
+
+        // Must be a regular file
+        if((inode.di_mode & 0xF000) != 0x8000)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: path is not a regular file (mode=0x{0:X4})", inode.di_mode);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        node = new JfsFileNode
+        {
+            Path   = path,
+            Length = (long)inode.di_size,
+            Offset = 0,
+            Inode  = inode
+        };
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: success, inode={0}, size={1}", inode.di_number, inode.di_size);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        return node is not JfsFileNode ? ErrorNumber.InvalidArgument : ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not JfsFileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        if(buffer is null) return ErrorNumber.InvalidArgument;
+
+        if(fileNode.Offset < 0 || fileNode.Offset >= fileNode.Length) return ErrorNumber.InvalidArgument;
+
+        // Clamp read length to remaining file size and buffer size
+        long toRead = length;
+
+        if(fileNode.Offset + toRead > fileNode.Length) toRead = fileNode.Length - fileNode.Offset;
+
+        if(toRead <= 0) return ErrorNumber.NoError;
+
+        if(toRead > buffer.Length) toRead = buffer.Length;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: offset={0}, length={1}, toRead={2}", fileNode.Offset, length, toRead);
+
+        long bytesRead     = 0;
+        long currentOffset = fileNode.Offset;
+
+        while(bytesRead < toRead)
+        {
+            // Calculate which filesystem block contains the current offset
+            long logicalBlock  = currentOffset / _superblock.s_bsize;
+            var  offsetInBlock = (int)(currentOffset % _superblock.s_bsize);
+
+            // Map logical block to physical block using the xtree
+            ErrorNumber errno = XTreeLookup(fileNode.Inode.di_u, false, logicalBlock, out long physicalBlock);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                // Sparse/hole — fill with zeros
+                if(errno == ErrorNumber.InvalidArgument)
+                {
+                    long bytesToZero = Math.Min(_superblock.s_bsize - offsetInBlock, toRead - bytesRead);
+                    Array.Clear(buffer, (int)bytesRead, (int)bytesToZero);
+                    bytesRead     += bytesToZero;
+                    currentOffset += bytesToZero;
+
+                    continue;
+                }
+
+                AaruLogging.Debug(MODULE_NAME, "ReadFile: XTreeLookup failed for block {0}: {1}", logicalBlock, errno);
+
+                break;
+            }
+
+            // Read the physical block
+            errno = ReadFsBlock(physicalBlock, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadFile: ReadFsBlock failed for block {0}: {1}", physicalBlock, errno);
+
+                break;
+            }
+
+            // Copy data from block to buffer
+            long bytesToCopy = Math.Min(_superblock.s_bsize - offsetInBlock, toRead - bytesRead);
+            Array.Copy(blockData, offsetInBlock, buffer, bytesRead, bytesToCopy);
+
+            bytesRead     += bytesToCopy;
+            currentOffset += bytesToCopy;
+        }
+
+        read            =  bytesRead;
+        fileNode.Offset += bytesRead;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: read {0} bytes, new offset={1}", read, fileNode.Offset);
+
+        return ErrorNumber.NoError;
+    }
+
     /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat)
     {
@@ -174,14 +311,10 @@ public sealed partial class JFS
             GID                 = inode.di_gid,
             Mode                = inode.di_mode & 0x0FFFu,
             Blocks              = (long)inode.di_nblocks,
-            AccessTimeUtc       = DateHandlers.UnixUnsignedToDateTime(inode.di_atime.tv_sec,
-                                                                      inode.di_atime.tv_nsec),
-            StatusChangeTimeUtc = DateHandlers.UnixUnsignedToDateTime(inode.di_ctime.tv_sec,
-                                                                      inode.di_ctime.tv_nsec),
-            LastWriteTimeUtc    = DateHandlers.UnixUnsignedToDateTime(inode.di_mtime.tv_sec,
-                                                                      inode.di_mtime.tv_nsec),
-            CreationTimeUtc     = DateHandlers.UnixUnsignedToDateTime(inode.di_otime.tv_sec,
-                                                                      inode.di_otime.tv_nsec)
+            AccessTimeUtc       = DateHandlers.UnixUnsignedToDateTime(inode.di_atime.tv_sec, inode.di_atime.tv_nsec),
+            StatusChangeTimeUtc = DateHandlers.UnixUnsignedToDateTime(inode.di_ctime.tv_sec, inode.di_ctime.tv_nsec),
+            LastWriteTimeUtc    = DateHandlers.UnixUnsignedToDateTime(inode.di_mtime.tv_sec, inode.di_mtime.tv_nsec),
+            CreationTimeUtc     = DateHandlers.UnixUnsignedToDateTime(inode.di_otime.tv_sec, inode.di_otime.tv_nsec)
         };
 
         // Determine file type from di_mode (S_IFMT mask = 0xF000)
@@ -200,4 +333,3 @@ public sealed partial class JFS
         return info;
     }
 }
-
