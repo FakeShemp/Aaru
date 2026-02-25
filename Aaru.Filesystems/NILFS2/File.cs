@@ -499,6 +499,7 @@ public sealed partial class NILFS2
         if((inode.flags & NILFS2_SYNC_FL) != 0) attributes |= FileAttributes.Sync;
 
         return new FileEntryInfo
+        if((inode.flags & NILFS2_DIRSYNC_FL) != 0) attributes |= FileAttributes.Sync;
         {
             Attributes          = attributes,
             Inode               = inodeNumber,
