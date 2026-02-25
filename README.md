@@ -211,6 +211,7 @@ Fully supported file-systems (identify and extraction)
 * DEC Files-11 (aka ODS)
 * DEC RT-11 file system
 * High Sierra Format
+* IBM Journaling File System (JFS)
 * ISO9660, including Apple, Amiga, Rock Ridge, Joliet and Romeo extensions
 * Linux extended file system
 * Locus file system
@@ -253,7 +254,6 @@ Supported file systems for identification and information only
 * HAMMER file system
 * High Performance Optical File System (HPOFS)
 * HP Logical Interchange Format
-* IBM Journaling File System (JFS)
 * Linux extended file system 2
 * Linux extended file system 3
 * Linux extended file system 4
