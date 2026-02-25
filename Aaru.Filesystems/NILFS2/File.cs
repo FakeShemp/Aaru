@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -173,6 +174,221 @@ public sealed partial class NILFS2
                           stat.Length,
                           stat.Inode,
                           stat.Mode);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(string.IsNullOrEmpty(path) || path == "/") return ErrorNumber.IsDirectory;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: path='{0}'", path);
+
+        // Look up the inode number for the path
+        ErrorNumber errno = LookupInode(path, out ulong inodeNumber);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: LookupInode failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Read the inode
+        errno = ReadInodeFromIfile(_ifileInode, inodeNumber, out Inode inode);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: ReadInodeFromIfile failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Check it's not a directory (S_IFDIR = 0x4000)
+        if((inode.mode & 0xF000) == 0x4000)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: path is a directory");
+
+            return ErrorNumber.IsDirectory;
+        }
+
+        node = new Nilfs2FileNode
+        {
+            Path             = path,
+            Length           = (long)inode.size,
+            Offset           = 0,
+            InodeNumber      = inodeNumber,
+            Inode            = inode,
+            CachedBlock      = null,
+            CachedBlockIndex = -1
+        };
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: success, inode={0}, size={1}", inodeNumber, inode.size);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not Nilfs2FileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        fileNode.CachedBlock      = null;
+        fileNode.CachedBlockIndex = -1;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not Nilfs2FileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        if(buffer == null) return ErrorNumber.InvalidArgument;
+
+        if(fileNode.Offset < 0 || fileNode.Offset >= fileNode.Length) return ErrorNumber.InvalidArgument;
+
+        // Clamp read length to remaining file size and buffer size
+        long toRead = length;
+
+        if(fileNode.Offset + toRead > fileNode.Length) toRead = fileNode.Length - fileNode.Offset;
+
+        if(toRead <= 0) return ErrorNumber.NoError;
+
+        if(toRead > buffer.Length) toRead = buffer.Length;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: offset={0}, length={1}, toRead={2}", fileNode.Offset, length, toRead);
+
+        long bytesRead     = 0;
+        long currentOffset = fileNode.Offset;
+
+        while(bytesRead < toRead)
+        {
+            // Calculate which block contains the current offset
+            long blockIndex    = currentOffset / _blockSize;
+            var  offsetInBlock = (int)(currentOffset % _blockSize);
+
+            byte[] blockData;
+
+            // Use cached block if it matches
+            if(blockIndex == fileNode.CachedBlockIndex && fileNode.CachedBlock != null)
+                blockData = fileNode.CachedBlock;
+            else
+            {
+                // Read the block through the bmap → DAT → physical chain
+                ErrorNumber errno = ReadLogicalBlock(fileNode.Inode, (ulong)blockIndex, false, out blockData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "ReadFile: ReadLogicalBlock failed for block {0}: {1}",
+                                      blockIndex,
+                                      errno);
+
+                    if(bytesRead > 0) break;
+
+                    return errno;
+                }
+
+                // Cache the block we just read
+                fileNode.CachedBlock      = blockData;
+                fileNode.CachedBlockIndex = blockIndex;
+            }
+
+            if(blockData == null || blockData.Length == 0)
+            {
+                // Sparse block — fill with zeros
+                long bytesToZero = Math.Min(_blockSize - offsetInBlock, toRead - bytesRead);
+                Array.Clear(buffer, (int)bytesRead, (int)bytesToZero);
+                bytesRead     += bytesToZero;
+                currentOffset += bytesToZero;
+
+                continue;
+            }
+
+            // Copy data from block to buffer
+            long bytesToCopy = Math.Min(blockData.Length - offsetInBlock, toRead - bytesRead);
+            Array.Copy(blockData, offsetInBlock, buffer, bytesRead, bytesToCopy);
+
+            bytesRead     += bytesToCopy;
+            currentOffset += bytesToCopy;
+        }
+
+        read            =  bytesRead;
+        fileNode.Offset += bytesRead;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: read {0} bytes, new offset={1}", read, fileNode.Offset);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Resolves a path to an inode number by traversing directories from the root</summary>
+    /// <param name="path">File path</param>
+    /// <param name="inodeNumber">Output inode number</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber LookupInode(string path, out ulong inodeNumber)
+    {
+        inodeNumber = 0;
+
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath is "" or ".") normalizedPath = "/";
+
+        if(normalizedPath is "/")
+        {
+            inodeNumber = NILFS2_ROOT_INO;
+
+            return ErrorNumber.NoError;
+        }
+
+        string pathWithoutLeadingSlash = normalizedPath.StartsWith("/", StringComparison.Ordinal)
+                                             ? normalizedPath[1..]
+                                             : normalizedPath;
+
+        string[] pathComponents = pathWithoutLeadingSlash.Split('/', StringSplitOptions.RemoveEmptyEntries)
+                                                         .Where(static c => c is not ("." or ".."))
+                                                         .ToArray();
+
+        if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
+
+        Dictionary<string, DirectoryEntryInfo> currentEntries = _rootDirectoryCache;
+        string                                 targetName     = pathComponents[^1];
+
+        // Traverse parent directories
+        for(var i = 0; i < pathComponents.Length - 1; i++)
+        {
+            string component = pathComponents[i];
+
+            if(!currentEntries.TryGetValue(component, out DirectoryEntryInfo dirEntry)) return ErrorNumber.NoSuchFile;
+
+            if(dirEntry.Type != FileType.Dir) return ErrorNumber.NotDirectory;
+
+            ErrorNumber errno = ReadInodeFromIfile(_ifileInode, dirEntry.InodeNumber, out Inode childInode);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if((childInode.mode & 0xF000) != 0x4000) return ErrorNumber.NotDirectory;
+
+            var childEntries = new Dictionary<string, DirectoryEntryInfo>(StringComparer.Ordinal);
+            errno = ReadDirectoryEntries(childInode, childEntries);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            currentEntries = childEntries;
+        }
+
+        if(!currentEntries.TryGetValue(targetName, out DirectoryEntryInfo targetEntry)) return ErrorNumber.NoSuchFile;
+
+        inodeNumber = targetEntry.InodeNumber;
 
         return ErrorNumber.NoError;
     }

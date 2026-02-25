@@ -71,4 +71,33 @@ public sealed partial class NILFS2
     }
 
 #endregion
+
+#region Nested type: Nilfs2FileNode
+
+    /// <summary>File node for reading file contents with single-block caching</summary>
+    sealed class Nilfs2FileNode : IFileNode
+    {
+        /// <summary>The inode number</summary>
+        internal ulong InodeNumber { get; init; }
+
+        /// <summary>The file's on-disk inode (contains block mapping)</summary>
+        internal Inode Inode { get; init; }
+
+        /// <summary>Cached block data from the last read (single block, not the whole file)</summary>
+        internal byte[] CachedBlock { get; set; }
+
+        /// <summary>Logical block index of the cached block (-1 if none)</summary>
+        internal long CachedBlockIndex { get; set; } = -1;
+
+        /// <inheritdoc />
+        public string Path { get; set; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+    }
+
+#endregion
 }
