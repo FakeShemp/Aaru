@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.Logging;
@@ -36,8 +37,43 @@ namespace Aaru.Filesystems;
 
 public sealed partial class F2FS
 {
+    /// <summary>Reads the directory entries for a given inode into a dictionary</summary>
+    /// <param name="nid">Node ID of the directory inode</param>
+    /// <param name="entries">Output dictionary mapping filename → inode number</param>
+    /// <returns>Error code indicating success or failure</returns>
+    ErrorNumber ReadDirectoryEntries(uint nid, out Dictionary<string, uint> entries)
+    {
+        entries = new Dictionary<string, uint>();
+
+        // Resolve inode block address via NAT
+        ErrorNumber errno = LookupNat(nid, out uint blockAddr);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(blockAddr == 0) return ErrorNumber.InvalidArgument;
+
+        // Read the inode node block
+        errno = ReadBlock(blockAddr, out byte[] nodeBlock);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Parse the inode
+        Inode inode = Marshal.ByteArrayToStructureLittleEndian<Inode>(nodeBlock);
+
+        // Validate it's a directory
+        if((inode.i_mode & 0xF000) != 0x4000) return ErrorNumber.NotDirectory;
+
+        // Check if this directory uses inline dentry
+        if((inode.i_inline & F2FS_INLINE_DENTRY) != 0)
+            ParseInlineDentry(inode, nodeBlock, entries);
+        else
+            errno = ParseRegularDentry(inode, entries);
+
+        return errno;
+    }
+
     /// <summary>Parses inline dentry from the inode's node block</summary>
-    void ParseInlineDentry(Inode inode, byte[] nodeBlock)
+    void ParseInlineDentry(Inode inode, byte[] nodeBlock, Dictionary<string, uint> entries)
     {
         // For inline dentry, the data is stored in the inode's i_addr area
         // The inline data starts after the extra attribute area (if present) + reserved word
@@ -98,16 +134,16 @@ public sealed partial class F2FS
         int dentryStart   = reservedEnd;
         int filenameStart = dentryStart + nrInlineDentry * 11;
 
-        ParseDentryBitmapEntries(nodeBlock, bitmapStart, dentryStart, filenameStart, nrInlineDentry);
+        ParseDentryBitmapEntries(nodeBlock, bitmapStart, dentryStart, filenameStart, nrInlineDentry, entries);
     }
 
     /// <summary>Parses regular (non-inline) dentry blocks from the inode's data blocks</summary>
-    ErrorNumber ParseRegularDentry(Inode inode)
+    ErrorNumber ParseRegularDentry(Inode inode, Dictionary<string, uint> entries)
     {
         // Number of data blocks = ceil(i_size / blockSize)
         ulong nPages = (inode.i_size + _blockSize - 1) / _blockSize;
 
-        AaruLogging.Debug(MODULE_NAME, "Reading {0} dentry blocks from root inode", nPages);
+        AaruLogging.Debug(MODULE_NAME, "Reading {0} dentry blocks", nPages);
 
         // Get the extra isize in uint32 count
         var extraIsize = 0;
@@ -158,7 +194,8 @@ public sealed partial class F2FS
                                      0,
                                      SIZE_OF_DENTRY_BITMAP + SIZE_OF_RESERVED,
                                      SIZE_OF_DENTRY_BITMAP + SIZE_OF_RESERVED + NR_DENTRY_IN_BLOCK * 11,
-                                     NR_DENTRY_IN_BLOCK);
+                                     NR_DENTRY_IN_BLOCK,
+                                     entries);
         }
 
         return ErrorNumber.NoError;
@@ -167,7 +204,8 @@ public sealed partial class F2FS
     /// <summary>
     ///     Parses dentry entries from a bitmap/dentry/filename layout (used by both inline and regular dentry blocks)
     /// </summary>
-    void ParseDentryBitmapEntries(byte[] data, int bitmapOffset, int dentryOffset, int filenameOffset, int maxDentries)
+    static void ParseDentryBitmapEntries(byte[] data,        int bitmapOffset, int dentryOffset, int filenameOffset,
+                                         int    maxDentries, Dictionary<string, uint> entries)
     {
         var bitPos = 0;
 
@@ -205,10 +243,8 @@ public sealed partial class F2FS
 
             string fileName = Encoding.UTF8.GetString(data, fnOffset, nameLen);
 
-            if(!string.IsNullOrEmpty(fileName) &&
-               fileName is not ("." or "..")   &&
-               !_rootDirectoryCache.ContainsKey(fileName))
-                _rootDirectoryCache[fileName] = ino;
+            if(!string.IsNullOrEmpty(fileName) && fileName is not ("." or "..") && !entries.ContainsKey(fileName))
+                entries[fileName] = ino;
 
             // Advance past the slots used by this entry
             int slots = (nameLen + 8 - 1) / 8; // GET_DENTRY_SLOTS

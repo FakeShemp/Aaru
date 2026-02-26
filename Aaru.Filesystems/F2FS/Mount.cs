@@ -211,68 +211,16 @@ public sealed partial class F2FS
     {
         AaruLogging.Debug(MODULE_NAME, "Loading root directory, root_ino={0}", _superblock.root_ino);
 
-        // Resolve root inode block address via NAT
-        ErrorNumber errno = LookupNat(_superblock.root_ino, out uint rootBlockAddr);
+        ErrorNumber errno = ReadDirectoryEntries(_superblock.root_ino, out Dictionary<string, uint> entries);
 
         if(errno != ErrorNumber.NoError)
         {
-            AaruLogging.Debug(MODULE_NAME, "Error looking up root inode in NAT: {0}", errno);
+            AaruLogging.Debug(MODULE_NAME, "Error reading root directory entries: {0}", errno);
 
             return errno;
         }
 
-        AaruLogging.Debug(MODULE_NAME, "Root inode block address: {0}", rootBlockAddr);
-
-        if(rootBlockAddr == 0)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Root inode block address is NULL_ADDR");
-
-            return ErrorNumber.InvalidArgument;
-        }
-
-        // Read the root inode node block
-        errno = ReadBlock(rootBlockAddr, out byte[] nodeBlock);
-
-        if(errno != ErrorNumber.NoError)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Error reading root inode block: {0}", errno);
-
-            return errno;
-        }
-
-        // Parse the inode from the node block
-        Inode rootInode = Marshal.ByteArrayToStructureLittleEndian<Inode>(nodeBlock);
-
-        // Validate it's a directory
-        // S_IFDIR = 0x4000 in POSIX mode bits
-        if((rootInode.i_mode & 0xF000) != 0x4000)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Root inode is not a directory (mode: 0x{0:X4})", rootInode.i_mode);
-
-            return ErrorNumber.InvalidArgument;
-        }
-
-        AaruLogging.Debug(MODULE_NAME,
-                          "Root inode valid: mode=0x{0:X4}, size={1}, inline=0x{2:X2}",
-                          rootInode.i_mode,
-                          rootInode.i_size,
-                          rootInode.i_inline);
-
-        // Check if this directory uses inline dentry
-        if((rootInode.i_inline & F2FS_INLINE_DENTRY) != 0)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Root directory uses inline dentry");
-
-            ParseInlineDentry(rootInode, nodeBlock);
-        }
-        else
-        {
-            AaruLogging.Debug(MODULE_NAME, "Root directory uses regular dentry blocks");
-
-            errno = ParseRegularDentry(rootInode);
-
-            if(errno != ErrorNumber.NoError) return errno;
-        }
+        foreach(KeyValuePair<string, uint> kvp in entries) _rootDirectoryCache[kvp.Key] = kvp.Value;
 
         AaruLogging.Debug(MODULE_NAME, "Root directory loaded, {0} entries cached", _rootDirectoryCache.Count);
 
