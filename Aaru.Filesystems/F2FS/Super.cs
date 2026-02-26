@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : F2FS filesystem plugin.
@@ -26,13 +26,44 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class F2FS
 {
     /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // f_blocks = block_count - segment0_blkaddr (same as kernel's f2fs_statfs)
+        ulong totalBlocks = _superblock.block_count - _superblock.segment0_blkaddr;
+
+        // f_bfree = user_block_count - valid_block_count
+        ulong freeBlocks = _checkpoint.user_block_count > _checkpoint.valid_block_count
+                               ? _checkpoint.user_block_count - _checkpoint.valid_block_count
+                               : 0;
+
+        stat = new FileSystemInfo
+        {
+            Blocks         = totalBlocks,
+            FreeBlocks     = freeBlocks,
+            Files          = _checkpoint.valid_inode_count,
+            FreeFiles      = 0,
+            FilenameLength = F2FS_NAME_LEN,
+            Type           = FS_TYPE,
+            PluginId       = Id,
+            Id =
+            {
+                IsGuid = true,
+                uuid   = _superblock.uuid
+            }
+        };
+
+        return ErrorNumber.NoError;
+    }
 }
