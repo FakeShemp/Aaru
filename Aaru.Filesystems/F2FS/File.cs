@@ -340,6 +340,93 @@ public sealed partial class F2FS
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Verify it's a symlink
+        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(!stat.Attributes.HasFlag(FileAttributes.Symlink)) return ErrorNumber.InvalidArgument;
+
+        // Resolve path to inode
+        errno = LookupFile(path, out uint nid);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read the raw node block (needed for both inline and block-mapped cases)
+        errno = LookupNat(nid, out uint blockAddr);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(blockAddr == 0) return ErrorNumber.InvalidArgument;
+
+        errno = ReadBlock(blockAddr, out byte[] nodeBlock);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        Inode inode = Marshal.ByteArrayToStructureLittleEndian<Inode>(nodeBlock);
+
+        if(inode.i_size == 0)
+        {
+            dest = string.Empty;
+
+            return ErrorNumber.NoError;
+        }
+
+        byte[] linkData;
+
+        // F2FS uses page_symlink(): target is stored as inline data or in data block 0
+        if((inode.i_inline & F2FS_INLINE_DATA) != 0)
+        {
+            // Inline data: read from the inode's i_addr area
+            int extraIsize     = GetExtraIsize(inode);
+            int xattrAddrs     = GetInlineXattrAddrs(inode);
+            int inodeFixedSize = Marshal.SizeOf<Inode>() - DEF_ADDRS_PER_INODE * 4 - DEF_NIDS_PER_INODE * 4;
+
+            int inlineDataOff  = inodeFixedSize      + (extraIsize + DEF_INLINE_RESERVED_SIZE) * 4;
+            int totalAddrs     = DEF_ADDRS_PER_INODE - extraIsize;
+            int usableAddrs    = totalAddrs          - xattrAddrs - DEF_INLINE_RESERVED_SIZE;
+            int inlineDataSize = usableAddrs * 4;
+
+            var maxLen = (int)Math.Min((long)inode.i_size, inlineDataSize);
+
+            if(inlineDataOff + maxLen > nodeBlock.Length) return ErrorNumber.InvalidArgument;
+
+            linkData = new byte[maxLen];
+            Array.Copy(nodeBlock, inlineDataOff, linkData, 0, maxLen);
+        }
+        else
+        {
+            // Block-mapped: symlinks always fit in one block, read data block 0
+            int addrsPerInode = GetAddrsPerInode(inode);
+
+            errno = ResolveDataBlock(inode, 0, addrsPerInode, out uint dataBlockAddr);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if(dataBlockAddr == 0) return ErrorNumber.InvalidArgument;
+
+            errno = ReadBlock(dataBlockAddr, out byte[] dataBlock);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            var maxLen = (int)Math.Min((long)inode.i_size, _blockSize);
+            linkData = new byte[maxLen];
+            Array.Copy(dataBlock, 0, linkData, 0, maxLen);
+        }
+
+        // The target is a null-terminated string
+        dest = StringHandlers.CToString(linkData, _encoding);
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Reads data from an inline-data file node</summary>
     static ErrorNumber ReadInlineData(F2fsFileNode fileNode, long toRead, byte[] buffer, out long read)
     {
