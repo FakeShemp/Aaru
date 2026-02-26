@@ -197,6 +197,34 @@ public sealed partial class F2FS
         _blockSize        = (uint)(1 << (int)_superblock.log_blocksize);
         _blocksPerSegment = (uint)(1 << (int)_superblock.log_blocks_per_seg);
 
+        // Validate superblock CRC if the feature is enabled
+        if((_superblock.feature & F2FS_FEATURE_SB_CHKSUM) != 0)
+        {
+            var expectedCrcOffset = (uint)(Marshal.SizeOf<Superblock>() - 4);
+
+            if(_superblock.checksum_offset != expectedCrcOffset)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Superblock checksum offset mismatch: stored={0}, expected={1}",
+                                  _superblock.checksum_offset,
+                                  expectedCrcOffset);
+            }
+            else
+            {
+                uint computed = Crc32Le(F2FS_MAGIC, sector, 0, _superblock.checksum_offset);
+
+                if(computed != _superblock.crc)
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "Superblock CRC mismatch: stored=0x{0:X8}, computed=0x{1:X8}",
+                                      _superblock.crc,
+                                      computed);
+                }
+                else
+                    AaruLogging.Debug(MODULE_NAME, "Superblock CRC valid (0x{0:X8})", _superblock.crc);
+            }
+        }
+
         AaruLogging.Debug(MODULE_NAME,
                           "Superblock valid. Block size: {0}, Blocks/segment: {1}",
                           _blockSize,
