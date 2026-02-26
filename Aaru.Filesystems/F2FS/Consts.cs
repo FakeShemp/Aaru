@@ -137,6 +137,29 @@ public sealed partial class F2FS
     // i_advise hint bits
     const byte FADVISE_ENCRYPT_BIT = 0x04;
 
+    // Extra inode attribute size limits (in bytes)
+    // F2FS_MIN_EXTRA_ATTR_SIZE = sizeof(__le32) = 4
+    // F2FS_TOTAL_EXTRA_ATTR_SIZE = offsetof(i_extra_end) - offsetof(i_extra_isize)
+    //   = (i_extra_isize(2) + i_inline_xattr_size(2) + i_projid(4) + i_inode_checksum(4)
+    //      + i_crtime(8) + i_crtime_nsec(4) + i_compr_blocks(8) + i_compress_algorithm(1)
+    //      + i_log_cluster_size(1) + i_compress_flag(2)) = 36 bytes
+    const int F2FS_MIN_EXTRA_ATTR_SIZE   = 4;
+    const int F2FS_TOTAL_EXTRA_ATTR_SIZE = 36;
+
+    // Inline xattr size limits (in __le32 units)
+    // MIN_INLINE_XATTR_SIZE = sizeof(f2fs_xattr_header) / sizeof(__le32) = 8 / 4 = 2
+    // MAX_INLINE_XATTR_SIZE = DEF_ADDRS_PER_INODE - TOTAL_EXTRA/4 - DEF_INLINE_RESERVED_SIZE - MIN_INLINE_DENTRY/4
+    //   = 923 - 9 - 1 - 10 = 903
+    const int MIN_INLINE_XATTR_SIZE = 2;
+    const int MAX_INLINE_XATTR_SIZE = 903;
+
+    // Compression log cluster size limits
+    const int MIN_COMPRESS_LOG_SIZE = 2;
+    const int MAX_COMPRESS_LOG_SIZE = 8;
+
+    // Compression algorithm maximum
+    const byte COMPRESS_MAX = 4;
+
     // Inline data reserved size in __le32 units (1 word reserved before inline data area)
     const int DEF_INLINE_RESERVED_SIZE = 1;
 

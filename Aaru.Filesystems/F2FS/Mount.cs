@@ -128,6 +128,8 @@ public sealed partial class F2FS
         _checkpointData = null;
         _imagePlugin    = null;
         _encoding       = null;
+        _maxBlockAddr   = 0;
+        _maxNid         = 0;
         _mounted        = false;
 
         AaruLogging.Debug(MODULE_NAME, "Filesystem unmounted successfully");
@@ -196,6 +198,14 @@ public sealed partial class F2FS
 
         _blockSize        = (uint)(1 << (int)_superblock.log_blocksize);
         _blocksPerSegment = (uint)(1 << (int)_superblock.log_blocks_per_seg);
+
+        // MAX_BLKADDR = segment0_blkaddr + segment_count * blocks_per_segment
+        _maxBlockAddr = _superblock.segment0_blkaddr + _superblock.segment_count * _blocksPerSegment;
+
+        // max_nid = NAT_ENTRY_PER_BLOCK * nat_blocks
+        // nat_blocks = (segment_count_nat / 2) * blocks_per_segment  (pair segments)
+        uint natBlocks = _superblock.segment_count_nat / 2 * _blocksPerSegment;
+        _maxNid = NAT_ENTRY_PER_BLOCK * natBlocks;
 
         // Validate superblock CRC if the feature is enabled
         if((_superblock.feature & F2FS_FEATURE_SB_CHKSUM) != 0)

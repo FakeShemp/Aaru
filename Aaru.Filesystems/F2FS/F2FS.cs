@@ -54,6 +54,8 @@ public sealed partial class F2FS : IReadOnlyFilesystem
     uint        _blockSize;
     uint        _blocksPerSegment;
     uint        _cpStartAddr;
+    uint        _maxBlockAddr;
+    uint        _maxNid;
 
     /// <summary>NAT journal entries from the checkpoint's hot data summary: nid → NatEntry</summary>
     readonly Dictionary<uint, NatEntry> _natJournal = new();

@@ -27,15 +27,41 @@
 // ****************************************************************************/
 
 using Aaru.CommonTypes.Enums;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class F2FS
 {
+    /// <summary>
+    ///     Validates that a data block address falls within the main area.
+    ///     Matches the kernel's DATA_GENERIC check in __f2fs_is_valid_blkaddr():
+    ///     blkaddr must be >= main_blkaddr and &lt; MAX_BLKADDR.
+    /// </summary>
+    bool IsValidDataBlockAddress(uint blkAddr)
+    {
+        if(blkAddr == NULL_ADDR || blkAddr == NEW_ADDR || blkAddr == COMPRESS_ADDR) return false;
+
+        return blkAddr >= _superblock.main_blkaddr && blkAddr < _maxBlockAddr;
+    }
+
     /// <summary>Reads a single filesystem block by its block number</summary>
     ErrorNumber ReadBlock(uint blockNumber, out byte[] blockData)
     {
         blockData = null;
+
+        // Reject blocks outside the filesystem: must be within [segment0_blkaddr, maxBlockAddr)
+        // This allows both metadata area (NAT, SIT, SSA) and main data area blocks.
+        if(blockNumber != 0 && (blockNumber < _superblock.segment0_blkaddr || blockNumber >= _maxBlockAddr))
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "ReadBlock: block address {0} outside filesystem range [{1}, {2})",
+                              blockNumber,
+                              _superblock.segment0_blkaddr,
+                              _maxBlockAddr);
+
+            return ErrorNumber.InvalidArgument;
+        }
 
         // Convert block number to sector address
         uint  sectorsPerBlock = _blockSize / _imagePlugin.Info.SectorSize;
