@@ -156,17 +156,21 @@ public sealed partial class F2FS
     const int SIT_VBLOCKS_SHIFT = 10;
 
     // Xattr constants from xattr.h
-    const uint F2FS_XATTR_MAGIC                   = 0xF2F52011;
-    const int  F2FS_XATTR_REFCOUNT_MAX            = 1024;
-    const byte F2FS_XATTR_INDEX_USER              = 1;
-    const byte F2FS_XATTR_INDEX_POSIX_ACL_ACCESS  = 2;
-    const byte F2FS_XATTR_INDEX_POSIX_ACL_DEFAULT = 3;
-    const byte F2FS_XATTR_INDEX_TRUSTED           = 4;
-    const byte F2FS_XATTR_INDEX_LUSTRE            = 5;
-    const byte F2FS_XATTR_INDEX_SECURITY          = 6;
-    const byte F2FS_XATTR_INDEX_ADVISE            = 7;
-    const byte F2FS_XATTR_INDEX_ENCRYPTION        = 9;
-    const byte F2FS_XATTR_INDEX_VERITY            = 11;
+    const uint   F2FS_XATTR_MAGIC                   = 0xF2F52011;
+    const int    F2FS_XATTR_REFCOUNT_MAX            = 1024;
+    const byte   F2FS_XATTR_INDEX_USER              = 1;
+    const byte   F2FS_XATTR_INDEX_POSIX_ACL_ACCESS  = 2;
+    const byte   F2FS_XATTR_INDEX_POSIX_ACL_DEFAULT = 3;
+    const byte   F2FS_XATTR_INDEX_TRUSTED           = 4;
+    const byte   F2FS_XATTR_INDEX_LUSTRE            = 5;
+    const byte   F2FS_XATTR_INDEX_SECURITY          = 6;
+    const byte   F2FS_XATTR_INDEX_ADVISE            = 7;
+    const byte   F2FS_XATTR_INDEX_ENCRYPTION        = 9;
+    const byte   F2FS_XATTR_INDEX_VERITY            = 11;
+    const int    XATTR_ROUND                        = 3;
+    const int    XATTR_PADDING_SIZE                 = 4; // sizeof(__u32)
+    const int    DEFAULT_INLINE_XATTR_ADDRS         = 50;
+    const string F2FS_SYSTEM_ADVISE_NAME            = "system.advise";
 
     // ACL constants from acl.h
     const ushort F2FS_ACL_VERSION = 0x0001;
