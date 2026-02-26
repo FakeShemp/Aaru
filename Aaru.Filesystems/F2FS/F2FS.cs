@@ -53,6 +53,10 @@ public sealed partial class F2FS : IReadOnlyFilesystem
     bool        _mounted;
     uint        _blockSize;
     uint        _blocksPerSegment;
+    uint        _cpStartAddr;
+
+    /// <summary>NAT journal entries from the checkpoint's hot data summary: nid → NatEntry</summary>
+    readonly Dictionary<uint, NatEntry> _natJournal = new();
 
     /// <summary>Cache of root directory entries: filename → inode number</summary>
     readonly Dictionary<string, uint> _rootDirectoryCache = new();

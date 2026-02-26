@@ -40,6 +40,20 @@ public sealed partial class F2FS
     {
         blockAddr = 0;
 
+        // Check the NAT journal first (entries here override on-disk NAT)
+        if(_natJournal.TryGetValue(nid, out NatEntry journalEntry))
+        {
+            blockAddr = journalEntry.block_addr;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "NAT journal hit: nid={0}, ino={1}, block_addr={2}",
+                              nid,
+                              journalEntry.ino,
+                              journalEntry.block_addr);
+
+            return ErrorNumber.NoError;
+        }
+
         // NAT_BLOCK_OFFSET(nid) = nid / NAT_ENTRY_PER_BLOCK
         uint natBlockOffset = nid / NAT_ENTRY_PER_BLOCK;
         uint natEntryOffset = nid % NAT_ENTRY_PER_BLOCK;

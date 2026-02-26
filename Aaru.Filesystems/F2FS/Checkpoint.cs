@@ -83,26 +83,36 @@ public sealed partial class F2FS
             {
                 _checkpoint     = cp2;
                 _checkpointData = cp2Data;
+                _cpStartAddr    = cp2Addr;
             }
             else
             {
                 _checkpoint     = cp1;
                 _checkpointData = cp1Data;
+                _cpStartAddr    = _superblock.cp_blkaddr;
             }
         }
         else if(cp1Valid)
         {
             _checkpoint     = cp1;
             _checkpointData = cp1Data;
+            _cpStartAddr    = _superblock.cp_blkaddr;
         }
         else
         {
             _checkpoint     = cp2;
             _checkpointData = cp2Data;
+            _cpStartAddr    = cp2Addr;
         }
 
         // Extract the NAT version bitmap from the checkpoint
         ExtractNatBitmap();
+
+        // Load NAT journal entries from the summary area
+        ErrorNumber journalErrno = LoadNatJournal();
+
+        if(journalErrno != ErrorNumber.NoError)
+            AaruLogging.Debug(MODULE_NAME, "Warning: failed to load NAT journal: {0}", journalErrno);
 
         return ErrorNumber.NoError;
     }
@@ -209,6 +219,110 @@ public sealed partial class F2FS
         cp      = firstCp;
         version = firstVersion;
         cpData  = fullCpData;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Loads NAT journal entries from the checkpoint's summary area.
+    ///     The kernel stores frequently-updated NAT entries in the hot data summary journal
+    ///     so they may not be reflected in the on-disk NAT blocks yet.
+    /// </summary>
+    ErrorNumber LoadNatJournal()
+    {
+        _natJournal.Clear();
+
+        byte[] journalData;
+
+        bool compactSummary = (_checkpoint.ckpt_flags & CP_COMPACT_SUM_FLAG) != 0;
+
+        if(compactSummary)
+        {
+            // For compact summaries, the NAT journal is at the very start of the summary block
+            // start_sum_block = cp_start + cp_pack_start_sum
+            uint sumBlockAddr = _cpStartAddr + _checkpoint.cp_pack_start_sum;
+
+            AaruLogging.Debug(MODULE_NAME, "Loading compact NAT journal from block {0}", sumBlockAddr);
+
+            ErrorNumber errno = ReadBlock(sumBlockAddr, out byte[] sumBlock);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // First SUM_JOURNAL_SIZE bytes = NAT journal
+            journalData = sumBlock;
+        }
+        else
+        {
+            // For normal summaries, the hot data summary block is at:
+            // sum_blk_addr(NR_CURSEG_PERSIST_TYPE, CURSEG_HOT_DATA) =
+            //   cp_start + cp_pack_total_block_count - (NR_CURSEG_PERSIST_TYPE + 1) + CURSEG_HOT_DATA
+            uint hotDataSumAddr = _cpStartAddr +
+                                  _checkpoint.cp_pack_total_block_count -
+                                  (NR_CURSEG_PERSIST_TYPE + 1u) +
+                                  CURSEG_HOT_DATA;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "Loading normal NAT journal from hot data summary block {0}",
+                              hotDataSumAddr);
+
+            ErrorNumber errno = ReadBlock(hotDataSumAddr, out byte[] sumBlock);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // In a normal summary block, the journal starts after the summary entries
+            // offset = SUM_ENTRY_SIZE = SUMMARY_SIZE * ENTRIES_IN_SUM = 3584
+            journalData = new byte[SUM_JOURNAL_SIZE];
+            Array.Copy(sumBlock, SUM_ENTRY_SIZE, journalData, 0, SUM_JOURNAL_SIZE);
+        }
+
+        // The f2fs_journal starts with n_nats (u16), then nat_journal_entry[NAT_JOURNAL_ENTRIES]
+        if(journalData.Length < 2)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Journal data too small");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        var nNats = BitConverter.ToUInt16(journalData, 0);
+
+        AaruLogging.Debug(MODULE_NAME, "NAT journal contains {0} entries", nNats);
+
+        if(nNats > NAT_JOURNAL_ENTRIES)
+        {
+            AaruLogging.Debug(MODULE_NAME, "NAT journal entry count {0} exceeds max {1}", nNats, NAT_JOURNAL_ENTRIES);
+
+            nNats = NAT_JOURNAL_ENTRIES;
+        }
+
+        // Each nat_journal_entry = { __le32 nid; struct f2fs_nat_entry ne; } = 13 bytes
+        // They start at offset 2 in the journal
+        var offset = 2;
+
+        for(var i = 0; i < nNats; i++)
+        {
+            if(offset + NAT_JOURNAL_ENTRY_SIZE > journalData.Length) break;
+
+            var nid = BitConverter.ToUInt32(journalData, offset);
+
+            // Parse the NatEntry (9 bytes: version u8, ino u32, block_addr u32)
+            var entryBytes = new byte[Marshal.SizeOf<NatEntry>()];
+            Array.Copy(journalData, offset + 4, entryBytes, 0, entryBytes.Length);
+
+            NatEntry natEntry = Marshal.ByteArrayToStructureLittleEndian<NatEntry>(entryBytes);
+
+            _natJournal[nid] = natEntry;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "NAT journal[{0}]: nid={1}, ino={2}, block_addr={3}",
+                              i,
+                              nid,
+                              natEntry.ino,
+                              natEntry.block_addr);
+
+            offset += NAT_JOURNAL_ENTRY_SIZE;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "Loaded {0} NAT journal entries", _natJournal.Count);
 
         return ErrorNumber.NoError;
     }

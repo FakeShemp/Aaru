@@ -77,6 +77,17 @@ public sealed partial class F2FS
     const int SIT_JOURNAL_RESERVED   = 37;   // (507 - 2) % 78
     const int EXTRA_INFO_RESERVED    = 497;  // 507 - 2 - 8
 
+    // Summary block layout constants
+    const int SUMMARY_SIZE           = 7; // sizeof(f2fs_summary)
+    const int SUM_FOOTER_SIZE        = 5; // sizeof(summary_footer)
+    const int SUM_ENTRY_SIZE         = SUMMARY_SIZE * ENTRIES_IN_SUM; // 7 * 512 = 3584
+    const int SUM_JOURNAL_SIZE       = 4096 - SUM_FOOTER_SIZE - SUM_ENTRY_SIZE; // 507
+    const int NAT_JOURNAL_ENTRY_SIZE = 4    + 9; // sizeof(nat_journal_entry) = nid(4) + NatEntry(9)
+
+    // Curseg type indices
+    const int CURSEG_HOT_DATA        = 0;
+    const int NR_CURSEG_PERSIST_TYPE = 6;
+
     // Checkpoint flags
     const uint CP_RESIZEFS_FLAG         = 0x00004000;
     const uint CP_DISABLED_QUICK_FLAG   = 0x00002000;

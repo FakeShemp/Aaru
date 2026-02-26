@@ -30,7 +30,8 @@ namespace Aaru.Filesystems;
 
 public sealed partial class F2FS
 {
-    /// <summary>Tests a bit in a bitmap (little-endian bit order within each byte)</summary>
+    /// <summary>Tests a bit in a bitmap using F2FS bit order (MSB-first within each byte)</summary>
+    /// <remarks>Matches the kernel's f2fs_test_bit(): mask = BIT(7 - (nr &amp; 7))</remarks>
     static bool TestBit(uint bitNumber, byte[] bitmap)
     {
         if(bitmap == null) return false;
@@ -39,7 +40,7 @@ public sealed partial class F2FS
 
         if(byteIndex >= bitmap.Length) return false;
 
-        var bitIndex = (int)(bitNumber & 7);
+        int bitIndex = 7 - (int)(bitNumber & 7);
 
         return (bitmap[byteIndex] & 1 << bitIndex) != 0;
     }
