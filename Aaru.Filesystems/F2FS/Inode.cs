@@ -58,6 +58,44 @@ public sealed partial class F2FS
         return ErrorNumber.NoError;
     }
 
+    /// <summary>
+    ///     Returns the extra inode size in __le32 units.
+    ///     Matches the kernel's offset_in_addr() / get_extra_isize().
+    /// </summary>
+    static int GetExtraIsize(in Inode inode)
+    {
+        if((inode.i_inline & F2FS_EXTRA_ATTR) == 0 || inode.i_addr is not { Length: > 0 }) return 0;
+
+        // i_extra_isize is stored as the first u16 of i_addr, value is in bytes
+        return (int)(inode.i_addr[0] & 0xFFFF) / 4;
+    }
+
+    /// <summary>
+    ///     Returns the number of __le32 slots reserved for inline xattrs.
+    ///     Matches the kernel's get_inline_xattr_addrs() with the three-way check from do_read_inode():
+    ///     1) If superblock has FLEXIBLE_INLINE_XATTR feature → use per-inode i_inline_xattr_size
+    ///     2) Else if inode has INLINE_XATTR or INLINE_DENTRY → DEFAULT_INLINE_XATTR_ADDRS (50)
+    ///     3) Else → 0
+    /// </summary>
+    int GetInlineXattrAddrs(in Inode inode)
+    {
+        if((_superblock.feature & F2FS_FEATURE_FLEXIBLE_INLINE_XATTR) != 0)
+        {
+            // Per-inode value from extra attributes: i_inline_xattr_size is at offset 2 in the extra area
+            if((inode.i_inline                     & F2FS_EXTRA_ATTR) != 0 && inode.i_addr is { Length: > 0 })
+                return (int)(inode.i_addr[0] >> 16 & 0xFFFF);
+
+            return 0;
+        }
+
+        if((inode.i_inline & (F2FS_INLINE_XATTR | F2FS_INLINE_DENTRY)) != 0) return DEFAULT_INLINE_XATTR_ADDRS;
+
+        return 0;
+    }
+
+    /// <summary>Returns the number of usable direct-address slots in an inode's i_addr array</summary>
+    int GetAddrsPerInode(in Inode inode) => DEF_ADDRS_PER_INODE - GetExtraIsize(inode) - GetInlineXattrAddrs(inode);
+
     /// <summary>Resolves a file-page index to a data block address for a given inode</summary>
     ErrorNumber ResolveDataBlock(Inode inode, uint pageIndex, int addrsPerInode, out uint blockAddr)
     {
@@ -69,13 +107,7 @@ public sealed partial class F2FS
             var addrIndex = (int)pageIndex;
 
             // Extra isize consumes the start of i_addr
-            var extraIsize = 0;
-
-            if((inode.i_inline & F2FS_EXTRA_ATTR) != 0 && inode.i_addr?.Length > 0)
-            {
-                extraIsize =  (int)(inode.i_addr[0] & 0xFFFF);
-                extraIsize /= 4;
-            }
+            int extraIsize = GetExtraIsize(inode);
 
             blockAddr = inode.i_addr[extraIsize + addrIndex];
 

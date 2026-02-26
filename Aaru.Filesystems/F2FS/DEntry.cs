@@ -79,21 +79,8 @@ public sealed partial class F2FS
         // The inline data starts after the extra attribute area (if present) + reserved word
         int inodeFixedSize = Marshal.SizeOf<Inode>() - DEF_ADDRS_PER_INODE * 4 - DEF_NIDS_PER_INODE * 4;
 
-        var extraSize = 0;
-
-        if((inode.i_inline & F2FS_EXTRA_ATTR) != 0 && inode.i_addr?.Length > 0)
-        {
-            // i_extra_isize is at the start of i_addr (first 2 bytes as LE16)
-            extraSize = BitConverter.ToUInt16(nodeBlock, inodeFixedSize) / 4;
-        }
-
-        var inlineXattrAddrs = 0;
-
-        if((inode.i_inline & F2FS_INLINE_XATTR) != 0 && (inode.i_inline & F2FS_EXTRA_ATTR) != 0)
-        {
-            // i_inline_xattr_size is at offset 2 within the extra area
-            inlineXattrAddrs = BitConverter.ToUInt16(nodeBlock, inodeFixedSize + 2);
-        }
+        int extraSize        = GetExtraIsize(inode);
+        int inlineXattrAddrs = GetInlineXattrAddrs(inode);
 
         int totalAddrs     = DEF_ADDRS_PER_INODE - extraSize;
         int usableAddrs    = totalAddrs          - inlineXattrAddrs - 1; // -1 for DEF_INLINE_RESERVED_SIZE
@@ -145,25 +132,7 @@ public sealed partial class F2FS
 
         AaruLogging.Debug(MODULE_NAME, "Reading {0} dentry blocks", nPages);
 
-        // Get the extra isize in uint32 count
-        var extraIsize = 0;
-
-        if((inode.i_inline & F2FS_EXTRA_ATTR) != 0 && inode.i_addr?.Length > 0)
-        {
-            // i_extra_isize is stored as first u16 of i_addr, value is in bytes
-            // We need the number of __le32 words it consumes
-            extraIsize =  (int)(inode.i_addr[0] & 0xFFFF);
-            extraIsize /= 4;
-        }
-
-        var xattrAddrs = 0;
-
-        if((inode.i_inline & F2FS_INLINE_XATTR) != 0 &&
-           (inode.i_inline & F2FS_EXTRA_ATTR)   != 0 &&
-           inode.i_addr?.Length                 > 0)
-            xattrAddrs = (int)(inode.i_addr[0] >> 16 & 0xFFFF);
-
-        int addrsPerInode = DEF_ADDRS_PER_INODE - extraIsize - xattrAddrs;
+        int addrsPerInode = GetAddrsPerInode(inode);
 
         for(ulong n = 0; n < nPages; n++)
         {

@@ -213,14 +213,7 @@ public sealed partial class F2FS
 
         if((inode.i_inline & F2FS_INLINE_XATTR) != 0)
         {
-            var inlineXattrAddrs = 0;
-
-            if((inode.i_inline & F2FS_EXTRA_ATTR) != 0 && inode.i_addr is { Length: > 0 })
-                inlineXattrAddrs = (int)(inode.i_addr[0] >> 16 & 0xFFFF);
-
-            // If not using flexible inline xattr, use the default size
-            if(inlineXattrAddrs == 0) inlineXattrAddrs = DEFAULT_INLINE_XATTR_ADDRS;
-
+            int inlineXattrAddrs = GetInlineXattrAddrs(inode);
             inlineXattrSize = inlineXattrAddrs * 4;
         }
 

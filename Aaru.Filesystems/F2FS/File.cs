@@ -80,22 +80,9 @@ public sealed partial class F2FS
             return ErrorNumber.IsDirectory;
         }
 
-        // Compute addrsPerInode (same logic used in ParseRegularDentry / ResolveDataBlock)
-        var extraIsize = 0;
-
-        if((inode.i_inline & F2FS_EXTRA_ATTR) != 0 && inode.i_addr is { Length: > 0 })
-        {
-            extraIsize =  (int)(inode.i_addr[0] & 0xFFFF);
-            extraIsize /= 4;
-        }
-
-        var xattrAddrs = 0;
-
-        if((inode.i_inline & F2FS_INLINE_XATTR) != 0 &&
-           (inode.i_inline & F2FS_EXTRA_ATTR)   != 0 &&
-           inode.i_addr is { Length: > 0 })
-            xattrAddrs = (int)(inode.i_addr[0] >> 16 & 0xFFFF);
-
+        // Compute addrsPerInode using centralized helpers matching kernel logic
+        int extraIsize    = GetExtraIsize(inode);
+        int xattrAddrs    = GetInlineXattrAddrs(inode);
         int addrsPerInode = DEF_ADDRS_PER_INODE - extraIsize - xattrAddrs;
 
         // Check for inline data
@@ -498,13 +485,7 @@ public sealed partial class F2FS
         // The kernel uses get_dnode_addr() which skips extra attrs, then checks addr[0] and addr[1]
         if((inode.i_mode & 0xF000) is 0x2000 or 0x6000 && inode.i_addr is { Length: > 0 })
         {
-            var extraSize = 0;
-
-            if((inode.i_inline & F2FS_EXTRA_ATTR) != 0)
-            {
-                extraSize =  (int)(inode.i_addr[0] & 0xFFFF);
-                extraSize /= 4;
-            }
+            int extraSize = GetExtraIsize(inode);
 
             // addr[0] after extra area = old-style dev, addr[1] = new-style dev
             if(extraSize + 1 < inode.i_addr.Length)
