@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Compression;
 using Aaru.Helpers;
 using Aaru.Logging;
 
@@ -111,20 +112,50 @@ public sealed partial class F2FS
                               inlineDataSize);
         }
 
+        // Detect compression (F2FS_COMPR_FL in i_flags, with extra attributes)
+        var  isCompressed = false;
+        byte compressAlg  = 0;
+        byte logClusterSz = 0;
+        var  clusterSize  = 1;
+
+        if((inode.i_flags  & F2FS_COMPR_FL)   != 0 &&
+           (inode.i_inline & F2FS_EXTRA_ATTR) != 0 &&
+           inode.i_addr is { Length: > EXTRA_OFFSET_COMPRESS_ALG })
+        {
+            isCompressed = true;
+
+            // i_addr[8]: low byte = i_compress_algorithm, next byte = i_log_cluster_size
+            compressAlg  = (byte)(inode.i_addr[EXTRA_OFFSET_COMPRESS_ALG]      & 0xFF);
+            logClusterSz = (byte)(inode.i_addr[EXTRA_OFFSET_COMPRESS_ALG] >> 8 & 0xFF);
+            clusterSize  = 1 << logClusterSz;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "OpenFile: compressed file, algorithm={0}, log_cluster_size={1}, cluster_size={2}",
+                              compressAlg,
+                              logClusterSz,
+                              clusterSize);
+        }
+
         node = new F2fsFileNode
         {
-            Path             = path,
-            Length           = (long)inode.i_size,
-            Offset           = 0,
-            InodeNumber      = nid,
-            Inode            = inode,
-            AddrsPerInode    = addrsPerInode,
-            HasInlineData    = hasInlineData,
-            InlineDataOffset = inlineDataOff,
-            InlineDataSize   = inlineDataSize,
-            NodeBlock        = retainedBlock,
-            CachedBlock      = null,
-            CachedBlockIndex = -1
+            Path               = path,
+            Length             = (long)inode.i_size,
+            Offset             = 0,
+            InodeNumber        = nid,
+            Inode              = inode,
+            AddrsPerInode      = addrsPerInode,
+            HasInlineData      = hasInlineData,
+            InlineDataOffset   = inlineDataOff,
+            InlineDataSize     = inlineDataSize,
+            NodeBlock          = retainedBlock,
+            CachedBlock        = null,
+            CachedBlockIndex   = -1,
+            IsCompressed       = isCompressed,
+            CompressAlgorithm  = compressAlg,
+            LogClusterSize     = logClusterSz,
+            ClusterSize        = clusterSize,
+            CachedCluster      = null,
+            CachedClusterIndex = -1
         };
 
         AaruLogging.Debug(MODULE_NAME, "OpenFile: success, nid={0}, size={1}", nid, inode.i_size);
@@ -137,9 +168,11 @@ public sealed partial class F2FS
     {
         if(node is not F2fsFileNode fileNode) return ErrorNumber.InvalidArgument;
 
-        fileNode.CachedBlock      = null;
-        fileNode.CachedBlockIndex = -1;
-        fileNode.NodeBlock        = null;
+        fileNode.CachedBlock        = null;
+        fileNode.CachedBlockIndex   = -1;
+        fileNode.NodeBlock          = null;
+        fileNode.CachedCluster      = null;
+        fileNode.CachedClusterIndex = -1;
 
         return ErrorNumber.NoError;
     }
@@ -168,6 +201,9 @@ public sealed partial class F2FS
 
         // Inline data path — data lives inside the inode node block
         if(fileNode.HasInlineData) return ReadInlineData(fileNode, toRead, buffer, out read);
+
+        // Compressed file path
+        if(fileNode.IsCompressed) return ReadCompressedData(fileNode, toRead, buffer, out read);
 
         // Regular (block-mapped) data path
         long bytesRead     = 0;
@@ -449,6 +485,239 @@ public sealed partial class F2FS
 
         read            =  bytesToCopy;
         fileNode.Offset += bytesToCopy;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads data from a compressed file node, decompressing clusters on the fly</summary>
+    ErrorNumber ReadCompressedData(F2fsFileNode fileNode, long toRead, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        long clusterBytes  = fileNode.ClusterSize * _blockSize;
+        long bytesRead     = 0;
+        long currentOffset = fileNode.Offset;
+
+        while(bytesRead < toRead)
+        {
+            long clusterIndex    = currentOffset / clusterBytes;
+            var  offsetInCluster = (int)(currentOffset % clusterBytes);
+
+            byte[] clusterData;
+
+            // Use cluster cache if it matches
+            if(clusterIndex == fileNode.CachedClusterIndex && fileNode.CachedCluster != null)
+                clusterData = fileNode.CachedCluster;
+            else
+            {
+                ErrorNumber errno = ReadCluster(fileNode, (uint)clusterIndex, out clusterData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "ReadCompressedData: ReadCluster failed for cluster {0}: {1}",
+                                      clusterIndex,
+                                      errno);
+
+                    if(bytesRead > 0) break;
+
+                    return errno;
+                }
+
+                fileNode.CachedCluster      = clusterData;
+                fileNode.CachedClusterIndex = clusterIndex;
+            }
+
+            long bytesToCopy = Math.Min(clusterData.Length - offsetInCluster, toRead - bytesRead);
+
+            if(bytesToCopy <= 0) break;
+
+            Array.Copy(clusterData, offsetInCluster, buffer, bytesRead, bytesToCopy);
+
+            bytesRead     += bytesToCopy;
+            currentOffset += bytesToCopy;
+        }
+
+        read            =  bytesRead;
+        fileNode.Offset += bytesRead;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Reads a cluster (compressed or uncompressed) for a compressed file.
+    ///     If the first block of the cluster is COMPRESS_ADDR, reads and decompresses
+    ///     the compressed data blocks. Otherwise, reads the raw blocks directly.
+    /// </summary>
+    ErrorNumber ReadCluster(F2fsFileNode fileNode, uint clusterIndex, out byte[] clusterData)
+    {
+        clusterData = null;
+
+        int  clusterSize  = fileNode.ClusterSize;
+        long clusterBytes = clusterSize  * _blockSize;
+        uint startPage    = clusterIndex * (uint)clusterSize;
+
+        // Resolve the first block of the cluster
+        ErrorNumber errno =
+            ResolveDataBlock(fileNode.Inode, startPage, fileNode.AddrsPerInode, out uint firstBlockAddr);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Compressed cluster: first block addr == COMPRESS_ADDR
+        if(firstBlockAddr == COMPRESS_ADDR)
+        {
+            // Count how many compressed data blocks follow (blocks 1..clusterSize-1 that are non-zero/non-null)
+            var compressedBlocks = new List<byte[]>();
+
+            for(var i = 1; i < clusterSize; i++)
+            {
+                errno = ResolveDataBlock(fileNode.Inode, startPage + (uint)i, fileNode.AddrsPerInode, out uint blkAddr);
+
+                if(errno != ErrorNumber.NoError) return errno;
+
+                if(blkAddr == NULL_ADDR || blkAddr == NEW_ADDR || blkAddr == COMPRESS_ADDR) break;
+
+                errno = ReadBlock(blkAddr, out byte[] blkData);
+
+                if(errno != ErrorNumber.NoError) return errno;
+
+                compressedBlocks.Add(blkData);
+            }
+
+            if(compressedBlocks.Count == 0)
+            {
+                // No compressed data blocks — treat as sparse
+                clusterData = new byte[clusterBytes];
+
+                return ErrorNumber.NoError;
+            }
+
+            // Assemble all compressed blocks into one contiguous buffer
+            var compBuf = new byte[compressedBlocks.Count * _blockSize];
+
+            for(var i = 0; i < compressedBlocks.Count; i++)
+                Array.Copy(compressedBlocks[i], 0, compBuf, i * (int)_blockSize, (int)_blockSize);
+
+            // Parse the CompressData header
+            if(compBuf.Length < COMPRESS_HEADER_SIZE)
+            {
+                AaruLogging.Debug(MODULE_NAME, "ReadCluster: compressed buffer too small for header");
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            var clen = BitConverter.ToUInt32(compBuf, 0);
+
+            if(clen == 0 || clen > compBuf.Length - COMPRESS_HEADER_SIZE)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "ReadCluster: invalid clen={0}, bufSize={1}",
+                                  clen,
+                                  compBuf.Length - COMPRESS_HEADER_SIZE);
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            // Extract compressed payload (after header)
+            var compressedPayload = new byte[clen];
+            Array.Copy(compBuf, COMPRESS_HEADER_SIZE, compressedPayload, 0, (int)clen);
+
+            // Decompress
+            clusterData = new byte[clusterBytes];
+
+            errno = DecompressCluster(fileNode.CompressAlgorithm, compressedPayload, clusterData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "ReadCluster: decompression failed for cluster {0}: {1}",
+                                  clusterIndex,
+                                  errno);
+
+                return errno;
+            }
+
+            return ErrorNumber.NoError;
+        }
+
+        // Non-compressed cluster: read individual blocks
+        clusterData = new byte[clusterBytes];
+
+        for(var i = 0; i < clusterSize; i++)
+        {
+            uint blkAddr;
+
+            if(i == 0)
+                blkAddr = firstBlockAddr;
+            else
+            {
+                errno = ResolveDataBlock(fileNode.Inode, startPage + (uint)i, fileNode.AddrsPerInode, out blkAddr);
+
+                if(errno != ErrorNumber.NoError) return errno;
+            }
+
+            if(blkAddr == NULL_ADDR || blkAddr == NEW_ADDR || blkAddr == COMPRESS_ADDR) continue; // sparse
+
+            errno = ReadBlock(blkAddr, out byte[] blkData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            Array.Copy(blkData, 0, clusterData, i * (int)_blockSize, (int)_blockSize);
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Decompresses a compressed cluster payload using the specified F2FS compression algorithm</summary>
+    static ErrorNumber DecompressCluster(byte algorithm, byte[] source, byte[] destination)
+    {
+        int result;
+
+        switch(algorithm)
+        {
+            case COMPRESS_LZO:
+            case COMPRESS_LZORLE:
+                // F2FS uses LZO1X for both LZO and LZO-RLE
+                result = LZO.DecodeBuffer(source, destination, LZO.Algorithm.LZO1X);
+
+                if(result < 0)
+                {
+                    AaruLogging.Debug("F2FS plugin", "LZO decompression failed");
+
+                    return ErrorNumber.InvalidArgument;
+                }
+
+                break;
+
+            case COMPRESS_LZ4:
+                result = LZ4.DecodeBuffer(source, destination);
+
+                if(result < 0)
+                {
+                    AaruLogging.Debug("F2FS plugin", "LZ4 decompression failed");
+
+                    return ErrorNumber.InvalidArgument;
+                }
+
+                break;
+
+            case COMPRESS_ZSTD:
+                result = ZSTD.DecodeBuffer(source, destination);
+
+                if(result <= 0)
+                {
+                    AaruLogging.Debug("F2FS plugin", "ZSTD decompression failed");
+
+                    return ErrorNumber.InvalidArgument;
+                }
+
+                break;
+
+            default:
+                AaruLogging.Debug("F2FS plugin", "Unknown compression algorithm: {0}", algorithm);
+
+                return ErrorNumber.NotSupported;
+        }
 
         return ErrorNumber.NoError;
     }

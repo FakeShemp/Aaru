@@ -159,6 +159,26 @@ public sealed partial class F2FS
     const int EXTRA_OFFSET_CRTIME      = 3;
     const int EXTRA_OFFSET_CRTIME_NSEC = 5;
 
+    // Extra attribute offsets for compression fields (in i_addr __le32 units)
+    // i_addr[6..7] = i_compr_blocks (u64)
+    // i_addr[8] low byte = i_compress_algorithm (u8), next byte = i_log_cluster_size (u8), upper u16 = i_compress_flag
+    const int EXTRA_OFFSET_COMPR_BLOCKS = 6;
+    const int EXTRA_OFFSET_COMPRESS_ALG = 8;
+
+    // Compression algorithm types (enum compress_algorithm_type)
+    const byte COMPRESS_LZO    = 0;
+    const byte COMPRESS_LZ4    = 1;
+    const byte COMPRESS_ZSTD   = 2;
+    const byte COMPRESS_LZORLE = 3;
+
+    // Special block addresses
+    const uint NULL_ADDR     = 0;
+    const uint NEW_ADDR      = 0xFFFFFFFF;
+    const uint COMPRESS_ADDR = 0xFFFFFFFE;
+
+    // CompressData header size: clen(4) + chksum(4) + reserved(4*4) = 24 bytes
+    const int COMPRESS_HEADER_SIZE = 24;
+
     // Summary types
     const byte SUM_TYPE_NODE = 1;
     const byte SUM_TYPE_DATA = 0;

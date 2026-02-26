@@ -75,6 +75,24 @@ public sealed partial class F2FS
         /// <summary>Logical block index of the cached block (-1 if none)</summary>
         internal long CachedBlockIndex { get; set; } = -1;
 
+        /// <summary>Whether this file uses F2FS compression (F2FS_COMPR_FL)</summary>
+        internal bool IsCompressed { get; init; }
+
+        /// <summary>Compression algorithm: 0=LZO, 1=LZ4, 2=ZSTD, 3=LZO-RLE</summary>
+        internal byte CompressAlgorithm { get; init; }
+
+        /// <summary>log2(cluster_size) — number of pages per compression cluster</summary>
+        internal byte LogClusterSize { get; init; }
+
+        /// <summary>Number of pages per compression cluster (1 &lt;&lt; LogClusterSize)</summary>
+        internal int ClusterSize { get; init; }
+
+        /// <summary>Decompressed cluster data cache (one cluster at a time)</summary>
+        internal byte[] CachedCluster { get; set; }
+
+        /// <summary>Cluster index of the cached decompressed cluster (-1 if none)</summary>
+        internal long CachedClusterIndex { get; set; } = -1;
+
         /// <inheritdoc />
         public string Path { get; init; }
 
