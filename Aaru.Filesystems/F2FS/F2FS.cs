@@ -29,8 +29,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -39,6 +41,22 @@ namespace Aaru.Filesystems;
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public sealed partial class F2FS : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "F2FS plugin";
+
+    IMediaImage _imagePlugin;
+    Partition   _partition;
+    Encoding    _encoding;
+    Superblock  _superblock;
+    Checkpoint  _checkpoint;
+    byte[]      _natBitmap;
+    byte[]      _checkpointData;
+    bool        _mounted;
+    uint        _blockSize;
+    uint        _blocksPerSegment;
+
+    /// <summary>Cache of root directory entries: filename → inode number</summary>
+    readonly Dictionary<string, uint> _rootDirectoryCache = new();
+
 #region IFilesystem Members
 
     /// <inheritdoc />
