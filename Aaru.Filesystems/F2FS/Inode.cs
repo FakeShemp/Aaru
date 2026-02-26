@@ -29,11 +29,35 @@
 using System;
 using Aaru.CommonTypes.Enums;
 using Aaru.Logging;
+using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class F2FS
 {
+    /// <summary>Reads an inode by its node ID via NAT lookup</summary>
+    /// <param name="nid">Node ID of the inode</param>
+    /// <param name="inode">Output inode structure</param>
+    /// <returns>Error code indicating success or failure</returns>
+    ErrorNumber ReadInode(uint nid, out Inode inode)
+    {
+        inode = default(Inode);
+
+        ErrorNumber errno = LookupNat(nid, out uint blockAddr);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(blockAddr == 0) return ErrorNumber.InvalidArgument;
+
+        errno = ReadBlock(blockAddr, out byte[] nodeBlock);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        inode = Marshal.ByteArrayToStructureLittleEndian<Inode>(nodeBlock);
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Resolves a file-page index to a data block address for a given inode</summary>
     ErrorNumber ResolveDataBlock(Inode inode, uint pageIndex, int addrsPerInode, out uint blockAddr)
     {

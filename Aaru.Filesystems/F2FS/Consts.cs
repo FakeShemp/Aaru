@@ -123,6 +123,28 @@ public sealed partial class F2FS
     const byte F2FS_PIN_FILE          = 0x40;
     const byte F2FS_COMPRESS_RELEASED = 0x80;
 
+    // On-disk inode flags (f2fs_inode::i_flags)
+    const uint F2FS_COMPR_FL       = 0x00000004;
+    const uint F2FS_SYNC_FL        = 0x00000008;
+    const uint F2FS_IMMUTABLE_FL   = 0x00000010;
+    const uint F2FS_APPEND_FL      = 0x00000020;
+    const uint F2FS_NODUMP_FL      = 0x00000040;
+    const uint F2FS_NOATIME_FL     = 0x00000080;
+    const uint F2FS_NOCOMP_FL      = 0x00000400;
+    const uint F2FS_INDEX_FL       = 0x00001000;
+    const uint F2FS_DIRSYNC_FL     = 0x00010000;
+    const uint F2FS_PROJINHERIT_FL = 0x20000000;
+    const uint F2FS_CASEFOLD_FL    = 0x40000000;
+
+    // Extra attribute offsets within i_addr[] (in __le32 units)
+    // i_addr[0] = i_extra_isize(u16) | i_inline_xattr_size(u16)
+    // i_addr[1] = i_projid
+    // i_addr[2] = i_inode_checksum
+    // i_addr[3..4] = i_crtime (u64)
+    // i_addr[5] = i_crtime_nsec
+    const int EXTRA_OFFSET_CRTIME      = 3;
+    const int EXTRA_OFFSET_CRTIME_NSEC = 5;
+
     // Summary types
     const byte SUM_TYPE_NODE = 1;
     const byte SUM_TYPE_DATA = 0;
