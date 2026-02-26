@@ -44,4 +44,44 @@ public sealed partial class F2FS
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>File node for reading file contents with single-block caching</summary>
+    sealed class F2fsFileNode : IFileNode
+    {
+        /// <summary>The file's node ID (inode number)</summary>
+        internal uint InodeNumber { get; init; }
+
+        /// <summary>The file's on-disk inode (contains block mapping and inline flags)</summary>
+        internal Inode Inode { get; init; }
+
+        /// <summary>Number of usable direct address slots in the inode</summary>
+        internal int AddrsPerInode { get; init; }
+
+        /// <summary>Whether this file uses inline data stored in the inode itself</summary>
+        internal bool HasInlineData { get; init; }
+
+        /// <summary>Byte offset where inline data begins within the raw node block</summary>
+        internal int InlineDataOffset { get; init; }
+
+        /// <summary>Maximum size of inline data in bytes</summary>
+        internal int InlineDataSize { get; init; }
+
+        /// <summary>Raw node block bytes (only retained when <see cref="HasInlineData" /> is true)</summary>
+        internal byte[] NodeBlock { get; set; }
+
+        /// <summary>Cached block data from the last read (single block, not the whole file)</summary>
+        internal byte[] CachedBlock { get; set; }
+
+        /// <summary>Logical block index of the cached block (-1 if none)</summary>
+        internal long CachedBlockIndex { get; set; } = -1;
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+    }
 }

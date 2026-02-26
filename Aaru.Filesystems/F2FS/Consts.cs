@@ -123,6 +123,9 @@ public sealed partial class F2FS
     const byte F2FS_PIN_FILE          = 0x40;
     const byte F2FS_COMPRESS_RELEASED = 0x80;
 
+    // Inline data reserved size in __le32 units (1 word reserved before inline data area)
+    const int DEF_INLINE_RESERVED_SIZE = 1;
+
     // On-disk inode flags (f2fs_inode::i_flags)
     const uint F2FS_COMPR_FL       = 0x00000004;
     const uint F2FS_SYNC_FL        = 0x00000008;
