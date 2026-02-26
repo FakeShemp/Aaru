@@ -89,6 +89,14 @@ public sealed partial class F2FS
             return ErrorNumber.NotSupported;
         }
 
+        // Reject compressed files whose blocks have been released — data no longer exists on disk
+        if((inode.i_inline & F2FS_COMPRESS_RELEASED) != 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: compressed file has released blocks, data unavailable");
+
+            return ErrorNumber.NotSupported;
+        }
+
         // Compute addrsPerInode using centralized helpers matching kernel logic
         int extraIsize    = GetExtraIsize(inode);
         int xattrAddrs    = GetInlineXattrAddrs(inode);
