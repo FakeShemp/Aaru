@@ -210,6 +210,7 @@ Fully supported file-systems (identify and extraction)
 * Cram file system
 * DEC Files-11 (aka ODS)
 * DEC RT-11 file system
+* Flash-Friendly File System (F2FS)
 * High Sierra Format
 * IBM Journaling File System (JFS)
 * ISO9660, including Apple, Amiga, Rock Ridge, Joliet and Romeo extensions
@@ -250,7 +251,6 @@ Supported file systems for identification and information only
 * Coherent UNIX file system
 * dump(8) (Old historic BSD, AIX, UFS and UFS2 types)
 * ECMA-67: 130mm Flexible Disk Cartridge Labelling and File Structure for Information Interchange
-* Flash-Friendly File System (F2FS)
 * Fossil file system (from Plan9)
 * HAMMER file system
 * High Performance Optical File System (HPOFS)
