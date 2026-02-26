@@ -81,6 +81,14 @@ public sealed partial class F2FS
             return ErrorNumber.IsDirectory;
         }
 
+        // Reject encrypted files — data is ciphertext without the key
+        if((inode.i_advise & FADVISE_ENCRYPT_BIT) != 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: file is encrypted, cannot read data");
+
+            return ErrorNumber.NotSupported;
+        }
+
         // Compute addrsPerInode using centralized helpers matching kernel logic
         int extraIsize    = GetExtraIsize(inode);
         int xattrAddrs    = GetInlineXattrAddrs(inode);
@@ -407,6 +415,14 @@ public sealed partial class F2FS
         if(errno != ErrorNumber.NoError) return errno;
 
         Inode inode = Marshal.ByteArrayToStructureLittleEndian<Inode>(nodeBlock);
+
+        // Reject encrypted symlinks — target is ciphertext without the key
+        if((inode.i_advise & FADVISE_ENCRYPT_BIT) != 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: symlink is encrypted, cannot read target");
+
+            return ErrorNumber.NotSupported;
+        }
 
         if(inode.i_size == 0)
         {

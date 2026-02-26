@@ -63,6 +63,14 @@ public sealed partial class F2FS
         // Validate it's a directory
         if((inode.i_mode & 0xF000) != 0x4000) return ErrorNumber.NotDirectory;
 
+        // Encrypted directories store ciphertext filenames that cannot be decoded without the key
+        if((inode.i_advise & FADVISE_ENCRYPT_BIT) != 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Directory nid={0} is encrypted, cannot read entries", nid);
+
+            return ErrorNumber.NotSupported;
+        }
+
         // Check if this directory uses inline dentry
         if((inode.i_inline & F2FS_INLINE_DENTRY) != 0)
             ParseInlineDentry(inode, nodeBlock, entries);

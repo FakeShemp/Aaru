@@ -134,6 +134,9 @@ public sealed partial class F2FS
     const byte F2FS_PIN_FILE          = 0x40;
     const byte F2FS_COMPRESS_RELEASED = 0x80;
 
+    // i_advise hint bits
+    const byte FADVISE_ENCRYPT_BIT = 0x04;
+
     // Inline data reserved size in __le32 units (1 word reserved before inline data area)
     const int DEF_INLINE_RESERVED_SIZE = 1;
 
