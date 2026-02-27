@@ -235,7 +235,7 @@ public sealed partial class XFS
             var l1 = BigEndianBitConverter.ToUInt64(rawInode, pos + 8);
             pos += 16;
 
-            DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount);
+            DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount, out _);
 
             for(ulong blockOffset = 0; blockOffset < blockCount; blockOffset++)
             {
@@ -295,7 +295,12 @@ public sealed partial class XFS
                 var l1 = BigEndianBitConverter.ToUInt64(rawInode, recPos + 8);
                 recPos += 16;
 
-                DecodeBmbtRec(l0, l1, out ulong startOff, out ulong startBlock, out uint blockCount);
+                DecodeBmbtRec(l0,
+                              l1,
+                              out ulong startOff,
+                              out ulong startBlock,
+                              out uint blockCount,
+                              out bool unwritten);
 
                 // Map logical block 0 to physical
                 if(startOff == 0)
@@ -503,7 +508,7 @@ public sealed partial class XFS
             var l0 = BigEndianBitConverter.ToUInt64(rawInode, pos);
             var l1 = BigEndianBitConverter.ToUInt64(rawInode, pos + 8);
             pos += 16;
-            DecodeBmbtRec(l0, l1, out ulong startOff, out ulong startBlock, out uint blockCount);
+            DecodeBmbtRec(l0, l1, out ulong startOff, out ulong startBlock, out uint blockCount, out bool unwritten);
             extents.Add((startOff, startBlock, blockCount));
         }
 
