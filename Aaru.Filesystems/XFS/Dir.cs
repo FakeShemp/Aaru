@@ -351,6 +351,9 @@ public sealed partial class XFS
 
         int pos = coreSize;
 
+        // Directory blocks may span multiple filesystem blocks (1 << dirblklog)
+        uint dirBlockFsBlocks = 1U << _superblock.dirblklog;
+
         for(ulong i = 0; i < extentCount; i++)
         {
             if(pos + 16 > rawInode.Length)
@@ -364,24 +367,38 @@ public sealed partial class XFS
             var l1 = BigEndianBitConverter.ToUInt64(rawInode, pos + 8);
             pos += 16;
 
-            DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount);
+            DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount, out _);
 
             AaruLogging.Debug(MODULE_NAME, "Extent {0}: startblock={1}, count={2}", i, startBlock, blockCount);
 
-            for(uint b = 0; b < blockCount; b++)
+            for(uint b = 0; b < blockCount; b += dirBlockFsBlocks)
             {
-                ulong blockAddr = startBlock + b;
+                uint fsBlocksToRead = Math.Min(dirBlockFsBlocks, blockCount - b);
 
-                errno = ReadBlock(blockAddr, out byte[] blockData);
+                // Read and assemble the full directory block
+                var dirBlockData = new byte[fsBlocksToRead * _superblock.blocksize];
+                var validRead    = true;
 
-                if(errno != ErrorNumber.NoError)
+                for(uint fb = 0; fb < fsBlocksToRead; fb++)
                 {
-                    AaruLogging.Debug(MODULE_NAME, "Error reading directory block {0}: {1}", blockAddr, errno);
+                    errno = ReadBlock(startBlock + b + fb, out byte[] blockData);
 
-                    continue;
+                    if(errno != ErrorNumber.NoError)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Error reading directory block {0}: {1}",
+                                          startBlock + b + fb,
+                                          errno);
+
+                        validRead = false;
+
+                        break;
+                    }
+
+                    Array.Copy(blockData, 0, dirBlockData, fb * _superblock.blocksize, blockData.Length);
                 }
 
-                ParseDirectoryDataBlock(blockData, entries);
+                if(validRead) ParseDirectoryDataBlock(dirBlockData, entries);
             }
         }
 
@@ -429,15 +446,32 @@ public sealed partial class XFS
                 var l1 = BigEndianBitConverter.ToUInt64(rawInode, recPos + 8);
                 recPos += 16;
 
-                DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount);
+                DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount, out _);
 
-                for(uint b = 0; b < blockCount; b++)
+                uint dirBlockFsBlocks = 1U << _superblock.dirblklog;
+
+                for(uint b = 0; b < blockCount; b += dirBlockFsBlocks)
                 {
-                    errno = ReadBlock(startBlock + b, out byte[] blockData);
+                    uint fsBlocksToRead = Math.Min(dirBlockFsBlocks, blockCount - b);
 
-                    if(errno != ErrorNumber.NoError) continue;
+                    var dirBlockData = new byte[fsBlocksToRead * _superblock.blocksize];
+                    var validRead    = true;
 
-                    ParseDirectoryDataBlock(blockData, entries);
+                    for(uint fb = 0; fb < fsBlocksToRead; fb++)
+                    {
+                        errno = ReadBlock(startBlock + b + fb, out byte[] blockData);
+
+                        if(errno != ErrorNumber.NoError)
+                        {
+                            validRead = false;
+
+                            break;
+                        }
+
+                        Array.Copy(blockData, 0, dirBlockData, fb * _superblock.blocksize, blockData.Length);
+                    }
+
+                    if(validRead) ParseDirectoryDataBlock(dirBlockData, entries);
                 }
             }
         }

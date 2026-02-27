@@ -84,14 +84,31 @@ public sealed partial class XFS
 
                 DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount, out _);
 
-                // Read all blocks in this extent as potential directory data blocks
-                for(uint bb = 0; bb < blockCount; bb++)
+                // Directory blocks may span multiple filesystem blocks (1 << dirblklog)
+                uint dirBlockFsBlocks = 1U << _superblock.dirblklog;
+
+                for(uint bb = 0; bb < blockCount; bb += dirBlockFsBlocks)
                 {
-                    errno = ReadBlock(startBlock + bb, out byte[] dirBlockData);
+                    uint fsBlocksToRead = Math.Min(dirBlockFsBlocks, blockCount - bb);
 
-                    if(errno != ErrorNumber.NoError) continue;
+                    var dirBlockData = new byte[fsBlocksToRead * _superblock.blocksize];
+                    var validRead    = true;
 
-                    ParseDirectoryDataBlock(dirBlockData, entries);
+                    for(uint fb = 0; fb < fsBlocksToRead; fb++)
+                    {
+                        errno = ReadBlock(startBlock + bb + fb, out byte[] fsBlockData);
+
+                        if(errno != ErrorNumber.NoError)
+                        {
+                            validRead = false;
+
+                            break;
+                        }
+
+                        Array.Copy(fsBlockData, 0, dirBlockData, fb * _superblock.blocksize, fsBlockData.Length);
+                    }
+
+                    if(validRead) ParseDirectoryDataBlock(dirBlockData, entries);
                 }
             }
         }
