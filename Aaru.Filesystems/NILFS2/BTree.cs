@@ -104,8 +104,16 @@ public sealed partial class NILFS2
             if(readErrno != ErrorNumber.NoError) return readErrno;
 
             // Parse the child node header
-            BTreeNode node  = Marshal.ByteArrayToStructureLittleEndian<BTreeNode>(nodeData);
-            var       ncmax = (int)((_blockSize - 8) / 16);
+            BTreeNode node = Marshal.ByteArrayToStructureLittleEndian<BTreeNode>(nodeData);
+
+            // Non-root nodes have NILFS_BTREE_NODE_EXTRA_PAD_SIZE (8 bytes) after the 8-byte header
+            // Keys start at offset 16 = sizeof(nilfs_btree_node) + EXTRA_PAD
+            // ncmax = (blocksize - sizeof(node) - EXTRA_PAD) / (sizeof(key) + sizeof(ptr))
+            //       = (blocksize - 8 - 8) / 16
+            const int nodeHeaderSize = 8;
+            const int extraPadSize   = 8;
+            int       keysOffset     = nodeHeaderSize + extraPadSize;
+            var       ncmax          = (int)((_blockSize - nodeHeaderSize - extraPadSize) / 16);
 
             if(node.nchildren == 0 || node.nchildren > ncmax)
             {
@@ -114,10 +122,10 @@ public sealed partial class NILFS2
                 return ErrorNumber.InvalidArgument;
             }
 
-            // Extract keys from the child node
+            // Extract keys from the child node (keys start at keysOffset)
             var keys = new ulong[node.nchildren];
 
-            for(var i = 0; i < node.nchildren; i++) keys[i] = BitConverter.ToUInt64(nodeData, 8 + i * 8);
+            for(var i = 0; i < node.nchildren; i++) keys[i] = BitConverter.ToUInt64(nodeData, keysOffset + i * 8);
 
             index = BtreeSearch(keys, node.nchildren, logicalBlock, out exact);
 
@@ -127,7 +135,7 @@ public sealed partial class NILFS2
             if(currentLevel == 1 && !exact) return ErrorNumber.InvalidArgument;
 
             // Get the child/leaf pointer (ptrs start after all max key slots)
-            ptr = BitConverter.ToUInt64(nodeData, 8 + ncmax * 8 + index * 8);
+            ptr = BitConverter.ToUInt64(nodeData, keysOffset + ncmax * 8 + index * 8);
 
             if(ptr == 0) return ErrorNumber.InvalidArgument;
         }
