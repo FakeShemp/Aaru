@@ -29,9 +29,11 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
 
@@ -80,6 +82,183 @@ public sealed partial class XFS
                           stat.Length,
                           stat.Inode,
                           stat.Mode);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(string.IsNullOrEmpty(path) || path == "/") return ErrorNumber.IsDirectory;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: path='{0}'", path);
+
+        // Verify the file exists and get its stat info
+        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: Stat failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Reject directories
+        if(stat.Attributes.HasFlag(FileAttributes.Directory))
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: path is a directory");
+
+            return ErrorNumber.IsDirectory;
+        }
+
+        // Look up inode number
+        errno = LookupInode(path, out ulong inodeNumber);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: LookupInode failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Read the inode
+        errno = ReadInode(inodeNumber, out Dinode inode);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: ReadInode failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Load extent map
+        errno = LoadFileExtents(inodeNumber, inode, out XfsExtent[] extents);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: LoadFileExtents failed with {0}", errno);
+
+            return errno;
+        }
+
+        node = new XfsFileNode
+        {
+            Path        = path,
+            Length      = inode.di_size,
+            Offset      = 0,
+            InodeNumber = inodeNumber,
+            Inode       = inode,
+            Extents     = extents
+        };
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: success, size={0}, extents={1}", inode.di_size, extents.Length);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not XfsFileNode xfsNode) return ErrorNumber.InvalidArgument;
+
+        xfsNode.Extents = null;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not XfsFileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        if(buffer == null) return ErrorNumber.InvalidArgument;
+
+        if(fileNode.Offset < 0 || fileNode.Offset >= fileNode.Length) return ErrorNumber.InvalidArgument;
+
+        // Clamp read length to remaining file size and buffer size
+        long toRead = length;
+
+        if(fileNode.Offset + toRead > fileNode.Length) toRead = fileNode.Length - fileNode.Offset;
+
+        if(toRead <= 0) return ErrorNumber.NoError;
+
+        if(toRead > buffer.Length) toRead = buffer.Length;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: offset={0}, length={1}, toRead={2}", fileNode.Offset, length, toRead);
+
+        // Handle inline (local format) data stored directly in the inode fork
+        if(fileNode.Inode.di_format == XFS_DINODE_FMT_LOCAL)
+            return ReadInlineFileData(fileNode, toRead, buffer, out read);
+
+        // Normal extent-based file reading
+        uint blockSize     = _superblock.blocksize;
+        long bytesRead     = 0;
+        long currentOffset = fileNode.Offset;
+
+        while(bytesRead < toRead)
+        {
+            // Calculate the logical file block number and offset within that block
+            var logicalBlock  = (ulong)(currentOffset / blockSize);
+            var offsetInBlock = (int)(currentOffset   % blockSize);
+
+            // Find the extent containing this logical block
+            var found = false;
+
+            foreach(XfsExtent extent in fileNode.Extents)
+            {
+                if(logicalBlock < extent.StartOff || logicalBlock >= extent.StartOff + extent.BlockCount) continue;
+
+                // Calculate the physical filesystem block
+                ulong blockInExtent = logicalBlock      - extent.StartOff;
+                ulong physBlock     = extent.StartBlock + blockInExtent;
+
+                ErrorNumber errno = ReadBlock(physBlock, out byte[] blockData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME, "ReadFile: ReadBlock failed for block {0}: {1}", physBlock, errno);
+
+                    if(bytesRead > 0) goto done;
+
+                    return errno;
+                }
+
+                long bytesToCopy = Math.Min(blockSize - offsetInBlock, toRead - bytesRead);
+                Array.Copy(blockData, offsetInBlock, buffer, bytesRead, bytesToCopy);
+
+                bytesRead     += bytesToCopy;
+                currentOffset += bytesToCopy;
+                found         =  true;
+
+                break;
+            }
+
+            if(!found)
+            {
+                // Sparse hole — fill with zeros
+                long bytesToCopy = Math.Min(blockSize - offsetInBlock, toRead - bytesRead);
+                Array.Clear(buffer, (int)bytesRead, (int)bytesToCopy);
+
+                bytesRead     += bytesToCopy;
+                currentOffset += bytesToCopy;
+            }
+        }
+
+    done:
+        read            =  bytesRead;
+        fileNode.Offset += bytesRead;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: read {0} bytes, new offset={1}", read, fileNode.Offset);
 
         return ErrorNumber.NoError;
     }
@@ -213,5 +392,35 @@ public sealed partial class XFS
         var nanoseconds = (int)(xfsTimestamp & 0xFFFFFFFF);
 
         return DateHandlers.UnixToDateTime(seconds).AddTicks(nanoseconds / 100);
+    }
+
+    /// <summary>Reads data from a file stored inline in the inode data fork (local format)</summary>
+    /// <param name="fileNode">The file node</param>
+    /// <param name="toRead">Number of bytes to read</param>
+    /// <param name="buffer">Output buffer</param>
+    /// <param name="read">Actual bytes read</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadInlineFileData(XfsFileNode fileNode, long toRead, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        ErrorNumber errno = ReadInodeRaw(fileNode.InodeNumber, out byte[] rawInode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        int coreSize = _v3Inodes ? Marshal.SizeOf<Dinode>() : 100;
+        var dataLen  = (int)fileNode.Inode.di_size;
+
+        if(coreSize + dataLen > rawInode.Length) dataLen = rawInode.Length - coreSize;
+
+        var copySize = (int)Math.Min(toRead, dataLen - fileNode.Offset);
+
+        if(copySize <= 0) return ErrorNumber.NoError;
+
+        Array.Copy(rawInode, coreSize + (int)fileNode.Offset, buffer, 0, copySize);
+        read            =  copySize;
+        fileNode.Offset += copySize;
+
+        return ErrorNumber.NoError;
     }
 }

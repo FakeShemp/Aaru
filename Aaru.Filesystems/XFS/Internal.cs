@@ -44,4 +44,39 @@ public sealed partial class XFS
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>Represents a single BMBT extent mapping a range of file logical blocks to physical blocks</summary>
+    readonly struct XfsExtent
+    {
+        /// <summary>Starting file offset in filesystem blocks</summary>
+        internal ulong StartOff { get; init; }
+
+        /// <summary>Starting filesystem block number</summary>
+        internal ulong StartBlock { get; init; }
+
+        /// <summary>Number of blocks in this extent</summary>
+        internal uint BlockCount { get; init; }
+    }
+
+    /// <summary>File node for reading file contents with cached extent list</summary>
+    sealed class XfsFileNode : IFileNode
+    {
+        /// <summary>The file's inode number</summary>
+        internal ulong InodeNumber { get; init; }
+
+        /// <summary>The file's inode structure</summary>
+        internal Dinode Inode { get; init; }
+
+        /// <summary>Sorted array of extents mapping logical to physical blocks</summary>
+        internal XfsExtent[] Extents { get; set; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 }
