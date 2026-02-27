@@ -263,6 +263,102 @@ public sealed partial class XFS
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: path='{0}'", path);
+
+        // Verify it exists and is a symlink
+        ErrorNumber errno = Stat(path, out FileEntryInfo stat);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(!stat.Attributes.HasFlag(FileAttributes.Symlink)) return ErrorNumber.InvalidArgument;
+
+        // Look up the inode
+        errno = LookupInode(path, out ulong inodeNumber);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read the inode
+        errno = ReadInode(inodeNumber, out Dinode inode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(inode.di_size <= 0 || inode.di_size > 1024)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: invalid symlink size {0}", inode.di_size);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Inline symlink: target stored directly in the inode data fork
+        if(inode.di_format == XFS_DINODE_FMT_LOCAL)
+        {
+            errno = ReadInodeRaw(inodeNumber, out byte[] rawInode);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            int coreSize = _v3Inodes ? Marshal.SizeOf<Dinode>() : 100;
+            var dataLen  = (int)inode.di_size;
+
+            if(coreSize + dataLen > rawInode.Length) dataLen = rawInode.Length - coreSize;
+
+            dest = _encoding.GetString(rawInode, coreSize, dataLen).TrimEnd('\0');
+
+            return ErrorNumber.NoError;
+        }
+
+        // Remote symlink: target stored in extent/btree data blocks
+        errno = LoadFileExtents(inodeNumber, inode, out XfsExtent[] extents);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        uint blockSize = _superblock.blocksize;
+        var  pathLen   = (int)inode.di_size;
+        var  linkData  = new byte[pathLen];
+        var  offset    = 0;
+
+        // V5 (CRC) filesystems have a symlink header per block
+        int headerSize = _v3Inodes ? Marshal.SizeOf<SymlinkHeader>() : 0;
+
+        foreach(XfsExtent extent in extents)
+        {
+            for(uint b = 0; b < extent.BlockCount && offset < pathLen; b++)
+            {
+                errno = ReadBlock(extent.StartBlock + b, out byte[] blockData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "ReadLink: ReadBlock failed for block {0}: {1}",
+                                      extent.StartBlock + b,
+                                      errno);
+
+                    return errno;
+                }
+
+                int dataOffset = headerSize;
+                int available  = (int)blockSize - headerSize;
+
+                if(available > pathLen - offset) available = pathLen - offset;
+
+                Array.Copy(blockData, dataOffset, linkData, offset, available);
+                offset += available;
+            }
+        }
+
+        dest = _encoding.GetString(linkData, 0, pathLen).TrimEnd('\0');
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: target='{0}'", dest);
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Looks up an inode number by traversing a path from the root directory</summary>
     /// <param name="path">Absolute path to look up</param>
     /// <param name="inodeNumber">Output inode number</param>
