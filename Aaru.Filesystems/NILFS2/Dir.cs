@@ -254,12 +254,16 @@ public sealed partial class NILFS2
                 {
                     string name = _encoding.GetString(blockData, (int)offset + 12, nameLen);
 
-                    entries[name] = new DirectoryEntryInfo
+                    // Skip . and .. entries
+                    if(name is not ("." or ".."))
                     {
-                        Name        = name,
-                        InodeNumber = entInode,
-                        Type        = fileType
-                    };
+                        entries[name] = new DirectoryEntryInfo
+                        {
+                            Name        = name,
+                            InodeNumber = entInode,
+                            Type        = fileType
+                        };
+                    }
                 }
 
                 offset    += recLen;
