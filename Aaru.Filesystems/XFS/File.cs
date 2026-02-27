@@ -447,13 +447,13 @@ public sealed partial class XFS
             GID                 = inode.di_gid,
             Mode                = (uint)(inode.di_mode & 0x0FFF),
             Blocks              = inode.di_nblocks,
-            AccessTimeUtc       = XfsTimestampToDateTime(inode.di_atime),
-            LastWriteTimeUtc    = XfsTimestampToDateTime(inode.di_mtime),
-            StatusChangeTimeUtc = XfsTimestampToDateTime(inode.di_ctime)
+            AccessTimeUtc       = XfsTimestampToDateTime(inode, inode.di_atime),
+            LastWriteTimeUtc    = XfsTimestampToDateTime(inode, inode.di_mtime),
+            StatusChangeTimeUtc = XfsTimestampToDateTime(inode, inode.di_ctime)
         };
 
         // v3 inodes have a creation time
-        if(_v3Inodes) info.CreationTimeUtc = XfsTimestampToDateTime(inode.di_crtime);
+        if(_v3Inodes) info.CreationTimeUtc = XfsTimestampToDateTime(inode, inode.di_crtime);
 
         // Determine file type from di_mode
         info.Attributes = (inode.di_mode & S_IFMT) switch
@@ -477,17 +477,35 @@ public sealed partial class XFS
     }
 
     /// <summary>
-    ///     Converts an XFS on-disk timestamp (packed int64: upper 32 = seconds, lower 32 = nanoseconds)
-    ///     to a DateTime in UTC.
+    ///     Converts an XFS on-disk timestamp to a DateTime in UTC, handling both legacy and bigtime formats.
+    ///     Legacy format: upper 32 bits = seconds (signed), lower 32 bits = nanoseconds.
+    ///     Bigtime format: single uint64 of nanoseconds since the bigtime epoch
+    ///     (Unix epoch minus 2^31 seconds, i.e. XFS_BIGTIME_EPOCH_OFFSET = -(int64)INT32_MIN = 2147483648).
     /// </summary>
+    /// <param name="inode">The dinode (needed to check bigtime flag)</param>
     /// <param name="xfsTimestamp">The packed XFS timestamp</param>
     /// <returns>DateTime in UTC</returns>
-    static DateTime XfsTimestampToDateTime(long xfsTimestamp)
+    DateTime XfsTimestampToDateTime(Dinode inode, long xfsTimestamp)
     {
-        var seconds     = (int)(xfsTimestamp >> 32);
-        var nanoseconds = (int)(xfsTimestamp & 0xFFFFFFFF);
+        // Bigtime: di_version >= 3 && (di_flags2 & XFS_DIFLAG2_BIGTIME) != 0
+        if(_v3Inodes && (inode.di_flags2 & XFS_DIFLAG2_BIGTIME) != 0)
+        {
+            // The 64-bit value is total nanoseconds since the bigtime epoch.
+            // bigtime_epoch = unix_epoch - 2147483648 seconds
+            // unix_seconds = (ts / 1_000_000_000) - 2147483648
+            var   totalNs     = (ulong)xfsTimestamp;
+            ulong seconds     = totalNs / 1_000_000_000UL;
+            ulong nanosRem    = totalNs % 1_000_000_000UL;
+            long  unixSeconds = (long)seconds - 2147483648L;
 
-        return DateHandlers.UnixToDateTime(seconds).AddTicks(nanoseconds / 100);
+            return DateHandlers.UnixToDateTime(unixSeconds).AddTicks((long)nanosRem / 100);
+        }
+
+        // Legacy format: upper 32 = signed seconds, lower 32 = unsigned nanoseconds
+        var legacySeconds     = (int)(xfsTimestamp >> 32);
+        var legacyNanoseconds = (int)(xfsTimestamp & 0xFFFFFFFF);
+
+        return DateHandlers.UnixToDateTime(legacySeconds).AddTicks(legacyNanoseconds / 100);
     }
 
     /// <summary>Reads data from a file stored inline in the inode data fork (local format)</summary>
