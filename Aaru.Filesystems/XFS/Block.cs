@@ -39,7 +39,14 @@ public sealed partial class XFS
     /// <returns>Error number indicating success or failure</returns>
     ErrorNumber ReadBlock(ulong fsBlock, out byte[] blockData)
     {
-        ulong byteOffset = fsBlock * _superblock.blocksize;
+        // Linux: XFS_FSB_TO_AGNO(mp, fsbno) = fsbno >> sb_agblklog
+        //        XFS_FSB_TO_AGBNO(mp, fsbno) = fsbno & mask(sb_agblklog)
+        //        XFS_AGB_TO_DADDR(mp, agno, agbno) = (agno * sb_agblocks + agbno) * bb_per_block
+        ulong agNo     = fsBlock >> _superblock.agblklog;
+        ulong agBno    = fsBlock & (1UL << _superblock.agblklog) - 1;
+        ulong absBlock = agNo * _superblock.agblocks + agBno;
+
+        ulong byteOffset = absBlock * _superblock.blocksize;
 
         return ReadBytes(byteOffset, _superblock.blocksize, out blockData);
     }
