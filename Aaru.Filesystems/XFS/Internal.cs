@@ -56,6 +56,9 @@ public sealed partial class XFS
 
         /// <summary>Number of blocks in this extent</summary>
         internal uint BlockCount { get; init; }
+
+        /// <summary>Whether this is an unwritten (preallocated) extent that should return zeros</summary>
+        internal bool Unwritten { get; init; }
     }
 
     /// <summary>File node for reading file contents with cached extent list</summary>

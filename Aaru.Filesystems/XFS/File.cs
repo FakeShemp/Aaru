@@ -218,6 +218,20 @@ public sealed partial class XFS
             {
                 if(logicalBlock < extent.StartOff || logicalBlock >= extent.StartOff + extent.BlockCount) continue;
 
+                long bytesToCopy = Math.Min(blockSize - offsetInBlock, toRead - bytesRead);
+
+                // Unwritten (preallocated) extents return zeros
+                if(extent.Unwritten)
+                {
+                    Array.Clear(buffer, (int)bytesRead, (int)bytesToCopy);
+
+                    bytesRead     += bytesToCopy;
+                    currentOffset += bytesToCopy;
+                    found         =  true;
+
+                    break;
+                }
+
                 // Calculate the physical filesystem block
                 ulong blockInExtent = logicalBlock      - extent.StartOff;
                 ulong physBlock     = extent.StartBlock + blockInExtent;
@@ -233,7 +247,6 @@ public sealed partial class XFS
                     return errno;
                 }
 
-                long bytesToCopy = Math.Min(blockSize - offsetInBlock, toRead - bytesRead);
                 Array.Copy(blockData, offsetInBlock, buffer, bytesRead, bytesToCopy);
 
                 bytesRead     += bytesToCopy;

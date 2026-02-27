@@ -26,6 +26,7 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
@@ -81,7 +82,7 @@ public sealed partial class XFS
                 var l1 = BigEndianBitConverter.ToUInt64(blockData, recPos + 8);
                 recPos += 16;
 
-                DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount);
+                DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount, out _);
 
                 // Read all blocks in this extent as potential directory data blocks
                 for(uint bb = 0; bb < blockCount; bb++)
@@ -123,13 +124,16 @@ public sealed partial class XFS
     /// <param name="startOff">Output: starting file offset in blocks</param>
     /// <param name="startBlock">Output: starting filesystem block number</param>
     /// <param name="blockCount">Output: number of blocks in extent</param>
-    static void DecodeBmbtRec(ulong l0, ulong l1, out ulong startOff, out ulong startBlock, out uint blockCount)
+    /// <param name="unwritten">Output: true if extent is unwritten (preallocated)</param>
+    static void DecodeBmbtRec(ulong    l0, ulong l1, out ulong startOff, out ulong startBlock, out uint blockCount,
+                              out bool unwritten)
     {
         // l0:63       = extent flag (1 = unwritten)
         // l0:9-62     = startoff (54 bits)
         // l0:0-8      = startblock high 9 bits
         // l1:21-63    = startblock low 43 bits
         // l1:0-20     = blockcount (21 bits)
+        unwritten  = l0 >> 63 != 0;
         startOff   = (l0 & 0x7FFFFFFFFFFFFE00UL) >> 9;
         startBlock = (l0 & 0x1FFUL) << 43 | l1 >> 21;
         blockCount = (uint)(l1 & 0x1FFFFFUL);
@@ -205,13 +209,14 @@ public sealed partial class XFS
             var l1 = BigEndianBitConverter.ToUInt64(rawInode, pos + 8);
             pos += 16;
 
-            DecodeBmbtRec(l0, l1, out ulong startOff, out ulong startBlock, out uint blockCount);
+            DecodeBmbtRec(l0, l1, out ulong startOff, out ulong startBlock, out uint blockCount, out bool unwritten);
 
             extList.Add(new XfsExtent
             {
                 StartOff   = startOff,
                 StartBlock = startBlock,
-                BlockCount = blockCount
+                BlockCount = blockCount,
+                Unwritten  = unwritten
             });
         }
 
@@ -257,13 +262,19 @@ public sealed partial class XFS
                 var l1 = BigEndianBitConverter.ToUInt64(rawInode, recPos + 8);
                 recPos += 16;
 
-                DecodeBmbtRec(l0, l1, out ulong startOff, out ulong startBlock, out uint blockCount);
+                DecodeBmbtRec(l0,
+                              l1,
+                              out ulong startOff,
+                              out ulong startBlock,
+                              out uint blockCount,
+                              out bool unwritten);
 
                 extList.Add(new XfsExtent
                 {
                     StartOff   = startOff,
                     StartBlock = startBlock,
-                    BlockCount = blockCount
+                    BlockCount = blockCount,
+                    Unwritten  = unwritten
                 });
             }
         }
@@ -284,9 +295,7 @@ public sealed partial class XFS
                 errno = CollectBmapBtreeExtents(childBlock, level - 1, extList);
 
                 if(errno != ErrorNumber.NoError)
-                {
                     AaruLogging.Debug(MODULE_NAME, "Error reading bmap btree child block {0}: {1}", childBlock, errno);
-                }
             }
         }
 
@@ -337,13 +346,19 @@ public sealed partial class XFS
                 var l1 = BigEndianBitConverter.ToUInt64(blockData, recPos + 8);
                 recPos += 16;
 
-                DecodeBmbtRec(l0, l1, out ulong startOff, out ulong startBlock, out uint blockCount);
+                DecodeBmbtRec(l0,
+                              l1,
+                              out ulong startOff,
+                              out ulong startBlock,
+                              out uint blockCount,
+                              out bool unwritten);
 
                 extents.Add(new XfsExtent
                 {
                     StartOff   = startOff,
                     StartBlock = startBlock,
-                    BlockCount = blockCount
+                    BlockCount = blockCount,
+                    Unwritten  = unwritten
                 });
             }
         }
@@ -363,9 +378,7 @@ public sealed partial class XFS
                 errno = CollectBmapBtreeExtents(childBlock, btLevel - 1, extents);
 
                 if(errno != ErrorNumber.NoError)
-                {
                     AaruLogging.Debug(MODULE_NAME, "Error reading btree child block {0}: {1}", childBlock, errno);
-                }
             }
         }
 
