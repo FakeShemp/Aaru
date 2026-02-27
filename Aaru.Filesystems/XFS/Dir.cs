@@ -512,15 +512,39 @@ public sealed partial class XFS
         var magic = BigEndianBitConverter.ToUInt32(blockData, 0);
 
         int dataStart;
+        int dataEnd = blockData.Length;
 
         switch(magic)
         {
             case XFS_DIR2_BLOCK_MAGIC:
+                dataStart = 16;
+
+                // Block-format: the tail is at the end, containing leaf count + stale count
+                // xfs_dir2_block_tail is at blockData[length - 4 (stale) - 4 (count)] = last 8 bytes
+                // The leaf entries sit before the tail: count * 8 bytes
+                if(blockData.Length >= 8)
+                {
+                    int tailOffset = blockData.Length - 8;
+                    var leafCount  = BigEndianBitConverter.ToUInt32(blockData, tailOffset);
+                    dataEnd = tailOffset - (int)leafCount * 8;
+                }
+
+                break;
             case XFS_DIR2_DATA_MAGIC:
                 dataStart = 16;
 
                 break;
             case XFS_DIR3_BLOCK_MAGIC:
+                dataStart = 64;
+
+                if(blockData.Length >= 8)
+                {
+                    int tailOffset = blockData.Length - 8;
+                    var leafCount  = BigEndianBitConverter.ToUInt32(blockData, tailOffset);
+                    dataEnd = tailOffset - (int)leafCount * 8;
+                }
+
+                break;
             case XFS_DIR3_DATA_MAGIC:
                 dataStart = 64;
 
@@ -533,29 +557,29 @@ public sealed partial class XFS
 
         int pos = dataStart;
 
-        while(pos + 10 < blockData.Length)
+        while(pos + 10 < dataEnd)
         {
             var freetag = BigEndianBitConverter.ToUInt16(blockData, pos);
 
             if(freetag == 0xFFFF)
             {
-                if(pos + 4 > blockData.Length) break;
+                if(pos + 4 > dataEnd) break;
 
                 var freeLen = BigEndianBitConverter.ToUInt16(blockData, pos + 2);
 
-                if(freeLen == 0 || pos + freeLen > blockData.Length) break;
+                if(freeLen == 0 || pos + freeLen > dataEnd) break;
 
                 pos += freeLen;
 
                 continue;
             }
 
-            if(pos + 9 > blockData.Length) break;
+            if(pos + 9 > dataEnd) break;
 
             var  entryIno = BigEndianBitConverter.ToUInt64(blockData, pos);
             byte nameLen  = blockData[pos + 8];
 
-            if(nameLen == 0 || pos + 9 + nameLen > blockData.Length) break;
+            if(nameLen == 0 || pos + 9 + nameLen > dataEnd) break;
 
             string name = _encoding.GetString(blockData, pos + 9, nameLen);
 
