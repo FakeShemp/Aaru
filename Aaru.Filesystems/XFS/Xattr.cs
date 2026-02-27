@@ -201,21 +201,31 @@ public sealed partial class XFS
         int dinodeSize     = inode.di_version >= 3 ? 176 : 100;
         int attrForkOffset = dinodeSize + (inode.di_forkoff << 3);
 
-        if(!TryFindValidAttrLeafBlock(rawInode, attrForkOffset, inode, out byte[] leafBlockData))
+        // Read extent count for attr fork, handling NREXT64 properly
+        // When NREXT64 is set, di_big_anextents (uint32) overlaps the di_nextents field at offset 76,
+        // and di_anextents at offset 80 becomes padding (zero).
+        uint extentCount;
+
+        if(_v3Inodes && (inode.di_flags2 & XFS_DIFLAG2_NREXT64) != 0)
+            extentCount = inode.di_nextents;
+        else
+            extentCount = inode.di_anextents;
+
+        if(!TryFindAttrLeafBlock(rawInode, attrForkOffset, extentCount, inode, out byte[] leafBlockData))
             return ErrorNumber.NoError;
 
         return ParseAttrLeaf(leafBlockData, entries, rawInode, attrForkOffset, inode);
     }
 
     /// <summary>Tries to find and read a valid attribute leaf block from extents</summary>
-    bool TryFindValidAttrLeafBlock(byte[] rawInode, int attrForkOffset, Dinode inode, out byte[] leafBlockData)
+    bool TryFindAttrLeafBlock(byte[]     rawInode, int attrForkOffset, uint extentCount, Dinode inode,
+                              out byte[] leafBlockData)
     {
         leafBlockData = null;
 
         if(inode.di_aformat != XFS_DINODE_FMT_EXTENTS) return false;
 
-        int pos         = attrForkOffset;
-        int extentCount = inode.di_anextents;
+        int pos = attrForkOffset;
 
         for(var i = 0; i < extentCount; i++)
         {
@@ -316,10 +326,11 @@ public sealed partial class XFS
         var level   = BigEndianBitConverter.ToUInt16(rawInode, pos);
         var numrecs = BigEndianBitConverter.ToUInt16(rawInode, pos + 2);
 
-        // Get pointer to child block pointers (at end of fork)
-        int attrForkEnd = rawInode.Length;
-        int forkSize    = attrForkEnd    - attrForkOffset;
-        int ptrsStart   = pos + forkSize - numrecs * 8;
+        // Linux: xfs_bmdr_maxrecs(dblocklen, 0) = (dblocklen - sizeof(xfs_bmdr_block_t)) / (sizeof(key) + sizeof(ptr))
+        // Linux: xfs_bmdr_ptr_addr(block, i, maxrecs) = block + sizeof(bmdr_block) + maxrecs * sizeof(key) + (i-1) * sizeof(ptr)
+        int attrForkSize = rawInode.Length - attrForkOffset;
+        int maxrecs      = (attrForkSize - 4) / 16;
+        int ptrsStart    = pos + 4 + maxrecs * 8;
 
         for(var i = 0; i < numrecs; i++)
         {
@@ -478,9 +489,13 @@ public sealed partial class XFS
         if(valueLen == 0) return [];
 
         // Build extent list from inode attr fork
-        var extents     = new List<(ulong startOff, ulong startBlock, uint blockCount)>();
-        int pos         = attrForkOffset;
-        int extentCount = inode.di_anextents;
+        var extents = new List<(ulong startOff, ulong startBlock, uint blockCount)>();
+        int pos     = attrForkOffset;
+
+        // When NREXT64 is set, di_big_anextents overlaps di_nextents and di_anextents is padding
+        int extentCount = _v3Inodes && (inode.di_flags2 & XFS_DIFLAG2_NREXT64) != 0
+                              ? (int)inode.di_nextents
+                              : inode.di_anextents;
 
         for(var i = 0; i < extentCount; i++)
         {

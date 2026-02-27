@@ -33,20 +33,21 @@ namespace Aaru.Filesystems;
 
 public sealed partial class XFS
 {
-    /// <summary>Reads a full filesystem block at the given filesystem block number</summary>
-    /// <param name="fsBlock">Filesystem block number</param>
+    /// <summary>Reads a full filesystem block at the given filesystem block number (FSB)</summary>
+    /// <param name="fsBlock">
+    ///     Filesystem block number, encoded as (agNo &lt;&lt; sb_agblklog) | blockWithinAG.
+    ///     This matches the Linux kernel macros XFS_FSB_TO_AGNO / XFS_FSB_TO_AGBNO.
+    /// </param>
     /// <param name="blockData">Output block data</param>
     /// <returns>Error number indicating success or failure</returns>
     ErrorNumber ReadBlock(ulong fsBlock, out byte[] blockData)
     {
-        // Linux: XFS_FSB_TO_AGNO(mp, fsbno) = fsbno >> sb_agblklog
-        //        XFS_FSB_TO_AGBNO(mp, fsbno) = fsbno & mask(sb_agblklog)
-        //        XFS_AGB_TO_DADDR(mp, agno, agbno) = (agno * sb_agblocks + agbno) * bb_per_block
-        ulong agNo     = fsBlock >> _superblock.agblklog;
-        ulong agBno    = fsBlock & (1UL << _superblock.agblklog) - 1;
-        ulong absBlock = agNo * _superblock.agblocks + agBno;
-
-        ulong byteOffset = absBlock * _superblock.blocksize;
+        // Decode the AG-encoded FSB into AG number and block within AG
+        int   agblklog    = _superblock.agblklog;
+        ulong agNo        = fsBlock >> agblklog;
+        ulong agBlock     = fsBlock & (1UL << agblklog) - 1;
+        ulong linearBlock = agNo * _superblock.agblocks + agBlock;
+        ulong byteOffset  = linearBlock * _superblock.blocksize;
 
         return ReadBytes(byteOffset, _superblock.blocksize, out blockData);
     }

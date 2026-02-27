@@ -313,21 +313,45 @@ public sealed partial class XFS
     /// <returns>Error number indicating success or failure</returns>
     ErrorNumber ReadExtentDirectory(ulong inodeNumber, Dinode inode, Dictionary<string, ulong> entries)
     {
-        AaruLogging.Debug(MODULE_NAME,
-                          "Reading extent directory for inode {0} ({1} extents)",
-                          inodeNumber,
-                          inode.di_nextents);
-
         int coreSize = _v3Inodes ? Marshal.SizeOf<Dinode>() : 100;
 
         ErrorNumber errno = ReadInodeRaw(inodeNumber, out byte[] rawInode);
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        int pos         = coreSize;
-        var extentCount = (int)inode.di_nextents;
+        // Determine extent count based on NREXT64 feature (per-inode flag in di_flags2)
+        ulong extentCount;
 
-        for(var i = 0; i < extentCount; i++)
+        if(_v3Inodes && (inode.di_flags2 & XFS_DIFLAG2_NREXT64) != 0)
+        {
+            // di_big_nextents is at offset 24 (di_v2_pad/di_flushiter position) as 8 bytes for V3 NREXT64
+            if(rawInode.Length < 32)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Truncated inode data for NREXT64");
+
+                return ErrorNumber.InvalidArgument;
+            }
+
+            extentCount = BigEndianBitConverter.ToUInt64(rawInode, 24);
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "Reading extent directory for inode {0} ({1} extents, NREXT64)",
+                              inodeNumber,
+                              extentCount);
+        }
+        else
+        {
+            extentCount = inode.di_nextents;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "Reading extent directory for inode {0} ({1} extents)",
+                              inodeNumber,
+                              extentCount);
+        }
+
+        int pos = coreSize;
+
+        for(ulong i = 0; i < extentCount; i++)
         {
             if(pos + 16 > rawInode.Length)
             {
@@ -433,9 +457,7 @@ public sealed partial class XFS
                 errno = ReadBmapBtreeBlock(childBlock, level - 1, entries);
 
                 if(errno != ErrorNumber.NoError)
-                {
                     AaruLogging.Debug(MODULE_NAME, "Error reading bmap btree child block {0}: {1}", childBlock, errno);
-                }
             }
         }
 
