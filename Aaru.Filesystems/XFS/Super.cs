@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : XFS filesystem plugin.
@@ -26,14 +26,36 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class XFS
 {
-
     /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        stat = new FileSystemInfo
+        {
+            Blocks         = _superblock.dblocks,
+            FreeBlocks     = _superblock.fdblocks,
+            Files          = _superblock.icount,
+            FreeFiles      = _superblock.ifree,
+            FilenameLength = 255,
+            Type           = FS_TYPE,
+            PluginId       = Id,
+            Id =
+            {
+                IsGuid = true,
+                uuid   = _superblock.uuid
+            }
+        };
+
+        return ErrorNumber.NoError;
+    }
 }
