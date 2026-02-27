@@ -26,6 +26,7 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -37,8 +38,9 @@ public sealed partial class XFS
     /// <summary>Recursively reads a BMAP btree block to find directory data extents</summary>
     /// <param name="fsBlock">Filesystem block number of the btree block</param>
     /// <param name="level">Level of this btree block (0 = leaf)</param>
+    /// <param name="entries">Dictionary to populate with directory entries</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadBmapBtreeBlock(ulong fsBlock, int level)
+    ErrorNumber ReadBmapBtreeBlock(ulong fsBlock, int level, Dictionary<string, ulong> entries)
     {
         ErrorNumber errno = ReadBlock(fsBlock, out byte[] blockData);
 
@@ -86,7 +88,7 @@ public sealed partial class XFS
 
                     if(errno != ErrorNumber.NoError) continue;
 
-                    ParseDirectoryDataBlock(dirBlockData);
+                    ParseDirectoryDataBlock(dirBlockData, entries);
                 }
             }
         }
@@ -103,12 +105,10 @@ public sealed partial class XFS
 
                 var childBlock = BigEndianBitConverter.ToUInt64(blockData, ptrOffset);
 
-                errno = ReadBmapBtreeBlock(childBlock, btLevel - 1);
+                errno = ReadBmapBtreeBlock(childBlock, btLevel - 1, entries);
 
                 if(errno != ErrorNumber.NoError)
-                {
                     AaruLogging.Debug(MODULE_NAME, "Error reading btree child block {0}: {1}", childBlock, errno);
-                }
             }
         }
 

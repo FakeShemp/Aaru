@@ -310,13 +310,7 @@ public sealed partial class XFS
         AaruLogging.Debug(MODULE_NAME, "Root inode data fork extents: {0}", rootInode.di_nextents);
 
         // Parse directory contents based on format
-        errno = rootInode.di_format switch
-                {
-                    XFS_DINODE_FMT_LOCAL   => ReadShortformDirectory(rootInode),
-                    XFS_DINODE_FMT_EXTENTS => ReadExtentDirectory(rootInode),
-                    XFS_DINODE_FMT_BTREE   => ReadBtreeDirectory(rootInode),
-                    _                      => ErrorNumber.NotSupported
-                };
+        errno = GetDirectoryContents(_superblock.rootino, rootInode, out Dictionary<string, ulong> rootEntries);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -327,6 +321,9 @@ public sealed partial class XFS
 
             return errno;
         }
+
+        // Copy into root directory cache
+        foreach(KeyValuePair<string, ulong> entry in rootEntries) _rootDirectoryCache[entry.Key] = entry.Value;
 
         AaruLogging.Debug(MODULE_NAME, "Cached {0} root directory entries", _rootDirectoryCache.Count);
 

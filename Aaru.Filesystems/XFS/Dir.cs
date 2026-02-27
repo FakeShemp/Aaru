@@ -26,7 +26,11 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
@@ -35,30 +39,194 @@ namespace Aaru.Filesystems;
 
 public sealed partial class XFS
 {
-    /// <summary>Reads a shortform (inline) directory from the inode data fork</summary>
-    /// <param name="inode">The directory inode</param>
-    /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadShortformDirectory(Dinode inode)
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node)
     {
-        AaruLogging.Debug(MODULE_NAME, "Reading shortform directory");
+        node = null;
 
-        // The data fork starts immediately after the inode core.
-        // The inode core size depends on version.
-        int coreSize = _v3Inodes ? Marshal.SizeOf<Dinode>() : 100; // v2 core is 100 bytes
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-        // We need the full inode including the data fork
-        ErrorNumber errno = ReadInodeRaw(_superblock.rootino, out byte[] rawInode);
+        // Normalize path
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath is "" or ".") normalizedPath = "/";
+
+        // Root directory case
+        if(normalizedPath == "/")
+        {
+            if(_rootDirectoryCache.Count == 0) return ErrorNumber.NoSuchFile;
+
+            node = new XfsDirNode
+            {
+                Path     = "/",
+                Position = 0,
+                Entries  = _rootDirectoryCache.Keys.ToArray()
+            };
+
+            return ErrorNumber.NoError;
+        }
+
+        // Subdirectory traversal
+        string pathWithoutLeadingSlash = normalizedPath.StartsWith("/", StringComparison.Ordinal)
+                                             ? normalizedPath[1..]
+                                             : normalizedPath;
+
+        string[] pathComponents = pathWithoutLeadingSlash.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenDir: Traversing path with {0} components", pathComponents.Length);
+
+        // Start from root directory cache
+        Dictionary<string, ulong> currentEntries = _rootDirectoryCache;
+
+        // Traverse each path component
+        for(var p = 0; p < pathComponents.Length; p++)
+        {
+            string component = pathComponents[p];
+
+            AaruLogging.Debug(MODULE_NAME, "OpenDir: Navigating to component '{0}'", component);
+
+            if(component is "." or "..") continue;
+
+            if(!currentEntries.TryGetValue(component, out ulong inodeNumber))
+            {
+                AaruLogging.Debug(MODULE_NAME, "OpenDir: Component '{0}' not found in directory", component);
+
+                return ErrorNumber.NoSuchFile;
+            }
+
+            AaruLogging.Debug(MODULE_NAME, "OpenDir: Component '{0}' found with inode {1}", component, inodeNumber);
+
+            // Read the inode
+            ErrorNumber errno = ReadInode(inodeNumber, out Dinode inode);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "OpenDir: Error reading inode {0}: {1}", inodeNumber, errno);
+
+                return errno;
+            }
+
+            // Check if it's a directory
+            if((inode.di_mode & S_IFMT) != S_IFDIR)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "OpenDir: '{0}' is not a directory (mode=0x{1:X4})",
+                                  component,
+                                  inode.di_mode);
+
+                return ErrorNumber.NotDirectory;
+            }
+
+            // Get or read directory contents
+            errno = GetDirectoryContents(inodeNumber, inode, out Dictionary<string, ulong> dirEntries);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "OpenDir: Error reading directory contents: {0}", errno);
+
+                return errno;
+            }
+
+            // If this is the last component, we're opening this directory
+            if(p == pathComponents.Length - 1)
+            {
+                node = new XfsDirNode
+                {
+                    Path     = normalizedPath,
+                    Position = 0,
+                    Entries  = dirEntries.Keys.ToArray()
+                };
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  "OpenDir: Successfully opened directory '{0}' with {1} entries",
+                                  normalizedPath,
+                                  dirEntries.Count);
+
+                return ErrorNumber.NoError;
+            }
+
+            // Not the last component — move to next level
+            currentEntries = dirEntries;
+        }
+
+        return ErrorNumber.NoSuchFile;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(node is not XfsDirNode xfsNode) return ErrorNumber.InvalidArgument;
+
+        xfsNode.Position = -1;
+        xfsNode.Entries  = null;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not XfsDirNode xfsNode) return ErrorNumber.InvalidArgument;
+
+        if(xfsNode.Position < 0) return ErrorNumber.InvalidArgument;
+
+        // End of directory
+        if(xfsNode.Position >= xfsNode.Entries.Length) return ErrorNumber.NoError;
+
+        // Get current filename and advance position
+        filename = xfsNode.Entries[xfsNode.Position++];
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Gets or reads directory contents for an inode, using the directory cache</summary>
+    /// <param name="inodeNumber">Inode number of the directory</param>
+    /// <param name="inode">The directory inode structure</param>
+    /// <param name="entries">Output dictionary of entries (filename -> inode number), excluding . and ..</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber GetDirectoryContents(ulong inodeNumber, Dinode inode, out Dictionary<string, ulong> entries)
+    {
+        entries = new Dictionary<string, ulong>();
+
+        ErrorNumber errno = inode.di_format switch
+                            {
+                                XFS_DINODE_FMT_LOCAL   => ReadShortformDirectory(inodeNumber, inode, entries),
+                                XFS_DINODE_FMT_EXTENTS => ReadExtentDirectory(inodeNumber, inode, entries),
+                                XFS_DINODE_FMT_BTREE   => ReadBtreeDirectory(inodeNumber, inode, entries),
+                                _                      => ErrorNumber.NotSupported
+                            };
+
+        return errno;
+    }
+
+    /// <summary>Reads a shortform (inline) directory from the inode data fork</summary>
+    /// <param name="inodeNumber">Inode number to read raw data from</param>
+    /// <param name="inode">The directory inode</param>
+    /// <param name="entries">Dictionary to populate with entries</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadShortformDirectory(ulong inodeNumber, Dinode inode, Dictionary<string, ulong> entries)
+    {
+        AaruLogging.Debug(MODULE_NAME, "Reading shortform directory for inode {0}", inodeNumber);
+
+        int coreSize = _v3Inodes ? Marshal.SizeOf<Dinode>() : 100;
+
+        ErrorNumber errno = ReadInodeRaw(inodeNumber, out byte[] rawInode);
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        if(rawInode.Length < coreSize + 6) // minimum sf header is 6 bytes
+        if(rawInode.Length < coreSize + 6)
         {
             AaruLogging.Debug(MODULE_NAME, "Raw inode too small for shortform directory");
 
             return ErrorNumber.InvalidArgument;
         }
 
-        // Parse the shortform header at the start of the data fork
         int pos = coreSize;
 
         byte count   = rawInode[pos];
@@ -66,7 +234,6 @@ public sealed partial class XFS
 
         bool use64BitInodes = i8count > 0;
 
-        // Header size: 1(count) + 1(i8count) + parent_ino_size
         int parentInoSize = use64BitInodes ? 8 : 4;
         int headerSize    = 2 + parentInoSize;
 
@@ -79,13 +246,8 @@ public sealed partial class XFS
             return ErrorNumber.InvalidArgument;
         }
 
-        // Skip past header
         pos += headerSize;
 
-        // The total number of entries is count + i8count (the counts just distinguish
-        // how many use 4-byte vs 8-byte inode numbers)
-        // Actually, count is the total entry count; i8count is how many use 8-byte inodes.
-        // But per the kernel, the total number of entries is simply "count".
         int totalEntries = count;
 
         for(var i = 0; i < totalEntries; i++)
@@ -98,8 +260,6 @@ public sealed partial class XFS
             }
 
             byte nameLen = rawInode[pos];
-
-            // offset[2] follows namelen
             pos += 1 + 2; // skip namelen + offset
 
             if(pos + nameLen > rawInode.Length)
@@ -112,15 +272,13 @@ public sealed partial class XFS
             string name = _encoding.GetString(rawInode, pos, nameLen);
             pos += nameLen;
 
-            // If ftype is enabled, there's a 1-byte file type field after the name
             if(_hasFtype)
             {
                 if(pos + 1 > rawInode.Length) break;
 
-                pos += 1; // skip filetype byte
+                pos += 1;
             }
 
-            // Inode number follows
             ulong entryIno;
 
             if(use64BitInodes)
@@ -140,7 +298,7 @@ public sealed partial class XFS
 
             if(name is "." or "..") continue;
 
-            _rootDirectoryCache[name] = entryIno;
+            entries[name] = entryIno;
 
             AaruLogging.Debug(MODULE_NAME, "SF entry: \"{0}\" -> inode {1}", name, entryIno);
         }
@@ -148,23 +306,25 @@ public sealed partial class XFS
         return ErrorNumber.NoError;
     }
 
-    /// <summary>Reads a directory stored in extent format (single data block or multiple data blocks)</summary>
+    /// <summary>Reads a directory stored in extent format</summary>
+    /// <param name="inodeNumber">Inode number to read raw data from</param>
     /// <param name="inode">The directory inode</param>
+    /// <param name="entries">Dictionary to populate with entries</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadExtentDirectory(Dinode inode)
+    ErrorNumber ReadExtentDirectory(ulong inodeNumber, Dinode inode, Dictionary<string, ulong> entries)
     {
-        AaruLogging.Debug(MODULE_NAME, "Reading extent directory ({0} extents)", inode.di_nextents);
+        AaruLogging.Debug(MODULE_NAME,
+                          "Reading extent directory for inode {0} ({1} extents)",
+                          inodeNumber,
+                          inode.di_nextents);
 
-        // Read the extent list from the data fork
         int coreSize = _v3Inodes ? Marshal.SizeOf<Dinode>() : 100;
 
-        ErrorNumber errno = ReadInodeRaw(_superblock.rootino, out byte[] rawInode);
+        ErrorNumber errno = ReadInodeRaw(inodeNumber, out byte[] rawInode);
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        int pos = coreSize;
-
-        // Each BMBT record is 16 bytes (2 x uint64)
+        int pos         = coreSize;
         var extentCount = (int)inode.di_nextents;
 
         for(var i = 0; i < extentCount; i++)
@@ -176,16 +336,14 @@ public sealed partial class XFS
                 break;
             }
 
-            // Decode BMBT record
             var l0 = BigEndianBitConverter.ToUInt64(rawInode, pos);
-            var l1 = BigEndianBitConverter.ToUInt64(rawInode, pos + 16 - 8);
+            var l1 = BigEndianBitConverter.ToUInt64(rawInode, pos + 8);
             pos += 16;
 
             DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount);
 
             AaruLogging.Debug(MODULE_NAME, "Extent {0}: startblock={1}, count={2}", i, startBlock, blockCount);
 
-            // Read all blocks in this extent
             for(uint b = 0; b < blockCount; b++)
             {
                 ulong blockAddr = startBlock + b;
@@ -199,7 +357,7 @@ public sealed partial class XFS
                     continue;
                 }
 
-                ParseDirectoryDataBlock(blockData);
+                ParseDirectoryDataBlock(blockData, entries);
             }
         }
 
@@ -207,16 +365,17 @@ public sealed partial class XFS
     }
 
     /// <summary>Reads a directory stored in btree format</summary>
+    /// <param name="inodeNumber">Inode number to read raw data from</param>
     /// <param name="inode">The directory inode</param>
+    /// <param name="entries">Dictionary to populate with entries</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadBtreeDirectory(Dinode inode)
+    ErrorNumber ReadBtreeDirectory(ulong inodeNumber, Dinode inode, Dictionary<string, ulong> entries)
     {
-        AaruLogging.Debug(MODULE_NAME, "Reading btree directory");
+        AaruLogging.Debug(MODULE_NAME, "Reading btree directory for inode {0}", inodeNumber);
 
-        // The data fork contains a bmdr_block header followed by keys and pointers.
         int coreSize = _v3Inodes ? Marshal.SizeOf<Dinode>() : 100;
 
-        ErrorNumber errno = ReadInodeRaw(_superblock.rootino, out byte[] rawInode);
+        ErrorNumber errno = ReadInodeRaw(inodeNumber, out byte[] rawInode);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -229,7 +388,6 @@ public sealed partial class XFS
             return ErrorNumber.InvalidArgument;
         }
 
-        // Read the bmdr_block header
         var level   = BigEndianBitConverter.ToUInt16(rawInode, pos);
         var numrecs = BigEndianBitConverter.ToUInt16(rawInode, pos + 2);
 
@@ -237,7 +395,6 @@ public sealed partial class XFS
 
         if(level == 0)
         {
-            // Leaf node: records are BMBT extent records starting at pos + 4
             int recPos = pos + 4;
 
             for(var i = 0; i < numrecs; i++)
@@ -256,18 +413,14 @@ public sealed partial class XFS
 
                     if(errno != ErrorNumber.NoError) continue;
 
-                    ParseDirectoryDataBlock(blockData);
+                    ParseDirectoryDataBlock(blockData, entries);
                 }
             }
         }
         else
         {
-            // Internal node: keys are at pos + 4, pointers are after keys.
-            // Keys: numrecs * 8 bytes (xfs_bmbt_key = __be64 br_startoff)
-            // Pointers: numrecs * 8 bytes (__be64) — positioned at end of fork area
-            int forkSize = inode.di_forkoff > 0 ? inode.di_forkoff * 8 : rawInode.Length - coreSize;
-
-            int ptrsStart = pos + forkSize - numrecs * 8;
+            int forkSize  = inode.di_forkoff > 0 ? inode.di_forkoff * 8 : rawInode.Length - coreSize;
+            int ptrsStart = pos                                                           + forkSize - numrecs * 8;
 
             for(var i = 0; i < numrecs; i++)
             {
@@ -277,7 +430,7 @@ public sealed partial class XFS
 
                 var childBlock = BigEndianBitConverter.ToUInt64(rawInode, ptrPos);
 
-                errno = ReadBmapBtreeBlock(childBlock, level - 1);
+                errno = ReadBmapBtreeBlock(childBlock, level - 1, entries);
 
                 if(errno != ErrorNumber.NoError)
                 {
@@ -289,9 +442,10 @@ public sealed partial class XFS
         return ErrorNumber.NoError;
     }
 
-    /// <summary>Parses a directory data block (v2 or v3 format) and adds entries to the cache</summary>
+    /// <summary>Parses a directory data block (v2 or v3 format) and adds entries to the given dictionary</summary>
     /// <param name="blockData">The raw block data</param>
-    void ParseDirectoryDataBlock(byte[] blockData)
+    /// <param name="entries">Dictionary to populate with entries</param>
+    void ParseDirectoryDataBlock(byte[] blockData, Dictionary<string, ulong> entries)
     {
         if(blockData.Length < 16) return;
 
@@ -303,13 +457,11 @@ public sealed partial class XFS
         {
             case XFS_DIR2_BLOCK_MAGIC:
             case XFS_DIR2_DATA_MAGIC:
-                // v2 header: 4 bytes magic + 3 * 4 bytes bestfree = 16 bytes
                 dataStart = 16;
 
                 break;
             case XFS_DIR3_BLOCK_MAGIC:
             case XFS_DIR3_DATA_MAGIC:
-                // v3 header: dir3_data_hdr = 48 (dir3_blk_hdr) + 12 (3*dir2_data_free) + 4 (pad) = 64 bytes
                 dataStart = 64;
 
                 break;
@@ -319,18 +471,14 @@ public sealed partial class XFS
                 return;
         }
 
-        // For block format, there's a tail at the end with leaf entries.
-        // We stop when we hit free space tags or run out of data.
         int pos = dataStart;
 
-        while(pos + 10 < blockData.Length) // minimum entry: 8 (inumber) + 1 (namelen) + 1 (name)
+        while(pos + 10 < blockData.Length)
         {
-            // Check for unused entry (freetag = 0xFFFF)
             var freetag = BigEndianBitConverter.ToUInt16(blockData, pos);
 
             if(freetag == 0xFFFF)
             {
-                // This is a free entry: read length and skip
                 if(pos + 4 > blockData.Length) break;
 
                 var freeLen = BigEndianBitConverter.ToUInt16(blockData, pos + 2);
@@ -342,7 +490,6 @@ public sealed partial class XFS
                 continue;
             }
 
-            // Active entry: xfs_dir2_data_entry
             if(pos + 9 > blockData.Length) break;
 
             var  entryIno = BigEndianBitConverter.ToUInt64(blockData, pos);
@@ -352,20 +499,15 @@ public sealed partial class XFS
 
             string name = _encoding.GetString(blockData, pos + 9, nameLen);
 
-            // After the name:
-            // - if ftype: 1 byte file type
-            // - padding to 8-byte align
-            // - 2 byte tag (starting offset of this entry)
             int afterName = pos + 9 + nameLen;
 
-            if(_hasFtype) afterName++; // skip filetype byte
+            if(_hasFtype) afterName++;
 
-            // Round up to next 8-byte boundary, then add 2 for tag
             int entryEnd = (afterName + 2 + 7) / 8 * 8;
 
             if(name is not "." and not "..")
             {
-                _rootDirectoryCache[name] = entryIno;
+                entries[name] = entryIno;
 
                 AaruLogging.Debug(MODULE_NAME, "Block entry: \"{0}\" -> inode {1}", name, entryIno);
             }
