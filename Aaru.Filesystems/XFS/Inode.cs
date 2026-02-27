@@ -95,6 +95,19 @@ public sealed partial class XFS
 
         inode = Marshal.ByteArrayToStructureBigEndian<Dinode>(inodeData, 0, dinodeSize);
 
+        // Validate inode magic
+        if(inode.di_magic != XFS_DINODE_MAGIC)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "Invalid inode magic 0x{0:X4} for inode {1}, expected 0x{2:X4}",
+                              inode.di_magic,
+                              inodeNumber,
+                              XFS_DINODE_MAGIC);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+
         return ErrorNumber.NoError;
     }
 
