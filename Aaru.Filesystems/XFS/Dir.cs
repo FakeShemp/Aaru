@@ -443,8 +443,12 @@ public sealed partial class XFS
         }
         else
         {
-            int forkSize  = inode.di_forkoff > 0 ? inode.di_forkoff * 8 : rawInode.Length - coreSize;
-            int ptrsStart = pos                                                           + forkSize - numrecs * 8;
+            int forkSize = inode.di_forkoff > 0 ? inode.di_forkoff * 8 : rawInode.Length - coreSize;
+
+            // maxrecs = max records that fit in the BMDR block
+            // Layout: header(4) + keys(maxrecs*8) + ptrs(maxrecs*8)
+            int maxrecs   = (forkSize - 4) / 16;
+            int ptrsStart = pos + 4 + maxrecs * 8;
 
             for(var i = 0; i < numrecs; i++)
             {
