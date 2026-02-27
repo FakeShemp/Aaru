@@ -486,6 +486,26 @@ public sealed partial class XFS
 
         if((inode.di_flags & XFS_DIFLAG_APPEND) != 0) info.Attributes |= FileAttributes.AppendOnly;
 
+        // Extract device major/minor for char and block device inodes
+        // The 32-bit SYSV dev_t is stored at the start of the data fork (FMT_DEV)
+        if((inode.di_mode & S_IFMT) is 0x2000 or 0x6000 && inode.di_format == XFS_DINODE_FMT_DEV)
+        {
+            ErrorNumber devErrno = ReadInodeRaw(inodeNumber, out byte[] rawInode);
+
+            if(devErrno == ErrorNumber.NoError)
+            {
+                int coreSize = _v3Inodes ? Marshal.SizeOf<Dinode>() : 100;
+
+                if(rawInode.Length >= coreSize + 4)
+                {
+                    var  sysvDev = BigEndianBitConverter.ToUInt32(rawInode, coreSize);
+                    uint major   = sysvDev >> 8 & 0xFF;
+                    uint minor   = sysvDev      & 0xFF;
+                    info.DeviceNo = (ulong)major << 32 | minor;
+                }
+            }
+        }
+
         return info;
     }
 
