@@ -107,6 +107,8 @@ public sealed partial class XFS
             return ErrorNumber.InvalidArgument;
         }
 
+        // Cache for future lookups
+        _inodeCache[inodeNumber] = inode;
 
         return ErrorNumber.NoError;
     }
