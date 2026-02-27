@@ -416,8 +416,6 @@ public sealed partial class NILFS2
         public readonly ulong ncheckpoints;
         /// <summary>Number of snapshots</summary>
         public readonly ulong nsnapshots;
-        /// <summary>Snapshot list</summary>
-        public readonly SnapshotList snapshot_list;
     }
 
 #endregion

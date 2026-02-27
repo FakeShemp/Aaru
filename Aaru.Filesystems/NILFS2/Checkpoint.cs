@@ -38,13 +38,12 @@ public sealed partial class NILFS2
 {
     /// <summary>Reads the latest checkpoint from the checkpoint file</summary>
     /// <param name="cpfileInode">The checkpoint file inode from the super root</param>
+    /// <param name="cno">Checkpoint number to read (from the segment summary that contained the super root)</param>
     /// <param name="checkpoint">Output checkpoint structure</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadLatestCheckpoint(in Inode cpfileInode, out Checkpoint checkpoint)
+    ErrorNumber ReadLatestCheckpoint(in Inode cpfileInode, ulong cno, out Checkpoint checkpoint)
     {
         checkpoint = default(Checkpoint);
-
-        ulong cno = _superblock.last_cno;
 
         AaruLogging.Debug(MODULE_NAME, "Reading checkpoint {0} from cpfile...", cno);
 
@@ -68,8 +67,9 @@ public sealed partial class NILFS2
                           logicalBlock,
                           offsetInBlock);
 
-        // The cpfile is a root metadata file, so bmap values are physical block numbers
-        ErrorNumber errno = ReadLogicalBlock(cpfileInode, logicalBlock, true, out byte[] blockData);
+        // The cpfile bmap uses virtual block numbers (NILFS_BMAP_PTR_VS in kernel)
+        // Only the DAT uses physical block numbers - cpfile needs DAT translation
+        ErrorNumber errno = ReadLogicalBlock(cpfileInode, logicalBlock, false, out byte[] blockData);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -92,6 +92,16 @@ public sealed partial class NILFS2
         if((checkpoint.flags & CheckpointFlags.Invalid) != 0)
         {
             AaruLogging.Debug(MODULE_NAME, "Checkpoint {0} is marked invalid", cno);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        if(checkpoint.cno != cno)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "Checkpoint number mismatch: expected {0}, got {1} (data may be stale or corrupt)",
+                              cno,
+                              checkpoint.cno);
 
             return ErrorNumber.InvalidArgument;
         }

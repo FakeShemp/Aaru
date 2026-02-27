@@ -64,13 +64,22 @@ public sealed partial class NILFS2
         }
 
         AaruLogging.Debug(MODULE_NAME, "Superblock read successfully");
-        AaruLogging.Debug(MODULE_NAME, "Block size: {0}",           _blockSize);
-        AaruLogging.Debug(MODULE_NAME, "Segments: {0}",             _superblock.nsegments);
-        AaruLogging.Debug(MODULE_NAME, "Last checkpoint: {0}",      _superblock.last_cno);
-        AaruLogging.Debug(MODULE_NAME, "Last partial segment: {0}", _superblock.last_pseg);
+        AaruLogging.Debug(MODULE_NAME, "Block size: {0}",                          _blockSize);
+        AaruLogging.Debug(MODULE_NAME, "Segments: {0}",                            _superblock.nsegments);
+        AaruLogging.Debug(MODULE_NAME, "Blocks per segment: {0}",                  _superblock.blocks_per_segment);
+        AaruLogging.Debug(MODULE_NAME, "Last checkpoint: {0}",                     _superblock.last_cno);
+        AaruLogging.Debug(MODULE_NAME, "Last partial segment (block number): {0}", _superblock.last_pseg);
+
+        // Calculate which segment the last_pseg block belongs to
+        ulong lastSegmentNumber = _superblock.last_pseg / _superblock.blocks_per_segment;
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "Last segment number (last_pseg / blocks_per_segment): {0} of {1}",
+                          lastSegmentNumber,
+                          _superblock.nsegments - 1);
 
         // Step 2: Find and read the super root (contains DAT, cpfile, sufile inodes)
-        errno = FindSuperRoot(out Inode datInode, out Inode cpfileInode);
+        errno = FindSuperRoot(out Inode datInode, out Inode cpfileInode, out ulong lastCno);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -81,10 +90,13 @@ public sealed partial class NILFS2
 
         _datInode = datInode;
 
-        AaruLogging.Debug(MODULE_NAME, "Super root found successfully");
+        AaruLogging.Debug(MODULE_NAME, "Super root found successfully, cno={0}", lastCno);
+
+        // The cpfile inode was read from the DAT in FindSuperRoot
+        Inode cpfileInode2 = cpfileInode;
 
         // Step 3: Read the latest checkpoint from the checkpoint file to get the ifile inode
-        errno = ReadLatestCheckpoint(cpfileInode, out Checkpoint checkpoint);
+        errno = ReadLatestCheckpoint(cpfileInode2, lastCno, out Checkpoint checkpoint);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -224,8 +236,8 @@ public sealed partial class NILFS2
 
         if(partitionSize >= NILFS2_SEG_MIN_BLOCKS * NILFS2_MIN_BLOCK_SIZE + 4096)
         {
-            ulong sb2Offset = ((partitionSize >> 12) - 1) << 12;
-            uint  sb2Addr   = (uint)(sb2Offset / _imagePlugin.Info.SectorSize);
+            ulong sb2Offset = (partitionSize >> 12) - 1 << 12;
+            var   sb2Addr   = (uint)(sb2Offset / _imagePlugin.Info.SectorSize);
 
             if(_partition.Start + sb2Addr + sbSize < _partition.End)
             {
@@ -290,88 +302,105 @@ public sealed partial class NILFS2
         return ErrorNumber.NoError;
     }
 
-    /// <summary>Finds and reads the super root from the last partial segment</summary>
-    /// <param name="datInode">Output DAT inode from the super root</param>
-    /// <param name="cpfileInode">Output checkpoint file inode from the super root</param>
-    /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber FindSuperRoot(out Inode datInode, out Inode cpfileInode)
+    ErrorNumber FindSuperRoot(out Inode datInode, out Inode cpfileInode, out ulong lastCno)
     {
         datInode    = default(Inode);
         cpfileInode = default(Inode);
+        lastCno     = 0;
 
-        AaruLogging.Debug(MODULE_NAME, "Finding super root at last_pseg block {0}...", _superblock.last_pseg);
+        ulong pseg     = _superblock.last_pseg;
+        ulong maxBlock = (_partition.End - _partition.Start + 1) * _imagePlugin.Info.SectorSize / _blockSize;
 
-        // Read the segment summary at the start of the last partial segment
-        ErrorNumber errno = ReadPhysicalBlock(_superblock.last_pseg, out byte[] ssData);
+        // Kernel: ri->ri_super_root = pseg_end
+        ulong srBlock = 0;
+        ulong srCno   = 0;
+        var   found   = false;
 
-        if(errno != ErrorNumber.NoError)
+        // Scan partial segments, keep last SR found (kernel's scan_newer logic)
+        while(pseg < maxBlock)
         {
-            AaruLogging.Debug(MODULE_NAME, "Error reading segment summary: {0}", errno);
+            if(ReadPhysicalBlock(pseg, out byte[] data) != ErrorNumber.NoError) break;
 
-            return errno;
-        }
+            SegmentSummary sum = Marshal.ByteArrayToStructureLittleEndian<SegmentSummary>(data);
 
-        SegmentSummary segsum = Marshal.ByteArrayToStructureLittleEndian<SegmentSummary>(ssData);
+            if(sum.magic != NILFS2_SEGSUM_MAGIC) break;
 
-        if(segsum.magic != NILFS2_SEGSUM_MAGIC)
-        {
+            if(sum.nblocks == 0 || sum.nblocks > _superblock.blocks_per_segment || pseg + sum.nblocks > maxBlock) break;
+
             AaruLogging.Debug(MODULE_NAME,
-                              "Invalid segment summary magic: 0x{0:X8}, expected 0x{1:X8}",
-                              segsum.magic,
-                              NILFS2_SEGSUM_MAGIC);
+                              "Pseg at {0}: nblocks={1}, flags=0x{2:X4}, cno={3}",
+                              pseg,
+                              sum.nblocks,
+                              (ushort)sum.flags,
+                              sum.cno);
+
+            if((sum.flags & SegmentSummaryFlags.SR) != 0)
+            {
+                // Kernel: ri->ri_super_root = pseg_end
+                srBlock = pseg + sum.nblocks - 1;
+                srCno   = sum.cno;
+                found   = true;
+
+                AaruLogging.Debug(MODULE_NAME, "Found SR at block {0}, cno={1}", srBlock, srCno);
+            }
+
+            pseg += sum.nblocks;
+        }
+
+        if(!found)
+        {
+            AaruLogging.Debug(MODULE_NAME, "No SR found");
 
             return ErrorNumber.InvalidArgument;
         }
+
+        // Kernel: nilfs_load_super_root reads from sr_block
+        AaruLogging.Debug(MODULE_NAME, "Reading SR block {0}", srBlock);
+
+        ErrorNumber readErr = ReadPhysicalBlock(srBlock, out byte[] sr);
+
+        if(readErr != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error reading SR block: {0}", readErr);
+
+            return readErr;
+        }
+
+        // Kernel uses NILFS_SR_MDT_OFFSET(inode_size, i) = offsetof(sr_dat) + inode_size * i
+        // offsetof(nilfs_super_root, sr_dat) = 16
+        // inode_size comes from superblock s_inode_size
+        const uint srHeaderSize = 16;
+        uint       inodeSize    = _superblock.inode_size;
+
+        uint datOffset    = srHeaderSize + inodeSize * 0; // = 16
+        uint cpfileOffset = srHeaderSize + inodeSize * 1; // = 16 + inode_size
+        uint sufileOffset = srHeaderSize + inodeSize * 2; // = 16 + 2 * inode_size
 
         AaruLogging.Debug(MODULE_NAME,
-                          "Segment summary: seq={0}, nblocks={1}, flags=0x{2:X4}",
-                          segsum.seq,
-                          segsum.nblocks,
-                          segsum.flags);
+                          "SR offsets: inode_size={0}, DAT={1}, cpfile={2}, sufile={3}",
+                          inodeSize,
+                          datOffset,
+                          cpfileOffset,
+                          sufileOffset);
 
-        if((segsum.flags & SegmentSummaryFlags.SR) == 0)
+        if(sr.Length < sufileOffset + inodeSize)
         {
-            AaruLogging.Debug(MODULE_NAME, "Last partial segment does not contain a super root");
+            AaruLogging.Debug(MODULE_NAME, "SR block too small: {0} < {1}", sr.Length, sufileOffset + inodeSize);
 
             return ErrorNumber.InvalidArgument;
         }
 
-        // Super root is the last block in the partial segment
-        ulong srBlockNr = _superblock.last_pseg + segsum.nblocks - 1;
-
-        AaruLogging.Debug(MODULE_NAME, "Reading super root at block {0}...", srBlockNr);
-
-        errno = ReadPhysicalBlock(srBlockNr, out byte[] srData);
-
-        if(errno != ErrorNumber.NoError)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Error reading super root block: {0}", errno);
-
-            return errno;
-        }
-
-        // Parse super root header (16 bytes: sum(4) + bytes(2) + flags(2) + nongc_ctime(8))
-        // Then parse inodes at variable offsets based on inode_size from superblock
-        uint       inodeSize       = _superblock.inode_size;
-        const uint srHeaderSize    = 16; // offsetof(nilfs_super_root, sr_dat)
-        int        inodeStructSize = Marshal.SizeOf<Inode>();
-
-        if(srData.Length < srHeaderSize + inodeSize * 3)
-        {
-            AaruLogging.Debug(MODULE_NAME, "Super root block too small");
-
-            return ErrorNumber.InvalidArgument;
-        }
-
-        datInode = Marshal.ByteArrayToStructureLittleEndian<Inode>(srData, (int)srHeaderSize, inodeStructSize);
-
-        cpfileInode = Marshal.ByteArrayToStructureLittleEndian<Inode>(srData,
-                                                                      (int)(srHeaderSize + inodeSize),
-                                                                      inodeStructSize);
+        // Kernel: nilfs_load_super_root reads inodes at these offsets
+        // It does NOT validate i_size — it passes raw inodes to nilfs_dat_read/nilfs_cpfile_read
+        datInode    = Marshal.ByteArrayToStructureLittleEndian<Inode>(sr, (int)datOffset,    (int)inodeSize);
+        cpfileInode = Marshal.ByteArrayToStructureLittleEndian<Inode>(sr, (int)cpfileOffset, (int)inodeSize);
+        lastCno     = srCno;
 
         AaruLogging.Debug(MODULE_NAME,
-                          "Super root parsed: DAT inode size={0}, cpfile inode size={1}",
+                          "SR: DAT blocks={0} size={1}, cpfile blocks={2} size={3}",
+                          datInode.blocks,
                           datInode.size,
+                          cpfileInode.blocks,
                           cpfileInode.size);
 
         return ErrorNumber.NoError;
