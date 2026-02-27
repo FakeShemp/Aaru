@@ -37,8 +37,6 @@ using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of SGI's XFS</summary>
 public sealed partial class XFS
 {
 #region IFilesystem Members

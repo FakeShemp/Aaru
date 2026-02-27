@@ -32,8 +32,6 @@ using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of SGI's XFS</summary>
 public sealed partial class XFS
 {
 #region Nested type: Superblock
