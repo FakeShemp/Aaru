@@ -228,4 +228,7 @@ public sealed partial class XFS
 
     // Directory data free count
     const int XFS_DIR2_DATA_FD_COUNT = 3;
+
+    // Maximum inode number (56 bits)
+    const ulong XFS_MAXINUMBER = (1UL << 56) - 1;
 }

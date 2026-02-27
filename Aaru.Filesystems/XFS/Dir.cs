@@ -285,7 +285,7 @@ public sealed partial class XFS
             {
                 if(pos + 8 > rawInode.Length) break;
 
-                entryIno =  BigEndianBitConverter.ToUInt64(rawInode, pos);
+                entryIno =  BigEndianBitConverter.ToUInt64(rawInode, pos) & XFS_MAXINUMBER;
                 pos      += 8;
             }
             else
