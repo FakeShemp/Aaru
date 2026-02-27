@@ -28,8 +28,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -38,6 +40,33 @@ namespace Aaru.Filesystems;
 public sealed partial class XFS : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "XFS plugin";
+
+    /// <summary>Cached inodes (inode number -> dinode)</summary>
+    readonly Dictionary<ulong, Dinode> _inodeCache = new();
+
+    /// <summary>Cached root directory entries (filename -> inode number)</summary>
+    readonly Dictionary<string, ulong> _rootDirectoryCache = new();
+
+    /// <summary>Encoding used for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>Whether the filesystem has ftype support in directory entries</summary>
+    bool _hasFtype;
+
+    /// <summary>Image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Whether filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>Cached superblock</summary>
+    Superblock _superblock;
+
+    /// <summary>Whether v3 inodes are in use (v5 superblock)</summary>
+    bool _v3Inodes;
 
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }

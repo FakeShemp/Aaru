@@ -184,7 +184,7 @@ public sealed partial class XFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct AGF
+    partial struct AGF
     {
         /// <summary>Magic number == XFS_AGF_MAGIC (0x58414746 'XAGF')</summary>
         public uint agf_magicnum;
@@ -249,7 +249,7 @@ public sealed partial class XFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct AGI
+    partial struct AGI
     {
         /// <summary>Magic number == XFS_AGI_MAGIC (0x58414749 'XAGI')</summary>
         public uint agi_magicnum;
@@ -302,7 +302,7 @@ public sealed partial class XFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct AGFL
+    partial struct AGFL
     {
         /// <summary>Magic number == XFS_AGFL_MAGIC (0x5841464c 'XAFL')</summary>
         public uint agfl_magicnum;
@@ -323,7 +323,7 @@ public sealed partial class XFS
     /// <summary>Legacy timestamp encoding format (struct xfs_legacy_timestamp).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct LegacyTimestamp
+    partial struct LegacyTimestamp
     {
         /// <summary>Timestamp seconds</summary>
         public int t_sec;
@@ -342,7 +342,7 @@ public sealed partial class XFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Dinode
+    partial struct Dinode
     {
         /// <summary>Inode magic # = XFS_DINODE_MAGIC (0x494e 'IN')</summary>
         public ushort di_magic;
@@ -441,7 +441,7 @@ public sealed partial class XFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct RealtimeSuperblock
+    partial struct RealtimeSuperblock
     {
         /// <summary>Magic number == XFS_RTSB_MAGIC (0x46726F67 'Frog')</summary>
         public uint rsb_magicnum;
@@ -465,7 +465,7 @@ public sealed partial class XFS
     /// <summary>Realtime bitmap/summary block header (struct xfs_rtbuf_blkinfo).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct RtBufBlkInfo
+    partial struct RtBufBlkInfo
     {
         /// <summary>Validity check on block (XFS_RTBITMAP_MAGIC or XFS_RTSUMMARY_MAGIC)</summary>
         public uint rt_magic;
@@ -490,7 +490,7 @@ public sealed partial class XFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct DiskDquot
+    partial struct DiskDquot
     {
         /// <summary>Dquot magic = XFS_DQUOT_MAGIC (0x4451 'DQ')</summary>
         public ushort d_magic;
@@ -546,7 +546,7 @@ public sealed partial class XFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct DquotBlock
+    partial struct DquotBlock
     {
         /// <summary>The disk dquot portion</summary>
         public DiskDquot dd_diskdq;
@@ -568,7 +568,7 @@ public sealed partial class XFS
     /// <summary>Remote symlink block header (struct xfs_dsymlink_hdr). CRC-enabled filesystems only.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct SymlinkHeader
+    partial struct SymlinkHeader
     {
         /// <summary>Magic number == XFS_SYMLINK_MAGIC (0x58534c4d 'XSLM')</summary>
         public uint sl_magic;
@@ -598,7 +598,7 @@ public sealed partial class XFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct AllocRecord
+    partial struct AllocRecord
     {
         /// <summary>Starting block number</summary>
         public uint ar_startblock;
@@ -616,7 +616,7 @@ public sealed partial class XFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct InodeBtreeRecord
+    partial struct InodeBtreeRecord
     {
         /// <summary>Starting inode number</summary>
         public uint ir_startino;
@@ -638,7 +638,7 @@ public sealed partial class XFS
     /// <summary>Inode btree key (struct xfs_inobt_key).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct InodeBtreeKey
+    partial struct InodeBtreeKey
     {
         /// <summary>Starting inode number</summary>
         public uint ir_startino;
@@ -651,7 +651,7 @@ public sealed partial class XFS
     /// <summary>Reverse mapping btree data record (struct xfs_rmap_rec).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct RmapRecord
+    partial struct RmapRecord
     {
         /// <summary>Extent start block</summary>
         public uint rm_startblock;
@@ -670,7 +670,7 @@ public sealed partial class XFS
     /// <summary>Reverse mapping btree key (struct xfs_rmap_key).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct RmapKey
+    partial struct RmapKey
     {
         /// <summary>Extent start block</summary>
         public uint rm_startblock;
@@ -687,7 +687,7 @@ public sealed partial class XFS
     /// <summary>Reference count btree data record (struct xfs_refcount_rec).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct RefcountRecord
+    partial struct RefcountRecord
     {
         /// <summary>Starting block number (bit 31 is CoW staging flag)</summary>
         public uint rc_startblock;
@@ -704,7 +704,7 @@ public sealed partial class XFS
     /// <summary>Reference count btree key (struct xfs_refcount_key).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct RefcountKey
+    partial struct RefcountKey
     {
         /// <summary>Starting block number</summary>
         public uint rc_startblock;
@@ -724,7 +724,7 @@ public sealed partial class XFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct BmbtRecord
+    partial struct BmbtRecord
     {
         /// <summary>First 64-bit word (extent flag + startoff + startblock high bits)</summary>
         public ulong l0;
@@ -739,7 +739,7 @@ public sealed partial class XFS
     /// <summary>Bmap btree key (struct xfs_bmbt_key).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct BmbtKey
+    partial struct BmbtKey
     {
         /// <summary>Starting file offset</summary>
         public ulong br_startoff;
@@ -752,7 +752,7 @@ public sealed partial class XFS
     /// <summary>Bmap root header, on-disk form only (struct xfs_bmdr_block).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct BmdrBlock
+    partial struct BmdrBlock
     {
         /// <summary>0 is a leaf</summary>
         public ushort bb_level;
@@ -767,7 +767,7 @@ public sealed partial class XFS
     /// <summary>Realtime rmap root header, on-disk form only (struct xfs_rtrmap_root).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct RtrmapRoot
+    partial struct RtrmapRoot
     {
         /// <summary>0 is a leaf</summary>
         public ushort bb_level;
@@ -782,7 +782,7 @@ public sealed partial class XFS
     /// <summary>Realtime refcount root header, on-disk form only (struct xfs_rtrefcount_root).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct RtRefcountRoot
+    partial struct RtRefcountRoot
     {
         /// <summary>0 is a leaf</summary>
         public ushort bb_level;
@@ -797,7 +797,7 @@ public sealed partial class XFS
     /// <summary>Short form btree block header (struct xfs_btree_block_shdr). Used for AG-based btrees.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct BtreeBlockShdr
+    partial struct BtreeBlockShdr
     {
         /// <summary>Left sibling block number (AG-relative)</summary>
         public uint bb_leftsib;
@@ -825,7 +825,7 @@ public sealed partial class XFS
     /// <summary>Long form btree block header (struct xfs_btree_block_lhdr). Used for inode-based btrees.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct BtreeBlockLhdr
+    partial struct BtreeBlockLhdr
     {
         /// <summary>Left sibling block number (filesystem-relative)</summary>
         public ulong bb_leftsib;
@@ -859,7 +859,7 @@ public sealed partial class XFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct BtreeBlock
+    partial struct BtreeBlock
     {
         /// <summary>Magic number for block type</summary>
         public uint bb_magic;
@@ -876,7 +876,7 @@ public sealed partial class XFS
     /// <summary>On-disk XFS access control list entry (struct xfs_acl_entry).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct AclEntry
+    partial struct AclEntry
     {
         /// <summary>ACL tag (user/group/mask/other)</summary>
         public uint ae_tag;
@@ -898,7 +898,7 @@ public sealed partial class XFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct DaBlkInfo
+    partial struct DaBlkInfo
     {
         /// <summary>Previous block in list</summary>
         public uint forw;
@@ -920,7 +920,7 @@ public sealed partial class XFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Da3BlkInfo
+    partial struct Da3BlkInfo
     {
         /// <summary>Previous block in list</summary>
         public uint forw;
@@ -949,7 +949,7 @@ public sealed partial class XFS
     /// <summary>DA btree non-leaf node header (struct xfs_da_node_hdr).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct DaNodeHeader
+    partial struct DaNodeHeader
     {
         /// <summary>Block type, links, etc.</summary>
         public DaBlkInfo info;
@@ -966,7 +966,7 @@ public sealed partial class XFS
     /// <summary>DA btree v3 non-leaf node header (struct xfs_da3_node_hdr).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Da3NodeHeader
+    partial struct Da3NodeHeader
     {
         /// <summary>Block type, links, etc.</summary>
         public Da3BlkInfo info;
@@ -985,7 +985,7 @@ public sealed partial class XFS
     /// <summary>DA btree node entry (struct xfs_da_node_entry).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct DaNodeEntry
+    partial struct DaNodeEntry
     {
         /// <summary>Hash value for this descendant</summary>
         public uint hashval;
@@ -999,7 +999,7 @@ public sealed partial class XFS
 
     /// <summary>Directory shortform header (struct xfs_dir2_sf_hdr). For inline directories.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct Dir2SfHeader
+    partial struct Dir2SfHeader
     {
         /// <summary>Count of entries</summary>
         public byte count;
@@ -1017,7 +1017,7 @@ public sealed partial class XFS
     /// <summary>Directory v2 free area descriptor (struct xfs_dir2_data_free).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Dir2DataFree
+    partial struct Dir2DataFree
     {
         /// <summary>Start of freespace</summary>
         public ushort offset;
@@ -1032,7 +1032,7 @@ public sealed partial class XFS
     /// <summary>Directory v2 data block header (struct xfs_dir2_data_hdr).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Dir2DataHeader
+    partial struct Dir2DataHeader
     {
         /// <summary>XFS_DIR2_DATA_MAGIC or XFS_DIR2_BLOCK_MAGIC</summary>
         public uint magic;
@@ -1048,7 +1048,7 @@ public sealed partial class XFS
     /// <summary>Directory v3 block header (struct xfs_dir3_blk_hdr). CRC-enabled directory blocks.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Dir3BlkHeader
+    partial struct Dir3BlkHeader
     {
         /// <summary>Magic number</summary>
         public uint magic;
@@ -1071,7 +1071,7 @@ public sealed partial class XFS
     /// <summary>Directory v3 data block header (struct xfs_dir3_data_hdr).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Dir3DataHeader
+    partial struct Dir3DataHeader
     {
         /// <summary>Block header</summary>
         public Dir3BlkHeader hdr;
@@ -1089,7 +1089,7 @@ public sealed partial class XFS
     /// <summary>Directory v2 leaf block entry (struct xfs_dir2_leaf_entry).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Dir2LeafEntry
+    partial struct Dir2LeafEntry
     {
         /// <summary>Hash value of name</summary>
         public uint hashval;
@@ -1104,7 +1104,7 @@ public sealed partial class XFS
     /// <summary>Directory v2 leaf block header (struct xfs_dir2_leaf_hdr).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Dir2LeafHeader
+    partial struct Dir2LeafHeader
     {
         /// <summary>Header for DA routines</summary>
         public DaBlkInfo info;
@@ -1121,7 +1121,7 @@ public sealed partial class XFS
     /// <summary>Directory v3 leaf block header (struct xfs_dir3_leaf_hdr).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Dir3LeafHeader
+    partial struct Dir3LeafHeader
     {
         /// <summary>Header for DA routines</summary>
         public Da3BlkInfo info;
@@ -1140,7 +1140,7 @@ public sealed partial class XFS
     /// <summary>Directory v2 leaf block tail (struct xfs_dir2_leaf_tail).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Dir2LeafTail
+    partial struct Dir2LeafTail
     {
         /// <summary>Count of best-free entries</summary>
         public uint bestcount;
@@ -1153,7 +1153,7 @@ public sealed partial class XFS
     /// <summary>Directory v2 free space block header (struct xfs_dir2_free_hdr).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Dir2FreeHeader
+    partial struct Dir2FreeHeader
     {
         /// <summary>XFS_DIR2_FREE_MAGIC</summary>
         public uint magic;
@@ -1172,7 +1172,7 @@ public sealed partial class XFS
     /// <summary>Directory v3 free space block header (struct xfs_dir3_free_hdr).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Dir3FreeHeader
+    partial struct Dir3FreeHeader
     {
         /// <summary>Block header</summary>
         public Dir3BlkHeader hdr;
@@ -1193,7 +1193,7 @@ public sealed partial class XFS
     /// <summary>Directory v2 single-block format tail (struct xfs_dir2_block_tail).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Dir2BlockTail
+    partial struct Dir2BlockTail
     {
         /// <summary>Count of leaf entries</summary>
         public uint count;
@@ -1208,7 +1208,7 @@ public sealed partial class XFS
     /// <summary>Attribute shortform header (struct xfs_attr_sf_hdr). For inline attributes.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct AttrSfHeader
+    partial struct AttrSfHeader
     {
         /// <summary>Total bytes in shortform list</summary>
         public ushort totsize;
@@ -1225,7 +1225,7 @@ public sealed partial class XFS
     /// <summary>Attribute leaf free space map entry (struct xfs_attr_leaf_map).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct AttrLeafMap
+    partial struct AttrLeafMap
     {
         /// <summary>Base of free region</summary>
         public ushort @base;
@@ -1240,7 +1240,7 @@ public sealed partial class XFS
     /// <summary>Attribute leaf block header (struct xfs_attr_leaf_hdr).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct AttrLeafHeader
+    partial struct AttrLeafHeader
     {
         /// <summary>Block type, links, etc.</summary>
         public DaBlkInfo info;
@@ -1266,7 +1266,7 @@ public sealed partial class XFS
     /// <summary>Attribute leaf block v3 header (struct xfs_attr3_leaf_hdr). CRC-enabled.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Attr3LeafHeader
+    partial struct Attr3LeafHeader
     {
         /// <summary>Block type, links, etc.</summary>
         public Da3BlkInfo info;
@@ -1294,7 +1294,7 @@ public sealed partial class XFS
     /// <summary>Attribute leaf entry, sorted on key (struct xfs_attr_leaf_entry).</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct AttrLeafEntry
+    partial struct AttrLeafEntry
     {
         /// <summary>Hash value of name</summary>
         public uint hashval;
@@ -1313,7 +1313,7 @@ public sealed partial class XFS
     /// <summary>Remote attribute block header (struct xfs_attr3_rmt_hdr). CRC-enabled filesystems only.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Attr3RemoteHeader
+    partial struct Attr3RemoteHeader
     {
         /// <summary>Magic number == XFS_ATTR3_RMT_MAGIC (0x5841524d 'XARM')</summary>
         public uint rm_magic;
@@ -1340,7 +1340,7 @@ public sealed partial class XFS
     /// <summary>Parent pointer attribute record (struct xfs_parent_rec). Stored as xattr value.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct ParentRecord
+    partial struct ParentRecord
     {
         /// <summary>Parent inode number</summary>
         public ulong p_ino;
