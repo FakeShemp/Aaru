@@ -28,7 +28,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Logging;
 
@@ -37,6 +39,116 @@ namespace Aaru.Filesystems;
 // ReSharper disable once InconsistentNaming
 public sealed partial class ext2FS
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath is "" or ".") normalizedPath = "/";
+
+        // Root directory — use cached entries
+        if(normalizedPath is "/")
+        {
+            if(_rootDirectoryCache.Count == 0) return ErrorNumber.NoSuchFile;
+
+            node = new Ext2DirNode
+            {
+                Path     = "/",
+                Position = 0,
+                Entries  = _rootDirectoryCache.Keys.ToArray()
+            };
+
+            return ErrorNumber.NoError;
+        }
+
+        // Subdirectory traversal — split path into components
+        string stripped = normalizedPath.StartsWith("/", StringComparison.Ordinal)
+                              ? normalizedPath[1..]
+                              : normalizedPath;
+
+        string[] components = stripped.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        if(components.Length == 0) return ErrorNumber.InvalidArgument;
+
+        Dictionary<string, uint> currentEntries = _rootDirectoryCache;
+
+        for(var i = 0; i < components.Length; i++)
+        {
+            string component = components[i];
+
+            if(component is "." or "..") continue;
+
+            if(!currentEntries.TryGetValue(component, out uint inodeNumber)) return ErrorNumber.NoSuchFile;
+
+            // Read inode and verify it's a directory
+            ErrorNumber errno = ReadInode(inodeNumber, out Inode inode);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if((inode.mode & S_IFMT) != S_IFDIR) return ErrorNumber.NotDirectory;
+
+            // Read subdirectory entries from disk
+            ulong dirSize = (ulong)inode.size_high << 32 | inode.size_lo;
+
+            errno = ReadDirectoryEntries(inode, dirSize, out Dictionary<string, uint> subEntries);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // Filter . and ..
+            var filtered = subEntries.Where(e => e.Key is not ("." or "..")).ToDictionary(e => e.Key, e => e.Value);
+
+            // Last component — create the node
+            if(i == components.Length - 1)
+            {
+                node = new Ext2DirNode
+                {
+                    Path     = normalizedPath,
+                    Position = 0,
+                    Entries  = filtered.Keys.ToArray()
+                };
+
+                return ErrorNumber.NoError;
+            }
+
+            // Intermediate component — descend
+            currentEntries = filtered;
+        }
+
+        return ErrorNumber.NoSuchFile;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(node is not Ext2DirNode dirNode) return ErrorNumber.InvalidArgument;
+
+        dirNode.Position = -1;
+        dirNode.Entries  = null;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
+
+        if(node is not Ext2DirNode dirNode) return ErrorNumber.InvalidArgument;
+
+        if(dirNode.Position < 0) return ErrorNumber.InvalidArgument;
+
+        if(dirNode.Position >= dirNode.Entries.Length) return ErrorNumber.NoError;
+
+        filename = dirNode.Entries[dirNode.Position++];
+
+        return ErrorNumber.NoError;
+    }
+
+
     /// <summary>Reads directory entries from an inode's data blocks</summary>
     /// <param name="inode">The directory inode</param>
     /// <param name="size">The directory size in bytes</param>

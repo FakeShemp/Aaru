@@ -2,14 +2,10 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Internal.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Linux extended filesystem 2, 3 and 4 plugin.
-//
-// --[ Description ] ----------------------------------------------------------
-//
-//     Identifies the Linux extended filesystem 2, 3 and 4 and shows information.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,39 +26,17 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-
-using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
+// ReSharper disable once InconsistentNaming
 public sealed partial class ext2FS
 {
-    /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+    sealed class Ext2DirNode : IDirNode
+    {
+        internal string[] Entries  { get; set; }
+        internal int      Position { get; set; }
+        public   string   Path     { get; init; }
+    }
 }
