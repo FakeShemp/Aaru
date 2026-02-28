@@ -28,8 +28,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -40,8 +42,16 @@ public sealed partial class LIF : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "LIF plugin";
 
+    bool                  _debug;
+    Encoding              _encoding;
+    List<DirectoryEntry>  _rootDirectoryCache;
+    IMediaImage           _imagePlugin;
+    bool                  _mounted;
+    Partition             _partition;
+    SystemBlock           _systemBlock;
+
     /// <inheritdoc />
-    public FileSystem Metadata { get; }
+    public FileSystem Metadata { get; private set; }
     /// <inheritdoc />
     public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
     /// <inheritdoc />
