@@ -57,7 +57,7 @@ public sealed partial class BTRFS
         // Root directory
         if(normalizedPath is "/")
         {
-            ErrorNumber errno = ReadInode(BTRFS_FIRST_FREE_OBJECTID, out InodeItem rootInode);
+            ErrorNumber errno = ReadInode(BTRFS_FIRST_FREE_OBJECTID, _fsTreeRoot, out InodeItem rootInode);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -68,11 +68,11 @@ public sealed partial class BTRFS
         }
 
         // Resolve path to an objectid
-        ErrorNumber pathErrno = ResolvePath(normalizedPath, out ulong objectId);
+        ErrorNumber pathErrno = ResolvePath(normalizedPath, out ulong objectId, out ulong treeRoot);
 
         if(pathErrno != ErrorNumber.NoError) return pathErrno;
 
-        ErrorNumber inodeErrno = ReadInode(objectId, out InodeItem inode);
+        ErrorNumber inodeErrno = ReadInode(objectId, treeRoot, out InodeItem inode);
 
         if(inodeErrno != ErrorNumber.NoError) return inodeErrno;
 
@@ -94,12 +94,12 @@ public sealed partial class BTRFS
 
         if(!stat.Attributes.HasFlag(FileAttributes.Symlink)) return ErrorNumber.InvalidArgument;
 
-        ErrorNumber pathErrno = ResolvePath(path, out ulong objectId);
+        ErrorNumber pathErrno = ResolvePath(path, out ulong objectId, out ulong treeRoot);
 
         if(pathErrno != ErrorNumber.NoError) return pathErrno;
 
         // Read the FS tree to find extent data for this symlink
-        ErrorNumber errno = ReadTreeBlock(_fsTreeRoot, out byte[] fsTreeData);
+        ErrorNumber errno = ReadTreeBlock(treeRoot, out byte[] fsTreeData);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -134,7 +134,7 @@ public sealed partial class BTRFS
 
         if(string.IsNullOrEmpty(path) || path is "/" or "." or "..") return ErrorNumber.IsDirectory;
 
-        ErrorNumber pathErrno = ResolvePath(path, out ulong objectId);
+        ErrorNumber pathErrno = ResolvePath(path, out ulong objectId, out ulong treeRoot);
 
         if(pathErrno != ErrorNumber.NoError) return pathErrno;
 
@@ -149,7 +149,8 @@ public sealed partial class BTRFS
             Path     = path,
             Length   = stat.Length,
             Offset   = 0,
-            ObjectId = objectId
+            ObjectId = objectId,
+            TreeRoot = treeRoot
         };
 
         return ErrorNumber.NoError;
@@ -184,7 +185,7 @@ public sealed partial class BTRFS
         if(toRead > buffer.Length) toRead = buffer.Length;
 
         // Walk the FS tree to find extent data items for this file and read the requested range
-        ErrorNumber errno = ReadTreeBlock(_fsTreeRoot, out byte[] fsTreeData);
+        ErrorNumber errno = ReadTreeBlock(fileNode.TreeRoot, out byte[] fsTreeData);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -386,13 +387,15 @@ public sealed partial class BTRFS
         return ErrorNumber.NoError;
     }
 
-    /// <summary>Resolves a filesystem path to its target objectid by walking the directory tree</summary>
+    /// <summary>Resolves a filesystem path to its target objectid and tree root by walking the directory tree</summary>
     /// <param name="path">Absolute path to resolve (must start with /)</param>
     /// <param name="objectId">The objectid of the target file or directory</param>
+    /// <param name="treeRoot">The tree root bytenr for the subvolume containing the target</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ResolvePath(string path, out ulong objectId)
+    ErrorNumber ResolvePath(string path, out ulong objectId, out ulong treeRoot)
     {
         objectId = 0;
+        treeRoot = _fsTreeRoot;
 
         string normalizedPath = path ?? "/";
 
@@ -413,7 +416,8 @@ public sealed partial class BTRFS
 
         if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
 
-        Dictionary<string, DirEntry> currentEntries = _rootDirectoryCache;
+        Dictionary<string, DirEntry> currentEntries  = _rootDirectoryCache;
+        ulong                        currentTreeRoot = _fsTreeRoot;
 
         for(var p = 0; p < pathComponents.Length; p++)
         {
@@ -423,10 +427,14 @@ public sealed partial class BTRFS
 
             if(!currentEntries.TryGetValue(component, out DirEntry entry)) return ErrorNumber.NoSuchFile;
 
+            // Handle subvolume crossing
+            if(entry.SubvolTreeRoot != 0) currentTreeRoot = entry.SubvolTreeRoot;
+
             // Last component — this is the target
             if(p == pathComponents.Length - 1)
             {
                 objectId = entry.ObjectId;
+                treeRoot = currentTreeRoot;
 
                 return ErrorNumber.NoError;
             }
@@ -434,7 +442,8 @@ public sealed partial class BTRFS
             // Intermediate — must be a directory
             if(entry.Type != BTRFS_FT_DIR) return ErrorNumber.NotDirectory;
 
-            ErrorNumber errno = ReadDirectoryContents(entry.ObjectId, out Dictionary<string, DirEntry> dirEntries);
+            ErrorNumber errno =
+                ReadDirectoryContents(entry.ObjectId, currentTreeRoot, out Dictionary<string, DirEntry> dirEntries);
 
             if(errno != ErrorNumber.NoError) return errno;
 

@@ -375,6 +375,52 @@ public sealed partial class BTRFS
     /// <returns>Error number indicating success or failure</returns>
     ErrorNumber SearchTreeForRootItem(byte[] nodeData, in Header header, ulong targetObjectId)
     {
+        ErrorNumber errno = ResolveSubvolumeRoot(nodeData, header, targetObjectId, out ulong bytenr, out byte level);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        _fsTreeRoot  = bytenr;
+        _fsTreeLevel = level;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Resolves a subvolume's tree root by searching the root tree for its ROOT_ITEM.
+    ///     Returns the bytenr and level of the subvolume's tree root node.
+    /// </summary>
+    /// <param name="subvolObjectId">The objectid of the subvolume (ROOT_ITEM key)</param>
+    /// <param name="treeRoot">The logical byte address of the subvolume's tree root</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ResolveSubvolumeRoot(ulong subvolObjectId, out ulong treeRoot)
+    {
+        treeRoot = 0;
+
+        ErrorNumber errno = ReadTreeBlock(_superblock.root_lba, out byte[] rootTreeData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        Header rootHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(rootTreeData);
+
+        return ResolveSubvolumeRoot(rootTreeData, rootHeader, subvolObjectId, out treeRoot, out _);
+    }
+
+    /// <summary>
+    ///     Recursively searches a tree node for a ROOT_ITEM with the specified objectid and returns
+    ///     its bytenr and level without modifying instance fields.
+    /// </summary>
+    /// <param name="nodeData">Raw tree node data</param>
+    /// <param name="header">Parsed node header</param>
+    /// <param name="targetObjectId">The objectid to search for</param>
+    /// <param name="bytenr">The logical byte address of the found tree root</param>
+    /// <param name="level">The level of the found tree root node</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ResolveSubvolumeRoot(byte[]   nodeData, in Header header, ulong targetObjectId, out ulong bytenr,
+                                     out byte level)
+    {
+        bytenr = 0;
+        level  = 0;
+
         int headerSize = Marshal.SizeOf<Header>();
 
         if(header.level == 0)
@@ -388,14 +434,12 @@ public sealed partial class BTRFS
 
                 if(itemOffset + itemSize > nodeData.Length) break;
 
-                // Parse DiskKey fields manually to avoid potential marshalling issues
                 var  objectid = BitConverter.ToUInt64(nodeData, itemOffset);
                 byte keyType  = nodeData[itemOffset                        + 8];
                 var  dataOff  = BitConverter.ToUInt32(nodeData, itemOffset + 17);
 
                 if(objectid != targetObjectId || keyType != BTRFS_ROOT_ITEM_KEY) continue;
 
-                // Found the FS tree root item - parse the RootItem to get the bytenr
                 int dataOffset   = headerSize + (int)dataOff;
                 int rootItemSize = Marshal.SizeOf<RootItem>();
 
@@ -409,14 +453,14 @@ public sealed partial class BTRFS
                 RootItem rootItem =
                     Marshal.ByteArrayToStructureLittleEndian<RootItem>(nodeData, dataOffset, rootItemSize);
 
-                _fsTreeRoot  = rootItem.bytenr;
-                _fsTreeLevel = rootItem.level;
+                bytenr = rootItem.bytenr;
+                level  = rootItem.level;
 
                 AaruLogging.Debug(MODULE_NAME,
-                                  "Found FS tree root: bytenr={0}, level={1}, root_dirid={2}",
+                                  "Found tree root for objectid {0}: bytenr={1}, level={2}",
+                                  targetObjectId,
                                   rootItem.bytenr,
-                                  rootItem.level,
-                                  rootItem.root_dirid);
+                                  rootItem.level);
 
                 return ErrorNumber.NoError;
             }
@@ -435,14 +479,12 @@ public sealed partial class BTRFS
 
             KeyPtr keyPtr = Marshal.ByteArrayToStructureLittleEndian<KeyPtr>(nodeData, keyPtrOffset, keyPtrSize);
 
-            // Only follow this child if the target objectid could be in its range
-            // For the last key pointer, or if the key is <= target, follow it
             if(i + 1 < header.nritems)
             {
                 int    nextOffset = headerSize + (int)(i + 1) * keyPtrSize;
                 KeyPtr nextKeyPtr = Marshal.ByteArrayToStructureLittleEndian<KeyPtr>(nodeData, nextOffset, keyPtrSize);
 
-                if(nextKeyPtr.key.objectid <= targetObjectId) continue; // Target is beyond this child's range
+                if(nextKeyPtr.key.objectid <= targetObjectId) continue;
             }
 
             ErrorNumber errno = ReadTreeBlock(keyPtr.blockptr, out byte[] childData);
@@ -451,7 +493,7 @@ public sealed partial class BTRFS
 
             Header childHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(childData);
 
-            errno = SearchTreeForRootItem(childData, childHeader, targetObjectId);
+            errno = ResolveSubvolumeRoot(childData, childHeader, targetObjectId, out bytenr, out level);
 
             if(errno == ErrorNumber.NoError) return ErrorNumber.NoError;
         }

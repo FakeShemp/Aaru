@@ -42,13 +42,14 @@ public sealed partial class BTRFS
 {
     /// <summary>Reads the INODE_ITEM for the specified objectid from the FS tree</summary>
     /// <param name="objectId">The objectid (inode number) to read</param>
+    /// <param name="treeRoot">The logical byte address of the tree to read from</param>
     /// <param name="inodeItem">The parsed InodeItem structure</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadInode(ulong objectId, out InodeItem inodeItem)
+    ErrorNumber ReadInode(ulong objectId, ulong treeRoot, out InodeItem inodeItem)
     {
         inodeItem = default(InodeItem);
 
-        ErrorNumber errno = ReadTreeBlock(_fsTreeRoot, out byte[] fsTreeData);
+        ErrorNumber errno = ReadTreeBlock(treeRoot, out byte[] fsTreeData);
 
         if(errno != ErrorNumber.NoError) return errno;
 

@@ -78,6 +78,7 @@ public sealed partial class BTRFS
         if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
 
         Dictionary<string, DirEntry> currentEntries = _rootDirectoryCache;
+        ulong                        currentTreeRoot = _fsTreeRoot;
 
         for(var p = 0; p < pathComponents.Length; p++)
         {
@@ -89,7 +90,11 @@ public sealed partial class BTRFS
 
             if(entry.Type != BTRFS_FT_DIR) return ErrorNumber.NotDirectory;
 
-            ErrorNumber errno = ReadDirectoryContents(entry.ObjectId, out Dictionary<string, DirEntry> dirEntries);
+            // Handle subvolume crossing
+            ulong treeRoot = entry.SubvolTreeRoot != 0 ? entry.SubvolTreeRoot : currentTreeRoot;
+
+            ErrorNumber errno =
+                ReadDirectoryContents(entry.ObjectId, treeRoot, out Dictionary<string, DirEntry> dirEntries);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -105,7 +110,8 @@ public sealed partial class BTRFS
                 return ErrorNumber.NoError;
             }
 
-            currentEntries = dirEntries;
+            currentEntries  = dirEntries;
+            currentTreeRoot = treeRoot;
         }
 
         return ErrorNumber.NoSuchFile;
@@ -172,6 +178,28 @@ public sealed partial class BTRFS
             AaruLogging.Debug(MODULE_NAME, "Error walking FS tree for directory entries: {0}", errno);
 
             return errno;
+        }
+
+        // Resolve subvolume entries: when a directory entry points to a ROOT_ITEM,
+        // look up the subvolume's tree root and update the entry accordingly
+        List<string> subvolKeys = [];
+
+        foreach(KeyValuePair<string, DirEntry> kvp in _rootDirectoryCache)
+        {
+            if(kvp.Value.LocationType == BTRFS_ROOT_ITEM_KEY) subvolKeys.Add(kvp.Key);
+        }
+
+        foreach(string key in subvolKeys)
+        {
+            DirEntry entry = _rootDirectoryCache[key];
+
+            ErrorNumber subvolErrno = ResolveSubvolumeRoot(entry.ObjectId, out ulong subvolRoot);
+
+            if(subvolErrno != ErrorNumber.NoError) continue;
+
+            entry.SubvolTreeRoot     = subvolRoot;
+            entry.ObjectId           = BTRFS_FIRST_FREE_OBJECTID;
+            _rootDirectoryCache[key] = entry;
         }
 
         return ErrorNumber.NoError;
@@ -267,9 +295,10 @@ public sealed partial class BTRFS
 
             entries[name] = new DirEntry
             {
-                ObjectId = dirItem.location.objectid,
-                Type     = dirItem.type,
-                Index    = item.key.offset
+                ObjectId     = dirItem.location.objectid,
+                Type         = dirItem.type,
+                Index        = item.key.offset,
+                LocationType = dirItem.location.type
             };
 
             AaruLogging.Debug(MODULE_NAME,
@@ -282,20 +311,47 @@ public sealed partial class BTRFS
         return ErrorNumber.NoError;
     }
 
-    /// <summary>Reads the contents of a directory given its inode objectid by walking the FS tree</summary>
+    /// <summary>Reads the contents of a directory given its inode objectid by walking the specified tree</summary>
     /// <param name="dirObjectId">The objectid of the directory inode</param>
+    /// <param name="treeRoot">The logical byte address of the tree to read from</param>
     /// <param name="entries">The directory entries found</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadDirectoryContents(ulong dirObjectId, out Dictionary<string, DirEntry> entries)
+    ErrorNumber ReadDirectoryContents(ulong dirObjectId, ulong treeRoot, out Dictionary<string, DirEntry> entries)
     {
         entries = new Dictionary<string, DirEntry>();
 
-        ErrorNumber errno = ReadTreeBlock(_fsTreeRoot, out byte[] fsTreeData);
+        ErrorNumber errno = ReadTreeBlock(treeRoot, out byte[] fsTreeData);
 
         if(errno != ErrorNumber.NoError) return errno;
 
         Header fsTreeHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(fsTreeData);
 
-        return WalkTreeForDirEntries(fsTreeData, fsTreeHeader, dirObjectId, entries);
+        errno = WalkTreeForDirEntries(fsTreeData, fsTreeHeader, dirObjectId, entries);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Resolve subvolume entries: when a directory entry points to a ROOT_ITEM,
+        // look up the subvolume's tree root and update the entry accordingly
+        List<string> subvolKeys = [];
+
+        foreach(KeyValuePair<string, DirEntry> kvp in entries)
+        {
+            if(kvp.Value.LocationType == BTRFS_ROOT_ITEM_KEY) subvolKeys.Add(kvp.Key);
+        }
+
+        foreach(string key in subvolKeys)
+        {
+            DirEntry entry = entries[key];
+
+            ErrorNumber subvolErrno = ResolveSubvolumeRoot(entry.ObjectId, out ulong subvolRoot);
+
+            if(subvolErrno != ErrorNumber.NoError) continue;
+
+            entry.SubvolTreeRoot = subvolRoot;
+            entry.ObjectId       = BTRFS_FIRST_FREE_OBJECTID;
+            entries[key]         = entry;
+        }
+
+        return ErrorNumber.NoError;
     }
 }

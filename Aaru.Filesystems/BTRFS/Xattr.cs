@@ -46,11 +46,11 @@ public sealed partial class BTRFS
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        ErrorNumber pathErrno = ResolvePath(path, out ulong objectId);
+        ErrorNumber pathErrno = ResolvePath(path, out ulong objectId, out ulong treeRoot);
 
         if(pathErrno != ErrorNumber.NoError) return pathErrno;
 
-        ErrorNumber errno = ReadTreeBlock(_fsTreeRoot, out byte[] fsTreeData);
+        ErrorNumber errno = ReadTreeBlock(treeRoot, out byte[] fsTreeData);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -73,11 +73,11 @@ public sealed partial class BTRFS
     {
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        ErrorNumber pathErrno = ResolvePath(path, out ulong objectId);
+        ErrorNumber pathErrno = ResolvePath(path, out ulong objectId, out ulong treeRoot);
 
         if(pathErrno != ErrorNumber.NoError) return pathErrno;
 
-        ErrorNumber errno = ReadTreeBlock(_fsTreeRoot, out byte[] fsTreeData);
+        ErrorNumber errno = ReadTreeBlock(treeRoot, out byte[] fsTreeData);
 
         if(errno != ErrorNumber.NoError) return errno;
 

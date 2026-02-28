@@ -80,6 +80,9 @@ public sealed partial class BTRFS
         /// <summary>The objectid (inode number) of this file</summary>
         internal ulong ObjectId { get; init; }
 
+        /// <summary>The tree root bytenr for this file's subvolume</summary>
+        internal ulong TreeRoot { get; init; }
+
         /// <summary>File offset of the currently cached decompressed extent</summary>
         internal ulong CachedExtentOffset { get; set; }
 
@@ -107,6 +110,12 @@ public sealed partial class BTRFS
 
         /// <summary>Index of this entry in the directory</summary>
         public ulong Index;
+
+        /// <summary>The key type from DirItem.location (BTRFS_ROOT_ITEM_KEY=132 indicates subvolume)</summary>
+        public byte LocationType;
+
+        /// <summary>The tree root bytenr for this entry's subvolume (0 if same subvolume)</summary>
+        public ulong SubvolTreeRoot;
     }
 
     /// <summary>Describes a file extent for on-demand reading</summary>
