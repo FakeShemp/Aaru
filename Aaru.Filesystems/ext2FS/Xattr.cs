@@ -340,7 +340,9 @@ public sealed partial class ext2FS
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        List<(ulong physicalBlock, uint length)> blockList = GetInodeDataBlocks(eaInode, valueSize);
+        errno = GetInodeDataBlocks(eaInode, out List<(ulong physicalBlock, uint length)> blockList);
+
+        if(errno != ErrorNumber.NoError) return errno;
 
         buf = new byte[valueSize];
 
