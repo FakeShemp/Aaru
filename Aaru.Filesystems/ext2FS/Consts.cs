@@ -241,4 +241,28 @@ public sealed partial class ext2FS
     const ushort S_IFDIR  = 0x4000;
     const ushort S_IFCHR  = 0x2000;
     const ushort S_IFIFO  = 0x1000;
+
+    // Extended attribute constants
+    /// <summary>Extended attribute block magic number</summary>
+    const uint EXT4_XATTR_MAGIC = 0xEA020000;
+    /// <summary>Minimum xattr entry header size (without name)</summary>
+    const int EXT4_XATTR_ENTRY_HDR_SIZE = 16;
+    /// <summary>Alignment mask for xattr entries</summary>
+    const int EXT4_XATTR_ROUND = 3;
+    /// <summary>Size of the external xattr block header</summary>
+    const int EXT4_XATTR_HEADER_SIZE = 32;
+    /// <summary>Size of the ibody xattr header (just the magic)</summary>
+    const int EXT4_XATTR_IBODY_HEADER_SIZE = 4;
+
+    // Extended attribute name indexes
+    const byte EXT4_XATTR_INDEX_USER              = 1;
+    const byte EXT4_XATTR_INDEX_POSIX_ACL_ACCESS  = 2;
+    const byte EXT4_XATTR_INDEX_POSIX_ACL_DEFAULT = 3;
+    const byte EXT4_XATTR_INDEX_TRUSTED           = 4;
+    const byte EXT4_XATTR_INDEX_LUSTRE            = 5;
+    const byte EXT4_XATTR_INDEX_SECURITY          = 6;
+    const byte EXT4_XATTR_INDEX_SYSTEM            = 7;
+    const byte EXT4_XATTR_INDEX_RICHACL           = 8;
+    const byte EXT4_XATTR_INDEX_ENCRYPTION        = 9;
+    const byte EXT4_XATTR_INDEX_HURD              = 10;
 }

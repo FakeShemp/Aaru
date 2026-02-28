@@ -119,4 +119,25 @@ public sealed partial class ext2FS
 
         return GetIndirectBlocks(inode, blockList);
     }
+
+    /// <summary>Reads the raw bytes of an inode from disk (full inode size, not just struct size)</summary>
+    ErrorNumber ReadRawInodeBytes(uint inodeNumber, out byte[] rawInode)
+    {
+        rawInode = null;
+
+        if(inodeNumber == 0 || inodeNumber > _superblock.inodes) return ErrorNumber.InvalidArgument;
+
+        uint blockGroup = (inodeNumber - 1) / _superblock.inodes_per_grp;
+        uint inodeInGrp = (inodeNumber - 1) % _superblock.inodes_per_grp;
+
+        if(blockGroup >= _blockGroupCount) return ErrorNumber.InvalidArgument;
+
+        BlockGroupDescriptor bgd = _blockGroupDescriptors[blockGroup];
+
+        ulong inodeTableBlock = _is64Bit ? (ulong)bgd.inode_table_hi << 32 | bgd.inode_table_lo : bgd.inode_table_lo;
+
+        ulong inodeByteOffset = inodeTableBlock * _blockSize + (ulong)inodeInGrp * _inodeSize;
+
+        return ReadBytes(inodeByteOffset, _inodeSize, out rawInode);
+    }
 }
