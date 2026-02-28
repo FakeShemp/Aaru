@@ -84,8 +84,8 @@ public sealed partial class XFS
 
                 DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount, out _);
 
-                // Directory blocks may span multiple filesystem blocks (1 << dirblklog)
-                uint dirBlockFsBlocks = 1U << _superblock.dirblklog;
+                // Directory blocks may span multiple filesystem blocks
+                uint dirBlockFsBlocks = _dirBlockFsBlocks;
 
                 for(uint bb = 0; bb < blockCount; bb += dirBlockFsBlocks)
                 {
@@ -129,6 +129,84 @@ public sealed partial class XFS
 
                 if(errno != ErrorNumber.NoError)
                     AaruLogging.Debug(MODULE_NAME, "Error reading btree child block {0}: {1}", childBlock, errno);
+            }
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Recursively reads a BMAP btree block to find V1 directory data extents</summary>
+    /// <param name="fsBlock">Filesystem block number of the btree block</param>
+    /// <param name="level">Level of this btree block (0 = leaf)</param>
+    /// <param name="entries">Dictionary to populate with directory entries</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadV1BmapBtreeBlock(ulong fsBlock, int level, Dictionary<string, ulong> entries)
+    {
+        ErrorNumber errno = ReadBlock(fsBlock, out byte[] blockData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(blockData.Length < 8) return ErrorNumber.InvalidArgument;
+
+        var magic = BigEndianBitConverter.ToUInt32(blockData, 0);
+
+        if(magic != XFS_BMAP_MAGIC && magic != XFS_BMAP_CRC_MAGIC)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Invalid BMAP btree magic: 0x{0:X8}", magic);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        var btLevel   = BigEndianBitConverter.ToUInt16(blockData, 4);
+        var btNumrecs = BigEndianBitConverter.ToUInt16(blockData, 6);
+
+        int headerSize = magic == XFS_BMAP_CRC_MAGIC
+                             ? 72  // XFS_BTREE_LBLOCK_CRC_LEN
+                             : 24; // XFS_BTREE_LBLOCK_LEN
+
+        if(btLevel == 0)
+        {
+            // Leaf: contains BMBT extent records
+            int recPos = headerSize;
+
+            for(var i = 0; i < btNumrecs; i++)
+            {
+                if(recPos + 16 > blockData.Length) break;
+
+                var l0 = BigEndianBitConverter.ToUInt64(blockData, recPos);
+                var l1 = BigEndianBitConverter.ToUInt64(blockData, recPos + 8);
+                recPos += 16;
+
+                DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount, out _);
+
+                // V1 directory blocks are always 1 filesystem block
+                for(uint bb = 0; bb < blockCount; bb++)
+                {
+                    errno = ReadBlock(startBlock + bb, out byte[] dirBlockData);
+
+                    if(errno != ErrorNumber.NoError) continue;
+
+                    ParseV1DirectoryBlock(dirBlockData, entries);
+                }
+            }
+        }
+        else
+        {
+            // Internal node: keys then pointers (64-bit pointers for long form)
+            int ptrsPos = headerSize + btNumrecs * 8;
+
+            for(var i = 0; i < btNumrecs; i++)
+            {
+                int ptrOffset = ptrsPos + i * 8;
+
+                if(ptrOffset + 8 > blockData.Length) break;
+
+                var childBlock = BigEndianBitConverter.ToUInt64(blockData, ptrOffset);
+
+                errno = ReadV1BmapBtreeBlock(childBlock, btLevel - 1, entries);
+
+                if(errno != ErrorNumber.NoError)
+                    AaruLogging.Debug(MODULE_NAME, "Error reading V1 btree child block {0}: {1}", childBlock, errno);
             }
         }
 

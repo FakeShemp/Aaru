@@ -47,6 +47,9 @@ public sealed partial class XFS : IReadOnlyFilesystem
     /// <summary>Cached root directory entries (filename -> inode number)</summary>
     readonly Dictionary<string, ulong> _rootDirectoryCache = new();
 
+    /// <summary>Number of filesystem blocks per directory block (1 for dir v1, 1 &lt;&lt; dirblklog for dir v2)</summary>
+    uint _dirBlockFsBlocks;
+
     /// <summary>Encoding used for filenames</summary>
     Encoding _encoding;
 
@@ -55,6 +58,9 @@ public sealed partial class XFS : IReadOnlyFilesystem
 
     /// <summary>Image plugin being accessed</summary>
     IMediaImage _imagePlugin;
+
+    /// <summary>Whether the filesystem uses directory format v1 (pre-DIRV2BIT)</summary>
+    bool _isDirV1;
 
     /// <summary>Whether filesystem is mounted</summary>
     bool _mounted;

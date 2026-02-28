@@ -449,13 +449,17 @@ public sealed partial class XFS
     /// <returns>The populated FileEntryInfo</returns>
     FileEntryInfo InodeToFileEntryInfo(Dinode inode, ulong inodeNumber)
     {
+        // V1 inodes store link count in di_onlink (16-bit, mapped to di_metatype);
+        // V2+ inodes store link count in di_nlink (32-bit)
+        uint linkCount = inode.di_version == 1 ? inode.di_metatype : inode.di_nlink;
+
         var info = new FileEntryInfo
         {
             Attributes          = FileAttributes.None,
             BlockSize           = _superblock.blocksize,
             Inode               = inodeNumber,
             Length              = inode.di_size,
-            Links               = inode.di_nlink,
+            Links               = linkCount,
             UID                 = inode.di_uid,
             GID                 = inode.di_gid,
             Mode                = (uint)(inode.di_mode & 0x0FFF),

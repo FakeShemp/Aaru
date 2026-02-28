@@ -147,14 +147,16 @@ public sealed partial class XFS
 
         _rootDirectoryCache.Clear();
         _inodeCache.Clear();
-        _mounted     = false;
-        _imagePlugin = null;
-        _partition   = default(Partition);
-        _superblock  = default(Superblock);
-        _encoding    = null;
-        _v3Inodes    = false;
-        _hasFtype    = false;
-        Metadata     = null;
+        _mounted          = false;
+        _imagePlugin      = null;
+        _partition        = default(Partition);
+        _superblock       = default(Superblock);
+        _encoding         = null;
+        _v3Inodes         = false;
+        _hasFtype         = false;
+        _isDirV1          = false;
+        _dirBlockFsBlocks = 0;
+        Metadata          = null;
 
         AaruLogging.Debug(MODULE_NAME, "Volume unmounted");
 
@@ -268,11 +270,28 @@ public sealed partial class XFS
 
         _v3Inodes = versionNum == XFS_SB_VERSION_5;
 
+        // Directory format v1 is used for V1/V2/V3 superblocks, and V4 without DIRV2BIT
+        _isDirV1 = versionNum switch
+                   {
+                       XFS_SB_VERSION_5 => false,
+                       XFS_SB_VERSION_4 => (_superblock.version & XFS_SB_VERSION_DIRV2BIT) == 0,
+                       _                => true
+                   };
+
+        // Dir v1 always uses 1 filesystem block per directory block; dir v2 uses 1 << dirblklog
+        _dirBlockFsBlocks = _isDirV1 ? 1U : 1U << _superblock.dirblklog;
+
         // ftype is supported if v5 with FTYPE incompat, or v4 with features2 FTYPE bit
-        if(_v3Inodes)
+        // Dir v1 never has ftype
+        if(_isDirV1)
+            _hasFtype = false;
+        else if(_v3Inodes)
             _hasFtype = (_superblock.features_incompat & XFS_SB_FEAT_INCOMPAT_FTYPE) != 0;
         else
             _hasFtype = (_superblock.features2 & XFS_SB_VERSION2_FTYPE) != 0;
+
+        AaruLogging.Debug(MODULE_NAME, "Dir V1: {0}",              _isDirV1);
+        AaruLogging.Debug(MODULE_NAME, "Dir block fs blocks: {0}", _dirBlockFsBlocks);
 
         return ErrorNumber.NoError;
     }

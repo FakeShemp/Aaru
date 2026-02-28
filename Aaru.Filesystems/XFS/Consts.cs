@@ -138,6 +138,7 @@ public sealed partial class XFS
     const ushort XFS_ATTR3_LEAF_MAGIC = 0x3BEE;
 
     // Directory magic numbers
+    const ushort XFS_DIR_LEAF_MAGIC   = 0xFEEB;     // V1 directory leaf block
     const uint   XFS_DIR2_BLOCK_MAGIC = 0x58443242; // 'XD2B'
     const uint   XFS_DIR2_DATA_MAGIC  = 0x58443244; // 'XD2D'
     const uint   XFS_DIR2_FREE_MAGIC  = 0x58443246; // 'XD2F'

@@ -194,13 +194,28 @@ public sealed partial class XFS
     {
         entries = new Dictionary<string, ulong>();
 
-        ErrorNumber errno = inode.di_format switch
-                            {
-                                XFS_DINODE_FMT_LOCAL   => ReadShortformDirectory(inodeNumber, inode, entries),
-                                XFS_DINODE_FMT_EXTENTS => ReadExtentDirectory(inodeNumber, inode, entries),
-                                XFS_DINODE_FMT_BTREE   => ReadBtreeDirectory(inodeNumber, inode, entries),
-                                _                      => ErrorNumber.NotSupported
-                            };
+        ErrorNumber errno;
+
+        if(_isDirV1)
+        {
+            errno = inode.di_format switch
+                    {
+                        XFS_DINODE_FMT_LOCAL   => ReadV1ShortformDirectory(inodeNumber, inode, entries),
+                        XFS_DINODE_FMT_EXTENTS => ReadV1ExtentDirectory(inodeNumber, inode, entries),
+                        XFS_DINODE_FMT_BTREE   => ReadV1BtreeDirectory(inodeNumber, inode, entries),
+                        _                      => ErrorNumber.NotSupported
+                    };
+        }
+        else
+        {
+            errno = inode.di_format switch
+                    {
+                        XFS_DINODE_FMT_LOCAL   => ReadShortformDirectory(inodeNumber, inode, entries),
+                        XFS_DINODE_FMT_EXTENTS => ReadExtentDirectory(inodeNumber, inode, entries),
+                        XFS_DINODE_FMT_BTREE   => ReadBtreeDirectory(inodeNumber, inode, entries),
+                        _                      => ErrorNumber.NotSupported
+                    };
+        }
 
         return errno;
     }
@@ -352,7 +367,7 @@ public sealed partial class XFS
         int pos = coreSize;
 
         // Directory blocks may span multiple filesystem blocks (1 << dirblklog)
-        uint dirBlockFsBlocks = 1U << _superblock.dirblklog;
+        uint dirBlockFsBlocks = _dirBlockFsBlocks;
 
         for(ulong i = 0; i < extentCount; i++)
         {
@@ -448,7 +463,7 @@ public sealed partial class XFS
 
                 DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount, out _);
 
-                uint dirBlockFsBlocks = 1U << _superblock.dirblklog;
+                uint dirBlockFsBlocks = _dirBlockFsBlocks;
 
                 for(uint b = 0; b < blockCount; b += dirBlockFsBlocks)
                 {
@@ -500,6 +515,304 @@ public sealed partial class XFS
         }
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads a V1 shortform (inline) directory from the inode data fork</summary>
+    /// <param name="inodeNumber">Inode number to read raw data from</param>
+    /// <param name="inode">The directory inode</param>
+    /// <param name="entries">Dictionary to populate with entries</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadV1ShortformDirectory(ulong inodeNumber, Dinode inode, Dictionary<string, ulong> entries)
+    {
+        AaruLogging.Debug(MODULE_NAME, "Reading V1 shortform directory for inode {0}", inodeNumber);
+
+        int coreSize = _v3Inodes ? Marshal.SizeOf<Dinode>() : 100;
+
+        ErrorNumber errno = ReadInodeRaw(inodeNumber, out byte[] rawInode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // V1 shortform header: xfs_dir_ino_t parent (8 bytes) + uint8 count (1 byte) = 9 bytes
+        if(rawInode.Length < coreSize + 9)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Raw inode too small for V1 shortform directory");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        int pos = coreSize;
+
+        // parent inode is 8 bytes big-endian (xfs_dir_ino_t)
+        pos += 8;
+
+        byte count = rawInode[pos];
+        pos++;
+
+        AaruLogging.Debug(MODULE_NAME, "V1 SF dir: count={0}", count);
+
+        // Each V1 shortform entry: xfs_dir_ino_t inumber (8 bytes) + uint8 namelen (1 byte) + name
+        for(var i = 0; i < count; i++)
+        {
+            if(pos + 9 > rawInode.Length)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Truncated V1 shortform entry at index {0}", i);
+
+                break;
+            }
+
+            ulong entryIno = BigEndianBitConverter.ToUInt64(rawInode, pos) & XFS_MAXINUMBER;
+            pos += 8;
+
+            byte nameLen = rawInode[pos];
+            pos++;
+
+            if(nameLen == 0 || pos + nameLen > rawInode.Length)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Truncated V1 shortform name at index {0}", i);
+
+                break;
+            }
+
+            string name = _encoding.GetString(rawInode, pos, nameLen);
+            pos += nameLen;
+
+            if(name is "." or "..") continue;
+
+            entries[name] = entryIno;
+
+            AaruLogging.Debug(MODULE_NAME, "V1 SF entry: \"{0}\" -> inode {1}", name, entryIno);
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads a V1 directory stored in extent format</summary>
+    /// <param name="inodeNumber">Inode number to read raw data from</param>
+    /// <param name="inode">The directory inode</param>
+    /// <param name="entries">Dictionary to populate with entries</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadV1ExtentDirectory(ulong inodeNumber, Dinode inode, Dictionary<string, ulong> entries)
+    {
+        AaruLogging.Debug(MODULE_NAME,
+                          "Reading V1 extent directory for inode {0} ({1} extents)",
+                          inodeNumber,
+                          inode.di_nextents);
+
+        int coreSize = _v3Inodes ? Marshal.SizeOf<Dinode>() : 100;
+
+        ErrorNumber errno = ReadInodeRaw(inodeNumber, out byte[] rawInode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        ulong extentCount = inode.di_nextents;
+        int   pos         = coreSize;
+
+        for(ulong i = 0; i < extentCount; i++)
+        {
+            if(pos + 16 > rawInode.Length)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Truncated extent record at index {0}", i);
+
+                break;
+            }
+
+            var l0 = BigEndianBitConverter.ToUInt64(rawInode, pos);
+            var l1 = BigEndianBitConverter.ToUInt64(rawInode, pos + 8);
+            pos += 16;
+
+            DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount, out _);
+
+            AaruLogging.Debug(MODULE_NAME, "V1 Extent {0}: startblock={1}, count={2}", i, startBlock, blockCount);
+
+            // V1 directory blocks are always 1 filesystem block
+            for(uint b = 0; b < blockCount; b++)
+            {
+                errno = ReadBlock(startBlock + b, out byte[] blockData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME, "Error reading V1 directory block {0}: {1}", startBlock + b, errno);
+
+                    continue;
+                }
+
+                ParseV1DirectoryBlock(blockData, entries);
+            }
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads a V1 directory stored in btree format</summary>
+    /// <param name="inodeNumber">Inode number to read raw data from</param>
+    /// <param name="inode">The directory inode</param>
+    /// <param name="entries">Dictionary to populate with entries</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadV1BtreeDirectory(ulong inodeNumber, Dinode inode, Dictionary<string, ulong> entries)
+    {
+        AaruLogging.Debug(MODULE_NAME, "Reading V1 btree directory for inode {0}", inodeNumber);
+
+        int coreSize = _v3Inodes ? Marshal.SizeOf<Dinode>() : 100;
+
+        ErrorNumber errno = ReadInodeRaw(inodeNumber, out byte[] rawInode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        int pos = coreSize;
+
+        if(pos + 4 > rawInode.Length)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Raw inode too small for bmdr_block header");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        var level   = BigEndianBitConverter.ToUInt16(rawInode, pos);
+        var numrecs = BigEndianBitConverter.ToUInt16(rawInode, pos + 2);
+
+        AaruLogging.Debug(MODULE_NAME, "V1 BMDR: level={0}, numrecs={1}", level, numrecs);
+
+        if(level == 0)
+        {
+            int recPos = pos + 4;
+
+            for(var i = 0; i < numrecs; i++)
+            {
+                if(recPos + 16 > rawInode.Length) break;
+
+                var l0 = BigEndianBitConverter.ToUInt64(rawInode, recPos);
+                var l1 = BigEndianBitConverter.ToUInt64(rawInode, recPos + 8);
+                recPos += 16;
+
+                DecodeBmbtRec(l0, l1, out _, out ulong startBlock, out uint blockCount, out _);
+
+                for(uint b = 0; b < blockCount; b++)
+                {
+                    errno = ReadBlock(startBlock + b, out byte[] blockData);
+
+                    if(errno != ErrorNumber.NoError) continue;
+
+                    ParseV1DirectoryBlock(blockData, entries);
+                }
+            }
+        }
+        else
+        {
+            int forkSize = inode.di_forkoff > 0 ? inode.di_forkoff * 8 : rawInode.Length - coreSize;
+
+            int maxrecs   = (forkSize - 4) / 16;
+            int ptrsStart = pos + 4 + maxrecs * 8;
+
+            for(var i = 0; i < numrecs; i++)
+            {
+                int ptrPos = ptrsStart + i * 8;
+
+                if(ptrPos + 8 > rawInode.Length) break;
+
+                var childBlock = BigEndianBitConverter.ToUInt64(rawInode, ptrPos);
+
+                errno = ReadV1BmapBtreeBlock(childBlock, level - 1, entries);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "Error reading V1 bmap btree child block {0}: {1}",
+                                      childBlock,
+                                      errno);
+                }
+            }
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Parses a V1 directory block. Checks the magic number in the da_blkinfo header
+    ///     to distinguish leaf blocks (0xFEEB) from DA btree nodes (0xFEBE), and only
+    ///     extracts entries from leaf blocks.
+    /// </summary>
+    /// <param name="blockData">The raw block data</param>
+    /// <param name="entries">Dictionary to populate with entries</param>
+    void ParseV1DirectoryBlock(byte[] blockData, Dictionary<string, ulong> entries)
+    {
+        // da_blkinfo_t: forw(4) + back(4) + magic(2) + pad(2) = 12 bytes
+        if(blockData.Length < 32) return;
+
+        var magic = BigEndianBitConverter.ToUInt16(blockData, 8);
+
+        if(magic == XFS_DA_NODE_MAGIC)
+        {
+            // DA btree internal node — skip, contains only index data
+            return;
+        }
+
+        if(magic != XFS_DIR_LEAF_MAGIC)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Unknown V1 directory block magic: 0x{0:X4}", magic);
+
+            return;
+        }
+
+        ParseV1DirectoryLeafBlock(blockData, entries);
+    }
+
+    /// <summary>
+    ///     Parses a V1 directory leaf block (magic 0xFEEB).
+    ///     Layout: xfs_dir_leaf_hdr (32 bytes), then leaf entries (8 bytes each) packed from top,
+    ///     and name data grows from the bottom. Each leaf entry has a nameidx pointing into
+    ///     the block where the xfs_dir_leaf_name_t (8-byte inode + name) resides.
+    /// </summary>
+    /// <param name="blockData">The raw leaf block data</param>
+    /// <param name="entries">Dictionary to populate with entries</param>
+    void ParseV1DirectoryLeafBlock(byte[] blockData, Dictionary<string, ulong> entries)
+    {
+        // xfs_dir_leaf_hdr: da_blkinfo(12) + count(2) + namebytes(2) + firstused(2) + holes(1) + pad1(1) + freemap(12) = 32
+        const int V1_LEAF_HDR_SIZE   = 32;
+        const int V1_LEAF_ENTRY_SIZE = 8; // hashval(4) + nameidx(2) + namelen(1) + pad(1)
+
+        if(blockData.Length < V1_LEAF_HDR_SIZE) return;
+
+        var count = BigEndianBitConverter.ToUInt16(blockData, 12);
+
+        AaruLogging.Debug(MODULE_NAME, "V1 leaf block: count={0}", count);
+
+        int pos = V1_LEAF_HDR_SIZE;
+
+        for(var i = 0; i < count; i++)
+        {
+            if(pos + V1_LEAF_ENTRY_SIZE > blockData.Length)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Truncated V1 leaf entry at index {0}", i);
+
+                break;
+            }
+
+            // xfs_dir_leaf_entry: hashval(4) + nameidx(2) + namelen(1) + pad(1)
+            var  nameIdx = BigEndianBitConverter.ToUInt16(blockData, pos + 4);
+            byte nameLen = blockData[pos                                 + 6];
+            pos += V1_LEAF_ENTRY_SIZE;
+
+            if(nameLen == 0 || nameIdx + 8 + nameLen > blockData.Length)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Invalid V1 leaf name at index {0}: idx={1}, len={2}",
+                                  i,
+                                  nameIdx,
+                                  nameLen);
+
+                continue;
+            }
+
+            // xfs_dir_leaf_name_t at nameIdx: xfs_dir_ino_t inumber (8 bytes) + name
+            ulong  entryIno = BigEndianBitConverter.ToUInt64(blockData, nameIdx) & XFS_MAXINUMBER;
+            string name     = _encoding.GetString(blockData, nameIdx + 8, nameLen);
+
+            if(name is "." or "..") continue;
+
+            entries[name] = entryIno;
+
+            AaruLogging.Debug(MODULE_NAME, "V1 leaf entry: \"{0}\" -> inode {1}", name, entryIno);
+        }
     }
 
     /// <summary>Parses a directory data block (v2 or v3 format) and adds entries to the given dictionary</summary>
