@@ -182,11 +182,63 @@ public sealed partial class ext2FS
     // Extent tree header magic
     const ushort EXT4_EXTENT_MAGIC = 0xF30A;
 
-    // Inode flags
+    // Inode flags (i_flags field)
+    /// <summary>Secure deletion</summary>
+    const uint EXT2_SECRM_FL = 0x00000001;
+    /// <summary>Undelete</summary>
+    const uint EXT2_UNRM_FL = 0x00000002;
+    /// <summary>Compress file</summary>
+    const uint EXT2_COMPR_FL = 0x00000004;
+    /// <summary>Synchronous updates</summary>
+    const uint EXT2_SYNC_FL = 0x00000008;
+    /// <summary>Immutable file</summary>
+    const uint EXT2_IMMUTABLE_FL = 0x00000010;
+    /// <summary>Append only</summary>
+    const uint EXT2_APPEND_FL = 0x00000020;
+    /// <summary>Do not dump file</summary>
+    const uint EXT2_NODUMP_FL = 0x00000040;
+    /// <summary>Do not update atime</summary>
+    const uint EXT2_NOATIME_FL = 0x00000080;
+    /// <summary>Compression flags (dirty, error, compr/decompressing cluster)</summary>
+    const uint EXT2_COMPRBLK_FL = 0x00000200;
+    /// <summary>Compression error</summary>
+    const uint EXT2_ECOMPR_FL = 0x00000800;
+    /// <summary>B-tree/hash-indexed directory</summary>
+    const uint EXT2_INDEX_FL = 0x00001000;
+    /// <summary>AFS directory</summary>
+    const uint EXT2_IMAGIC_FL = 0x00002000;
+    /// <summary>File data should be journaled (ext3/4)</summary>
+    const uint EXT3_JOURNAL_DATA_FL = 0x00004000;
+    /// <summary>File tail should not be merged</summary>
+    const uint EXT2_NOTAIL_FL = 0x00008000;
+    /// <summary>Synchronous directory modifications</summary>
+    const uint EXT2_DIRSYNC_FL = 0x00010000;
+    /// <summary>Top of directory hierarchies</summary>
+    const uint EXT2_TOPDIR_FL = 0x00020000;
+    /// <summary>Huge file</summary>
+    const uint EXT4_HUGE_FILE_FL = 0x00040000;
     /// <summary>Inode uses extents</summary>
     const uint EXT4_EXTENTS_FL = 0x00080000;
+    /// <summary>Verity protected inode</summary>
+    const uint EXT4_VERITY_FL = 0x00100000;
+    /// <summary>Inode used for large EA</summary>
+    const uint EXT4_EA_INODE_FL = 0x00200000;
+    /// <summary>Inode has inline data</summary>
+    const uint EXT4_INLINE_DATA_FL = 0x10000000;
+    /// <summary>Create with parents projid</summary>
+    const uint EXT4_PROJINHERIT_FL = 0x20000000;
+    /// <summary>Casefolded directory</summary>
+    const uint EXT4_CASEFOLD_FL = 0x40000000;
+    /// <summary>Encrypted inode</summary>
+    const uint EXT4_ENCRYPT_FL = 0x00000800;
 
     // POSIX file mode masks
-    const ushort S_IFMT  = 0xF000;
-    const ushort S_IFDIR = 0x4000;
+    const ushort S_IFMT   = 0xF000;
+    const ushort S_IFSOCK = 0xC000;
+    const ushort S_IFLNK  = 0xA000;
+    const ushort S_IFREG  = 0x8000;
+    const ushort S_IFBLK  = 0x6000;
+    const ushort S_IFDIR  = 0x4000;
+    const ushort S_IFCHR  = 0x2000;
+    const ushort S_IFIFO  = 0x1000;
 }
