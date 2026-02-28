@@ -130,4 +130,14 @@ public sealed partial class BTRFS
         /// <summary>Inline data bytes (for INLINE extents only)</summary>
         public byte[] InlineData;
     }
+
+    /// <summary>Describes a cached extended attribute entry</summary>
+    struct XattrEntry
+    {
+        /// <summary>Extended attribute name</summary>
+        public string Name;
+
+        /// <summary>Extended attribute value</summary>
+        public byte[] Value;
+    }
 }

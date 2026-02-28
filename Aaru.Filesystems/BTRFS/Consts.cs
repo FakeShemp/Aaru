@@ -43,6 +43,7 @@ public sealed partial class BTRFS
 
     // Key type constants from btrfs_tree.h
     const byte BTRFS_INODE_ITEM_KEY = 1;
+    const byte BTRFS_XATTR_ITEM_KEY = 24;
     const byte BTRFS_DIR_ITEM_KEY   = 84;
     const byte BTRFS_DIR_INDEX_KEY  = 96;
     const byte BTRFS_ROOT_ITEM_KEY  = 132;
