@@ -81,6 +81,9 @@ public sealed partial class ext2FS : IReadOnlyFilesystem
     /// <summary>Whether filesystem was created on GNU/Hurd</summary>
     bool _isHurd;
 
+    /// <summary>Whether filesystem was created on MASIX</summary>
+    bool _isMasix;
+
     /// <summary>Whether the filesystem is mounted</summary>
     bool _mounted;
 

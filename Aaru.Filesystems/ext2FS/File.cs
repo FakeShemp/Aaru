@@ -356,7 +356,7 @@ public sealed partial class ext2FS
 
         // Fast symlink: target stored inline in inode.block[] (60 bytes)
         // Detected by having no allocated blocks or inline data flag
-        ulong totalBlocks = _isHurd ? inode.blocks_lo : (ulong)inode.blocks_high << 32 | inode.blocks_lo;
+        ulong totalBlocks = _isHurd || _isMasix ? inode.blocks_lo : (ulong)inode.blocks_high << 32 | inode.blocks_lo;
 
         if(inlineData || totalBlocks == 0 && linkSize < 60)
         {
@@ -473,9 +473,9 @@ public sealed partial class ext2FS
             Length    = (long)fileSize,
             BlockSize = _blockSize,
             Blocks    = (long)((fileSize + _blockSize - 1) / _blockSize),
-            UID       = (ulong)inode.uid_high << 16 | inode.uid,
-            GID       = (ulong)inode.gid_high << 16 | inode.gid,
-            Mode      = _isHurd ? (uint)inode.file_acl_high << 16 | inode.mode : inode.mode,
+            UID       = _isMasix ? inode.uid : (ulong)inode.uid_high << 16 | inode.uid,
+            GID       = _isMasix ? inode.gid : (ulong)inode.gid_high << 16 | inode.gid,
+            Mode      = _isHurd ? (uint)inode.file_acl_high          << 16 | inode.mode : inode.mode,
 
             // Standard timestamps (seconds since Unix epoch)
             AccessTimeUtc       = DateHandlers.UnixUnsignedToDateTime(inode.atime),
