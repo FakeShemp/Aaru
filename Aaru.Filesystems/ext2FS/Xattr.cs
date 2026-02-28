@@ -141,7 +141,9 @@ public sealed partial class ext2FS
     /// <summary>Reads xattr names from the external xattr block</summary>
     void ReadExternalXattrNames(Inode inode, List<string> names)
     {
-        ulong xattrBlock = _is64Bit ? (ulong)inode.file_acl_high << 32 | inode.file_acl_lo : inode.file_acl_lo;
+        ulong xattrBlock = _is64Bit && !_isHurd
+                               ? (ulong)inode.file_acl_high << 32 | inode.file_acl_lo
+                               : inode.file_acl_lo;
 
         if(xattrBlock == 0) return;
 
@@ -194,7 +196,9 @@ public sealed partial class ext2FS
     /// <summary>Reads a specific xattr value from the external xattr block</summary>
     ErrorNumber ReadExternalXattrValue(Inode inode, string xattr, ref byte[] buf)
     {
-        ulong xattrBlock = _is64Bit ? (ulong)inode.file_acl_high << 32 | inode.file_acl_lo : inode.file_acl_lo;
+        ulong xattrBlock = _is64Bit && !_isHurd
+                               ? (ulong)inode.file_acl_high << 32 | inode.file_acl_lo
+                               : inode.file_acl_lo;
 
         if(xattrBlock == 0) return ErrorNumber.NoSuchExtendedAttribute;
 

@@ -78,6 +78,9 @@ public sealed partial class ext2FS : IReadOnlyFilesystem
     /// <summary>Whether 64-bit feature is enabled</summary>
     bool _is64Bit;
 
+    /// <summary>Whether filesystem was created on GNU/Hurd</summary>
+    bool _isHurd;
+
     /// <summary>Whether the filesystem is mounted</summary>
     bool _mounted;
 
