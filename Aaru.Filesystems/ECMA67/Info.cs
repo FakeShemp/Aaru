@@ -40,8 +40,6 @@ using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the filesystem described in ECMA-67</summary>
 public sealed partial class ECMA67
 {
 #region IFilesystem Members

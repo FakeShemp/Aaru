@@ -34,8 +34,6 @@ using System.Runtime.InteropServices;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the filesystem described in ECMA-67</summary>
 public sealed partial class ECMA67
 {
 #region Nested type: VolumeLabel

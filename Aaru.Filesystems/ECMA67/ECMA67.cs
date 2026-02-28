@@ -31,14 +31,23 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the filesystem described in ECMA-67</summary>
-public sealed partial class ECMA67 : IFilesystem
+/// <summary>Implements the filesystem described in ECMA-67</summary>
+public sealed partial class ECMA67 : IReadOnlyFilesystem
 {
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces => [];
+
 #region IFilesystem Members
 
     /// <inheritdoc />
