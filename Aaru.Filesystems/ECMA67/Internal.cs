@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Internal.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : ECMA-67 plugin.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Identifies the ECMA-67 file system and shows information.
+//     Internal types for file and directory node tracking.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,17 +30,54 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Structs;
+using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class ECMA67
 {
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+#region Nested type: Ecma67DirNode
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
+    sealed class Ecma67DirNode : IDirNode
+    {
+        internal string[] Contents;
+        internal int      Position;
+
+#region IDirNode Members
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+#endregion
+    }
+
+#endregion
+
+#region Nested type: Ecma67FileNode
+
+    sealed class Ecma67FileNode : IFileNode
+    {
+        /// <summary>Last LBA of the file extent</summary>
+        internal ulong EndLba;
+        /// <summary>Parsed File Label for this file</summary>
+        internal FileLabel Label;
+
+        /// <summary>First LBA of the file extent</summary>
+        internal ulong StartLba;
+
+#region IFileNode Members
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+#endregion
+    }
+
+#endregion
 }
