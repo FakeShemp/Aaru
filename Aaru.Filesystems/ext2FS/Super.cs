@@ -2,14 +2,10 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Linux extended filesystem 2, 3 and 4 plugin.
-//
-// --[ Description ] ----------------------------------------------------------
-//
-//     Identifies the Linux extended filesystem 2, 3 and 4 and shows information.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,14 +26,43 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-
-using System;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
+// ReSharper disable once InconsistentNaming
 public sealed partial class ext2FS
 {
     /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ulong totalBlocks = _is64Bit ? (ulong)_superblock.blocks_hi << 32 | _superblock.blocks : _superblock.blocks;
+
+        ulong freeBlocks = _is64Bit
+                               ? (ulong)_superblock.free_blocks_hi << 32 | _superblock.free_blocks
+                               : _superblock.free_blocks;
+
+        stat = new FileSystemInfo
+        {
+            Blocks         = totalBlocks,
+            FilenameLength = 255,
+            Files          = _superblock.inodes,
+            FreeBlocks     = freeBlocks,
+            FreeFiles      = _superblock.free_inodes,
+            PluginId       = Id,
+            Type           = Metadata.Type,
+            Id =
+            {
+                IsGuid = true,
+                uuid   = _superblock.uuid
+            }
+        };
+
+        return ErrorNumber.NoError;
+    }
 }
