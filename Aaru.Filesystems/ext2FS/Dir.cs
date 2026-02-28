@@ -273,11 +273,21 @@ public sealed partial class ext2FS
             }
 
             byte nameLen;
+            byte fileType = 0;
 
             if(_hasFileType)
             {
                 // DirectoryEntry2: name_len is 1 byte at offset 6, file_type is 1 byte at offset 7
-                nameLen = blockData[offset + 6];
+                nameLen  = blockData[offset + 6];
+                fileType = blockData[offset + 7];
+
+                // Filter out checksum tail entries (fake dir entries with file_type = 0xDE)
+                if(fileType == EXT4_FT_DIR_CSUM)
+                {
+                    offset += actualRecLen;
+
+                    continue;
+                }
             }
             else
             {

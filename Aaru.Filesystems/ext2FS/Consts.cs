@@ -315,6 +315,10 @@ public sealed partial class ext2FS
     // Extended attribute constants
     /// <summary>Extended attribute block magic number</summary>
     const uint EXT4_XATTR_MAGIC = 0xEA020000;
+
+    // Directory entry file type for checksum tail
+    /// <summary>Fake file type used for directory checksum tail entries</summary>
+    const byte EXT4_FT_DIR_CSUM = 0xDE;
     /// <summary>Minimum xattr entry header size (without name)</summary>
     const int EXT4_XATTR_ENTRY_HDR_SIZE = 16;
     /// <summary>Alignment mask for xattr entries</summary>
