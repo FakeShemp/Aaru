@@ -201,6 +201,7 @@ public sealed partial class ext2FS
     const uint EXT2_SUPPORTED_INCOMPAT = EXT2_FEATURE_INCOMPAT_COMPRESSION |
                                          EXT2_FEATURE_INCOMPAT_FILETYPE    |
                                          EXT3_FEATURE_INCOMPAT_RECOVER     |
+                                         EXT3_FEATURE_INCOMPAT_JOURNAL_DEV |
                                          EXT2_FEATURE_INCOMPAT_META_BG     |
                                          EXT4_FEATURE_INCOMPAT_EXTENTS     |
                                          EXT4_FEATURE_INCOMPAT_64BIT       |
