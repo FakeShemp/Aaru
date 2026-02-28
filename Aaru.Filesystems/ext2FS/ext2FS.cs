@@ -33,8 +33,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -46,6 +48,45 @@ namespace Aaru.Filesystems;
 // ReSharper disable once InconsistentNaming
 public sealed partial class ext2FS : IReadOnlyFilesystem
 {
+    /// <summary>Cached root directory entries (filename to inode number)</summary>
+    readonly Dictionary<string, uint> _rootDirectoryCache = [];
+
+    /// <summary>Block group descriptors</summary>
+    BlockGroupDescriptor[] _blockGroupDescriptors;
+
+    /// <summary>Computed block size in bytes</summary>
+    uint _blockSize;
+
+    /// <summary>Number of block groups</summary>
+    uint _blockGroupCount;
+
+    /// <summary>Block group descriptor size</summary>
+    ushort _descSize;
+
+    /// <summary>The encoding used for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>Whether filetype is stored in directory entries</summary>
+    bool _hasFileType;
+
+    /// <summary>The image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Inode size in bytes</summary>
+    ushort _inodeSize;
+
+    /// <summary>Whether 64-bit feature is enabled</summary>
+    bool _is64Bit;
+
+    /// <summary>Whether the filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>The partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>The cached superblock</summary>
+    SuperBlock _superblock;
+
 #region IFilesystem Members
 
     /// <inheritdoc />

@@ -160,4 +160,33 @@ public sealed partial class ext2FS
     const string FS_TYPE_EXT2 = "ext2";
     const string FS_TYPE_EXT3 = "ext3";
     const string FS_TYPE_EXT4 = "ext4";
+
+    const string MODULE_NAME = "ext2FS plugin";
+
+    // Root inode number
+    const uint EXT2_ROOT_INO = 2;
+
+    // Good old inode size for original revision
+    const ushort EXT2_GOOD_OLD_INODE_SIZE = 128;
+
+    // First non-reserved inode for original revision
+    const uint EXT2_GOOD_OLD_FIRST_INO = 11;
+
+    // Block size limits
+    const uint EXT4_MIN_BLOCK_SIZE = 1024;
+    const uint EXT4_MAX_BLOCK_SIZE = 65536;
+
+    // Block group descriptor size limits
+    const ushort EXT4_MIN_DESC_SIZE = 32;
+
+    // Extent tree header magic
+    const ushort EXT4_EXTENT_MAGIC = 0xF30A;
+
+    // Inode flags
+    /// <summary>Inode uses extents</summary>
+    const uint EXT4_EXTENTS_FL = 0x00080000;
+
+    // POSIX file mode masks
+    const ushort S_IFMT  = 0xF000;
+    const ushort S_IFDIR = 0x4000;
 }
