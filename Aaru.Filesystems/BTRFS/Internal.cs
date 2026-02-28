@@ -74,6 +74,22 @@ public sealed partial class BTRFS
         public ulong Type;
     }
 
+    /// <summary>Represents an opened btrfs file for reading</summary>
+    sealed class BtrfsFileNode : IFileNode
+    {
+        /// <summary>The objectid (inode number) of this file</summary>
+        internal ulong ObjectId { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+    }
+
     /// <summary>Cached directory entry information</summary>
     struct DirEntry
     {
@@ -85,5 +101,33 @@ public sealed partial class BTRFS
 
         /// <summary>Index of this entry in the directory</summary>
         public ulong Index;
+    }
+
+    /// <summary>Describes a file extent for on-demand reading</summary>
+    struct ExtentEntry
+    {
+        /// <summary>Byte offset in the file where this extent starts</summary>
+        public ulong FileOffset;
+
+        /// <summary>Length of this extent in bytes (file-level)</summary>
+        public ulong Length;
+
+        /// <summary>Extent type (inline, regular, prealloc)</summary>
+        public byte Type;
+
+        /// <summary>Compression type (none, zlib, lzo, zstd)</summary>
+        public byte Compression;
+
+        /// <summary>Logical byte number on disk (for REG/PREALLOC extents)</summary>
+        public ulong DiskBytenr;
+
+        /// <summary>Number of bytes on disk (for REG/PREALLOC extents)</summary>
+        public ulong DiskBytes;
+
+        /// <summary>Offset into the on-disk extent (for REG/PREALLOC extents)</summary>
+        public ulong ExtentOffset;
+
+        /// <summary>Inline data bytes (for INLINE extents only)</summary>
+        public byte[] InlineData;
     }
 }

@@ -33,8 +33,10 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
@@ -75,6 +77,216 @@ public sealed partial class BTRFS
         if(inodeErrno != ErrorNumber.NoError) return inodeErrno;
 
         stat = InodeItemToFileEntryInfo(inode, objectId);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(string.IsNullOrEmpty(path) || path is "/" or "." or "..") return ErrorNumber.IsDirectory;
+
+        ErrorNumber pathErrno = ResolvePath(path, out ulong objectId);
+
+        if(pathErrno != ErrorNumber.NoError) return pathErrno;
+
+        ErrorNumber statErrno = Stat(path, out FileEntryInfo stat);
+
+        if(statErrno != ErrorNumber.NoError) return statErrno;
+
+        if(stat.Attributes.HasFlag(FileAttributes.Directory)) return ErrorNumber.IsDirectory;
+
+        node = new BtrfsFileNode
+        {
+            Path     = path,
+            Length   = stat.Length,
+            Offset   = 0,
+            ObjectId = objectId
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not BtrfsFileNode) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(node is not BtrfsFileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(length <= 0) return ErrorNumber.NoError;
+
+        if(fileNode.Offset >= fileNode.Length) return ErrorNumber.NoError;
+
+        // Clamp read to remaining file size and buffer capacity
+        long toRead = length;
+
+        if(fileNode.Offset + toRead > fileNode.Length) toRead = fileNode.Length - fileNode.Offset;
+
+        if(toRead > buffer.Length) toRead = buffer.Length;
+
+        // Walk the FS tree to find extent data items for this file and read the requested range
+        ErrorNumber errno = ReadTreeBlock(_fsTreeRoot, out byte[] fsTreeData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        Header fsTreeHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(fsTreeData);
+
+        // Collect all extent entries for this file's object
+        List<ExtentEntry> extents = [];
+        errno = WalkTreeForExtents(fsTreeData, fsTreeHeader, fileNode.ObjectId, extents);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Sort extents by file offset
+        extents.Sort((a, b) => a.FileOffset.CompareTo(b.FileOffset));
+
+        long currentOffset = fileNode.Offset;
+        long bytesRead     = 0;
+
+        while(bytesRead < toRead)
+        {
+            // Find the extent covering the current offset
+            ExtentEntry? coveringExtent = null;
+
+            foreach(ExtentEntry extent in extents)
+            {
+                if(currentOffset >= (long)extent.FileOffset &&
+                   currentOffset < (long)extent.FileOffset + (long)extent.Length)
+                {
+                    coveringExtent = extent;
+
+                    break;
+                }
+            }
+
+            if(coveringExtent is null)
+            {
+                // Gap in extents — file has a hole, fill with zeros
+                // Find next extent to determine hole size
+                long holeEnd = fileNode.Length;
+
+                foreach(ExtentEntry extent in extents)
+                {
+                    if((long)extent.FileOffset > currentOffset)
+                    {
+                        holeEnd = (long)extent.FileOffset;
+
+                        break;
+                    }
+                }
+
+                long holeBytes = Math.Min(holeEnd - currentOffset, toRead - bytesRead);
+                Array.Clear(buffer, (int)bytesRead, (int)holeBytes);
+                bytesRead     += holeBytes;
+                currentOffset += holeBytes;
+
+                continue;
+            }
+
+            ExtentEntry ext = coveringExtent.Value;
+
+            long offsetInExtent  = currentOffset    - (long)ext.FileOffset;
+            long extentRemaining = (long)ext.Length - offsetInExtent;
+            long bytesToCopy     = Math.Min(extentRemaining, toRead - bytesRead);
+
+            switch(ext.Type)
+            {
+                case BTRFS_FILE_EXTENT_PREALLOC:
+                    // Preallocated — reads as zeros
+                    Array.Clear(buffer, (int)bytesRead, (int)bytesToCopy);
+                    bytesRead     += bytesToCopy;
+                    currentOffset += bytesToCopy;
+
+                    break;
+
+                case BTRFS_FILE_EXTENT_INLINE:
+                    // Inline data is stored directly in the leaf item
+                    if(ext.Compression != BTRFS_COMPRESS_NONE)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Compressed inline extents not supported (compression={0})",
+                                          ext.Compression);
+
+                        return ErrorNumber.NotSupported;
+                    }
+
+                    long inlineCopy = Math.Min(bytesToCopy, ext.InlineData.Length - offsetInExtent);
+
+                    if(inlineCopy > 0)
+                        Array.Copy(ext.InlineData, (int)offsetInExtent, buffer, (int)bytesRead, (int)inlineCopy);
+
+                    bytesRead     += inlineCopy;
+                    currentOffset += inlineCopy;
+
+                    break;
+
+                case BTRFS_FILE_EXTENT_REG:
+                    if(ext.Compression != BTRFS_COMPRESS_NONE)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Compressed extents not supported (compression={0})",
+                                          ext.Compression);
+
+                        return ErrorNumber.NotSupported;
+                    }
+
+                    if(ext.DiskBytenr == 0)
+                    {
+                        // Sparse extent — reads as zeros
+                        Array.Clear(buffer, (int)bytesRead, (int)bytesToCopy);
+                        bytesRead     += bytesToCopy;
+                        currentOffset += bytesToCopy;
+
+                        break;
+                    }
+
+                    // Read from disk in reasonable chunks to avoid caching whole file
+                    while(bytesToCopy > 0)
+                    {
+                        // Read up to one nodesize at a time
+                        var chunkSize = (uint)Math.Min(bytesToCopy, _superblock.nodesize);
+
+                        // Logical address = disk_bytenr + extent offset + position within extent
+                        ulong logicalRead = ext.DiskBytenr + ext.ExtentOffset + (ulong)offsetInExtent;
+
+                        ErrorNumber readErrno = ReadLogicalBytes(logicalRead, chunkSize, out byte[] chunkData);
+
+                        if(readErrno != ErrorNumber.NoError) return readErrno;
+
+                        Array.Copy(chunkData, 0, buffer, (int)bytesRead, (int)chunkSize);
+
+                        bytesRead      += chunkSize;
+                        currentOffset  += chunkSize;
+                        offsetInExtent += chunkSize;
+                        bytesToCopy    -= chunkSize;
+                    }
+
+                    break;
+
+                default:
+                    AaruLogging.Debug(MODULE_NAME, "Unknown extent type {0}", ext.Type);
+
+                    return ErrorNumber.InvalidArgument;
+            }
+        }
+
+        read            =  bytesRead;
+        fileNode.Offset += bytesRead;
 
         return ErrorNumber.NoError;
     }
@@ -275,5 +487,112 @@ public sealed partial class BTRFS
         if((inode.mode & S_IFMT) is S_IFCHR or S_IFBLK) info.DeviceNo = inode.rdev;
 
         return info;
+    }
+
+    /// <summary>Walks a tree node recursively to collect all EXTENT_DATA items for the specified objectid</summary>
+    /// <param name="nodeData">Raw tree node data</param>
+    /// <param name="header">Parsed node header</param>
+    /// <param name="objectId">The objectid to search for</param>
+    /// <param name="extents">List to add found extents to</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber WalkTreeForExtents(byte[] nodeData, in Header header, ulong objectId, List<ExtentEntry> extents)
+    {
+        int headerSize = Marshal.SizeOf<Header>();
+
+        if(header.level == 0) return ExtractExtentsFromLeaf(nodeData, header, objectId, extents);
+
+        int keyPtrSize = Marshal.SizeOf<KeyPtr>();
+
+        for(uint i = 0; i < header.nritems; i++)
+        {
+            int keyPtrOffset = headerSize + (int)i * keyPtrSize;
+
+            if(keyPtrOffset + keyPtrSize > nodeData.Length) break;
+
+            KeyPtr keyPtr = Marshal.ByteArrayToStructureLittleEndian<KeyPtr>(nodeData, keyPtrOffset, keyPtrSize);
+
+            ErrorNumber errno = ReadTreeBlock(keyPtr.blockptr, out byte[] childData);
+
+            if(errno != ErrorNumber.NoError) continue;
+
+            Header childHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(childData);
+
+            WalkTreeForExtents(childData, childHeader, objectId, extents);
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Extracts all EXTENT_DATA items from a leaf node for the specified objectid</summary>
+    /// <param name="leafData">Raw leaf node data</param>
+    /// <param name="header">Parsed leaf header</param>
+    /// <param name="objectId">The objectid to search for</param>
+    /// <param name="extents">List to add found extents to</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ExtractExtentsFromLeaf(byte[] leafData, in Header header, ulong objectId, List<ExtentEntry> extents)
+    {
+        int itemSize        = Marshal.SizeOf<Item>();
+        int headerSize      = Marshal.SizeOf<Header>();
+        int extentItemSize  = Marshal.SizeOf<FileExtentItem>();
+        var inlineHeaderLen = 21; // FileExtentItem fields before the disk_bytenr (for inline extents)
+
+        for(uint i = 0; i < header.nritems; i++)
+        {
+            int itemOffset = headerSize + (int)i * itemSize;
+
+            if(itemOffset + itemSize > leafData.Length) break;
+
+            Item item = Marshal.ByteArrayToStructureLittleEndian<Item>(leafData, itemOffset, itemSize);
+
+            if(item.key.objectid != objectId || item.key.type != BTRFS_EXTENT_DATA_KEY) continue;
+
+            int dataOffset = headerSize + (int)item.offset;
+
+            if(dataOffset + inlineHeaderLen > leafData.Length) continue;
+
+            FileExtentItem extentItem =
+                Marshal.ByteArrayToStructureLittleEndian<FileExtentItem>(leafData,
+                                                                         dataOffset,
+                                                                         Math.Min(extentItemSize, (int)item.size));
+
+            var entry = new ExtentEntry
+            {
+                FileOffset  = item.key.offset,
+                Type        = extentItem.type,
+                Compression = extentItem.compression
+            };
+
+            if(extentItem.type == BTRFS_FILE_EXTENT_INLINE)
+            {
+                // Inline data: starts after the 21-byte header (generation + ram_bytes + compression + encryption +
+                // other_encoding + type)
+                int inlineDataOffset = dataOffset     + inlineHeaderLen;
+                int inlineDataLen    = (int)item.size - inlineHeaderLen;
+
+                if(inlineDataLen > 0 && inlineDataOffset + inlineDataLen <= leafData.Length)
+                {
+                    entry.InlineData = new byte[inlineDataLen];
+                    Array.Copy(leafData, inlineDataOffset, entry.InlineData, 0, inlineDataLen);
+                    entry.Length = (ulong)inlineDataLen;
+                }
+                else
+                {
+                    entry.InlineData = [];
+                    entry.Length     = 0;
+                }
+            }
+            else
+            {
+                // REG or PREALLOC
+                entry.DiskBytenr   = extentItem.disk_bytenr;
+                entry.DiskBytes    = extentItem.disk_num_bytes;
+                entry.ExtentOffset = extentItem.offset;
+                entry.Length       = extentItem.num_bytes;
+            }
+
+            extents.Add(entry);
+        }
+
+        return ErrorNumber.NoError;
     }
 }

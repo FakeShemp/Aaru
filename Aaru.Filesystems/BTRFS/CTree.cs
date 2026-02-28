@@ -366,6 +366,52 @@ public sealed partial class BTRFS
         return ErrorNumber.NoError;
     }
 
+    /// <summary>Reads an arbitrary range of bytes starting at a logical byte address</summary>
+    /// <param name="logicalAddr">Logical byte address to start reading from</param>
+    /// <param name="length">Number of bytes to read</param>
+    /// <param name="data">The read data</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadLogicalBytes(ulong logicalAddr, uint length, out byte[] data)
+    {
+        data = null;
+
+        ulong physicalAddr = LogicalToPhysical(logicalAddr);
+
+        if(physicalAddr == ulong.MaxValue)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Cannot translate logical address 0x{0:X} to physical", logicalAddr);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        uint sectorSize = _imagePlugin.Info.SectorSize;
+
+        // Calculate sector-aligned read
+        ulong sectorAddr       = _partition.Start + physicalAddr / sectorSize;
+        var   offsetInSector   = (uint)(physicalAddr % sectorSize);
+        uint  totalBytesNeeded = offsetInSector + length;
+        uint  numSectors       = (totalBytesNeeded + sectorSize - 1) / sectorSize;
+
+        if(sectorAddr + numSectors > _partition.End)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "Physical sector address {0} beyond partition end {1}",
+                              sectorAddr,
+                              _partition.End);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        ErrorNumber errno = _imagePlugin.ReadSectors(sectorAddr, false, numSectors, out byte[] sectorData, out _);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        data = new byte[length];
+        Array.Copy(sectorData, (int)offsetInSector, data, 0, (int)length);
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Translates a logical byte address to a physical byte address using the chunk map</summary>
     /// <param name="logicalAddr">The logical byte address to translate</param>
     /// <returns>The physical byte address, or ulong.MaxValue if the mapping is not found</returns>

@@ -73,6 +73,20 @@ public sealed partial class BTRFS
     const uint S_IFCHR  = 0x2000;
     const uint S_IFIFO  = 0x1000;
 
+    // Extent data key type
+    const byte BTRFS_EXTENT_DATA_KEY = 108;
+
+    // File extent types
+    const byte BTRFS_FILE_EXTENT_INLINE   = 0;
+    const byte BTRFS_FILE_EXTENT_REG      = 1;
+    const byte BTRFS_FILE_EXTENT_PREALLOC = 2;
+
+    // Compression types
+    const byte BTRFS_COMPRESS_NONE = 0;
+    const byte BTRFS_COMPRESS_ZLIB = 1;
+    const byte BTRFS_COMPRESS_LZO  = 2;
+    const byte BTRFS_COMPRESS_ZSTD = 3;
+
     // Btrfs inode flags
     const ulong BTRFS_INODE_NODATASUM = 1UL << 0;
     const ulong BTRFS_INODE_NODATACOW = 1UL << 1;
