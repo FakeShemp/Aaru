@@ -62,4 +62,23 @@ public sealed partial class BTRFS
     const ulong BTRFS_BLOCK_GROUP_RAID10 = 0x40;
     const ulong BTRFS_BLOCK_GROUP_RAID5  = 0x80;
     const ulong BTRFS_BLOCK_GROUP_RAID6  = 0x100;
+
+    // Unix file type constants (S_IFMT mask and values)
+    const uint S_IFMT   = 0xF000;
+    const uint S_IFSOCK = 0xC000;
+    const uint S_IFLNK  = 0xA000;
+    const uint S_IFREG  = 0x8000;
+    const uint S_IFBLK  = 0x6000;
+    const uint S_IFDIR  = 0x4000;
+    const uint S_IFCHR  = 0x2000;
+    const uint S_IFIFO  = 0x1000;
+
+    // Btrfs inode flags
+    const ulong BTRFS_INODE_NODATASUM = 1UL << 0;
+    const ulong BTRFS_INODE_NODATACOW = 1UL << 1;
+    const ulong BTRFS_INODE_COMPRESS  = 1UL << 11;
+    const ulong BTRFS_INODE_IMMUTABLE = 1UL << 6;
+    const ulong BTRFS_INODE_APPEND    = 1UL << 7;
+    const ulong BTRFS_INODE_SYNC      = 1UL << 5;
+    const ulong BTRFS_INODE_NOATIME   = 1UL << 9;
 }
