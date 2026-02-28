@@ -202,6 +202,7 @@ Fully supported file-systems (identify and extraction)
 * Apple Macintosh File System (MFS)
 * Apple ProDOS / SOS file system
 * AtheOS file system
+* B-tree file system (btrfs)
 * BeOS filesystem
 * BeOS (old) filesystem
 * CD-i file system
@@ -250,7 +251,6 @@ Supported file systems for identification and information only
 * Apple File System (preliminary detection until on-disk layout is stable)
 * BSD Fast File System (FFS) / Unix File System (UFS)
 * BSD Unix File System 2 (UFS2)
-* B-tree file system (btrfs)
 * Coherent UNIX file system
 * dump(8) (Old historic BSD, AIX, UFS and UFS2 types)
 * Fossil file system (from Plan9)
