@@ -26,6 +26,7 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
@@ -38,5 +39,33 @@ public sealed partial class ext2FS
         internal string[] Entries  { get; set; }
         internal int      Position { get; set; }
         public   string   Path     { get; init; }
+    }
+
+    /// <summary>File node for reading ext2/3/4 file contents with single-block caching</summary>
+    sealed class Ext2FileNode : IFileNode
+    {
+        /// <summary>The inode number</summary>
+        internal uint InodeNumber { get; init; }
+
+        /// <summary>The file's on-disk inode</summary>
+        internal Inode Inode { get; init; }
+
+        /// <summary>Pre-computed list of physical data blocks for this file</summary>
+        internal List<(ulong physicalBlock, uint length)> BlockList { get; init; }
+
+        /// <summary>Cached block data from the last read</summary>
+        internal byte[] CachedBlock { get; set; }
+
+        /// <summary>Logical block index of the cached block (-1 if none)</summary>
+        internal long CachedBlockIndex { get; set; } = -1;
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
     }
 }

@@ -49,9 +49,8 @@ public sealed partial class ext2FS
 
         // Direct blocks (0-11)
         for(uint i = 0; i < 12 && blockIndex < blocksUsed; i++, blockIndex++)
-        {
-            if(inode.block[i] != 0) blockList.Add((inode.block[i], 1));
-        }
+            if(inode.block[i] != 0)
+                blockList.Add((inode.block[i], 1));
 
         // Single indirect (block[12])
         if(blockIndex < blocksUsed && inode.block[12] != 0)
@@ -191,6 +190,39 @@ public sealed partial class ext2FS
             data = new byte[count];
             Array.Copy(sectorData, (int)offsetInSect, data, 0, (int)count);
         }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads a logical block of a file from its pre-computed block list</summary>
+    /// <param name="blockList">The file's block list (physical block, contiguous length) pairs</param>
+    /// <param name="logicalBlock">The logical block index to read</param>
+    /// <param name="blockData">The block data</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadLogicalBlock(List<(ulong physicalBlock, uint length)> blockList, ulong logicalBlock,
+                                 out byte[]                               blockData)
+    {
+        blockData = null;
+
+        // Walk the block list to find which entry covers this logical block
+        ulong currentLogical = 0;
+
+        foreach((ulong physicalBlock, uint length) in blockList)
+        {
+            if(logicalBlock < currentLogical + length)
+            {
+                // Found it — compute the exact physical block
+                ulong offsetInExtent = logicalBlock  - currentLogical;
+                ulong targetPhysical = physicalBlock + offsetInExtent;
+
+                return ReadBytes(targetPhysical * _blockSize, _blockSize, out blockData);
+            }
+
+            currentLogical += length;
+        }
+
+        // Logical block not found in block list — sparse/hole, return empty
+        blockData = Array.Empty<byte>();
 
         return ErrorNumber.NoError;
     }

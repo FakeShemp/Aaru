@@ -30,8 +30,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
@@ -68,6 +70,172 @@ public sealed partial class ext2FS
         if(readError != ErrorNumber.NoError) return readError;
 
         stat = InodeToFileEntryInfo(inode, targetInodeNum);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(string.IsNullOrEmpty(path) || path == "/") return ErrorNumber.IsDirectory;
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: path='{0}'", path);
+
+        // Resolve path to inode
+        ErrorNumber errno = ResolvePathToInode(path, out uint inodeNumber);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: ResolvePathToInode failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Read the inode
+        errno = ReadInode(inodeNumber, out Inode inode);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: ReadInode failed with {0}", errno);
+
+            return errno;
+        }
+
+        // Check it's not a directory
+        if((inode.mode & S_IFMT) == S_IFDIR)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: path is a directory");
+
+            return ErrorNumber.IsDirectory;
+        }
+
+        // Pre-compute data block list
+        errno = GetInodeDataBlocks(inode, out List<(ulong physicalBlock, uint length)> blockList);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "OpenFile: GetInodeDataBlocks failed with {0}", errno);
+
+            return errno;
+        }
+
+        ulong fileSize = (ulong)inode.size_high << 32 | inode.size_lo;
+
+        node = new Ext2FileNode
+        {
+            Path             = path,
+            Length           = (long)fileSize,
+            Offset           = 0,
+            InodeNumber      = inodeNumber,
+            Inode            = inode,
+            BlockList        = blockList,
+            CachedBlock      = null,
+            CachedBlockIndex = -1
+        };
+
+        AaruLogging.Debug(MODULE_NAME, "OpenFile: success, inode={0}, size={1}", inodeNumber, fileSize);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not Ext2FileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        fileNode.CachedBlock      = null;
+        fileNode.CachedBlockIndex = -1;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not Ext2FileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        if(buffer == null) return ErrorNumber.InvalidArgument;
+
+        if(fileNode.Offset < 0 || fileNode.Offset >= fileNode.Length) return ErrorNumber.InvalidArgument;
+
+        // Clamp read length to remaining file size and buffer size
+        long toRead = length;
+
+        if(fileNode.Offset + toRead > fileNode.Length) toRead = fileNode.Length - fileNode.Offset;
+
+        if(toRead <= 0) return ErrorNumber.NoError;
+
+        if(toRead > buffer.Length) toRead = buffer.Length;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: offset={0}, length={1}, toRead={2}", fileNode.Offset, length, toRead);
+
+        long bytesRead     = 0;
+        long currentOffset = fileNode.Offset;
+
+        while(bytesRead < toRead)
+        {
+            // Calculate which logical block contains the current offset
+            long blockIndex    = currentOffset / _blockSize;
+            var  offsetInBlock = (int)(currentOffset % _blockSize);
+
+            byte[] blockData;
+
+            // Use cached block if it matches
+            if(blockIndex == fileNode.CachedBlockIndex && fileNode.CachedBlock != null)
+                blockData = fileNode.CachedBlock;
+            else
+            {
+                // Find the physical block from the pre-computed block list
+                ErrorNumber errno = ReadLogicalBlock(fileNode.BlockList, (ulong)blockIndex, out blockData);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "ReadFile: ReadLogicalBlock failed for block {0}: {1}",
+                                      blockIndex,
+                                      errno);
+
+                    if(bytesRead > 0) break;
+
+                    return errno;
+                }
+
+                // Cache the block
+                fileNode.CachedBlock      = blockData;
+                fileNode.CachedBlockIndex = blockIndex;
+            }
+
+            if(blockData == null || blockData.Length == 0)
+            {
+                // Sparse block — fill with zeros
+                long bytesToZero = Math.Min(_blockSize - offsetInBlock, toRead - bytesRead);
+                Array.Clear(buffer, (int)bytesRead, (int)bytesToZero);
+                bytesRead     += bytesToZero;
+                currentOffset += bytesToZero;
+
+                continue;
+            }
+
+            // Copy data from block to buffer
+            long bytesToCopy = Math.Min(blockData.Length - offsetInBlock, toRead - bytesRead);
+            Array.Copy(blockData, offsetInBlock, buffer, bytesRead, bytesToCopy);
+
+            bytesRead     += bytesToCopy;
+            currentOffset += bytesToCopy;
+        }
+
+        read            =  bytesRead;
+        fileNode.Offset += bytesRead;
+
+        AaruLogging.Debug(MODULE_NAME, "ReadFile: read {0} bytes, new offset={1}", read, fileNode.Offset);
 
         return ErrorNumber.NoError;
     }
