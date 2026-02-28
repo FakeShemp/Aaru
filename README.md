@@ -231,6 +231,7 @@ Fully supported file-systems (identify and extraction)
 * Reiser v3 file systems
 * Reiser v4 file system
 * SGI Extent File System (EFS)
+* SGI XFS
 * SmartFileSystem
 * Squash file system
 * U.C.S.D Pascal file system
@@ -263,7 +264,6 @@ Supported file systems for identification and information only
 * NEC PC-Engine executable
 * NEC PC-FX executable
 * Nintendo optical filesystems (GameCube and Wii)
-* SGI XFS
 * SolarOS file system
 * UNICOS file system
 * UNIX System V file system
