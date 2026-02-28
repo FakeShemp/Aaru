@@ -311,6 +311,14 @@ public sealed partial class BTRFS
     {
         nodeData = null;
 
+        // Check cache first
+        if(_treeBlockCache != null && _treeBlockCache.TryGetValue(logicalAddr, out byte[] cached))
+        {
+            nodeData = cached;
+
+            return ErrorNumber.NoError;
+        }
+
         ulong physicalAddr = LogicalToPhysical(logicalAddr);
 
         if(physicalAddr == ulong.MaxValue)
@@ -362,6 +370,9 @@ public sealed partial class BTRFS
                 return ErrorNumber.InvalidArgument;
             }
         }
+
+        // Cache the successfully read block
+        _treeBlockCache?.TryAdd(logicalAddr, nodeData);
 
         return ErrorNumber.NoError;
     }

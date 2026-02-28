@@ -72,6 +72,9 @@ public sealed partial class BTRFS : IReadOnlyFilesystem
     /// <summary>The cached superblock</summary>
     SuperBlock _superblock;
 
+    /// <summary>Cache of tree block data keyed by logical byte address</summary>
+    Dictionary<ulong, byte[]> _treeBlockCache;
+
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
     /// <inheritdoc />

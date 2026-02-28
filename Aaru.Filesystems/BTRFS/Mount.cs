@@ -46,9 +46,10 @@ public sealed partial class BTRFS
     {
         AaruLogging.Debug(MODULE_NAME, "Mounting btrfs volume");
 
-        _imagePlugin = imagePlugin;
-        _partition   = partition;
-        _encoding    = encoding ?? Encoding.GetEncoding("iso-8859-15");
+        _imagePlugin    = imagePlugin;
+        _partition      = partition;
+        _encoding       = encoding ?? Encoding.GetEncoding("iso-8859-15");
+        _treeBlockCache = new Dictionary<ulong, byte[]>();
 
         // Step 1: Read and validate the superblock
         ErrorNumber errno = ReadSuperblock();
@@ -145,8 +146,10 @@ public sealed partial class BTRFS
 
         _rootDirectoryCache?.Clear();
         _chunkMap?.Clear();
+        _treeBlockCache?.Clear();
         _rootDirectoryCache = null;
         _chunkMap           = null;
+        _treeBlockCache     = null;
         _mounted            = false;
         _imagePlugin        = null;
         _partition          = default(Partition);
