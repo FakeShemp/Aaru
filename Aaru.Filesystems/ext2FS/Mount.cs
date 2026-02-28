@@ -178,6 +178,7 @@ public sealed partial class ext2FS
         _descSize              = 0;
         _is64Bit               = false;
         _hasFileType           = false;
+        _hasCompression        = false;
         _isHurd                = false;
         _isMasix               = false;
         _isVisopsys            = false;
@@ -305,10 +306,11 @@ public sealed partial class ext2FS
             _descSize = EXT4_MIN_DESC_SIZE;
 
         // Check for filetype in directory entries
-        _hasFileType = (_superblock.ftr_incompat & EXT2_FEATURE_INCOMPAT_FILETYPE) != 0;
-        _isHurd      = _superblock.creator_os                                      == EXT2_OS_HURD;
-        _isMasix     = _superblock.creator_os                                      == EXT2_OS_MASIX;
-        _isVisopsys  = _superblock.creator_os                                      == EXT2_OS_VISOPSYS;
+        _hasFileType    = (_superblock.ftr_incompat & EXT2_FEATURE_INCOMPAT_FILETYPE)    != 0;
+        _hasCompression = (_superblock.ftr_incompat & EXT2_FEATURE_INCOMPAT_COMPRESSION) != 0;
+        _isHurd         = _superblock.creator_os                                         == EXT2_OS_HURD;
+        _isMasix        = _superblock.creator_os                                         == EXT2_OS_MASIX;
+        _isVisopsys     = _superblock.creator_os                                         == EXT2_OS_VISOPSYS;
 
         // Compute block group count
         ulong totalBlocks = _is64Bit ? (ulong)_superblock.blocks_hi << 32 | _superblock.blocks : _superblock.blocks;

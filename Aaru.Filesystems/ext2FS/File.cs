@@ -163,8 +163,8 @@ public sealed partial class ext2FS
             return errno;
         }
 
-        // Detect e2compr compressed file
-        bool isCompressed   = (inode.i_flags & EXT2_COMPR_FL) != 0;
+        // Detect e2compr compressed file (only valid if filesystem has COMPRESSION incompat flag)
+        bool isCompressed   = _hasCompression && (inode.i_flags & EXT2_COMPR_FL) != 0;
         byte comprMethod    = 0;
         uint clusterNBlocks = 1;
 
@@ -548,9 +548,16 @@ public sealed partial class ext2FS
 
         if((inode.i_flags & EXT2_SYNC_FL) != 0) info.Attributes |= FileAttributes.Sync;
 
-        if((inode.i_flags & EXT2_COMPR_FL) != 0) info.Attributes |= FileAttributes.Compressed;
+        if(_hasCompression && (inode.i_flags & EXT2_COMPR_FL) != 0) info.Attributes |= FileAttributes.Compressed;
 
-        if((inode.i_flags & EXT2_ECOMPR_FL) != 0) info.Attributes |= FileAttributes.CompressionError;
+        // Bit 0x800 is shared: EXT2_ECOMPR_FL on compression filesystems, EXT4_ENCRYPT_FL on ext4
+        if((inode.i_flags & 0x00000800) != 0)
+        {
+            if(_hasCompression)
+                info.Attributes |= FileAttributes.CompressionError;
+            else
+                info.Attributes |= FileAttributes.Encrypted;
+        }
 
         if((inode.i_flags & EXT4_EXTENTS_FL) != 0) info.Attributes |= FileAttributes.Extents;
 
@@ -561,8 +568,6 @@ public sealed partial class ext2FS
         if((inode.i_flags & EXT2_TOPDIR_FL) != 0) info.Attributes |= FileAttributes.TopDirectory;
 
         if((inode.i_flags & EXT4_INLINE_DATA_FL) != 0) info.Attributes |= FileAttributes.Inline;
-
-        if((inode.i_flags & EXT4_ENCRYPT_FL) != 0) info.Attributes |= FileAttributes.Encrypted;
 
         // Device number for block/char devices
         if((inode.mode & S_IFMT) is S_IFCHR or S_IFBLK)

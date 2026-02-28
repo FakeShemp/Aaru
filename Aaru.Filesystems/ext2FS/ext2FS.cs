@@ -69,6 +69,9 @@ public sealed partial class ext2FS : IReadOnlyFilesystem
     /// <summary>Whether filetype is stored in directory entries</summary>
     bool _hasFileType;
 
+    /// <summary>Whether the filesystem uses e2compr compression</summary>
+    bool _hasCompression;
+
     /// <summary>The image plugin being accessed</summary>
     IMediaImage _imagePlugin;
 
