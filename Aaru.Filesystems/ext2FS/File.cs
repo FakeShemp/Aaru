@@ -114,6 +114,45 @@ public sealed partial class ext2FS
             return ErrorNumber.IsDirectory;
         }
 
+        ulong fileSize = (ulong)inode.size_high << 32 | inode.size_lo;
+
+        // Detect inline data (data stored in inode body + ibody xattr)
+        bool isInlineData = (inode.i_flags & EXT4_INLINE_DATA_FL) != 0;
+
+        if(isInlineData)
+        {
+            errno = GetInlineData(inodeNumber, inode, fileSize, out byte[] inlineData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "OpenFile: GetInlineData failed with {0}", errno);
+
+                return errno;
+            }
+
+            node = new Ext2FileNode
+            {
+                Path             = path,
+                Length           = (long)fileSize,
+                Offset           = 0,
+                InodeNumber      = inodeNumber,
+                Inode            = inode,
+                BlockList        = [],
+                CachedBlock      = null,
+                CachedBlockIndex = -1,
+                IsInlineData     = true,
+                InlineData       = inlineData
+            };
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "OpenFile: inline data, inode={0}, size={1}, inlineBytes={2}",
+                              inodeNumber,
+                              fileSize,
+                              inlineData.Length);
+
+            return ErrorNumber.NoError;
+        }
+
         // Pre-compute data block list
         errno = GetInodeDataBlocks(inode, out List<(ulong physicalBlock, uint length)> blockList);
 
@@ -123,8 +162,6 @@ public sealed partial class ext2FS
 
             return errno;
         }
-
-        ulong fileSize = (ulong)inode.size_high << 32 | inode.size_lo;
 
         // Detect e2compr compressed file
         bool isCompressed   = (inode.i_flags & EXT2_COMPR_FL) != 0;
@@ -205,6 +242,20 @@ public sealed partial class ext2FS
         if(toRead > buffer.Length) toRead = buffer.Length;
 
         AaruLogging.Debug(MODULE_NAME, "ReadFile: offset={0}, length={1}, toRead={2}", fileNode.Offset, length, toRead);
+
+        // Inline data: read from pre-assembled buffer
+        if(fileNode.IsInlineData && fileNode.InlineData != null)
+        {
+            var inlineOffset = (int)fileNode.Offset;
+            var inlineToCopy = (int)Math.Min(toRead, fileNode.InlineData.Length - inlineOffset);
+
+            if(inlineToCopy > 0) Array.Copy(fileNode.InlineData, inlineOffset, buffer, 0, inlineToCopy);
+
+            read            =  inlineToCopy;
+            fileNode.Offset += inlineToCopy;
+
+            return ErrorNumber.NoError;
+        }
 
         long bytesRead     = 0;
         long currentOffset = fileNode.Offset;
@@ -300,11 +351,14 @@ public sealed partial class ext2FS
 
         if(linkSize == 0) return ErrorNumber.InvalidArgument;
 
+        // Inline data symlink: data stored in inode body
+        bool inlineData = (inode.i_flags & EXT4_INLINE_DATA_FL) != 0;
+
         // Fast symlink: target stored inline in inode.block[] (60 bytes)
-        // Detected by having no allocated blocks
+        // Detected by having no allocated blocks or inline data flag
         ulong totalBlocks = (ulong)inode.blocks_high << 32 | inode.blocks_lo;
 
-        if(totalBlocks == 0 && linkSize < 60)
+        if(inlineData || totalBlocks == 0 && linkSize < 60)
         {
             var linkData   = new byte[linkSize];
             var blockBytes = new byte[60];
@@ -394,7 +448,7 @@ public sealed partial class ext2FS
 
             ulong dirSize = (ulong)inode.size_high << 32 | inode.size_lo;
 
-            errno = ReadDirectoryEntries(inode, dirSize, out Dictionary<string, uint> subEntries);
+            errno = ReadDirectoryEntries(inode, childInode, dirSize, out Dictionary<string, uint> subEntries);
 
             if(errno != ErrorNumber.NoError) return errno;
 

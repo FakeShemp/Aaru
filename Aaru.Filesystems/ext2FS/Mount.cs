@@ -411,19 +411,25 @@ public sealed partial class ext2FS
             return ErrorNumber.InvalidArgument;
         }
 
-        ulong rootBlocks = (ulong)rootInode.blocks_high << 32 | rootInode.blocks_lo;
+        // Inline data directories store data in inode body, so blocks can be zero
+        bool rootInline = (rootInode.i_flags & EXT4_INLINE_DATA_FL) != 0;
 
-        if(rootBlocks == 0)
+        if(!rootInline)
         {
-            AaruLogging.Debug(MODULE_NAME, "Root inode has zero blocks");
+            ulong rootBlocks = (ulong)rootInode.blocks_high << 32 | rootInode.blocks_lo;
 
-            return ErrorNumber.InvalidArgument;
+            if(rootBlocks == 0)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Root inode has zero blocks");
+
+                return ErrorNumber.InvalidArgument;
+            }
         }
 
         AaruLogging.Debug(MODULE_NAME, "Root inode size: {0} bytes", rootSize);
 
         // Read directory entries from the root inode's data blocks
-        errno = ReadDirectoryEntries(rootInode, rootSize, out Dictionary<string, uint> entries);
+        errno = ReadDirectoryEntries(rootInode, EXT2_ROOT_INO, rootSize, out Dictionary<string, uint> entries);
 
         if(errno != ErrorNumber.NoError)
         {

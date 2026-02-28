@@ -94,7 +94,7 @@ public sealed partial class ext2FS
             // Read subdirectory entries from disk
             ulong dirSize = (ulong)inode.size_high << 32 | inode.size_lo;
 
-            errno = ReadDirectoryEntries(inode, dirSize, out Dictionary<string, uint> subEntries);
+            errno = ReadDirectoryEntries(inode, inodeNumber, dirSize, out Dictionary<string, uint> subEntries);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -151,13 +151,42 @@ public sealed partial class ext2FS
 
     /// <summary>Reads directory entries from an inode's data blocks</summary>
     /// <param name="inode">The directory inode</param>
+    /// <param name="inodeNumber">The inode number</param>
     /// <param name="size">The directory size in bytes</param>
     /// <param name="entries">Dictionary of filename to inode number</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadDirectoryEntries(Inode inode, ulong size, out Dictionary<string, uint> entries)
+    ErrorNumber ReadDirectoryEntries(Inode inode, uint inodeNumber, ulong size, out Dictionary<string, uint> entries)
     {
         entries = new Dictionary<string, uint>(StringComparer.Ordinal);
 
+        // Inline data directories: data stored in inode body + ibody xattr
+        if((inode.i_flags & EXT4_INLINE_DATA_FL) != 0)
+        {
+            ErrorNumber inlineErr = GetInlineData(inodeNumber, inode, size, out byte[] inlineData);
+
+            if(inlineErr != ErrorNumber.NoError) return inlineErr;
+
+            if(inlineData == null || inlineData.Length < 16) return ErrorNumber.NoError;
+
+            // Inline directory layout:
+            // Bytes 0-11:  "." entry (standard ext4_dir_entry_2, rec_len=12)
+            // Bytes 12-15: Parent inode number (compact ".." representation, 4 bytes)
+            // Bytes 16+:   Regular ext4_dir_entry_2 entries
+            // Skip the first 16 bytes (. and .. entries)
+            var dataStart = 16;
+            int dataLen   = inlineData.Length - dataStart;
+
+            if(dataLen > 0)
+            {
+                var dirData = new byte[dataLen];
+                Array.Copy(inlineData, dataStart, dirData, 0, dataLen);
+                ParseDirectoryBlock(dirData, (uint)dataLen, entries);
+            }
+
+            return ErrorNumber.NoError;
+        }
+
+        // Standard block-based directory reading
         // Get all data blocks for the inode
         ErrorNumber errno = GetInodeDataBlocks(inode, out List<(ulong physicalBlock, uint length)> blockList);
 

@@ -210,6 +210,7 @@ public sealed partial class ext2FS
                                          EXT4_FEATURE_INCOMPAT_DIRDATA     |
                                          EXT4_FEATURE_INCOMPAT_CSUM_SEED   |
                                          EXT4_FEATURE_INCOMPAT_LARGEDIR    |
+                                         EXT4_FEATURE_INCOMPAT_INLINE_DATA |
                                          EXT4_FEATURE_INCOMPAT_CASEFOLD;
 
     const string MODULE_NAME = "ext2FS plugin";

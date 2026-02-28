@@ -54,9 +54,8 @@ public sealed partial class ext2FS
 
         // Direct blocks (0-11)
         for(uint i = 0; i < 12 && blockIndex < blocksUsed; i++, blockIndex++)
-        {
-            if(inode.block[i] != 0) blockList.Add((inode.block[i], 1));
-        }
+            if(inode.block[i] != 0)
+                blockList.Add((inode.block[i], 1));
 
         // Single indirect (block[12])
         if(blockIndex < blocksUsed && inode.block[12] != 0)
@@ -500,5 +499,70 @@ public sealed partial class ext2FS
             default:
                 return ErrorNumber.NotSupported;
         }
+    }
+
+    /// <summary>Assembles inline data from the inode body and optional system.data ibody xattr</summary>
+    /// <param name="inodeNumber">The inode number</param>
+    /// <param name="inode">The inode structure</param>
+    /// <param name="fileSize">The file size in bytes</param>
+    /// <param name="inlineData">The assembled inline data</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber GetInlineData(uint inodeNumber, Inode inode, ulong fileSize, out byte[] inlineData)
+    {
+        inlineData = null;
+
+        // First part: up to 60 bytes from inode.block[] (EXT4_MIN_INLINE_DATA_SIZE)
+        var blockBytes = new byte[60];
+
+        for(var i = 0; i < 15; i++)
+        {
+            byte[] b = BitConverter.GetBytes(inode.block[i]);
+            Array.Copy(b, 0, blockBytes, i * 4, 4);
+        }
+
+        if(fileSize <= 60)
+        {
+            inlineData = new byte[fileSize];
+            Array.Copy(blockBytes, 0, inlineData, 0, (int)fileSize);
+
+            return ErrorNumber.NoError;
+        }
+
+        // Second part: continuation data in "system.data" ibody xattr
+        byte[]      xattrData = null;
+        ErrorNumber errno     = ReadInlineXattrValue(inodeNumber, inode, "system.data", ref xattrData);
+
+        if(errno != ErrorNumber.NoError || xattrData == null || xattrData.Length == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "GetInlineData: no system.data xattr found for inode {0}, truncating to 60 bytes",
+                              inodeNumber);
+
+            inlineData = new byte[Math.Min(60, (int)fileSize)];
+            Array.Copy(blockBytes, 0, inlineData, 0, inlineData.Length);
+
+            return ErrorNumber.NoError;
+        }
+
+        // Concatenate block[] data + xattr continuation data, truncated to file size
+        var totalSize = (int)Math.Min(fileSize, (ulong)(60 + xattrData.Length));
+        inlineData = new byte[totalSize];
+
+        int firstPart = Math.Min(60, totalSize);
+        Array.Copy(blockBytes, 0, inlineData, 0, firstPart);
+
+        if(totalSize > 60)
+        {
+            int secondPart = totalSize - 60;
+            Array.Copy(xattrData, 0, inlineData, 60, secondPart);
+        }
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "GetInlineData: inode {0}, size={1}, block_part=60, xattr_part={2}",
+                          inodeNumber,
+                          fileSize,
+                          xattrData.Length);
+
+        return ErrorNumber.NoError;
     }
 }

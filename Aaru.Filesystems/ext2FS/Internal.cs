@@ -71,6 +71,12 @@ public sealed partial class ext2FS
         /// <summary>Cached decompressed cluster data, keyed by cluster index</summary>
         internal Dictionary<long, byte[]> DecompressedClusterCache { get; } = [];
 
+        /// <summary>Whether this file stores data inline in the inode</summary>
+        internal bool IsInlineData { get; init; }
+
+        /// <summary>Pre-assembled inline data for inline data files</summary>
+        internal byte[] InlineData { get; init; }
+
         /// <inheritdoc />
         public string Path { get; init; }
 
