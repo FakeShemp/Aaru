@@ -147,10 +147,10 @@ public sealed partial class BTRFS
             UID                 = inode.uid,
             GID                 = inode.gid,
             Mode                = inode.mode & 0x0FFF,
-            AccessTimeUtc       = DateHandlers.UnixUnsignedToDateTime((uint)inode.atime.sec, inode.atime.nsec),
-            LastWriteTimeUtc    = DateHandlers.UnixUnsignedToDateTime((uint)inode.mtime.sec, inode.mtime.nsec),
-            StatusChangeTimeUtc = DateHandlers.UnixUnsignedToDateTime((uint)inode.ctime.sec, inode.ctime.nsec),
-            CreationTimeUtc     = DateHandlers.UnixUnsignedToDateTime((uint)inode.otime.sec, inode.otime.nsec)
+            AccessTimeUtc       = DateHandlers.UnixUnsignedToDateTime(inode.atime.sec, inode.atime.nsec),
+            LastWriteTimeUtc    = DateHandlers.UnixUnsignedToDateTime(inode.mtime.sec, inode.mtime.nsec),
+            StatusChangeTimeUtc = DateHandlers.UnixUnsignedToDateTime(inode.ctime.sec, inode.ctime.nsec),
+            CreationTimeUtc     = DateHandlers.UnixUnsignedToDateTime(inode.otime.sec, inode.otime.nsec)
         };
 
         // Determine file type from S_IFMT bits in mode
