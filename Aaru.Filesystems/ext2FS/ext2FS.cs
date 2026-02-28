@@ -31,18 +31,20 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 // Information from the Linux kernel
 /// <inheritdoc />
-/// <summary>Implements detection of the Linux extended filesystem v2, v3 and v4</summary>
+/// <summary>Implements the Linux extended filesystem v2, v3 and v4</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 
 // ReSharper disable once InconsistentNaming
-public sealed partial class ext2FS : IFilesystem
+public sealed partial class ext2FS : IReadOnlyFilesystem
 {
 #region IFilesystem Members
 
@@ -56,4 +58,11 @@ public sealed partial class ext2FS : IFilesystem
     public string Author => Authors.NataliaPortillo;
 
 #endregion
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces => [];
 }

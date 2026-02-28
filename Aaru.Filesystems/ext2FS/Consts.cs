@@ -34,9 +34,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Aaru.Filesystems;
 
-// Information from the Linux kernel
-/// <inheritdoc />
-/// <summary>Implements detection of the Linux extended filesystem v2, v3 and v4</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 
 // ReSharper disable once InconsistentNaming
