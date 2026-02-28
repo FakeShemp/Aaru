@@ -68,8 +68,11 @@ public sealed partial class ext2FS
         /// <summary>Compression algorithm id for this file</summary>
         internal byte CompressionMethod { get; init; }
 
-        /// <summary>Cached decompressed cluster data, keyed by cluster index</summary>
-        internal Dictionary<long, byte[]> DecompressedClusterCache { get; } = [];
+        /// <summary>Cached decompressed cluster data</summary>
+        internal byte[] CachedClusterData { get; set; }
+
+        /// <summary>Cluster index of the cached decompressed cluster (-1 if none)</summary>
+        internal long CachedClusterIndex { get; set; } = -1;
 
         /// <summary>Whether this file stores data inline in the inode</summary>
         internal bool IsInlineData { get; init; }

@@ -54,8 +54,9 @@ public sealed partial class ext2FS
 
         // Direct blocks (0-11)
         for(uint i = 0; i < 12 && blockIndex < blocksUsed; i++, blockIndex++)
-            if(inode.block[i] != 0)
-                blockList.Add((inode.block[i], 1, false));
+        {
+            if(inode.block[i] != 0) blockList.Add((inode.block[i], 1, false));
+        }
 
         // Single indirect (block[12])
         if(blockIndex < blocksUsed && inode.block[12] != 0)
@@ -254,9 +255,13 @@ public sealed partial class ext2FS
         var  blockInCluster = (int)(logicalBlock          % clusterNBlocks);
         var  blockOffset    = (int)((ulong)blockInCluster * _blockSize);
 
+        byte[] clusterData;
+
         // Check cluster cache
-        if(fileNode.DecompressedClusterCache.TryGetValue(clusterIndex, out byte[] clusterData))
+        if(clusterIndex == fileNode.CachedClusterIndex && fileNode.CachedClusterData != null)
         {
+            clusterData = fileNode.CachedClusterData;
+
             if(blockOffset + (int)_blockSize <= clusterData.Length)
             {
                 blockData = new byte[_blockSize];
@@ -280,8 +285,9 @@ public sealed partial class ext2FS
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        // Cache the decompressed cluster
-        fileNode.DecompressedClusterCache[clusterIndex] = clusterData;
+        // Cache the decompressed cluster (single entry, replaces previous)
+        fileNode.CachedClusterData  = clusterData;
+        fileNode.CachedClusterIndex = clusterIndex;
 
         // Extract the requested block
         if(blockOffset + (int)_blockSize <= clusterData.Length)
