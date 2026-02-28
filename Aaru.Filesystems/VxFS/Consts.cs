@@ -28,8 +28,6 @@
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the Veritas filesystem</summary>
 public sealed partial class VxFS
 {
     /// <summary>Identifier for VxFS</summary>

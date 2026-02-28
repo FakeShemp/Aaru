@@ -31,8 +31,6 @@ using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the Veritas filesystem</summary>
 public sealed partial class VxFS
 {
 #region Nested type: SuperBlock

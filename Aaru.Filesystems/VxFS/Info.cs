@@ -37,8 +37,6 @@ using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the Veritas filesystem</summary>
 public sealed partial class VxFS
 {
 #region IFilesystem Members
