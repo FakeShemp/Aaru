@@ -180,6 +180,7 @@ public sealed partial class ext2FS
         _hasFileType           = false;
         _isHurd                = false;
         _isMasix               = false;
+        _isVisopsys            = false;
         Metadata               = null;
 
         AaruLogging.Debug(MODULE_NAME, "Volume unmounted successfully");
@@ -307,6 +308,7 @@ public sealed partial class ext2FS
         _hasFileType = (_superblock.ftr_incompat & EXT2_FEATURE_INCOMPAT_FILETYPE) != 0;
         _isHurd      = _superblock.creator_os                                      == EXT2_OS_HURD;
         _isMasix     = _superblock.creator_os                                      == EXT2_OS_MASIX;
+        _isVisopsys  = _superblock.creator_os                                      == EXT2_OS_VISOPSYS;
 
         // Compute block group count
         ulong totalBlocks = _is64Bit ? (ulong)_superblock.blocks_hi << 32 | _superblock.blocks : _superblock.blocks;
@@ -420,7 +422,7 @@ public sealed partial class ext2FS
 
         if(!rootInline)
         {
-            ulong rootBlocks = _isHurd || _isMasix
+            ulong rootBlocks = _isHurd || _isMasix || _isVisopsys
                                    ? rootInode.blocks_lo
                                    : (ulong)rootInode.blocks_high << 32 | rootInode.blocks_lo;
 

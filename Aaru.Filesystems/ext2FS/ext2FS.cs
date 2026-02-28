@@ -84,6 +84,9 @@ public sealed partial class ext2FS : IReadOnlyFilesystem
     /// <summary>Whether filesystem was created on MASIX</summary>
     bool _isMasix;
 
+    /// <summary>Whether filesystem was created on Visopsys</summary>
+    bool _isVisopsys;
+
     /// <summary>Whether the filesystem is mounted</summary>
     bool _mounted;
 

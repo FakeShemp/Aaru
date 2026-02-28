@@ -171,12 +171,13 @@ public sealed partial class ext2FS
 
         string extOs = supblk.creator_os switch
                        {
-                           EXT2_OS_FREEBSD => "FreeBSD",
-                           EXT2_OS_HURD    => "Hurd",
-                           EXT2_OS_LINUX   => "Linux",
-                           EXT2_OS_LITES   => "Lites",
-                           EXT2_OS_MASIX   => "MasIX",
-                           _               => string.Format(Localization.Unknown_OS_0, supblk.creator_os)
+                           EXT2_OS_FREEBSD  => "FreeBSD",
+                           EXT2_OS_HURD     => "Hurd",
+                           EXT2_OS_LINUX    => "Linux",
+                           EXT2_OS_LITES    => "Lites",
+                           EXT2_OS_MASIX    => "MasIX",
+                           EXT2_OS_VISOPSYS => "Visopsys",
+                           _                => string.Format(Localization.Unknown_OS_0, supblk.creator_os)
                        };
 
         metadata.SystemIdentifier = extOs;

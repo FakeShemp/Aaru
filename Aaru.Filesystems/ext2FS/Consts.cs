@@ -81,11 +81,12 @@ public sealed partial class ext2FS
     const ushort EXT2_ERRORS_PANIC = 3;
 
     // OS codes
-    const uint EXT2_OS_LINUX   = 0;
-    const uint EXT2_OS_HURD    = 1;
-    const uint EXT2_OS_MASIX   = 2;
-    const uint EXT2_OS_FREEBSD = 3;
-    const uint EXT2_OS_LITES   = 4;
+    const uint EXT2_OS_LINUX    = 0;
+    const uint EXT2_OS_HURD     = 1;
+    const uint EXT2_OS_MASIX    = 2;
+    const uint EXT2_OS_FREEBSD  = 3;
+    const uint EXT2_OS_LITES    = 4;
+    const uint EXT2_OS_VISOPSYS = 0x0A600D05;
 
     // Revision levels
     /// <summary>The good old (original) format</summary>
