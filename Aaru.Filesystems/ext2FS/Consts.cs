@@ -106,6 +106,14 @@ public sealed partial class ext2FS
     const uint EXT2_FEATURE_COMPAT_RESIZE_INO = 0x00000010;
     /// <summary>Can use hashed indexes on directories</summary>
     const uint EXT2_FEATURE_COMPAT_DIR_INDEX = 0x00000020;
+    /// <summary>Sparse super block v2</summary>
+    const uint EXT4_FEATURE_COMPAT_SPARSE_SUPER2 = 0x00000200;
+    /// <summary>Fast commit journal</summary>
+    const uint EXT4_FEATURE_COMPAT_FAST_COMMIT = 0x00000400;
+    /// <summary>Stable inodes (for encryption)</summary>
+    const uint EXT4_FEATURE_COMPAT_STABLE_INODES = 0x00000800;
+    /// <summary>Orphan file allocated</summary>
+    const uint EXT4_FEATURE_COMPAT_ORPHAN_FILE = 0x00001000;
 
     // Read-only compatible features
     /// <summary>Reduced number of superblocks</summary>
@@ -122,6 +130,24 @@ public sealed partial class ext2FS
     const uint EXT4_FEATURE_RO_COMPAT_DIR_NLINK = 0x00000020;
     /// <summary>Nanosecond timestamps and creation time *ext4*</summary>
     const uint EXT4_FEATURE_RO_COMPAT_EXTRA_ISIZE = 0x00000040;
+    /// <summary>Has snapshot *ext4*</summary>
+    const uint EXT4_FEATURE_RO_COMPAT_HAS_SNAPSHOT = 0x00000080;
+    /// <summary>Quota support *ext4*</summary>
+    const uint EXT4_FEATURE_RO_COMPAT_QUOTA = 0x00000100;
+    /// <summary>Big allocation clusters instead of blocks *ext4*</summary>
+    const uint EXT4_FEATURE_RO_COMPAT_BIGALLOC = 0x00000200;
+    /// <summary>Metadata checksum using crc32c *ext4*</summary>
+    const uint EXT4_FEATURE_RO_COMPAT_METADATA_CSUM = 0x00000400;
+    /// <summary>Filesystem replica support *ext4*</summary>
+    const uint EXT4_FEATURE_RO_COMPAT_REPLICA = 0x00000800;
+    /// <summary>Read-only filesystem image *ext4*</summary>
+    const uint EXT4_FEATURE_RO_COMPAT_READONLY = 0x00001000;
+    /// <summary>Project quotas *ext4*</summary>
+    const uint EXT4_FEATURE_RO_COMPAT_PROJECT = 0x00002000;
+    /// <summary>Verity inodes support *ext4*</summary>
+    const uint EXT4_FEATURE_RO_COMPAT_VERITY = 0x00008000;
+    /// <summary>Orphan inodes present in orphan file *ext4*</summary>
+    const uint EXT4_FEATURE_RO_COMPAT_ORPHAN_PRESENT = 0x00010000;
 
     // Incompatible features
     /// <summary>Uses compression</summary>
@@ -148,6 +174,16 @@ public sealed partial class ext2FS
     const uint EXT4_FEATURE_INCOMPAT_EA_INODE = 0x00000400;
     /// <summary>Data can reside in directory entry *ext4*</summary>
     const uint EXT4_FEATURE_INCOMPAT_DIRDATA = 0x00001000;
+    /// <summary>Checksum seed in superblock *ext4*</summary>
+    const uint EXT4_FEATURE_INCOMPAT_CSUM_SEED = 0x00002000;
+    /// <summary>Large directory with 3-level hash tree *ext4*</summary>
+    const uint EXT4_FEATURE_INCOMPAT_LARGEDIR = 0x00004000;
+    /// <summary>Data stored in inode body *ext4*</summary>
+    const uint EXT4_FEATURE_INCOMPAT_INLINE_DATA = 0x00008000;
+    /// <summary>Encrypted inodes *ext4*</summary>
+    const uint EXT4_FEATURE_INCOMPAT_ENCRYPT = 0x00010000;
+    /// <summary>Casefolded directory entries *ext4*</summary>
+    const uint EXT4_FEATURE_INCOMPAT_CASEFOLD = 0x00020000;
 
     // Miscellaneous filesystem flags
     /// <summary>Signed dirhash in use</summary>
@@ -162,14 +198,17 @@ public sealed partial class ext2FS
     const string FS_TYPE_EXT4 = "ext4";
 
     // Incompatible features supported by this read-only implementation
-    const uint EXT2_SUPPORTED_INCOMPAT = EXT2_FEATURE_INCOMPAT_FILETYPE |
-                                         EXT3_FEATURE_INCOMPAT_RECOVER  |
-                                         EXT2_FEATURE_INCOMPAT_META_BG  |
-                                         EXT4_FEATURE_INCOMPAT_EXTENTS  |
-                                         EXT4_FEATURE_INCOMPAT_64BIT    |
-                                         EXT4_FEATURE_INCOMPAT_FLEX_BG  |
-                                         EXT4_FEATURE_INCOMPAT_EA_INODE |
-                                         EXT4_FEATURE_INCOMPAT_DIRDATA;
+    const uint EXT2_SUPPORTED_INCOMPAT = EXT2_FEATURE_INCOMPAT_FILETYPE    |
+                                         EXT3_FEATURE_INCOMPAT_RECOVER     |
+                                         EXT2_FEATURE_INCOMPAT_META_BG     |
+                                         EXT4_FEATURE_INCOMPAT_EXTENTS     |
+                                         EXT4_FEATURE_INCOMPAT_64BIT       |
+                                         EXT4_FEATURE_INCOMPAT_FLEX_BG     |
+                                         EXT4_FEATURE_INCOMPAT_EA_INODE    |
+                                         EXT4_FEATURE_INCOMPAT_DIRDATA     |
+                                         EXT4_FEATURE_INCOMPAT_CSUM_SEED   |
+                                         EXT4_FEATURE_INCOMPAT_LARGEDIR    |
+                                         EXT4_FEATURE_INCOMPAT_CASEFOLD;
 
     const string MODULE_NAME = "ext2FS plugin";
 
@@ -209,10 +248,14 @@ public sealed partial class ext2FS
     const uint EXT2_NODUMP_FL = 0x00000040;
     /// <summary>Do not update atime</summary>
     const uint EXT2_NOATIME_FL = 0x00000080;
-    /// <summary>Compression flags (dirty, error, compr/decompressing cluster)</summary>
+    /// <summary>Dirty (modified) compressed file</summary>
+    const uint EXT2_DIRTY_FL = 0x00000100;
+    /// <summary>One or more compressed clusters</summary>
     const uint EXT2_COMPRBLK_FL = 0x00000200;
-    /// <summary>Compression error</summary>
-    const uint EXT2_ECOMPR_FL = 0x00000800;
+    /// <summary>Don't compress file</summary>
+    const uint EXT2_NOCOMPR_FL = 0x00000400;
+    /// <summary>Encrypted inode (also historically compression error)</summary>
+    const uint EXT4_ENCRYPT_FL = 0x00000800;
     /// <summary>B-tree/hash-indexed directory</summary>
     const uint EXT2_INDEX_FL = 0x00001000;
     /// <summary>AFS directory</summary>
@@ -233,14 +276,24 @@ public sealed partial class ext2FS
     const uint EXT4_VERITY_FL = 0x00100000;
     /// <summary>Inode used for large EA</summary>
     const uint EXT4_EA_INODE_FL = 0x00200000;
+    /// <summary>Blocks past EOF for this inode</summary>
+    const uint EXT4_EOFBLOCKS_FL = 0x00400000;
+    /// <summary>Do not copy-on-write this file</summary>
+    const uint EXT4_NOCOW_FL = 0x00800000;
+    /// <summary>Inode is a snapshot</summary>
+    const uint EXT4_SNAPFILE_FL = 0x01000000;
+    /// <summary>Inode is DAX (direct access)</summary>
+    const uint EXT4_DAX_FL = 0x02000000;
+    /// <summary>Snapshot is being deleted</summary>
+    const uint EXT4_SNAPFILE_DELETED_FL = 0x04000000;
+    /// <summary>Snapshot shrink has completed</summary>
+    const uint EXT4_SNAPFILE_SHRUNK_FL = 0x08000000;
     /// <summary>Inode has inline data</summary>
     const uint EXT4_INLINE_DATA_FL = 0x10000000;
     /// <summary>Create with parents projid</summary>
     const uint EXT4_PROJINHERIT_FL = 0x20000000;
     /// <summary>Casefolded directory</summary>
     const uint EXT4_CASEFOLD_FL = 0x40000000;
-    /// <summary>Encrypted inode</summary>
-    const uint EXT4_ENCRYPT_FL = 0x00000800;
 
     // POSIX file mode masks
     const ushort S_IFMT   = 0xF000;
