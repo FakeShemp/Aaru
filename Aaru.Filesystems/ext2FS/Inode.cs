@@ -37,13 +37,13 @@ namespace Aaru.Filesystems;
 // ReSharper disable once InconsistentNaming
 public sealed partial class ext2FS
 {
-    /// <summary>Reads an inode from disk</summary>
-    /// <param name="inodeNumber">The inode number to read (1-based)</param>
-    /// <param name="inode">The parsed inode structure</param>
+    /// <summary>Calculates the byte offset of an inode on disk</summary>
+    /// <param name="inodeNumber">The inode number (1-based)</param>
+    /// <param name="inodeByteOffset">The computed byte offset</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadInode(uint inodeNumber, out Inode inode)
+    ErrorNumber GetInodeByteOffset(uint inodeNumber, out ulong inodeByteOffset)
     {
-        inode = default(Inode);
+        inodeByteOffset = 0;
 
         if(inodeNumber == 0 || inodeNumber > _superblock.inodes)
         {
@@ -52,7 +52,6 @@ public sealed partial class ext2FS
             return ErrorNumber.InvalidArgument;
         }
 
-        // Calculate which block group this inode belongs to
         uint blockGroup = (inodeNumber - 1) / _superblock.inodes_per_grp;
         uint inodeInGrp = (inodeNumber - 1) % _superblock.inodes_per_grp;
 
@@ -63,27 +62,40 @@ public sealed partial class ext2FS
             return ErrorNumber.InvalidArgument;
         }
 
-        // Get the inode table block from the block group descriptor
         BlockGroupDescriptor bgd = _blockGroupDescriptors[blockGroup];
 
         ulong inodeTableBlock = _is64Bit ? (ulong)bgd.inode_table_hi << 32 | bgd.inode_table_lo : bgd.inode_table_lo;
 
-        // Calculate byte offset of the inode on disk
-        ulong inodeByteOffset = inodeTableBlock * _blockSize + (ulong)inodeInGrp * _inodeSize;
+        inodeByteOffset = inodeTableBlock * _blockSize + (ulong)inodeInGrp * _inodeSize;
 
         AaruLogging.Debug(MODULE_NAME,
-                          "Reading inode {0}: group={1}, index={2}, table_block={3}, offset=0x{4:X}",
+                          "Inode {0}: group={1}, index={2}, table_block={3}, offset=0x{4:X}",
                           inodeNumber,
                           blockGroup,
                           inodeInGrp,
                           inodeTableBlock,
                           inodeByteOffset);
 
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads an inode from disk</summary>
+    /// <param name="inodeNumber">The inode number to read (1-based)</param>
+    /// <param name="inode">The parsed inode structure</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadInode(uint inodeNumber, out Inode inode)
+    {
+        inode = default(Inode);
+
+        ErrorNumber errno = GetInodeByteOffset(inodeNumber, out ulong inodeByteOffset);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
         // Read the inode data
         int inodeStructSize = Marshal.SizeOf<Inode>();
         int bytesToRead     = Math.Min(_inodeSize, (ushort)inodeStructSize);
 
-        ErrorNumber errno = ReadBytes(inodeByteOffset, (uint)bytesToRead, out byte[] inodeData);
+        errno = ReadBytes(inodeByteOffset, (uint)bytesToRead, out byte[] inodeData);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -125,18 +137,9 @@ public sealed partial class ext2FS
     {
         rawInode = null;
 
-        if(inodeNumber == 0 || inodeNumber > _superblock.inodes) return ErrorNumber.InvalidArgument;
+        ErrorNumber errno = GetInodeByteOffset(inodeNumber, out ulong inodeByteOffset);
 
-        uint blockGroup = (inodeNumber - 1) / _superblock.inodes_per_grp;
-        uint inodeInGrp = (inodeNumber - 1) % _superblock.inodes_per_grp;
-
-        if(blockGroup >= _blockGroupCount) return ErrorNumber.InvalidArgument;
-
-        BlockGroupDescriptor bgd = _blockGroupDescriptors[blockGroup];
-
-        ulong inodeTableBlock = _is64Bit ? (ulong)bgd.inode_table_hi << 32 | bgd.inode_table_lo : bgd.inode_table_lo;
-
-        ulong inodeByteOffset = inodeTableBlock * _blockSize + (ulong)inodeInGrp * _inodeSize;
+        if(errno != ErrorNumber.NoError) return errno;
 
         return ReadBytes(inodeByteOffset, _inodeSize, out rawInode);
     }
