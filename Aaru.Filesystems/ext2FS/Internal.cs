@@ -59,6 +59,18 @@ public sealed partial class ext2FS
         /// <summary>Logical block index of the cached block (-1 if none)</summary>
         internal long CachedBlockIndex { get; set; } = -1;
 
+        /// <summary>Whether this file uses e2compr compression</summary>
+        internal bool IsCompressed { get; init; }
+
+        /// <summary>Number of blocks per compression cluster (power of 2)</summary>
+        internal uint ClusterNBlocks { get; init; }
+
+        /// <summary>Compression algorithm id for this file</summary>
+        internal byte CompressionMethod { get; init; }
+
+        /// <summary>Cached decompressed cluster data, keyed by cluster index</summary>
+        internal Dictionary<long, byte[]> DecompressedClusterCache { get; } = [];
+
         /// <inheritdoc />
         public string Path { get; init; }
 

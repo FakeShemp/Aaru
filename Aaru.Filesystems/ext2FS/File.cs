@@ -126,16 +126,43 @@ public sealed partial class ext2FS
 
         ulong fileSize = (ulong)inode.size_high << 32 | inode.size_lo;
 
+        // Detect e2compr compressed file
+        bool isCompressed   = (inode.i_flags & EXT2_COMPR_FL) != 0;
+        byte comprMethod    = 0;
+        uint clusterNBlocks = 1;
+
+        if(isCompressed)
+        {
+            // Per-inode compression params are stored in the obsoleted fragment address field (obso_faddr)
+            // Bits 0-7: compression method, Bits 8-15: log2(cluster_nblocks)
+            comprMethod = (byte)(inode.obso_faddr & 0xFF);
+            var log2CluNBlocks = (byte)(inode.obso_faddr >> 8 & 0xFF);
+
+            // Default cluster size if not set
+            if(log2CluNBlocks == 0) log2CluNBlocks = 3; // 8 blocks per cluster
+
+            clusterNBlocks = 1u << log2CluNBlocks;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "OpenFile: compressed file, method={0}, log2_clu_nblocks={1}, clu_nblocks={2}",
+                              comprMethod,
+                              log2CluNBlocks,
+                              clusterNBlocks);
+        }
+
         node = new Ext2FileNode
         {
-            Path             = path,
-            Length           = (long)fileSize,
-            Offset           = 0,
-            InodeNumber      = inodeNumber,
-            Inode            = inode,
-            BlockList        = blockList,
-            CachedBlock      = null,
-            CachedBlockIndex = -1
+            Path              = path,
+            Length            = (long)fileSize,
+            Offset            = 0,
+            InodeNumber       = inodeNumber,
+            Inode             = inode,
+            BlockList         = blockList,
+            CachedBlock       = null,
+            CachedBlockIndex  = -1,
+            IsCompressed      = isCompressed,
+            CompressionMethod = comprMethod,
+            ClusterNBlocks    = clusterNBlocks
         };
 
         AaruLogging.Debug(MODULE_NAME, "OpenFile: success, inode={0}, size={1}", inodeNumber, fileSize);
@@ -150,6 +177,7 @@ public sealed partial class ext2FS
 
         fileNode.CachedBlock      = null;
         fileNode.CachedBlockIndex = -1;
+        fileNode.DecompressedClusterCache.Clear();
 
         return ErrorNumber.NoError;
     }
@@ -194,8 +222,13 @@ public sealed partial class ext2FS
                 blockData = fileNode.CachedBlock;
             else
             {
-                // Find the physical block from the pre-computed block list
-                ErrorNumber errno = ReadLogicalBlock(fileNode.BlockList, (ulong)blockIndex, out blockData);
+                ErrorNumber errno;
+
+                // For compressed files, use cluster-aware reading with decompression
+                if(fileNode.IsCompressed)
+                    errno = ReadCompressedLogicalBlock(fileNode, (ulong)blockIndex, out blockData);
+                else
+                    errno = ReadLogicalBlock(fileNode.BlockList, (ulong)blockIndex, out blockData);
 
                 if(errno != ErrorNumber.NoError)
                 {

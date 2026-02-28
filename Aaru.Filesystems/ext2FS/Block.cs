@@ -28,7 +28,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using Aaru.CommonTypes.Enums;
+using Aaru.Compression;
+using Aaru.Logging;
+using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
 
@@ -49,8 +54,9 @@ public sealed partial class ext2FS
 
         // Direct blocks (0-11)
         for(uint i = 0; i < 12 && blockIndex < blocksUsed; i++, blockIndex++)
-            if(inode.block[i] != 0)
-                blockList.Add((inode.block[i], 1));
+        {
+            if(inode.block[i] != 0) blockList.Add((inode.block[i], 1));
+        }
 
         // Single indirect (block[12])
         if(blockIndex < blocksUsed && inode.block[12] != 0)
@@ -225,5 +231,274 @@ public sealed partial class ext2FS
         blockData = Array.Empty<byte>();
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads a logical block from a compressed file, decompressing the cluster as needed</summary>
+    /// <param name="fileNode">The file node with compression state and cluster cache</param>
+    /// <param name="logicalBlock">The logical block index to read</param>
+    /// <param name="blockData">The decompressed block data</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadCompressedLogicalBlock(Ext2FileNode fileNode, ulong logicalBlock, out byte[] blockData)
+    {
+        blockData = null;
+
+        uint clusterNBlocks = fileNode.ClusterNBlocks;
+        var  clusterIndex   = (long)(logicalBlock         / clusterNBlocks);
+        var  blockInCluster = (int)(logicalBlock          % clusterNBlocks);
+        var  blockOffset    = (int)((ulong)blockInCluster * _blockSize);
+
+        // Check cluster cache
+        if(fileNode.DecompressedClusterCache.TryGetValue(clusterIndex, out byte[] clusterData))
+        {
+            if(blockOffset + (int)_blockSize <= clusterData.Length)
+            {
+                blockData = new byte[_blockSize];
+                Array.Copy(clusterData, blockOffset, blockData, 0, (int)_blockSize);
+            }
+            else if(blockOffset < clusterData.Length)
+            {
+                // Partial last block
+                int available = clusterData.Length - blockOffset;
+                blockData = new byte[_blockSize];
+                Array.Copy(clusterData, blockOffset, blockData, 0, available);
+            }
+            else
+                blockData = new byte[_blockSize];
+
+            return ErrorNumber.NoError;
+        }
+
+        // Read the cluster and decompress it
+        ErrorNumber errno = ReadAndDecompressCluster(fileNode, clusterIndex, out clusterData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Cache the decompressed cluster
+        fileNode.DecompressedClusterCache[clusterIndex] = clusterData;
+
+        // Extract the requested block
+        if(blockOffset + (int)_blockSize <= clusterData.Length)
+        {
+            blockData = new byte[_blockSize];
+            Array.Copy(clusterData, blockOffset, blockData, 0, (int)_blockSize);
+        }
+        else if(blockOffset < clusterData.Length)
+        {
+            int available = clusterData.Length - blockOffset;
+            blockData = new byte[_blockSize];
+            Array.Copy(clusterData, blockOffset, blockData, 0, available);
+        }
+        else
+            blockData = new byte[_blockSize];
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads all physical blocks of a cluster and decompresses them</summary>
+    /// <param name="fileNode">The file node</param>
+    /// <param name="clusterIndex">The cluster index within the file</param>
+    /// <param name="decompressedData">The decompressed cluster data</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadAndDecompressCluster(Ext2FileNode fileNode, long clusterIndex, out byte[] decompressedData)
+    {
+        decompressedData = null;
+
+        uint  clusterNBlocks     = fileNode.ClusterNBlocks;
+        ulong firstLogicalBlock  = (ulong)clusterIndex * clusterNBlocks;
+        uint  clusterSizeInBytes = clusterNBlocks      * _blockSize;
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "ReadAndDecompressCluster: cluster={0}, firstBlock={1}, nblocks={2}",
+                          clusterIndex,
+                          firstLogicalBlock,
+                          clusterNBlocks);
+
+        // Read all blocks of the cluster
+        var rawCluster = new byte[clusterSizeInBytes];
+        var bytesRead  = 0;
+
+        for(uint i = 0; i < clusterNBlocks; i++)
+        {
+            ulong logBlock = firstLogicalBlock + i;
+
+            ErrorNumber errno = ReadLogicalBlock(fileNode.BlockList, logBlock, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "ReadAndDecompressCluster: failed reading block {0}: {1}",
+                                  logBlock,
+                                  errno);
+
+                return errno;
+            }
+
+            if(blockData != null && blockData.Length > 0)
+            {
+                int toCopy = Math.Min(blockData.Length, (int)_blockSize);
+                Array.Copy(blockData, 0, rawCluster, bytesRead, toCopy);
+                bytesRead += toCopy;
+            }
+            else
+                bytesRead += (int)_blockSize;
+        }
+
+        // Check for cluster head magic in the first 2 bytes
+        var magic = BitConverter.ToUInt16(rawCluster, 0);
+
+        if(magic != EXT2_COMPRESS_MAGIC_04X)
+        {
+            // Not compressed — return raw data
+            AaruLogging.Debug(MODULE_NAME,
+                              "ReadAndDecompressCluster: cluster {0} not compressed (magic=0x{1:X4})",
+                              clusterIndex,
+                              magic);
+
+            decompressedData = rawCluster;
+
+            return ErrorNumber.NoError;
+        }
+
+        // Parse the cluster head
+        int headSize = Marshal.SizeOf<CompressedClusterHead>();
+
+        CompressedClusterHead head =
+            Marshal.ByteArrayToStructureLittleEndian<CompressedClusterHead>(rawCluster, 0, headSize);
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "ReadAndDecompressCluster: method={0}, ulen={1}, clen={2}, holemap_nbytes={3}",
+                          head.method,
+                          head.ulen,
+                          head.clen,
+                          head.holemap_nbytes);
+
+        // Calculate offset to the compressed data (after header + holemap)
+        int compressedDataOffset = headSize + head.holemap_nbytes;
+
+        if(compressedDataOffset + (int)head.clen > rawCluster.Length)
+        {
+            AaruLogging.Debug(MODULE_NAME, "ReadAndDecompressCluster: compressed data extends beyond cluster");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Extract compressed data
+        var compressedData = new byte[head.clen];
+        Array.Copy(rawCluster, compressedDataOffset, compressedData, 0, (int)head.clen);
+
+        // Decompress
+        decompressedData = new byte[head.ulen];
+
+        ErrorNumber decompResult = DecompressData(head.method, compressedData, decompressedData);
+
+        if(decompResult != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "ReadAndDecompressCluster: decompression failed for method {0}: {1}",
+                              head.method,
+                              decompResult);
+
+            return decompResult;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "ReadAndDecompressCluster: decompressed {0} -> {1} bytes", head.clen, head.ulen);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Decompresses data using the specified e2compr algorithm</summary>
+    /// <param name="method">e2compr algorithm id</param>
+    /// <param name="compressedData">The compressed data</param>
+    /// <param name="decompressedData">Pre-allocated buffer for decompressed output</param>
+    /// <returns>Error number indicating success or failure</returns>
+    static ErrorNumber DecompressData(byte method, byte[] compressedData, byte[] decompressedData)
+    {
+        switch(method)
+        {
+            case EXT2_GZIP_ALG:
+            {
+                try
+                {
+                    using var ms   = new MemoryStream(compressedData);
+                    using var zlib = new ZLibStream(ms, CompressionMode.Decompress);
+                    var       pos  = 0;
+
+                    while(pos < decompressedData.Length)
+                    {
+                        int read = zlib.Read(decompressedData, pos, decompressedData.Length - pos);
+
+                        if(read == 0) break;
+
+                        pos += read;
+                    }
+
+                    return ErrorNumber.NoError;
+                }
+                catch(Exception)
+                {
+                    // The e2compr gzip format uses raw deflate (no zlib header), try that
+                    try
+                    {
+                        using var ms      = new MemoryStream(compressedData);
+                        using var deflate = new DeflateStream(ms, CompressionMode.Decompress);
+                        var       pos     = 0;
+
+                        while(pos < decompressedData.Length)
+                        {
+                            int read = deflate.Read(decompressedData, pos, decompressedData.Length - pos);
+
+                            if(read == 0) break;
+
+                            pos += read;
+                        }
+
+                        return ErrorNumber.NoError;
+                    }
+                    catch(Exception)
+                    {
+                        return ErrorNumber.InvalidArgument;
+                    }
+                }
+            }
+
+            case EXT2_BZIP2_ALG:
+            {
+                int decoded = BZip2.DecodeBuffer(compressedData, decompressedData);
+
+                return decoded > 0 ? ErrorNumber.NoError : ErrorNumber.InvalidArgument;
+            }
+
+            case EXT2_LZO_ALG:
+            {
+                int decoded = LZO.DecodeBuffer(compressedData, decompressedData, LZO.Algorithm.LZO1X);
+
+                return decoded > 0 ? ErrorNumber.NoError : ErrorNumber.InvalidArgument;
+            }
+
+            case EXT2_NONE_ALG:
+            {
+                int toCopy = Math.Min(compressedData.Length, decompressedData.Length);
+                Array.Copy(compressedData, 0, decompressedData, 0, toCopy);
+
+                return ErrorNumber.NoError;
+            }
+
+            case EXT2_LZRW3A_ALG:
+            {
+                int decoded = LZRW3A.DecodeBuffer(compressedData, decompressedData);
+
+                return decoded > 0 ? ErrorNumber.NoError : ErrorNumber.InvalidArgument;
+            }
+
+            case EXT2_LZV1_ALG:
+            {
+                int decoded = LZV1.DecodeBuffer(compressedData, decompressedData);
+
+                return decoded > 0 ? ErrorNumber.NoError : ErrorNumber.InvalidArgument;
+            }
+
+            default:
+                return ErrorNumber.NotSupported;
+        }
     }
 }

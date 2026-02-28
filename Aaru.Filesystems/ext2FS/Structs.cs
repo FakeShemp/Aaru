@@ -638,6 +638,29 @@ public sealed partial class ext2FS
 
 #endregion
 
+#region Nested type: CompressedClusterHead
+
+    /// <summary>e2compr v0.4.x compressed cluster head (stored at start of a compressed cluster)</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    readonly struct CompressedClusterHead
+    {
+        /// <summary>0x00, Magic number (EXT2_COMPRESS_MAGIC_04X = 0x5EF2)</summary>
+        public readonly ushort magic;
+        /// <summary>0x02, Compression method id</summary>
+        public readonly byte method;
+        /// <summary>0x03, Number of bytes in holemap</summary>
+        public readonly byte holemap_nbytes;
+        /// <summary>0x04, Adler32 checksum of uncompressed data</summary>
+        public readonly uint checksum;
+        /// <summary>0x08, Uncompressed data length in bytes</summary>
+        public readonly uint ulen;
+        /// <summary>0x0C, Compressed data length in bytes (after header + holemap)</summary>
+        public readonly uint clen;
+    }
+
+#endregion
+
 #region Nested type: FastCommitTagLength
 
     /// <summary>ext4 fast commit on-disk tag-length structure</summary>

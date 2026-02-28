@@ -198,7 +198,8 @@ public sealed partial class ext2FS
     const string FS_TYPE_EXT4 = "ext4";
 
     // Incompatible features supported by this read-only implementation
-    const uint EXT2_SUPPORTED_INCOMPAT = EXT2_FEATURE_INCOMPAT_FILETYPE    |
+    const uint EXT2_SUPPORTED_INCOMPAT = EXT2_FEATURE_INCOMPAT_COMPRESSION |
+                                         EXT2_FEATURE_INCOMPAT_FILETYPE    |
                                          EXT3_FEATURE_INCOMPAT_RECOVER     |
                                          EXT2_FEATURE_INCOMPAT_META_BG     |
                                          EXT4_FEATURE_INCOMPAT_EXTENTS     |
@@ -256,6 +257,8 @@ public sealed partial class ext2FS
     const uint EXT2_NOCOMPR_FL = 0x00000400;
     /// <summary>Encrypted inode (also historically compression error)</summary>
     const uint EXT4_ENCRYPT_FL = 0x00000800;
+    /// <summary>Compression error (e2compr, same bit as EXT4_ENCRYPT_FL)</summary>
+    const uint EXT2_ECOMPR_FL = 0x00000800;
     /// <summary>B-tree/hash-indexed directory</summary>
     const uint EXT2_INDEX_FL = 0x00001000;
     /// <summary>AFS directory</summary>
@@ -328,4 +331,24 @@ public sealed partial class ext2FS
     const byte EXT4_XATTR_INDEX_RICHACL           = 8;
     const byte EXT4_XATTR_INDEX_ENCRYPTION        = 9;
     const byte EXT4_XATTR_INDEX_HURD              = 10;
+
+    // e2compr compressed cluster head magic
+    /// <summary>Magic number for e2compr v0.4.x compressed cluster heads</summary>
+    const ushort EXT2_COMPRESS_MAGIC_04X = 0x5EF2;
+
+    // e2compr compression algorithm IDs
+    /// <summary>No compression</summary>
+    const byte EXT2_NONE_ALG = 0;
+    /// <summary>gzip / zlib deflate</summary>
+    const byte EXT2_GZIP_ALG = 1;
+    /// <summary>bzip2</summary>
+    const byte EXT2_BZIP2_ALG = 2;
+    /// <summary>LZO</summary>
+    const byte EXT2_LZO_ALG = 3;
+    /// <summary>LZRW3-A</summary>
+    const byte EXT2_LZRW3A_ALG = 4;
+    /// <summary>LZV1</summary>
+    const byte EXT2_LZV1_ALG = 5;
+    /// <summary>Number of supported e2compr algorithms</summary>
+    const byte EXT2_N_ALGORITHMS = 6;
 }
