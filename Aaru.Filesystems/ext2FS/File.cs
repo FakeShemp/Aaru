@@ -360,7 +360,21 @@ public sealed partial class ext2FS
                                 ? inode.blocks_lo
                                 : (ulong)inode.blocks_high << 32 | inode.blocks_lo;
 
-        if(inlineData || totalBlocks == 0 && linkSize < 60)
+        if(inlineData)
+        {
+            // Inline data symlink: target stored in inode body (block[] + system.data xattr)
+            errno = GetInlineData(inodeNumber, inode, linkSize, out byte[] inlineBuf);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            dest = StringHandlers.CToString(inlineBuf, _encoding ?? Encoding.UTF8);
+
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: inline data symlink inode={0}, target='{1}'", inodeNumber, dest);
+
+            return ErrorNumber.NoError;
+        }
+
+        if(totalBlocks == 0 && linkSize < 60)
         {
             var linkData   = new byte[linkSize];
             var blockBytes = new byte[60];
