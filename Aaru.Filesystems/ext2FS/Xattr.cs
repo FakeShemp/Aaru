@@ -258,9 +258,8 @@ public sealed partial class ext2FS
             byte nameLen   = data[offset];
             byte nameIndex = data[offset                        + 1];
             var  valueOffs = BitConverter.ToUInt16(data, offset + 2);
-
-            // skip e_value_inum at offset+4 (4 bytes)
-            var valueSize = BitConverter.ToUInt32(data, offset + 8);
+            var  valueInum = BitConverter.ToUInt32(data, offset + 4);
+            var  valueSize = BitConverter.ToUInt32(data, offset + 8);
 
             if(nameLen == 0) break;
 
@@ -283,6 +282,9 @@ public sealed partial class ext2FS
 
                     return ErrorNumber.NoError;
                 }
+
+                // EA inode: value stored in a dedicated inode's data blocks
+                if(valueInum != 0) return ReadEaInodeValue(valueInum, valueSize, ref buf);
 
                 // Value offset is relative to the value base
                 int absoluteOffset = valueBase + valueOffs;
@@ -326,4 +328,41 @@ public sealed partial class ext2FS
                                                         EXT4_XATTR_INDEX_HURD       => "gnu.",
                                                         _                           => ""
                                                     };
+
+    /// <summary>Reads an xattr value stored in an EA inode</summary>
+    /// <param name="inodeNumber">The EA inode number</param>
+    /// <param name="valueSize">Expected size of the value</param>
+    /// <param name="buf">Buffer to receive the value</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadEaInodeValue(uint inodeNumber, uint valueSize, ref byte[] buf)
+    {
+        ErrorNumber errno = ReadInode(inodeNumber, out Inode eaInode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        List<(ulong physicalBlock, uint length)> blockList = GetInodeDataBlocks(eaInode, valueSize);
+
+        buf = new byte[valueSize];
+
+        uint  bytesRead    = 0;
+        ulong logicalBlock = 0;
+
+        while(bytesRead < valueSize)
+        {
+            errno = ReadLogicalBlock(blockList, logicalBlock, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            uint toCopy = Math.Min(_blockSize, valueSize - bytesRead);
+
+            if(blockData != null && blockData.Length > 0) Array.Copy(blockData, 0, buf, (int)bytesRead, (int)toCopy);
+
+            bytesRead += toCopy;
+            logicalBlock++;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "ReadEaInodeValue: read {0} bytes from EA inode {1}", valueSize, inodeNumber);
+
+        return ErrorNumber.NoError;
+    }
 }
