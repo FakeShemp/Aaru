@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : ECMA-67 plugin.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Identifies the ECMA-67 file system and shows information.
+//     Filesystem information for the ECMA-67 file system.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,14 +30,22 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Structs;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class ECMA67
 {
     /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        stat = _statfs.ShallowCopy();
+
+        return ErrorNumber.NoError;
+    }
 }
