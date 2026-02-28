@@ -34,7 +34,12 @@ public sealed partial class VxFS
 {
     /// <summary>Identifier for VxFS</summary>
     const uint VXFS_MAGIC = 0xA501FCF5;
+    /// <summary>Identifier for VxFS, big-endian</summary>
+    const uint VXFS_MAGIC_BE = 0xF5FC01A5;
+    /// <summary>Superblock offset for Unixware/x86 (block 1, little-endian)</summary>
     const uint VXFS_BASE = 0x400;
+    /// <summary>Superblock offset for HP-UX/parisc (block 8, big-endian)</summary>
+    const uint VXFS_BASE_BE = 0x2000;
 
     const string FS_TYPE = "vxfs";
 }

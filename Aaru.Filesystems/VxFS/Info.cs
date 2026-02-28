@@ -32,6 +32,7 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
+using Marshal = System.Runtime.InteropServices.Marshal;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -45,32 +46,99 @@ public sealed partial class VxFS
     /// <inheritdoc />
     public bool Identify(IMediaImage imagePlugin, Partition partition)
     {
-        ulong vmfsSuperOff = VXFS_BASE / imagePlugin.Info.SectorSize;
+        // Try Unixware/x86 location (block 1, offset 0x400, little-endian)
+        ulong sbSectorOff = VXFS_BASE / imagePlugin.Info.SectorSize;
+        uint  sbOff       = VXFS_BASE % imagePlugin.Info.SectorSize;
 
-        if(partition.Start + vmfsSuperOff >= partition.End) return false;
+        if(partition.Start + sbSectorOff < partition.End)
+        {
+            ErrorNumber errno = imagePlugin.ReadSector(partition.Start + sbSectorOff, false, out byte[] sector, out _);
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + vmfsSuperOff, false, out byte[] sector, out _);
+            if(errno == ErrorNumber.NoError && sbOff + 4 <= sector.Length)
+            {
+                var magic = BitConverter.ToUInt32(sector, (int)sbOff);
 
-        if(errno != ErrorNumber.NoError) return false;
+                if(magic == VXFS_MAGIC) return true;
+            }
+        }
 
-        var magic = BitConverter.ToUInt32(sector, 0x00);
+        // Try HP-UX/parisc location (block 8, offset 0x2000, big-endian)
+        sbSectorOff = VXFS_BASE_BE / imagePlugin.Info.SectorSize;
+        sbOff       = VXFS_BASE_BE % imagePlugin.Info.SectorSize;
 
-        return magic == VXFS_MAGIC;
+        if(partition.Start + sbSectorOff >= partition.End) return false;
+
+        {
+            ErrorNumber errno = imagePlugin.ReadSector(partition.Start + sbSectorOff, false, out byte[] sector, out _);
+
+            if(errno != ErrorNumber.NoError || sbOff + 4 > sector.Length) return false;
+
+            var magic = BitConverter.ToUInt32(sector, (int)sbOff);
+
+            return magic == VXFS_MAGIC_BE;
+        }
     }
 
     /// <inheritdoc />
     public void GetInformation(IMediaImage imagePlugin, Partition partition, Encoding encoding, out string information,
                                out FileSystem metadata)
     {
-        encoding ??= Encoding.UTF8;
-        information = "";
-        metadata = new FileSystem();
-        ulong       vmfsSuperOff = VXFS_BASE / imagePlugin.Info.SectorSize;
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + vmfsSuperOff, false, out byte[] sector, out _);
+        encoding    ??= Encoding.UTF8;
+        information =   "";
+        metadata    =   new FileSystem();
+
+        var   bigEndian   = false;
+        ulong sbSectorOff = VXFS_BASE / imagePlugin.Info.SectorSize;
+        uint  sbOff       = VXFS_BASE % imagePlugin.Info.SectorSize;
+
+        int sbSizeInBytes = Marshal.SizeOf<SuperBlock>();
+
+        var sbSizeInSectors = (uint)((sbOff + sbSizeInBytes + imagePlugin.Info.SectorSize - 1) /
+                                     imagePlugin.Info.SectorSize);
+
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + sbSectorOff,
+                                                    false,
+                                                    sbSizeInSectors,
+                                                    out byte[] sbSector,
+                                                    out _);
 
         if(errno != ErrorNumber.NoError) return;
 
-        SuperBlock vxSb = Marshal.ByteArrayToStructureLittleEndian<SuperBlock>(sector);
+        if(sbOff + 4 > sbSector.Length) return;
+
+        var magic = BitConverter.ToUInt32(sbSector, (int)sbOff);
+
+        if(magic != VXFS_MAGIC)
+        {
+            // Try HP-UX/parisc location (block 8, offset 0x2000, big-endian)
+            sbSectorOff = VXFS_BASE_BE / imagePlugin.Info.SectorSize;
+            sbOff       = VXFS_BASE_BE % imagePlugin.Info.SectorSize;
+
+            sbSizeInSectors = (uint)((sbOff + sbSizeInBytes + imagePlugin.Info.SectorSize - 1) /
+                                     imagePlugin.Info.SectorSize);
+
+            errno = imagePlugin.ReadSectors(partition.Start + sbSectorOff, false, sbSizeInSectors, out sbSector, out _);
+
+            if(errno != ErrorNumber.NoError) return;
+
+            if(sbOff + 4 > (uint)sbSector.Length) return;
+
+            magic = BitConverter.ToUInt32(sbSector, (int)sbOff);
+
+            if(magic != VXFS_MAGIC_BE) return;
+
+            bigEndian = true;
+        }
+
+        var sb = new byte[sbSizeInBytes];
+
+        if(sbOff + sbSizeInBytes > sbSector.Length) return;
+
+        Array.Copy(sbSector, sbOff, sb, 0, sbSizeInBytes);
+
+        SuperBlock vxSb = bigEndian
+                              ? Helpers.Marshal.ByteArrayToStructureBigEndian<SuperBlock>(sb)
+                              : Helpers.Marshal.ByteArrayToStructureLittleEndian<SuperBlock>(sb);
 
         var sbInformation = new StringBuilder();
 
