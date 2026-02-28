@@ -7438,6 +7438,72 @@ namespace Aaru.Filesystems {
             }
         }
         
+        internal static string XFS_version_has_extended_attributes {
+            get {
+                return ResourceManager.GetString("XFS_version_has_extended_attributes", resourceCulture);
+            }
+        }
+        
+        internal static string XFS_version_has_32_bit_link_counts {
+            get {
+                return ResourceManager.GetString("XFS_version_has_32_bit_link_counts", resourceCulture);
+            }
+        }
+        
+        internal static string XFS_version_has_quotas {
+            get {
+                return ResourceManager.GetString("XFS_version_has_quotas", resourceCulture);
+            }
+        }
+        
+        internal static string XFS_version_has_inode_alignment {
+            get {
+                return ResourceManager.GetString("XFS_version_has_inode_alignment", resourceCulture);
+            }
+        }
+        
+        internal static string XFS_version_has_data_stripe_alignment {
+            get {
+                return ResourceManager.GetString("XFS_version_has_data_stripe_alignment", resourceCulture);
+            }
+        }
+        
+        internal static string XFS_version_has_shared_filesystem_support {
+            get {
+                return ResourceManager.GetString("XFS_version_has_shared_filesystem_support", resourceCulture);
+            }
+        }
+        
+        internal static string XFS_version_has_directory_v2 {
+            get {
+                return ResourceManager.GetString("XFS_version_has_directory_v2", resourceCulture);
+            }
+        }
+        
+        internal static string XFS_version_has_directory_v1 {
+            get {
+                return ResourceManager.GetString("XFS_version_has_directory_v1", resourceCulture);
+            }
+        }
+        
+        internal static string XFS_version_has_unwritten_extents {
+            get {
+                return ResourceManager.GetString("XFS_version_has_unwritten_extents", resourceCulture);
+            }
+        }
+        
+        internal static string XFS_version_has_log_v2 {
+            get {
+                return ResourceManager.GetString("XFS_version_has_log_v2", resourceCulture);
+            }
+        }
+        
+        internal static string XFS_version_has_sector_size_override {
+            get {
+                return ResourceManager.GetString("XFS_version_has_sector_size_override", resourceCulture);
+            }
+        }
+        
         internal static string Xia_Name {
             get {
                 return ResourceManager.GetString("Xia_Name", resourceCulture);

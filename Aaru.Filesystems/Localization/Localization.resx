@@ -3725,6 +3725,39 @@
     <data name="fsck_in_progress" xml:space="preserve">
     <value>fsck in progress</value>
   </data>
+    <data name="XFS_version_has_extended_attributes" xml:space="preserve">
+    <value>Version has extended attributes</value>
+  </data>
+    <data name="XFS_version_has_32_bit_link_counts" xml:space="preserve">
+    <value>Version has 32-bit link counts</value>
+  </data>
+    <data name="XFS_version_has_quotas" xml:space="preserve">
+    <value>Version has quotas</value>
+  </data>
+    <data name="XFS_version_has_inode_alignment" xml:space="preserve">
+    <value>Version has inode alignment</value>
+  </data>
+    <data name="XFS_version_has_data_stripe_alignment" xml:space="preserve">
+    <value>Version has data stripe alignment</value>
+  </data>
+    <data name="XFS_version_has_shared_filesystem_support" xml:space="preserve">
+    <value>Version has shared filesystem support</value>
+  </data>
+    <data name="XFS_version_has_directory_v2" xml:space="preserve">
+    <value>Version has directory v2</value>
+  </data>
+    <data name="XFS_version_has_directory_v1" xml:space="preserve">
+    <value>Version has directory v1</value>
+  </data>
+    <data name="XFS_version_has_unwritten_extents" xml:space="preserve">
+    <value>Version has unwritten extents</value>
+  </data>
+    <data name="XFS_version_has_log_v2" xml:space="preserve">
+    <value>Version has log v2</value>
+  </data>
+    <data name="XFS_version_has_sector_size_override" xml:space="preserve">
+    <value>Version has non-default sector size</value>
+  </data>
     <data name="Xia_Name" xml:space="preserve">
     <value>Xia filesystem</value>
   </data>

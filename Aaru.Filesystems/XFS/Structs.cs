@@ -79,9 +79,12 @@ public sealed partial class XFS
         public ushort inodesize;
         /// <summary>Inodes per block</summary>
         public ushort inopblock;
-        /// <summary>File system name (up to 12 bytes, no terminating NULL)</summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
+        /// <summary>File system name (up to 6 bytes, no terminating NULL)</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
         public byte[] fname;
+        /// <summary>File system pack name (up to 6 bytes, no terminating NULL). IRIX-specific; extends volume label in Linux XFS.</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+        public byte[] fpack;
         /// <summary>log2 of blocksize</summary>
         public byte blocklog;
         /// <summary>log2 of sectsize</summary>
@@ -999,7 +1002,7 @@ public sealed partial class XFS
 
     /// <summary>Directory shortform header (struct xfs_dir2_sf_hdr). For inline directories.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    partial struct Dir2SfHeader
+    struct Dir2SfHeader
     {
         /// <summary>Count of entries</summary>
         public byte count;

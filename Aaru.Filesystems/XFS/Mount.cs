@@ -103,7 +103,21 @@ public sealed partial class XFS
         AaruLogging.Debug(MODULE_NAME, "Root directory loaded with {0} entries", _rootDirectoryCache.Count);
 
         // Build metadata
-        string volumeName = StringHandlers.CToString(_superblock.fname, _encoding);
+        // V1-V3 use only sb_fname (6 bytes), V4+ may use sb_fname + sb_fpack (12 bytes)
+        var versionNum = (ushort)(_superblock.version & XFS_SB_VERSION_NUMBITS);
+
+        byte[] volumeNameBytes;
+
+        if(versionNum >= XFS_SB_VERSION_4)
+        {
+            volumeNameBytes = new byte[12];
+            Array.Copy(_superblock.fname, 0, volumeNameBytes, 0, 6);
+            Array.Copy(_superblock.fpack, 0, volumeNameBytes, 6, 6);
+        }
+        else
+            volumeNameBytes = _superblock.fname;
+
+        string volumeName = StringHandlers.CToString(volumeNameBytes, _encoding);
 
         Metadata = new FileSystem
         {

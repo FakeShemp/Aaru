@@ -3221,6 +3221,39 @@
     <data name="XFS_Name" xml:space="preserve">
     <value>Extensión del sistema de ficheros XFS</value>
   </data>
+    <data name="XFS_version_has_extended_attributes" xml:space="preserve">
+    <value>La versión tiene atributos extendidos</value>
+  </data>
+    <data name="XFS_version_has_32_bit_link_counts" xml:space="preserve">
+    <value>La versión tiene contadores de enlaces de 32 bits</value>
+  </data>
+    <data name="XFS_version_has_quotas" xml:space="preserve">
+    <value>La versión tiene cuotas</value>
+  </data>
+    <data name="XFS_version_has_inode_alignment" xml:space="preserve">
+    <value>La versión tiene alineamiento de inodos</value>
+  </data>
+    <data name="XFS_version_has_data_stripe_alignment" xml:space="preserve">
+    <value>La versión tiene alineamiento de franjas de datos</value>
+  </data>
+    <data name="XFS_version_has_shared_filesystem_support" xml:space="preserve">
+    <value>La versión tiene soporte de sistema de ficheros compartido</value>
+  </data>
+    <data name="XFS_version_has_directory_v2" xml:space="preserve">
+    <value>La versión tiene directorio v2</value>
+  </data>
+    <data name="XFS_version_has_directory_v1" xml:space="preserve">
+    <value>La versión tiene directorio v1</value>
+  </data>
+    <data name="XFS_version_has_unwritten_extents" xml:space="preserve">
+    <value>La versión tiene extensiones sin escribir</value>
+  </data>
+    <data name="XFS_version_has_log_v2" xml:space="preserve">
+    <value>La versión tiene log v2</value>
+  </data>
+    <data name="XFS_version_has_sector_size_override" xml:space="preserve">
+    <value>La versión tiene tamaño de sector no predeterminado</value>
+  </data>
     <data name="Xia_Name" xml:space="preserve">
     <value>Sistema de ficheros Xia</value>
   </data>

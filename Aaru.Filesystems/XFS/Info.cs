@@ -188,10 +188,76 @@ public sealed partial class XFS
 
         if(xfsSb.magicnum != XFS_MAGIC) return;
 
-        var sb = new StringBuilder();
+        var sb         = new StringBuilder();
+        var versionNum = (ushort)(xfsSb.version & XFS_SB_VERSION_NUMBITS);
+
+        // Construct volume name: V1-V3 use only sb_fname (6 bytes), V4+ may use sb_fname + sb_fpack (12 bytes)
+        byte[] volumeNameBytes;
+
+        if(versionNum >= XFS_SB_VERSION_4)
+        {
+            volumeNameBytes = new byte[12];
+            Array.Copy(xfsSb.fname, 0, volumeNameBytes, 0, 6);
+            Array.Copy(xfsSb.fpack, 0, volumeNameBytes, 6, 6);
+        }
+        else
+            volumeNameBytes = xfsSb.fname;
+
+        string volumeName = StringHandlers.CToString(volumeNameBytes, encoding);
 
         sb.AppendLine(Localization.XFS_filesystem);
-        sb.AppendFormat(Localization.Filesystem_version_0,            xfsSb.version & 0xF).AppendLine();
+        sb.AppendFormat(Localization.Filesystem_version_0, versionNum).AppendLine();
+
+        // Report version-specific features
+        switch(versionNum)
+        {
+            case XFS_SB_VERSION_2:
+                sb.AppendLine(Localization.XFS_version_has_extended_attributes);
+
+                break;
+            case XFS_SB_VERSION_3:
+                sb.AppendLine(Localization.XFS_version_has_extended_attributes);
+                sb.AppendLine(Localization.XFS_version_has_32_bit_link_counts);
+
+                break;
+            case XFS_SB_VERSION_4:
+            {
+                ushort versionFlags = xfsSb.version;
+
+                if((versionFlags & XFS_SB_VERSION_ATTRBIT) != 0)
+                    sb.AppendLine(Localization.XFS_version_has_extended_attributes);
+
+                if((versionFlags & XFS_SB_VERSION_NLINKBIT) != 0)
+                    sb.AppendLine(Localization.XFS_version_has_32_bit_link_counts);
+
+                if((versionFlags & XFS_SB_VERSION_QUOTABIT) != 0) sb.AppendLine(Localization.XFS_version_has_quotas);
+
+                if((versionFlags & XFS_SB_VERSION_ALIGNBIT) != 0)
+                    sb.AppendLine(Localization.XFS_version_has_inode_alignment);
+
+                if((versionFlags & XFS_SB_VERSION_DALIGNBIT) != 0)
+                    sb.AppendLine(Localization.XFS_version_has_data_stripe_alignment);
+
+                if((versionFlags & XFS_SB_VERSION_SHAREDBIT) != 0)
+                    sb.AppendLine(Localization.XFS_version_has_shared_filesystem_support);
+
+                if((versionFlags & XFS_SB_VERSION_DIRV2BIT) != 0)
+                    sb.AppendLine(Localization.XFS_version_has_directory_v2);
+                else
+                    sb.AppendLine(Localization.XFS_version_has_directory_v1);
+
+                if((versionFlags & XFS_SB_VERSION_EXTFLGBIT) != 0)
+                    sb.AppendLine(Localization.XFS_version_has_unwritten_extents);
+
+                if((versionFlags & XFS_SB_VERSION_LOGV2BIT) != 0) sb.AppendLine(Localization.XFS_version_has_log_v2);
+
+                if((versionFlags & XFS_SB_VERSION_SECTORBIT) != 0)
+                    sb.AppendLine(Localization.XFS_version_has_sector_size_override);
+
+                break;
+            }
+        }
+
         sb.AppendFormat(Localization._0_bytes_per_sector,             xfsSb.sectsize).AppendLine();
         sb.AppendFormat(Localization._0_bytes_per_block,              xfsSb.blocksize).AppendLine();
         sb.AppendFormat(Localization._0_bytes_per_inode,              xfsSb.inodesize).AppendLine();
@@ -202,7 +268,16 @@ public sealed partial class XFS
 
         if(xfsSb.inprogress > 0) sb.AppendLine(Localization.fsck_in_progress);
 
-        sb.AppendFormat(Localization.Volume_name_0, StringHandlers.CToString(xfsSb.fname, encoding)).AppendLine();
+        sb.AppendFormat(Localization.Volume_name_0, volumeName).AppendLine();
+
+        // Show pack name for pre-V4 (IRIX) if non-empty
+        if(versionNum < XFS_SB_VERSION_4)
+        {
+            string packName = StringHandlers.CToString(xfsSb.fpack, encoding);
+
+            if(!string.IsNullOrEmpty(packName)) sb.AppendFormat(Localization.Pack_name_0, packName).AppendLine();
+        }
+
         sb.AppendFormat(Localization.Volume_UUID_0, xfsSb.uuid).AppendLine();
 
         information = sb.ToString();
@@ -215,7 +290,7 @@ public sealed partial class XFS
             FreeClusters = xfsSb.fdblocks,
             Files        = xfsSb.icount - xfsSb.ifree,
             Dirty        = xfsSb.inprogress > 0,
-            VolumeName   = StringHandlers.CToString(xfsSb.fname, encoding),
+            VolumeName   = volumeName,
             VolumeSerial = xfsSb.uuid.ToString()
         };
     }
