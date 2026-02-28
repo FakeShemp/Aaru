@@ -30,10 +30,25 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using Aaru.CommonTypes.Interfaces;
+
 namespace Aaru.Filesystems;
 
 public sealed partial class BTRFS
 {
+    /// <summary>Represents an opened btrfs directory for enumeration</summary>
+    sealed class BtrfsDirNode : IDirNode
+    {
+        /// <summary>Current position in the directory enumeration (entry index)</summary>
+        internal int Position { get; set; }
+
+        /// <summary>Array of directory entry names in this directory</summary>
+        internal string[] Entries { get; set; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
+
     /// <summary>Stores a logical-to-physical chunk mapping entry used to translate btrfs logical addresses</summary>
     struct ChunkMapping
     {

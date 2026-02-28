@@ -52,6 +52,9 @@ public sealed partial class BTRFS
     const ulong BTRFS_FIRST_FREE_OBJECTID       = 256;
     const ulong BTRFS_FIRST_CHUNK_TREE_OBJECTID = 256;
 
+    // File type constants from btrfs_tree.h
+    const byte BTRFS_FT_DIR = 2;
+
     // Block group / chunk type flags
     const ulong BTRFS_BLOCK_GROUP_RAID0  = 0x08;
     const ulong BTRFS_BLOCK_GROUP_RAID1  = 0x10;

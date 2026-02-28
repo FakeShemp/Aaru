@@ -30,8 +30,11 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
@@ -39,6 +42,106 @@ namespace Aaru.Filesystems;
 
 public sealed partial class BTRFS
 {
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath is "" or ".") normalizedPath = "/";
+
+        // Root directory
+        if(normalizedPath is "/")
+        {
+            if(_rootDirectoryCache.Count == 0) return ErrorNumber.NoSuchFile;
+
+            node = new BtrfsDirNode
+            {
+                Path     = "/",
+                Position = 0,
+                Entries  = _rootDirectoryCache.Keys.ToArray()
+            };
+
+            return ErrorNumber.NoError;
+        }
+
+        // Subdirectory traversal
+        string pathWithoutLeadingSlash = normalizedPath.StartsWith("/", StringComparison.Ordinal)
+                                             ? normalizedPath[1..]
+                                             : normalizedPath;
+
+        string[] pathComponents = pathWithoutLeadingSlash.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
+
+        Dictionary<string, DirEntry> currentEntries = _rootDirectoryCache;
+
+        for(var p = 0; p < pathComponents.Length; p++)
+        {
+            string component = pathComponents[p];
+
+            if(component is "." or "..") continue;
+
+            if(!currentEntries.TryGetValue(component, out DirEntry entry)) return ErrorNumber.NoSuchFile;
+
+            if(entry.Type != BTRFS_FT_DIR) return ErrorNumber.NotDirectory;
+
+            ErrorNumber errno = ReadDirectoryContents(entry.ObjectId, out Dictionary<string, DirEntry> dirEntries);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if(p == pathComponents.Length - 1)
+            {
+                node = new BtrfsDirNode
+                {
+                    Path     = normalizedPath,
+                    Position = 0,
+                    Entries  = dirEntries.Keys.ToArray()
+                };
+
+                return ErrorNumber.NoError;
+            }
+
+            currentEntries = dirEntries;
+        }
+
+        return ErrorNumber.NoSuchFile;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(node is not BtrfsDirNode btrfsNode) return ErrorNumber.InvalidArgument;
+
+        btrfsNode.Position = -1;
+        btrfsNode.Entries  = null;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not BtrfsDirNode btrfsNode) return ErrorNumber.InvalidArgument;
+
+        if(btrfsNode.Position < 0) return ErrorNumber.InvalidArgument;
+
+        // End of directory
+        if(btrfsNode.Position >= btrfsNode.Entries.Length) return ErrorNumber.NoError;
+
+        // Get current filename and advance position
+        filename = btrfsNode.Entries[btrfsNode.Position++];
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Loads the root directory of the default subvolume from the FS tree and caches its entries</summary>
     /// <returns>Error number indicating success or failure</returns>
     ErrorNumber LoadRootDirectory()
@@ -62,7 +165,7 @@ public sealed partial class BTRFS
 
         // The root directory inode is BTRFS_FIRST_FREE_OBJECTID (256) in the default subvolume
         // We search for DIR_INDEX items for objectid 256 to get directory entries sorted by index
-        errno = WalkTreeForDirEntries(fsTreeData, fsTreeHeader, BTRFS_FIRST_FREE_OBJECTID);
+        errno = WalkTreeForDirEntries(fsTreeData, fsTreeHeader, BTRFS_FIRST_FREE_OBJECTID, _rootDirectoryCache);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -81,12 +184,14 @@ public sealed partial class BTRFS
     /// <param name="nodeData">Raw tree node data</param>
     /// <param name="header">Parsed node header</param>
     /// <param name="dirObjectId">The objectid of the directory (inode) to enumerate</param>
+    /// <param name="entries">Dictionary to collect directory entries into</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber WalkTreeForDirEntries(byte[] nodeData, in Header header, ulong dirObjectId)
+    ErrorNumber WalkTreeForDirEntries(byte[]                       nodeData, in Header header, ulong dirObjectId,
+                                      Dictionary<string, DirEntry> entries)
     {
         int headerSize = Marshal.SizeOf<Header>();
 
-        if(header.level == 0) return ExtractDirEntriesFromLeaf(nodeData, header, dirObjectId);
+        if(header.level == 0) return ExtractDirEntriesFromLeaf(nodeData, header, dirObjectId, entries);
 
         // Internal node - follow all key pointers
         int keyPtrSize = Marshal.SizeOf<KeyPtr>();
@@ -110,7 +215,7 @@ public sealed partial class BTRFS
 
             Header childHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(childData);
 
-            errno = WalkTreeForDirEntries(childData, childHeader, dirObjectId);
+            errno = WalkTreeForDirEntries(childData, childHeader, dirObjectId, entries);
 
             if(errno != ErrorNumber.NoError) return errno;
         }
@@ -125,8 +230,10 @@ public sealed partial class BTRFS
     /// <param name="leafData">Raw leaf node data</param>
     /// <param name="header">Parsed leaf header</param>
     /// <param name="dirObjectId">The objectid of the directory to enumerate</param>
+    /// <param name="entries">Dictionary to collect directory entries into</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ExtractDirEntriesFromLeaf(byte[] leafData, in Header header, ulong dirObjectId)
+    ErrorNumber ExtractDirEntriesFromLeaf(byte[]                       leafData, in Header header, ulong dirObjectId,
+                                          Dictionary<string, DirEntry> entries)
     {
         int itemSize    = Marshal.SizeOf<Item>();
         int headerSize  = Marshal.SizeOf<Header>();
@@ -158,7 +265,7 @@ public sealed partial class BTRFS
             // Skip . and .. entries
             if(name is "." or "..") continue;
 
-            _rootDirectoryCache[name] = new DirEntry
+            entries[name] = new DirEntry
             {
                 ObjectId = dirItem.location.objectid,
                 Type     = dirItem.type,
@@ -173,5 +280,22 @@ public sealed partial class BTRFS
         }
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads the contents of a directory given its inode objectid by walking the FS tree</summary>
+    /// <param name="dirObjectId">The objectid of the directory inode</param>
+    /// <param name="entries">The directory entries found</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ReadDirectoryContents(ulong dirObjectId, out Dictionary<string, DirEntry> entries)
+    {
+        entries = new Dictionary<string, DirEntry>();
+
+        ErrorNumber errno = ReadTreeBlock(_fsTreeRoot, out byte[] fsTreeData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        Header fsTreeHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(fsTreeData);
+
+        return WalkTreeForDirEntries(fsTreeData, fsTreeHeader, dirObjectId, entries);
     }
 }
