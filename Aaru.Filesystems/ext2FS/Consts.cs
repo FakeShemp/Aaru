@@ -161,6 +161,16 @@ public sealed partial class ext2FS
     const string FS_TYPE_EXT3 = "ext3";
     const string FS_TYPE_EXT4 = "ext4";
 
+    // Incompatible features supported by this read-only implementation
+    const uint EXT2_SUPPORTED_INCOMPAT = EXT2_FEATURE_INCOMPAT_FILETYPE |
+                                         EXT3_FEATURE_INCOMPAT_RECOVER  |
+                                         EXT2_FEATURE_INCOMPAT_META_BG  |
+                                         EXT4_FEATURE_INCOMPAT_EXTENTS  |
+                                         EXT4_FEATURE_INCOMPAT_64BIT    |
+                                         EXT4_FEATURE_INCOMPAT_FLEX_BG  |
+                                         EXT4_FEATURE_INCOMPAT_EA_INODE |
+                                         EXT4_FEATURE_INCOMPAT_DIRDATA;
+
     const string MODULE_NAME = "ext2FS plugin";
 
     // Root inode number

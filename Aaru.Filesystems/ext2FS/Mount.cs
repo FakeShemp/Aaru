@@ -75,6 +75,18 @@ public sealed partial class ext2FS
         AaruLogging.Debug(MODULE_NAME, "Inode size: {0}",       _inodeSize);
         AaruLogging.Debug(MODULE_NAME, "Descriptor size: {0}",  _descSize);
 
+        // Check for unsupported incompatible features
+        uint unsupportedIncompat = _superblock.ftr_incompat & ~EXT2_SUPPORTED_INCOMPAT;
+
+        if(unsupportedIncompat != 0)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "Filesystem has unsupported incompatible features: 0x{0:X8}",
+                              unsupportedIncompat);
+
+            return ErrorNumber.NotSupported;
+        }
+
         // Read block group descriptors
         errno = ReadBlockGroupDescriptors();
 
