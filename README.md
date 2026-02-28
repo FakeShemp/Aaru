@@ -218,6 +218,9 @@ Fully supported file-systems (identify and extraction)
 * IBM Journaling File System (JFS)
 * ISO9660, including Apple, Amiga, Rock Ridge, Joliet and Romeo extensions
 * Linux extended file system
+* Linux extended file system 2
+* Linux extended file system 3
+* Linux extended file system 4
 * Locus file system
 * MicroDOS file system
 * Microsoft 12-bit File Allocation Table (FAT12), including Atari ST extensions
@@ -256,9 +259,6 @@ Supported file systems for identification and information only
 * Fossil file system (from Plan9)
 * HAMMER file system
 * High Performance Optical File System (HPOFS)
-* Linux extended file system 2
-* Linux extended file system 3
-* Linux extended file system 4
 * Microsoft New Technology File System (NTFS)
 * Microsoft Resilient File System (ReFS)
 * NEC PC-Engine executable
