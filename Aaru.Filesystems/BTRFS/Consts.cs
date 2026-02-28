@@ -38,4 +38,25 @@ public sealed partial class BTRFS
     const ulong BTRFS_MAGIC = 0x4D5F53665248425F;
 
     const string FS_TYPE = "btrfs";
+
+    // Key type constants from btrfs_tree.h
+    const byte BTRFS_INODE_ITEM_KEY = 1;
+    const byte BTRFS_DIR_ITEM_KEY   = 84;
+    const byte BTRFS_DIR_INDEX_KEY  = 96;
+    const byte BTRFS_ROOT_ITEM_KEY  = 132;
+    const byte BTRFS_CHUNK_ITEM_KEY = 228;
+
+    // Well-known object IDs
+    const ulong BTRFS_ROOT_TREE_OBJECTID        = 1;
+    const ulong BTRFS_FS_TREE_OBJECTID          = 5;
+    const ulong BTRFS_FIRST_FREE_OBJECTID       = 256;
+    const ulong BTRFS_FIRST_CHUNK_TREE_OBJECTID = 256;
+
+    // Block group / chunk type flags
+    const ulong BTRFS_BLOCK_GROUP_RAID0  = 0x08;
+    const ulong BTRFS_BLOCK_GROUP_RAID1  = 0x10;
+    const ulong BTRFS_BLOCK_GROUP_DUP    = 0x20;
+    const ulong BTRFS_BLOCK_GROUP_RAID10 = 0x40;
+    const ulong BTRFS_BLOCK_GROUP_RAID5  = 0x80;
+    const ulong BTRFS_BLOCK_GROUP_RAID6  = 0x100;
 }

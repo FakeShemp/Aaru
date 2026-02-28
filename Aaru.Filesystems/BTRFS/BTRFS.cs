@@ -32,8 +32,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -42,6 +44,33 @@ namespace Aaru.Filesystems;
 public sealed partial class BTRFS : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "BTRFS Plugin";
+
+    /// <summary>Chunk map for logical-to-physical address translation</summary>
+    List<ChunkMapping> _chunkMap;
+
+    /// <summary>The encoding used for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>Level of the FS tree root node</summary>
+    byte _fsTreeLevel;
+
+    /// <summary>Logical byte address of the FS tree root node</summary>
+    ulong _fsTreeRoot;
+
+    /// <summary>The image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Whether the filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>The partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>Cached root directory entries (filename to DirEntry)</summary>
+    Dictionary<string, DirEntry> _rootDirectoryCache;
+
+    /// <summary>The cached superblock</summary>
+    SuperBlock _superblock;
 
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
