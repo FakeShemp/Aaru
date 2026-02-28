@@ -27,16 +27,25 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 // Information from http://www.hp9845.net/9845/projects/hpdir/#lif_filesystem
 /// <inheritdoc />
-/// <summary>Implements detection of the LIF filesystem</summary>
-public sealed partial class LIF : IFilesystem
+/// <summary>Implements the LIF filesystem</summary>
+public sealed partial class LIF : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "LIF plugin";
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces => [];
 
 #region IFilesystem Members
 

@@ -31,9 +31,6 @@ using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
-// Information from http://www.hp9845.net/9845/projects/hpdir/#lif_filesystem
-/// <inheritdoc />
-/// <summary>Implements detection of the LIF filesystem</summary>
 public sealed partial class LIF
 {
 #region Nested type: SystemBlock
