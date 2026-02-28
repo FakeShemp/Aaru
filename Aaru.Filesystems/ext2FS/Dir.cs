@@ -166,14 +166,13 @@ public sealed partial class ext2FS
 
             if(inlineErr != ErrorNumber.NoError) return inlineErr;
 
-            if(inlineData == null || inlineData.Length < 16) return ErrorNumber.NoError;
+            if(inlineData == null || inlineData.Length < 4) return ErrorNumber.NoError;
 
-            // Inline directory layout:
-            // Bytes 0-11:  "." entry (standard ext4_dir_entry_2, rec_len=12)
-            // Bytes 12-15: Parent inode number (compact ".." representation, 4 bytes)
-            // Bytes 16+:   Regular ext4_dir_entry_2 entries
-            // Skip the first 16 bytes (. and .. entries)
-            var dataStart = 16;
+            // Inline directory layout (per kernel inline.c):
+            // Bytes 0-3:  Parent inode number (compact ".." entry, EXT4_INLINE_DOTDOT_SIZE)
+            // Bytes 4+:   Regular ext4_dir_entry_2 entries
+            // Skip the first 4 bytes (compact .. entry)
+            var dataStart = 4;
             int dataLen   = inlineData.Length - dataStart;
 
             if(dataLen > 0)
