@@ -186,4 +186,374 @@ public sealed partial class VxFS
     }
 
 #endregion
+
+#region Nested type: DirectExtent
+
+    /// <summary>Direct extent entry used in ext4 organisation</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct DirectExtent
+    {
+        /// <summary>Extent number</summary>
+        public uint extent;
+        /// <summary>Size of extent</summary>
+        public uint size;
+    }
+
+#endregion
+
+#region Nested type: Ext4
+
+    /// <summary>Ext4 inode organisation</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct Ext4
+    {
+        /// <summary>Spare</summary>
+        public uint ve4_spare;
+        /// <summary>Indirect extent size</summary>
+        public uint ve4_indsize;
+        /// <summary>Indirect extents</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public uint[] ve4_indir;
+        /// <summary>Direct extents</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 80)]
+        public byte[] ve4_direct;
+    }
+
+#endregion
+
+#region Nested type: TypedExtent
+
+    /// <summary>Typed extent descriptor</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct TypedExtent
+    {
+        /// <summary>Header, 0xTTOOOOOOOOOOOOOO; T=type, O=offset</summary>
+        public ulong vt_hdr;
+        /// <summary>Extent block</summary>
+        public uint vt_block;
+        /// <summary>Size in blocks</summary>
+        public uint vt_size;
+    }
+
+#endregion
+
+#region Nested type: TypedExtentDev4
+
+    /// <summary>Typed extent descriptor for dev4</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct TypedExtentDev4
+    {
+        /// <summary>Header, 0xTTOOOOOOOOOOOOOO; T=type, O=offset</summary>
+        public ulong vd4_hdr;
+        /// <summary>Extent block</summary>
+        public ulong vd4_block;
+        /// <summary>Size in blocks</summary>
+        public ulong vd4_size;
+        /// <summary>Device ID</summary>
+        public uint vd4_dev;
+        /// <summary>Padding</summary>
+        public byte __pad1;
+    }
+
+#endregion
+
+#region Nested type: DiskInode
+
+    /// <summary>On-disk inode structure</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct DiskInode
+    {
+        /// <summary>File mode and type</summary>
+        public uint vdi_mode;
+        /// <summary>Link count</summary>
+        public uint vdi_nlink;
+        /// <summary>User ID</summary>
+        public uint vdi_uid;
+        /// <summary>Group ID</summary>
+        public uint vdi_gid;
+        /// <summary>Inode size in bytes</summary>
+        public ulong vdi_size;
+        /// <summary>Last time accessed - sec</summary>
+        public uint vdi_atime;
+        /// <summary>Last time accessed - usec</summary>
+        public uint vdi_autime;
+        /// <summary>Last modify time - sec</summary>
+        public uint vdi_mtime;
+        /// <summary>Last modify time - usec</summary>
+        public uint vdi_mutime;
+        /// <summary>Create time - sec</summary>
+        public uint vdi_ctime;
+        /// <summary>Create time - usec</summary>
+        public uint vdi_cutime;
+        /// <summary>Allocation flags</summary>
+        public byte vdi_aflags;
+        /// <summary>Organisation type</summary>
+        public byte vdi_orgtype;
+        /// <summary>Extended operation flags</summary>
+        public ushort vdi_eopflags;
+        /// <summary>Extended operation data</summary>
+        public uint vdi_eopdata;
+        /// <summary>File type area (union: rdev, dotdot, regular, vxspec) - 8 bytes</summary>
+        public ulong vdi_ftarea;
+        /// <summary>How many blocks does inode occupy</summary>
+        public uint vdi_blocks;
+        /// <summary>Inode generation</summary>
+        public uint vdi_gen;
+        /// <summary>Version</summary>
+        public ulong vdi_version;
+        /// <summary>Organisation data (union: immed[96], ext4, typed[6]) - 96 bytes</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 96)]
+        public byte[] vdi_org;
+        /// <summary>Indirect attribute inode</summary>
+        public uint vdi_iattrino;
+    }
+
+#endregion
+
+#region Nested type: OltHeader
+
+    /// <summary>Object Location Table header</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct OltHeader
+    {
+        /// <summary>Magic number</summary>
+        public uint olt_magic;
+        /// <summary>Size of this entry</summary>
+        public uint olt_size;
+        /// <summary>Checksum of extent</summary>
+        public uint olt_checksum;
+        /// <summary>Unused</summary>
+        public uint __unused1;
+        /// <summary>Time of last modification (sec)</summary>
+        public uint olt_mtime;
+        /// <summary>Time of last modification (usec)</summary>
+        public uint olt_mutime;
+        /// <summary>Free space in OLT extent</summary>
+        public uint olt_totfree;
+        /// <summary>Address of this extent and replica</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public uint[] olt_extents;
+        /// <summary>Size of this extent</summary>
+        public uint olt_esize;
+        /// <summary>Address of next extent and replica</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public uint[] olt_next;
+        /// <summary>Size of next extent</summary>
+        public uint olt_nsize;
+        /// <summary>Align to 8 byte boundary</summary>
+        public uint __unused2;
+    }
+
+#endregion
+
+#region Nested type: OltCommon
+
+    /// <summary>Common OLT entry</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct OltCommon
+    {
+        /// <summary>Type of this record</summary>
+        public uint olt_type;
+        /// <summary>Size of this record</summary>
+        public uint olt_size;
+    }
+
+#endregion
+
+#region Nested type: OltFree
+
+    /// <summary>Free OLT entry</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct OltFree
+    {
+        /// <summary>Type of this record</summary>
+        public uint olt_type;
+        /// <summary>Size of this free record</summary>
+        public uint olt_fsize;
+    }
+
+#endregion
+
+#region Nested type: OltIlist
+
+    /// <summary>Initial inode list OLT entry</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct OltIlist
+    {
+        /// <summary>Type of this record</summary>
+        public uint olt_type;
+        /// <summary>Size of this record</summary>
+        public uint olt_size;
+        /// <summary>Initial inode list and replica</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public uint[] olt_iext;
+    }
+
+#endregion
+
+#region Nested type: OltCut
+
+    /// <summary>Current Usage Table OLT entry</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct OltCut
+    {
+        /// <summary>Type of this record</summary>
+        public uint olt_type;
+        /// <summary>Size of this record</summary>
+        public uint olt_size;
+        /// <summary>Inode of current usage table</summary>
+        public uint olt_cutino;
+        /// <summary>Unused, 8 byte align</summary>
+        public byte __pad;
+    }
+
+#endregion
+
+#region Nested type: OltSuperBlock
+
+    /// <summary>Inodes containing Superblock, Intent log and OLTs</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct OltSuperBlock
+    {
+        /// <summary>Type of this record</summary>
+        public uint olt_type;
+        /// <summary>Size of this record</summary>
+        public uint olt_size;
+        /// <summary>Inode of superblock file</summary>
+        public uint olt_sbino;
+        /// <summary>Unused</summary>
+        public uint __unused1;
+        /// <summary>Inode of log file and replica</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public uint[] olt_logino;
+        /// <summary>Inode of OLT and replica</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public uint[] olt_oltino;
+    }
+
+#endregion
+
+#region Nested type: OltDev
+
+    /// <summary>Device configuration OLT entry</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct OltDev
+    {
+        /// <summary>Type of this record</summary>
+        public uint olt_type;
+        /// <summary>Size of this record</summary>
+        public uint olt_size;
+        /// <summary>Inode of device config files</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public uint[] olt_devino;
+    }
+
+#endregion
+
+#region Nested type: OltFsHead
+
+    /// <summary>Fileset header OLT entry</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct OltFsHead
+    {
+        /// <summary>Type number</summary>
+        public uint olt_type;
+        /// <summary>Size of this record</summary>
+        public uint olt_size;
+        /// <summary>Inodes of fileset header</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public uint[] olt_fsino;
+    }
+
+#endregion
+
+#region Nested type: DirectoryBlock
+
+    /// <summary>VxFS directory block header</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct DirectoryBlock
+    {
+        /// <summary>Free space in directory block</summary>
+        public ushort d_free;
+        /// <summary>Number of hash chains</summary>
+        public ushort d_nhash;
+    }
+
+#endregion
+
+#region Nested type: DirectoryEntry
+
+    /// <summary>VxFS directory entry</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct DirectoryEntry
+    {
+        /// <summary>Inode number</summary>
+        public uint d_ino;
+        /// <summary>Record length</summary>
+        public ushort d_reclen;
+        /// <summary>Name length</summary>
+        public ushort d_namelen;
+        /// <summary>Next hash entry</summary>
+        public ushort d_hashnext;
+        /// <summary>Name</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+        public byte[] d_name;
+    }
+
+#endregion
+
+#region Nested type: FilesetHeader
+
+    /// <summary>VxFS fileset header</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct FilesetHeader
+    {
+        /// <summary>Fileset header version</summary>
+        public uint fsh_version;
+        /// <summary>Fileset index</summary>
+        public uint fsh_fsindex;
+        /// <summary>Modification time - sec</summary>
+        public uint fsh_time;
+        /// <summary>Modification time - usec</summary>
+        public uint fsh_utime;
+        /// <summary>Extop flags</summary>
+        public uint fsh_extop;
+        /// <summary>Allocated inodes</summary>
+        public uint fsh_ninodes;
+        /// <summary>Number of IAUs</summary>
+        public uint fsh_nau;
+        /// <summary>Old size of ilist</summary>
+        public uint fsh_old_ilesize;
+        /// <summary>Flags</summary>
+        public uint fsh_dflags;
+        /// <summary>Quota limit</summary>
+        public uint fsh_quota;
+        /// <summary>Maximum inode number</summary>
+        public uint fsh_maxinode;
+        /// <summary>IAU inode</summary>
+        public uint fsh_iauino;
+        /// <summary>Ilist inodes</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public uint[] fsh_ilistino;
+        /// <summary>Link count table inode</summary>
+        public uint fsh_lctino;
+    }
+
+#endregion
 }
