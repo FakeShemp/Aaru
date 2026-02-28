@@ -41,4 +41,17 @@ public sealed partial class LIF
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    sealed class LifFileNode : IFileNode
+    {
+        /// <summary>Starting sector of the file data on the medium.</summary>
+        internal uint StartSector;
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+        /// <inheritdoc />
+        public long Length { get; init; }
+        /// <inheritdoc />
+        public long Offset { get; set; }
+    }
 }
