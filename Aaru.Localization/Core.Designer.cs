@@ -6946,5 +6946,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Reading_data_sectors", resourceCulture);
             }
         }
+
+        public static string Output_format_not_initialized {
+            get {
+                return ResourceManager.GetString("Output_format_not_initialized", resourceCulture);
+            }
+        }
     }
 }

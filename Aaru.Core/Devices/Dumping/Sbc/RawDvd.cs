@@ -77,6 +77,12 @@ partial class Dump
         uint   blocksToRead = maxBlocksToRead;
         var    outputFormat = _outputPlugin as IWritableImage;
 
+        if(outputFormat is null)
+        {
+            ErrorMessage?.Invoke(Localization.Core.Output_format_not_initialized);
+            return;
+        }
+
         InitProgress?.Invoke();
 
         if(scsiReader.HldtstReadRaw && _resume.NextBlock > 0)
@@ -160,7 +166,7 @@ partial class Dump
                 double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
                 if(elapsed > 0)
                 {
-                    currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed);
+                    currentSpeed     = (double)sectorSpeedStart * blockSize / (1048576d * elapsed);
                     sectorSpeedStart = 0;
                     _speedStopwatch.Restart();
                 }
@@ -361,7 +367,7 @@ partial class Dump
                 double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
                 if(elapsed > 0)
                 {
-                    currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed);
+                    currentSpeed     = (double)sectorSpeedStart * blockSize / (1048576d * elapsed);
                     sectorSpeedStart = 0;
                     _speedStopwatch.Restart();
                 }

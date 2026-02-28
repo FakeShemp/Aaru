@@ -3544,4 +3544,7 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="Reading_data_sectors" xml:space="preserve">
       <value>[slateblue1]Reading data sectors...[/]</value>
     </data>
+    <data name="Output_format_not_initialized" xml:space="preserve">
+      <value>[red]Output format not initialized.[/]</value>
+    </data>
 </root>

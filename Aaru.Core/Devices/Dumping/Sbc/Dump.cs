@@ -403,9 +403,9 @@ partial class Dump
                 if(scsiReader.OmniDriveReadRaw &&
                    decodedPfi.HasValue &&
                    ((dskType >= MediaType.DVDROM && dskType <= MediaType.DVDDownload)
-                   || dskType != MediaType.PS2DVD
-                   || dskType != MediaType.PS3DVD
-                   || dskType != MediaType.Nuon))
+                   || dskType == MediaType.PS2DVD
+                   || dskType == MediaType.PS3DVD
+                   || dskType == MediaType.Nuon))
                     nominalNegativeSectors = Math.Min(nominalNegativeSectors, DvdLeadinSectors);
 
                 mediaTags.TryGetValue(MediaTagType.BD_DI, out byte[] di);
