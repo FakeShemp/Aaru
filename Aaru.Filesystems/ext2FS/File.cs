@@ -212,9 +212,10 @@ public sealed partial class ext2FS
     {
         if(node is not Ext2FileNode fileNode) return ErrorNumber.InvalidArgument;
 
-        fileNode.CachedBlock      = null;
-        fileNode.CachedBlockIndex = -1;
-        fileNode.DecompressedClusterCache.Clear();
+        fileNode.CachedBlock        = null;
+        fileNode.CachedBlockIndex   = -1;
+        fileNode.CachedClusterData  = null;
+        fileNode.CachedClusterIndex = -1;
 
         return ErrorNumber.NoError;
     }
