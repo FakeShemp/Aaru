@@ -32,8 +32,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 
 namespace Aaru.Filesystems;
 
@@ -41,6 +44,18 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the filesystem described in ECMA-67</summary>
 public sealed partial class ECMA67 : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "ECMA-67 plugin";
+
+    bool                          _doubleSided;
+    Encoding                      _encoding;
+    ErrorMapLabel                 _errorMap;
+    Dictionary<string, FileLabel> _fileLabels;
+    IMediaImage                   _imagePlugin;
+    bool                          _mounted;
+    Partition                     _partition;
+    FileSystemInfo                _statfs;
+    VolumeLabel                   _volumeLabel;
+
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
     /// <inheritdoc />
