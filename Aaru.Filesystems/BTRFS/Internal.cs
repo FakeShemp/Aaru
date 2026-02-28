@@ -80,6 +80,12 @@ public sealed partial class BTRFS
         /// <summary>The objectid (inode number) of this file</summary>
         internal ulong ObjectId { get; init; }
 
+        /// <summary>File offset of the currently cached decompressed extent</summary>
+        internal ulong CachedExtentOffset { get; set; }
+
+        /// <summary>Decompressed data of the currently cached extent, or null if none is cached</summary>
+        internal byte[] CachedExtentData { get; set; }
+
         /// <inheritdoc />
         public string Path { get; init; }
 
@@ -126,6 +132,9 @@ public sealed partial class BTRFS
 
         /// <summary>Offset into the on-disk extent (for REG/PREALLOC extents)</summary>
         public ulong ExtentOffset;
+
+        /// <summary>Uncompressed size of the full extent</summary>
+        public ulong RamBytes;
 
         /// <summary>Inline data bytes (for INLINE extents only)</summary>
         public byte[] InlineData;

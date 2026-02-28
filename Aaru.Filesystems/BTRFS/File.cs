@@ -32,11 +32,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Compression;
 using Aaru.Helpers;
 using Aaru.Logging;
+using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
@@ -259,36 +263,45 @@ public sealed partial class BTRFS
                     break;
 
                 case BTRFS_FILE_EXTENT_INLINE:
-                    // Inline data is stored directly in the leaf item
+                {
+                    byte[] inlineSource;
+
                     if(ext.Compression != BTRFS_COMPRESS_NONE)
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                          "Compressed inline extents not supported (compression={0})",
-                                          ext.Compression);
+                        if(fileNode.CachedExtentData != null && fileNode.CachedExtentOffset == ext.FileOffset)
+                            inlineSource = fileNode.CachedExtentData;
+                        else
+                        {
+                            inlineSource = DecompressExtent(ext.InlineData, (uint)ext.RamBytes, ext.Compression);
 
-                        return ErrorNumber.NotSupported;
+                            if(inlineSource is null)
+                            {
+                                AaruLogging.Debug(MODULE_NAME,
+                                                  "Unsupported compression type {0} for inline extent",
+                                                  ext.Compression);
+
+                                return ErrorNumber.NotSupported;
+                            }
+
+                            fileNode.CachedExtentOffset = ext.FileOffset;
+                            fileNode.CachedExtentData   = inlineSource;
+                        }
                     }
+                    else
+                        inlineSource = ext.InlineData;
 
-                    long inlineCopy = Math.Min(bytesToCopy, ext.InlineData.Length - offsetInExtent);
+                    long inlineCopy = Math.Min(bytesToCopy, inlineSource.Length - offsetInExtent);
 
                     if(inlineCopy > 0)
-                        Array.Copy(ext.InlineData, (int)offsetInExtent, buffer, (int)bytesRead, (int)inlineCopy);
+                        Array.Copy(inlineSource, (int)offsetInExtent, buffer, (int)bytesRead, (int)inlineCopy);
 
                     bytesRead     += inlineCopy;
                     currentOffset += inlineCopy;
 
                     break;
+                }
 
                 case BTRFS_FILE_EXTENT_REG:
-                    if(ext.Compression != BTRFS_COMPRESS_NONE)
-                    {
-                        AaruLogging.Debug(MODULE_NAME,
-                                          "Compressed extents not supported (compression={0})",
-                                          ext.Compression);
-
-                        return ErrorNumber.NotSupported;
-                    }
-
                     if(ext.DiskBytenr == 0)
                     {
                         // Sparse extent — reads as zeros
@@ -299,25 +312,67 @@ public sealed partial class BTRFS
                         break;
                     }
 
-                    // Read from disk in reasonable chunks to avoid caching whole file
-                    while(bytesToCopy > 0)
+                    if(ext.Compression != BTRFS_COMPRESS_NONE)
                     {
-                        // Read up to one nodesize at a time
-                        var chunkSize = (uint)Math.Min(bytesToCopy, _superblock.nodesize);
+                        byte[] decompressed;
 
-                        // Logical address = disk_bytenr + extent offset + position within extent
-                        ulong logicalRead = ext.DiskBytenr + ext.ExtentOffset + (ulong)offsetInExtent;
+                        if(fileNode.CachedExtentData != null && fileNode.CachedExtentOffset == ext.FileOffset)
+                            decompressed = fileNode.CachedExtentData;
+                        else
+                        {
+                            // Read all compressed data from disk
+                            ErrorNumber compReadErrno =
+                                ReadLogicalBytes(ext.DiskBytenr, (uint)ext.DiskBytes, out byte[] compressedData);
 
-                        ErrorNumber readErrno = ReadLogicalBytes(logicalRead, chunkSize, out byte[] chunkData);
+                            if(compReadErrno != ErrorNumber.NoError) return compReadErrno;
 
-                        if(readErrno != ErrorNumber.NoError) return readErrno;
+                            decompressed = DecompressExtent(compressedData, (uint)ext.RamBytes, ext.Compression);
 
-                        Array.Copy(chunkData, 0, buffer, (int)bytesRead, (int)chunkSize);
+                            if(decompressed is null)
+                            {
+                                AaruLogging.Debug(MODULE_NAME,
+                                                  "Unsupported compression type {0} for regular extent",
+                                                  ext.Compression);
 
-                        bytesRead      += chunkSize;
-                        currentOffset  += chunkSize;
-                        offsetInExtent += chunkSize;
-                        bytesToCopy    -= chunkSize;
+                                return ErrorNumber.NotSupported;
+                            }
+
+                            fileNode.CachedExtentOffset = ext.FileOffset;
+                            fileNode.CachedExtentData   = decompressed;
+                        }
+
+                        // ExtentOffset is offset into decompressed data for this file extent
+                        long decompOffset = (long)ext.ExtentOffset + offsetInExtent;
+                        long decompCopy   = Math.Min(bytesToCopy, decompressed.Length - decompOffset);
+
+                        if(decompCopy > 0)
+                            Array.Copy(decompressed, (int)decompOffset, buffer, (int)bytesRead, (int)decompCopy);
+
+                        bytesRead     += decompCopy;
+                        currentOffset += decompCopy;
+                    }
+                    else
+                    {
+                        // Read from disk in reasonable chunks to avoid caching whole file
+                        while(bytesToCopy > 0)
+                        {
+                            // Read up to one nodesize at a time
+                            var chunkSize = (uint)Math.Min(bytesToCopy, _superblock.nodesize);
+
+                            // Logical address = disk_bytenr + extent offset + position within extent
+                            ulong logicalRead = ext.DiskBytenr + ext.ExtentOffset + (ulong)offsetInExtent;
+
+                            ErrorNumber readErrno = ReadLogicalBytes(logicalRead, chunkSize, out byte[] chunkData);
+
+                            if(readErrno != ErrorNumber.NoError) return readErrno;
+
+                            Array.Copy(chunkData, 0, buffer, (int)bytesRead, (int)chunkSize);
+
+                            bytesRead      += chunkSize;
+                            currentOffset  += chunkSize;
+                            offsetInExtent += chunkSize;
+                            bytesToCopy    -= chunkSize;
+                        }
                     }
 
                     break;
@@ -606,6 +661,8 @@ public sealed partial class BTRFS
                 Compression = extentItem.compression
             };
 
+            entry.RamBytes = extentItem.ram_bytes;
+
             if(extentItem.type == BTRFS_FILE_EXTENT_INLINE)
             {
                 // Inline data: starts after the 21-byte header (generation + ram_bytes + compression + encryption +
@@ -617,7 +674,7 @@ public sealed partial class BTRFS
                 {
                     entry.InlineData = new byte[inlineDataLen];
                     Array.Copy(leafData, inlineDataOffset, entry.InlineData, 0, inlineDataLen);
-                    entry.Length = (ulong)inlineDataLen;
+                    entry.Length = extentItem.ram_bytes;
                 }
                 else
                 {
@@ -638,5 +695,93 @@ public sealed partial class BTRFS
         }
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Decompresses extent data using the specified compression algorithm</summary>
+    /// <param name="compressedData">The compressed data bytes</param>
+    /// <param name="uncompressedSize">The expected uncompressed size</param>
+    /// <param name="compression">The compression type (ZLIB, LZO, ZSTD)</param>
+    /// <returns>The decompressed data, or null if the compression type is unsupported</returns>
+    static byte[] DecompressExtent(byte[] compressedData, uint uncompressedSize, byte compression)
+    {
+        switch(compression)
+        {
+            case BTRFS_COMPRESS_ZLIB:
+            {
+                var       output = new byte[uncompressedSize];
+                using var ms     = new MemoryStream(compressedData);
+                using var zlib   = new ZLibStream(ms, CompressionMode.Decompress);
+                var       offset = 0;
+
+                while(offset < (int)uncompressedSize)
+                {
+                    int read = zlib.Read(output, offset, (int)uncompressedSize - offset);
+
+                    if(read == 0) break;
+
+                    offset += read;
+                }
+
+                return output;
+            }
+
+            case BTRFS_COMPRESS_LZO:
+                return DecompressBtrfsLzo(compressedData, uncompressedSize);
+
+            case BTRFS_COMPRESS_ZSTD:
+            {
+                var output = new byte[uncompressedSize];
+                ZSTD.DecodeBuffer(compressedData, output);
+
+                return output;
+            }
+
+            default:
+                return null;
+        }
+    }
+
+    /// <summary>Decompresses BTRFS LZO page-wrapped data</summary>
+    /// <param name="compressedData">The compressed data in BTRFS LZO container format</param>
+    /// <param name="uncompressedSize">The expected total uncompressed size</param>
+    /// <returns>The decompressed data</returns>
+    static byte[] DecompressBtrfsLzo(byte[] compressedData, uint uncompressedSize)
+    {
+        var decompressed = new byte[uncompressedSize];
+
+        // First 4 bytes are the total compressed payload length (LE), skip them
+        var pos       = 4;
+        var decompPos = 0;
+
+        while(pos < compressedData.Length && decompPos < (int)uncompressedSize)
+        {
+            if(pos + 4 > compressedData.Length) break;
+
+            var segLen = BitConverter.ToUInt32(compressedData, pos);
+            pos += 4;
+
+            if(segLen == 0 || pos + (int)segLen > compressedData.Length) break;
+
+            int pageSize = Math.Min(4096, (int)uncompressedSize - decompPos);
+            var page     = new byte[pageSize];
+            var segment  = new byte[segLen];
+
+            Array.Copy(compressedData, pos, segment, 0, (int)segLen);
+
+            int decoded = LZO.DecodeBuffer(segment, page, LZO.Algorithm.LZO1X);
+
+            if(decoded > 0)
+            {
+                Array.Copy(page, 0, decompressed, decompPos, decoded);
+                decompPos += decoded;
+            }
+
+            pos += (int)segLen;
+
+            // Align position to 4-byte boundary for next segment
+            pos = pos + 3 & ~3;
+        }
+
+        return decompressed;
     }
 }
