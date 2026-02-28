@@ -114,9 +114,11 @@ public sealed partial class BTRFS
 
         int keyPtrSize = Marshal.SizeOf<KeyPtr>();
 
-        for(uint i = 0; i < header.nritems; i++)
+        BinarySearchNodeRange(nodeData, header, objectId, out int startIdx, out int endIdx);
+
+        for(int i = startIdx; i < endIdx; i++)
         {
-            int keyPtrOffset = headerSize + (int)i * keyPtrSize;
+            int keyPtrOffset = headerSize + i * keyPtrSize;
 
             if(keyPtrOffset + keyPtrSize > nodeData.Length) break;
 
@@ -146,13 +148,17 @@ public sealed partial class BTRFS
         int headerSize  = Marshal.SizeOf<Header>();
         int dirItemSize = Marshal.SizeOf<DirItem>();
 
-        for(uint i = 0; i < header.nritems; i++)
+        uint startItem = BinarySearchLeaf(leafData, header, objectId);
+
+        for(uint i = startItem; i < header.nritems; i++)
         {
             int itemOffset = headerSize + (int)i * itemSize;
 
             if(itemOffset + itemSize > leafData.Length) break;
 
             Item item = Marshal.ByteArrayToStructureLittleEndian<Item>(leafData, itemOffset, itemSize);
+
+            if(item.key.objectid > objectId) break;
 
             if(item.key.objectid != objectId || item.key.type != BTRFS_XATTR_ITEM_KEY) continue;
 

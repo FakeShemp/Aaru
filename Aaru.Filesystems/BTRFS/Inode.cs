@@ -30,6 +30,7 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
@@ -71,29 +72,32 @@ public sealed partial class BTRFS
 
         if(header.level == 0) return ExtractInodeItemFromLeaf(nodeData, header, objectId, out inodeItem);
 
-        // Internal node — follow all key pointers
-        int keyPtrSize = Marshal.SizeOf<KeyPtr>();
+        // Internal node — binary search for the correct child
+        var keyBytes = new byte[17];
+        BitConverter.TryWriteBytes(keyBytes.AsSpan(0), objectId);
+        keyBytes[8] = BTRFS_INODE_ITEM_KEY;
 
-        for(uint i = 0; i < header.nritems; i++)
-        {
-            int keyPtrOffset = headerSize + (int)i * keyPtrSize;
+        // offset = 0 already from array init
+        DiskKey targetKey = Marshal.ByteArrayToStructureLittleEndian<DiskKey>(keyBytes);
 
-            if(keyPtrOffset + keyPtrSize > nodeData.Length) break;
+        int childIdx = BinarySearchNode(nodeData, header, targetKey);
 
-            KeyPtr keyPtr = Marshal.ByteArrayToStructureLittleEndian<KeyPtr>(nodeData, keyPtrOffset, keyPtrSize);
+        if(childIdx < 0) return ErrorNumber.NoSuchFile;
 
-            ErrorNumber errno = ReadTreeBlock(keyPtr.blockptr, out byte[] childData);
+        int keyPtrSize   = Marshal.SizeOf<KeyPtr>();
+        int keyPtrOffset = headerSize + childIdx * keyPtrSize;
 
-            if(errno != ErrorNumber.NoError) continue;
+        if(keyPtrOffset + keyPtrSize > nodeData.Length) return ErrorNumber.NoSuchFile;
 
-            Header childHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(childData);
+        KeyPtr keyPtr = Marshal.ByteArrayToStructureLittleEndian<KeyPtr>(nodeData, keyPtrOffset, keyPtrSize);
 
-            errno = WalkTreeForInodeItem(childData, childHeader, objectId, out inodeItem);
+        ErrorNumber errno = ReadTreeBlock(keyPtr.blockptr, out byte[] childData);
 
-            if(errno == ErrorNumber.NoError) return ErrorNumber.NoError;
-        }
+        if(errno != ErrorNumber.NoError) return errno;
 
-        return ErrorNumber.NoSuchFile;
+        Header childHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(childData);
+
+        return WalkTreeForInodeItem(childData, childHeader, objectId, out inodeItem);
     }
 
     /// <summary>Extracts an INODE_ITEM from a leaf node for the specified objectid</summary>
@@ -109,13 +113,17 @@ public sealed partial class BTRFS
         int headerSize    = Marshal.SizeOf<Header>();
         int inodeItemSize = Marshal.SizeOf<InodeItem>();
 
-        for(uint i = 0; i < header.nritems; i++)
+        uint startItem = BinarySearchLeaf(leafData, header, objectId);
+
+        for(uint i = startItem; i < header.nritems; i++)
         {
             int itemOffset = headerSize + (int)i * itemSize;
 
             if(itemOffset + itemSize > leafData.Length) break;
 
             Item item = Marshal.ByteArrayToStructureLittleEndian<Item>(leafData, itemOffset, itemSize);
+
+            if(item.key.objectid > objectId) break;
 
             if(item.key.objectid != objectId || item.key.type != BTRFS_INODE_ITEM_KEY) continue;
 

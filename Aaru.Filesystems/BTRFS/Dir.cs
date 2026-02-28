@@ -77,7 +77,7 @@ public sealed partial class BTRFS
 
         if(pathComponents.Length == 0) return ErrorNumber.InvalidArgument;
 
-        Dictionary<string, DirEntry> currentEntries = _rootDirectoryCache;
+        Dictionary<string, DirEntry> currentEntries  = _rootDirectoryCache;
         ulong                        currentTreeRoot = _fsTreeRoot;
 
         for(var p = 0; p < pathComponents.Length; p++)
@@ -185,9 +185,8 @@ public sealed partial class BTRFS
         List<string> subvolKeys = [];
 
         foreach(KeyValuePair<string, DirEntry> kvp in _rootDirectoryCache)
-        {
-            if(kvp.Value.LocationType == BTRFS_ROOT_ITEM_KEY) subvolKeys.Add(kvp.Key);
-        }
+            if(kvp.Value.LocationType == BTRFS_ROOT_ITEM_KEY)
+                subvolKeys.Add(kvp.Key);
 
         foreach(string key in subvolKeys)
         {
@@ -221,12 +220,14 @@ public sealed partial class BTRFS
 
         if(header.level == 0) return ExtractDirEntriesFromLeaf(nodeData, header, dirObjectId, entries);
 
-        // Internal node - follow all key pointers
+        // Internal node - use binary search to find children whose subtrees may contain our objectid
         int keyPtrSize = Marshal.SizeOf<KeyPtr>();
 
-        for(uint i = 0; i < header.nritems; i++)
+        BinarySearchNodeRange(nodeData, header, dirObjectId, out int startIdx, out int endIdx);
+
+        for(int i = startIdx; i < endIdx; i++)
         {
-            int keyPtrOffset = headerSize + (int)i * keyPtrSize;
+            int keyPtrOffset = headerSize + i * keyPtrSize;
 
             if(keyPtrOffset + keyPtrSize > nodeData.Length) break;
 
@@ -267,13 +268,17 @@ public sealed partial class BTRFS
         int headerSize  = Marshal.SizeOf<Header>();
         int dirItemSize = Marshal.SizeOf<DirItem>();
 
-        for(uint i = 0; i < header.nritems; i++)
+        uint startItem = BinarySearchLeaf(leafData, header, dirObjectId);
+
+        for(uint i = startItem; i < header.nritems; i++)
         {
             int itemOffset = headerSize + (int)i * itemSize;
 
             if(itemOffset + itemSize > leafData.Length) break;
 
             Item item = Marshal.ByteArrayToStructureLittleEndian<Item>(leafData, itemOffset, itemSize);
+
+            if(item.key.objectid > dirObjectId) break;
 
             // We want DIR_INDEX items for our directory objectid
             if(item.key.objectid != dirObjectId || item.key.type != BTRFS_DIR_INDEX_KEY) continue;
@@ -335,9 +340,8 @@ public sealed partial class BTRFS
         List<string> subvolKeys = [];
 
         foreach(KeyValuePair<string, DirEntry> kvp in entries)
-        {
-            if(kvp.Value.LocationType == BTRFS_ROOT_ITEM_KEY) subvolKeys.Add(kvp.Key);
-        }
+            if(kvp.Value.LocationType == BTRFS_ROOT_ITEM_KEY)
+                subvolKeys.Add(kvp.Key);
 
         foreach(string key in subvolKeys)
         {

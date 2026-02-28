@@ -294,29 +294,33 @@ public sealed partial class BTRFS
 
         if(header.level == 0) return ExtractDefaultSubvolFromLeaf(nodeData, header, out subvolId);
 
-        // Internal node — follow all key pointers
+        // Internal node — use binary search to find the child that may contain objectid 6
         int keyPtrSize = Marshal.SizeOf<KeyPtr>();
 
-        for(uint i = 0; i < header.nritems; i++)
-        {
-            int keyPtrOffset = headerSize + (int)i * keyPtrSize;
+        var keyBytes = new byte[17];
+        BitConverter.TryWriteBytes(keyBytes.AsSpan(0), BTRFS_ROOT_TREE_DIR_OBJECTID);
+        keyBytes[8] = BTRFS_DIR_ITEM_KEY;
 
-            if(keyPtrOffset + keyPtrSize > nodeData.Length) break;
+        // offset = 0 already from array init
+        DiskKey targetKey = Marshal.ByteArrayToStructureLittleEndian<DiskKey>(keyBytes);
 
-            KeyPtr keyPtr = Marshal.ByteArrayToStructureLittleEndian<KeyPtr>(nodeData, keyPtrOffset, keyPtrSize);
+        int childIdx = BinarySearchNode(nodeData, header, targetKey);
 
-            ErrorNumber errno = ReadTreeBlock(keyPtr.blockptr, out byte[] childData);
+        if(childIdx < 0) return ErrorNumber.NoSuchFile;
 
-            if(errno != ErrorNumber.NoError) continue;
+        int keyPtrOffset = headerSize + childIdx * keyPtrSize;
 
-            Header childHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(childData);
+        if(keyPtrOffset + keyPtrSize > nodeData.Length) return ErrorNumber.NoSuchFile;
 
-            errno = FindDefaultSubvolume(childData, childHeader, out subvolId);
+        KeyPtr keyPtr = Marshal.ByteArrayToStructureLittleEndian<KeyPtr>(nodeData, keyPtrOffset, keyPtrSize);
 
-            if(errno == ErrorNumber.NoError) return ErrorNumber.NoError;
-        }
+        ErrorNumber errno = ReadTreeBlock(keyPtr.blockptr, out byte[] childData);
 
-        return ErrorNumber.NoSuchFile;
+        if(errno != ErrorNumber.NoError) return errno;
+
+        Header childHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(childData);
+
+        return FindDefaultSubvolume(childData, childHeader, out subvolId);
     }
 
     /// <summary>
@@ -334,13 +338,17 @@ public sealed partial class BTRFS
         int headerSize  = Marshal.SizeOf<Header>();
         int dirItemSize = Marshal.SizeOf<DirItem>();
 
-        for(uint i = 0; i < header.nritems; i++)
+        uint startItem = BinarySearchLeaf(leafData, header, BTRFS_ROOT_TREE_DIR_OBJECTID);
+
+        for(uint i = startItem; i < header.nritems; i++)
         {
             int itemOffset = headerSize + (int)i * itemSize;
 
             if(itemOffset + itemSize > leafData.Length) break;
 
             Item item = Marshal.ByteArrayToStructureLittleEndian<Item>(leafData, itemOffset, itemSize);
+
+            if(item.key.objectid > BTRFS_ROOT_TREE_DIR_OBJECTID) break;
 
             if(item.key.objectid != BTRFS_ROOT_TREE_DIR_OBJECTID || item.key.type != BTRFS_DIR_ITEM_KEY) continue;
 
@@ -431,7 +439,9 @@ public sealed partial class BTRFS
             // Leaf node - search for the root item
             int itemSize = Marshal.SizeOf<Item>();
 
-            for(uint i = 0; i < header.nritems; i++)
+            uint startItem = BinarySearchLeaf(nodeData, header, targetObjectId);
+
+            for(uint i = startItem; i < header.nritems; i++)
             {
                 int itemOffset = headerSize + (int)i * itemSize;
 
@@ -440,6 +450,8 @@ public sealed partial class BTRFS
                 var  objectid = BitConverter.ToUInt64(nodeData, itemOffset);
                 byte keyType  = nodeData[itemOffset                        + 8];
                 var  dataOff  = BitConverter.ToUInt32(nodeData, itemOffset + 17);
+
+                if(objectid > targetObjectId) break;
 
                 if(objectid != targetObjectId || keyType != BTRFS_ROOT_ITEM_KEY) continue;
 
@@ -471,36 +483,32 @@ public sealed partial class BTRFS
             return ErrorNumber.NoSuchFile;
         }
 
-        // Internal node - traverse key pointers
+        // Internal node - use binary search to find the child containing our target
         int keyPtrSize = Marshal.SizeOf<KeyPtr>();
 
-        for(uint i = 0; i < header.nritems; i++)
-        {
-            int keyPtrOffset = headerSize + (int)i * keyPtrSize;
+        var keyBytes = new byte[17];
+        BitConverter.TryWriteBytes(keyBytes.AsSpan(0), targetObjectId);
+        keyBytes[8] = BTRFS_ROOT_ITEM_KEY;
 
-            if(keyPtrOffset + keyPtrSize > nodeData.Length) break;
+        // offset = 0 already from array init
+        DiskKey searchKey = Marshal.ByteArrayToStructureLittleEndian<DiskKey>(keyBytes);
 
-            KeyPtr keyPtr = Marshal.ByteArrayToStructureLittleEndian<KeyPtr>(nodeData, keyPtrOffset, keyPtrSize);
+        int idx = BinarySearchNode(nodeData, header, searchKey);
 
-            if(i + 1 < header.nritems)
-            {
-                int    nextOffset = headerSize + (int)(i + 1) * keyPtrSize;
-                KeyPtr nextKeyPtr = Marshal.ByteArrayToStructureLittleEndian<KeyPtr>(nodeData, nextOffset, keyPtrSize);
+        if(idx < 0) return ErrorNumber.NoSuchFile;
 
-                if(nextKeyPtr.key.objectid <= targetObjectId) continue;
-            }
+        int keyPtrOffset = headerSize + idx * keyPtrSize;
 
-            ErrorNumber errno = ReadTreeBlock(keyPtr.blockptr, out byte[] childData);
+        if(keyPtrOffset + keyPtrSize > nodeData.Length) return ErrorNumber.NoSuchFile;
 
-            if(errno != ErrorNumber.NoError) continue;
+        KeyPtr keyPtr = Marshal.ByteArrayToStructureLittleEndian<KeyPtr>(nodeData, keyPtrOffset, keyPtrSize);
 
-            Header childHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(childData);
+        ErrorNumber errno = ReadTreeBlock(keyPtr.blockptr, out byte[] childData);
 
-            errno = ResolveSubvolumeRoot(childData, childHeader, targetObjectId, out bytenr, out level);
+        if(errno != ErrorNumber.NoError) return errno;
 
-            if(errno == ErrorNumber.NoError) return ErrorNumber.NoError;
-        }
+        Header childHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(childData);
 
-        return ErrorNumber.NoSuchFile;
+        return ResolveSubvolumeRoot(childData, childHeader, targetObjectId, out bytenr, out level);
     }
 }

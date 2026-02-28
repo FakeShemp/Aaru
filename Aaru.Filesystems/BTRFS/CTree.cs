@@ -464,4 +464,159 @@ public sealed partial class BTRFS
 
         return ulong.MaxValue;
     }
+
+    /// <summary>Compares two DiskKey values using btrfs key ordering (objectid, type, offset)</summary>
+    /// <param name="a">First key</param>
+    /// <param name="b">Second key</param>
+    /// <returns>Negative if a &lt; b, zero if equal, positive if a &gt; b</returns>
+    static int CompareKeys(in DiskKey a, in DiskKey b)
+    {
+        if(a.objectid != b.objectid) return a.objectid < b.objectid ? -1 : 1;
+        if(a.type     != b.type) return a.type         < b.type ? -1 : 1;
+        if(a.offset   != b.offset) return a.offset     < b.offset ? -1 : 1;
+
+        return 0;
+    }
+
+    /// <summary>
+    ///     Binary searches an internal node's key pointers to find the index of the child subtree
+    ///     that could contain the target key. Returns the index of the rightmost KeyPtr whose key ≤ targetKey.
+    /// </summary>
+    /// <param name="nodeData">Raw internal node data</param>
+    /// <param name="header">Parsed node header</param>
+    /// <param name="targetKey">The key to search for</param>
+    /// <returns>The index of the child to descend into, or -1 if the node is empty</returns>
+    static int BinarySearchNode(byte[] nodeData, in Header header, in DiskKey targetKey)
+    {
+        if(header.nritems == 0) return -1;
+
+        int headerSize = Marshal.SizeOf<Header>();
+        int keyPtrSize = Marshal.SizeOf<KeyPtr>();
+
+        var lo = 0;
+        int hi = (int)header.nritems - 1;
+
+        while(lo <= hi)
+        {
+            int mid       = lo         + (hi - lo) / 2;
+            int midOffset = headerSize + mid       * keyPtrSize;
+
+            if(midOffset + keyPtrSize > nodeData.Length) break;
+
+            KeyPtr midKeyPtr = Marshal.ByteArrayToStructureLittleEndian<KeyPtr>(nodeData, midOffset, keyPtrSize);
+
+            int cmp = CompareKeys(midKeyPtr.key, targetKey);
+
+            if(cmp <= 0)
+                lo = mid + 1;
+            else
+                hi = mid - 1;
+        }
+
+        // hi is now the index of the rightmost KeyPtr with key ≤ targetKey
+        return hi >= 0 ? hi : 0;
+    }
+
+    /// <summary>
+    ///     Binary searches an internal node to find the range of children whose subtrees could contain
+    ///     items with the specified objectid. Returns the start (inclusive) and end (exclusive) indices.
+    /// </summary>
+    /// <param name="nodeData">Raw internal node data</param>
+    /// <param name="header">Parsed node header</param>
+    /// <param name="targetObjectId">The objectid to search for</param>
+    /// <param name="startIndex">First child index that could contain matching items (inclusive)</param>
+    /// <param name="endIndex">Last child index that could contain matching items (exclusive)</param>
+    static void BinarySearchNodeRange(byte[]  nodeData, in Header header, ulong targetObjectId, out int startIndex,
+                                      out int endIndex)
+    {
+        startIndex = 0;
+        endIndex   = (int)header.nritems;
+
+        if(header.nritems == 0) return;
+
+        int headerSize = Marshal.SizeOf<Header>();
+        int keyPtrSize = Marshal.SizeOf<KeyPtr>();
+
+        // Find the first child whose key's objectid could include targetObjectId
+        // This is the rightmost child with key.objectid ≤ targetObjectId
+        var keyBytes = new byte[17];
+        BitConverter.TryWriteBytes(keyBytes.AsSpan(0), targetObjectId);
+
+        // type = 0 and offset = 0 already from array init
+        DiskKey targetLow = Marshal.ByteArrayToStructureLittleEndian<DiskKey>(keyBytes);
+
+        startIndex = BinarySearchNode(nodeData, header, targetLow);
+
+        // Find the end: first child whose key.objectid > targetObjectId
+        // We scan forward from startIndex since the range is typically small
+        endIndex = startIndex + 1;
+
+        while(endIndex < (int)header.nritems)
+        {
+            int endOffset = headerSize + endIndex * keyPtrSize;
+
+            if(endOffset + keyPtrSize > nodeData.Length) break;
+
+            KeyPtr endKeyPtr = Marshal.ByteArrayToStructureLittleEndian<KeyPtr>(nodeData, endOffset, keyPtrSize);
+
+            if(endKeyPtr.key.objectid > targetObjectId) break;
+
+            endIndex++;
+        }
+    }
+
+    /// <summary>
+    ///     Binary searches a leaf node's items to find the index of the first item with
+    ///     objectid ≥ targetObjectId. Returns nritems if no matching item exists.
+    /// </summary>
+    /// <param name="leafData">Raw leaf node data</param>
+    /// <param name="header">Parsed leaf header</param>
+    /// <param name="targetObjectId">The objectid to search for</param>
+    /// <returns>Index of the first item with objectid ≥ targetObjectId</returns>
+    static uint BinarySearchLeaf(byte[] leafData, in Header header, ulong targetObjectId)
+    {
+        if(header.nritems == 0) return 0;
+
+        int headerSize = Marshal.SizeOf<Header>();
+        int itemSize   = Marshal.SizeOf<Item>();
+
+        uint lo = 0;
+        uint hi = header.nritems - 1;
+
+        while(lo <= hi)
+        {
+            uint mid       = lo         + (hi - lo) / 2;
+            int  midOffset = headerSize + (int)mid  * itemSize;
+
+            if(midOffset + itemSize > leafData.Length) break;
+
+            var midObjectId = BitConverter.ToUInt64(leafData, midOffset);
+
+            if(midObjectId < targetObjectId)
+                lo = mid + 1;
+            else if(midObjectId > targetObjectId)
+            {
+                if(mid == 0) break;
+
+                hi = mid - 1;
+            }
+            else
+            {
+                // Found matching objectid — scan backward to find the first occurrence
+                while(mid > 0)
+                {
+                    int prevOffset = headerSize + (int)(mid - 1) * itemSize;
+                    var prevObjId  = BitConverter.ToUInt64(leafData, prevOffset);
+
+                    if(prevObjId != targetObjectId) break;
+
+                    mid--;
+                }
+
+                return mid;
+            }
+        }
+
+        return lo;
+    }
 }
