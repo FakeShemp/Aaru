@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
@@ -202,6 +203,23 @@ public sealed partial class ECMA67
         /// <summary>CP 14-128: Reserved for future standardization. Shall be SPACEs.</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 115)]
         public readonly byte[] reserved3;
+    }
+
+#endregion
+
+#region Nested type: Ecma67DirNode
+
+    sealed class Ecma67DirNode : IDirNode
+    {
+        internal string[] Contents;
+        internal int      Position;
+
+#region IDirNode Members
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+#endregion
     }
 
 #endregion
