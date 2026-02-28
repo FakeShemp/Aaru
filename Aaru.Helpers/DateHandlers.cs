@@ -86,6 +86,13 @@ public static class DateHandlers
     /// <returns>.NET DateTime</returns>
     public static DateTime UnixUnsignedToDateTime(ulong unixTimeStamp) => _unixEpoch.AddSeconds(unixTimeStamp);
 
+    /// <summary>Converts a UNIX timestamp to a .NET DateTime</summary>
+    /// <param name="seconds">Seconds since 1st Jan. 1970</param>
+    /// <param name="nanoseconds">Nanoseconds</param>
+    /// <returns>.NET DateTime</returns>
+    public static DateTime UnixUnsignedToDateTime(ulong seconds, uint nanoseconds) =>
+        _unixEpoch.AddSeconds(seconds).AddTicks((long)nanoseconds / 100);
+
     /// <summary>Converts a High Sierra Format timestamp to a .NET DateTime</summary>
     /// <param name="vdDateTime">High Sierra Format timestamp</param>
     /// <returns>.NET DateTime</returns>
