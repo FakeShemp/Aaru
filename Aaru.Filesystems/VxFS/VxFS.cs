@@ -28,8 +28,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -37,6 +39,43 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the Veritas filesystem</summary>
 public sealed partial class VxFS : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "VxFS plugin";
+
+    /// <summary>Cached inodes (inode number -> DiskInode)</summary>
+    readonly Dictionary<uint, DiskInode> _inodeCache = new();
+
+    /// <summary>Cached root directory entries (filename -> inode number)</summary>
+    readonly Dictionary<string, uint> _rootDirectoryCache = new();
+
+    /// <summary>Whether the filesystem is big-endian (HP-UX/parisc)</summary>
+    bool _bigEndian;
+
+    /// <summary>Encoding for filenames</summary>
+    Encoding _encoding;
+
+    /// <summary>Fileset header inode number from OLT</summary>
+    uint _fsHeadIno;
+
+    /// <summary>Initial inode list extent (block number)</summary>
+    uint _ilistExtent;
+
+    /// <summary>Primary inode list inode (file/directory inodes)</summary>
+    DiskInode _ilistInode;
+
+    /// <summary>Image being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Whether filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Partition being mounted</summary>
+    Partition _partition;
+
+    /// <summary>Structural inode list inode (system metadata)</summary>
+    DiskInode _stilistInode;
+
+    /// <summary>Cached superblock</summary>
+    SuperBlock _superblock;
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
     /// <inheritdoc />
