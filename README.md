@@ -213,6 +213,7 @@ Fully supported file-systems (identify and extraction)
 * ECMA-67: 130mm Flexible Disk Cartridge Labelling and File Structure for Information Interchange
 * Flash-Friendly File System (F2FS)
 * High Sierra Format
+* HP Logical Interchange Format
 * IBM Journaling File System (JFS)
 * ISO9660, including Apple, Amiga, Rock Ridge, Joliet and Romeo extensions
 * Linux extended file system
@@ -255,7 +256,6 @@ Supported file systems for identification and information only
 * Fossil file system (from Plan9)
 * HAMMER file system
 * High Performance Optical File System (HPOFS)
-* HP Logical Interchange Format
 * Linux extended file system 2
 * Linux extended file system 3
 * Linux extended file system 4
