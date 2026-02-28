@@ -205,6 +205,7 @@ public sealed partial class ext2FS
                                          EXT2_FEATURE_INCOMPAT_META_BG     |
                                          EXT4_FEATURE_INCOMPAT_EXTENTS     |
                                          EXT4_FEATURE_INCOMPAT_64BIT       |
+                                         EXT4_FEATURE_INCOMPAT_MMP         |
                                          EXT4_FEATURE_INCOMPAT_FLEX_BG     |
                                          EXT4_FEATURE_INCOMPAT_EA_INODE    |
                                          EXT4_FEATURE_INCOMPAT_DIRDATA     |
