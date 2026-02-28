@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -236,6 +237,85 @@ public sealed partial class ext2FS
         fileNode.Offset += bytesRead;
 
         AaruLogging.Debug(MODULE_NAME, "ReadFile: read {0} bytes, new offset={1}", read, fileNode.Offset);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(string.IsNullOrEmpty(path) || path == "/") return ErrorNumber.InvalidArgument;
+
+        // Resolve path to inode
+        ErrorNumber errno = ResolvePathToInode(path, out uint inodeNumber);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Read the inode
+        errno = ReadInode(inodeNumber, out Inode inode);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Verify it's a symlink
+        if((inode.mode & S_IFMT) != S_IFLNK) return ErrorNumber.InvalidArgument;
+
+        ulong linkSize = (ulong)inode.size_high << 32 | inode.size_lo;
+
+        if(linkSize == 0) return ErrorNumber.InvalidArgument;
+
+        // Fast symlink: target stored inline in inode.block[] (60 bytes)
+        // Detected by having no allocated blocks
+        ulong totalBlocks = (ulong)inode.blocks_high << 32 | inode.blocks_lo;
+
+        if(totalBlocks == 0 && linkSize < 60)
+        {
+            var linkData   = new byte[linkSize];
+            var blockBytes = new byte[60];
+
+            for(var i = 0; i < 15; i++)
+            {
+                byte[] b = BitConverter.GetBytes(inode.block[i]);
+                Array.Copy(b, 0, blockBytes, i * 4, 4);
+            }
+
+            Array.Copy(blockBytes, 0, linkData, 0, (int)linkSize);
+            dest = StringHandlers.CToString(linkData, _encoding ?? Encoding.UTF8);
+
+            AaruLogging.Debug(MODULE_NAME, "ReadLink: fast symlink inode={0}, target='{1}'", inodeNumber, dest);
+
+            return ErrorNumber.NoError;
+        }
+
+        // Slow symlink: target stored in data blocks
+        errno = GetInodeDataBlocks(inode, out List<(ulong physicalBlock, uint length)> blockList);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        var   targetData = new byte[linkSize];
+        ulong bytesRead  = 0;
+
+        foreach((ulong physicalBlock, uint length) in blockList)
+        {
+            if(bytesRead >= linkSize) break;
+
+            var toRead = (uint)Math.Min(length * _blockSize, linkSize - bytesRead);
+
+            errno = ReadBytes(physicalBlock * _blockSize, toRead, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            var toCopy = (uint)Math.Min((ulong)blockData.Length, linkSize - bytesRead);
+            Array.Copy(blockData, 0, targetData, (int)bytesRead, (int)toCopy);
+            bytesRead += toCopy;
+        }
+
+        dest = StringHandlers.CToString(targetData, _encoding ?? Encoding.UTF8);
+
+        AaruLogging.Debug(MODULE_NAME, "ReadLink: slow symlink inode={0}, target='{1}'", inodeNumber, dest);
 
         return ErrorNumber.NoError;
     }
