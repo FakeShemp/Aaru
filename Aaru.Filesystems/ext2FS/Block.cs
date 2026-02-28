@@ -54,9 +54,8 @@ public sealed partial class ext2FS
 
         // Direct blocks (0-11)
         for(uint i = 0; i < 12 && blockIndex < blocksUsed; i++, blockIndex++)
-        {
-            if(inode.block[i] != 0) blockList.Add((inode.block[i], 1, false));
-        }
+            if(inode.block[i] != 0)
+                blockList.Add((inode.block[i], 1, false));
 
         // Single indirect (block[12])
         if(blockIndex < blocksUsed && inode.block[12] != 0)
@@ -380,6 +379,11 @@ public sealed partial class ext2FS
                           head.clen,
                           head.holemap_nbytes);
 
+        // Read the holemap (bitmap indicating which blocks in the cluster are holes/zeroes)
+        var holemap = new byte[head.holemap_nbytes];
+
+        if(head.holemap_nbytes > 0) Array.Copy(rawCluster, headSize, holemap, 0, head.holemap_nbytes);
+
         // Calculate offset to the compressed data (after header + holemap)
         int compressedDataOffset = headSize + head.holemap_nbytes;
 
@@ -394,10 +398,10 @@ public sealed partial class ext2FS
         var compressedData = new byte[head.clen];
         Array.Copy(rawCluster, compressedDataOffset, compressedData, 0, (int)head.clen);
 
-        // Decompress
-        decompressedData = new byte[head.ulen];
+        // Decompress (ulen covers only non-hole blocks)
+        var rawDecompressed = new byte[head.ulen];
 
-        ErrorNumber decompResult = DecompressData(head.method, compressedData, decompressedData);
+        ErrorNumber decompResult = DecompressData(head.method, compressedData, rawDecompressed);
 
         if(decompResult != ErrorNumber.NoError)
         {
@@ -410,6 +414,33 @@ public sealed partial class ext2FS
         }
 
         AaruLogging.Debug(MODULE_NAME, "ReadAndDecompressCluster: decompressed {0} -> {1} bytes", head.clen, head.ulen);
+
+        // Reconstruct full cluster by applying the holemap:
+        // Each bit in the holemap corresponds to one block in the cluster.
+        // A set bit means that block is a hole (all zeroes, not in decompressed data).
+        // A clear bit means the block's data comes from the decompressed output.
+        decompressedData = new byte[clusterSizeInBytes];
+        var decompOffset = 0;
+
+        for(uint blk = 0; blk < clusterNBlocks; blk++)
+        {
+            bool isHole = blk / 8 < head.holemap_nbytes && (holemap[blk / 8] & 1 << (int)(blk % 8)) != 0;
+
+            if(isHole)
+            {
+                // Hole block — leave as zeroes (already initialized)
+                continue;
+            }
+
+            // Non-hole block — copy from decompressed data
+            var available = (int)Math.Min(_blockSize, rawDecompressed.Length - decompOffset);
+
+            if(available > 0)
+            {
+                Array.Copy(rawDecompressed, decompOffset, decompressedData, (int)(blk * _blockSize), available);
+                decompOffset += available;
+            }
+        }
 
         return ErrorNumber.NoError;
     }
