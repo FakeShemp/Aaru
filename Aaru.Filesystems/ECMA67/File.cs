@@ -36,8 +36,10 @@ using System.IO;
 using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
+using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
 namespace Aaru.Filesystems;
 
@@ -117,7 +119,99 @@ public sealed partial class ECMA67
         return Math.Min(fullBlocks, dataFromBlockCalc > 0 ? dataFromBlockCalc : fullBlocks);
     }
 
+    /// <summary>Parses a 6-byte ECMA-67 date field (YYMMDD) into a DateTime</summary>
+    /// <param name="date">6-byte ASCII date field</param>
+    /// <returns>Parsed DateTime in UTC, or <c>null</c> if the field is blank or invalid</returns>
+    static DateTime? ParseEcma67Date(byte[] date)
+    {
+        if(date is null || date.Length < 6) return null;
+
+        string str = Encoding.ASCII.GetString(date).Trim();
+
+        if(string.IsNullOrEmpty(str)) return null;
+
+        if(str.Length < 6) return null;
+
+        if(!int.TryParse(str[..2],  NumberStyles.Integer, CultureInfo.InvariantCulture, out int year)  ||
+           !int.TryParse(str[2..4], NumberStyles.Integer, CultureInfo.InvariantCulture, out int month) ||
+           !int.TryParse(str[4..6], NumberStyles.Integer, CultureInfo.InvariantCulture, out int day))
+            return null;
+
+        if(month is < 1 or > 12 || day is < 1 or > 31) return null;
+
+        // Two-digit year: 00-99. Assume 1900s for this 1981-era standard.
+        year += 1900;
+
+        try
+        {
+            return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
+        }
+        catch(ArgumentOutOfRangeException)
+        {
+            return null;
+        }
+    }
+
 #region IReadOnlyFilesystem Members
+
+    /// <inheritdoc />
+    public ErrorNumber Stat(string path, out FileEntryInfo stat)
+    {
+        stat = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        string[] pathElements = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
+
+        // Root directory
+        if(pathElements.Length == 0   ||
+           string.IsNullOrEmpty(path) ||
+           string.Equals(path, "/", StringComparison.OrdinalIgnoreCase))
+        {
+            stat = new FileEntryInfo
+            {
+                Attributes = FileAttributes.Directory,
+                BlockSize  = PHYSICAL_RECORD_LENGTH_DATA,
+                Links      = 1
+            };
+
+            return ErrorNumber.NoError;
+        }
+
+        if(pathElements.Length != 1) return ErrorNumber.NotSupported;
+
+        string fileName = pathElements[0];
+
+        if(!_fileLabels.TryGetValue(fileName, out FileLabel label)) return ErrorNumber.NoSuchFile;
+
+        if(!TryParseExtentAddress(label.beginOfExtent, out ulong startLba) ||
+           !TryParseExtentAddress(label.endOfExtent,   out ulong endLba))
+            return ErrorNumber.InvalidArgument;
+
+        int  blockLength = ParseAsciiNumber(label.blockLength, PHYSICAL_RECORD_LENGTH_DATA);
+        long fileLength  = ComputeFileLength(label, startLba, endLba, blockLength);
+        long blocks      = (fileLength + PHYSICAL_RECORD_LENGTH_DATA - 1) / PHYSICAL_RECORD_LENGTH_DATA;
+
+        FileAttributes attributes = FileAttributes.File;
+
+        if(label.writeProtect == WRITE_PROTECT_YES) attributes |= FileAttributes.ReadOnly;
+
+        stat = new FileEntryInfo
+        {
+            Attributes = attributes,
+            BlockSize  = PHYSICAL_RECORD_LENGTH_DATA,
+            Length     = fileLength,
+            Blocks     = blocks,
+            Links      = 1
+        };
+
+        // Parse creation date (YYMMDD) if present
+        DateTime? creationDate = ParseEcma67Date(label.creationDate);
+
+        if(creationDate.HasValue) stat.CreationTimeUtc = creationDate.Value;
+
+        return ErrorNumber.NoError;
+    }
 
     /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
