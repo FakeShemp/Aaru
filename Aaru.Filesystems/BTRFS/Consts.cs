@@ -52,6 +52,7 @@ public sealed partial class BTRFS
     // Well-known object IDs
     const ulong BTRFS_ROOT_TREE_OBJECTID        = 1;
     const ulong BTRFS_FS_TREE_OBJECTID          = 5;
+    const ulong BTRFS_ROOT_TREE_DIR_OBJECTID    = 6;
     const ulong BTRFS_FIRST_FREE_OBJECTID       = 256;
     const ulong BTRFS_FIRST_CHUNK_TREE_OBJECTID = 256;
 

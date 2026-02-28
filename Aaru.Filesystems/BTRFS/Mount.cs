@@ -212,13 +212,14 @@ public sealed partial class BTRFS
     }
 
     /// <summary>
-    ///     Searches the root tree to find the FS tree root item (objectid=5, type=BTRFS_ROOT_ITEM_KEY) and caches the FS
-    ///     tree root's bytenr and level
+    ///     Searches the root tree for the default subvolume by looking up the "default" DIR_ITEM under
+    ///     ROOT_TREE_DIR_OBJECTID (6). If found, uses its location to find the corresponding ROOT_ITEM.
+    ///     Falls back to FS_TREE_OBJECTID (5) if the default dir item is not present.
     /// </summary>
     /// <returns>Error number indicating success or failure</returns>
     ErrorNumber FindFsTreeRoot()
     {
-        AaruLogging.Debug(MODULE_NAME, "Searching root tree for FS tree root item...");
+        AaruLogging.Debug(MODULE_NAME, "Searching root tree for default subvolume...");
 
         ErrorNumber errno = ReadTreeBlock(_superblock.root_lba, out byte[] rootTreeData);
 
@@ -233,16 +234,135 @@ public sealed partial class BTRFS
 
         AaruLogging.Debug(MODULE_NAME, "Root tree level: {0}, items: {1}", rootHeader.level, rootHeader.nritems);
 
-        errno = SearchTreeForRootItem(rootTreeData, rootHeader, BTRFS_FS_TREE_OBJECTID);
+        // Try to find the default subvolume by looking for a DIR_ITEM named "default" under objectid 6
+        ulong defaultSubvolId = BTRFS_FS_TREE_OBJECTID;
+
+        ErrorNumber dirErrno = FindDefaultSubvolume(rootTreeData, rootHeader, out ulong resolvedSubvolId);
+
+        if(dirErrno == ErrorNumber.NoError && resolvedSubvolId != 0)
+        {
+            defaultSubvolId = resolvedSubvolId;
+
+            AaruLogging.Debug(MODULE_NAME, "Default subvolume objectid: {0}", defaultSubvolId);
+        }
+        else
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "Default subvolume DIR_ITEM not found, falling back to FS_TREE (objectid 5)");
+        }
+
+        // Now find the ROOT_ITEM for the resolved subvolume
+        errno = SearchTreeForRootItem(rootTreeData, rootHeader, defaultSubvolId);
 
         if(errno != ErrorNumber.NoError)
         {
+            // If the resolved default subvol wasn't found and it wasn't 5, try subvol 5 as last resort
+            if(defaultSubvolId != BTRFS_FS_TREE_OBJECTID)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "ROOT_ITEM for default subvolume {0} not found, trying FS_TREE (5)",
+                                  defaultSubvolId);
+
+                errno = SearchTreeForRootItem(rootTreeData, rootHeader, BTRFS_FS_TREE_OBJECTID);
+
+                if(errno == ErrorNumber.NoError) return ErrorNumber.NoError;
+            }
+
             AaruLogging.Debug(MODULE_NAME, "FS tree root item not found in root tree");
 
             return ErrorNumber.NoSuchFile;
         }
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Searches the root tree for a DIR_ITEM named "default" under ROOT_TREE_DIR_OBJECTID (6)
+    ///     and returns the objectid from its location key, which is the default subvolume id.
+    /// </summary>
+    /// <param name="nodeData">Raw root tree node data</param>
+    /// <param name="header">Parsed root tree header</param>
+    /// <param name="subvolId">The default subvolume objectid if found</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber FindDefaultSubvolume(byte[] nodeData, in Header header, out ulong subvolId)
+    {
+        subvolId = 0;
+        int headerSize = Marshal.SizeOf<Header>();
+
+        if(header.level == 0) return ExtractDefaultSubvolFromLeaf(nodeData, header, out subvolId);
+
+        // Internal node — follow all key pointers
+        int keyPtrSize = Marshal.SizeOf<KeyPtr>();
+
+        for(uint i = 0; i < header.nritems; i++)
+        {
+            int keyPtrOffset = headerSize + (int)i * keyPtrSize;
+
+            if(keyPtrOffset + keyPtrSize > nodeData.Length) break;
+
+            KeyPtr keyPtr = Marshal.ByteArrayToStructureLittleEndian<KeyPtr>(nodeData, keyPtrOffset, keyPtrSize);
+
+            ErrorNumber errno = ReadTreeBlock(keyPtr.blockptr, out byte[] childData);
+
+            if(errno != ErrorNumber.NoError) continue;
+
+            Header childHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(childData);
+
+            errno = FindDefaultSubvolume(childData, childHeader, out subvolId);
+
+            if(errno == ErrorNumber.NoError) return ErrorNumber.NoError;
+        }
+
+        return ErrorNumber.NoSuchFile;
+    }
+
+    /// <summary>
+    ///     Scans a leaf node for a DIR_ITEM with objectid=ROOT_TREE_DIR_OBJECTID (6) and name="default",
+    ///     returning the location.objectid which identifies the default subvolume.
+    /// </summary>
+    /// <param name="leafData">Raw leaf node data</param>
+    /// <param name="header">Parsed leaf header</param>
+    /// <param name="subvolId">The default subvolume objectid if found</param>
+    /// <returns>Error number indicating success or failure</returns>
+    ErrorNumber ExtractDefaultSubvolFromLeaf(byte[] leafData, in Header header, out ulong subvolId)
+    {
+        subvolId = 0;
+        int itemSize    = Marshal.SizeOf<Item>();
+        int headerSize  = Marshal.SizeOf<Header>();
+        int dirItemSize = Marshal.SizeOf<DirItem>();
+
+        for(uint i = 0; i < header.nritems; i++)
+        {
+            int itemOffset = headerSize + (int)i * itemSize;
+
+            if(itemOffset + itemSize > leafData.Length) break;
+
+            Item item = Marshal.ByteArrayToStructureLittleEndian<Item>(leafData, itemOffset, itemSize);
+
+            if(item.key.objectid != BTRFS_ROOT_TREE_DIR_OBJECTID || item.key.type != BTRFS_DIR_ITEM_KEY) continue;
+
+            int dataOffset = headerSize + (int)item.offset;
+
+            if(dataOffset + dirItemSize > leafData.Length) continue;
+
+            DirItem dirItem = Marshal.ByteArrayToStructureLittleEndian<DirItem>(leafData, dataOffset, dirItemSize);
+
+            int nameOffset = dataOffset + dirItemSize;
+
+            if(nameOffset + dirItem.name_len > leafData.Length) continue;
+
+            string name = _encoding.GetString(leafData, nameOffset, dirItem.name_len);
+
+            if(name != "default") continue;
+
+            subvolId = dirItem.location.objectid;
+
+            AaruLogging.Debug(MODULE_NAME, "Found default subvolume DIR_ITEM: location objectid={0}", subvolId);
+
+            return ErrorNumber.NoError;
+        }
+
+        return ErrorNumber.NoSuchFile;
     }
 
     /// <summary>
