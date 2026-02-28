@@ -35,8 +35,6 @@ using System.Runtime.InteropServices;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the b-tree filesystem (btrfs)</summary>
 public sealed partial class BTRFS
 {
 #region Nested type: DevItem

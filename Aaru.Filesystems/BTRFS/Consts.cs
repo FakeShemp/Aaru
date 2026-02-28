@@ -32,8 +32,6 @@
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the b-tree filesystem (btrfs)</summary>
 public sealed partial class BTRFS
 {
     /// <summary>BTRFS magic "_BHRfS_M"</summary>

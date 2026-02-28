@@ -42,8 +42,6 @@ using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the b-tree filesystem (btrfs)</summary>
 public sealed partial class BTRFS
 {
 #region IFilesystem Members
