@@ -898,6 +898,7 @@ partial class Dump
             case MediaType.PS3BD:
             case MediaType.PS4BD:
             case MediaType.XGD4:
+            case MediaType.PS5BD:
                 AaruLogging.WriteLine(Localization.Core.Reading_Disc_Information);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
