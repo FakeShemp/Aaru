@@ -44,7 +44,4 @@ public sealed partial class BTRFS
 
     /// <inheritdoc />
     public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
 }

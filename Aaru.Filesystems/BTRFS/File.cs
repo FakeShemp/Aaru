@@ -82,6 +82,50 @@ public sealed partial class BTRFS
     }
 
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber statErrno = Stat(path, out FileEntryInfo stat);
+
+        if(statErrno != ErrorNumber.NoError) return statErrno;
+
+        if(!stat.Attributes.HasFlag(FileAttributes.Symlink)) return ErrorNumber.InvalidArgument;
+
+        ErrorNumber pathErrno = ResolvePath(path, out ulong objectId);
+
+        if(pathErrno != ErrorNumber.NoError) return pathErrno;
+
+        // Read the FS tree to find extent data for this symlink
+        ErrorNumber errno = ReadTreeBlock(_fsTreeRoot, out byte[] fsTreeData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        Header fsTreeHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(fsTreeData);
+
+        List<ExtentEntry> extents = [];
+        errno = WalkTreeForExtents(fsTreeData, fsTreeHeader, objectId, extents);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // BTRFS symlinks are always stored as a single inline extent at offset 0
+        foreach(ExtentEntry extent in extents)
+        {
+            if(extent.Type != BTRFS_FILE_EXTENT_INLINE || extent.FileOffset != 0) continue;
+
+            if(extent.InlineData is null || extent.InlineData.Length == 0) return ErrorNumber.InvalidArgument;
+
+            dest = _encoding.GetString(extent.InlineData).TrimEnd('\0');
+
+            return ErrorNumber.NoError;
+        }
+
+        return ErrorNumber.InvalidArgument;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
         node = null;
