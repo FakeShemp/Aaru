@@ -39,6 +39,8 @@ public sealed partial class BTRFS
 
     const string FS_TYPE = "btrfs";
 
+    const ushort BTRFS_NAME_LEN = 255;
+
     // Key type constants from btrfs_tree.h
     const byte BTRFS_INODE_ITEM_KEY = 1;
     const byte BTRFS_DIR_ITEM_KEY   = 84;

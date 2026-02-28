@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : B-tree file system plugin.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Identifies the B-tree file system and shows information.
+//     Filesystem-level information methods.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,21 +30,34 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-
-using System;
-using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class BTRFS
 {
     /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+        stat = new FileSystemInfo
+        {
+            Blocks         = _superblock.total_bytes                            / _superblock.sectorsize,
+            FreeBlocks     = (_superblock.total_bytes - _superblock.bytes_used) / _superblock.sectorsize,
+            FilenameLength = BTRFS_NAME_LEN,
+            Type           = FS_TYPE,
+            PluginId       = Id,
+            Id = new FileSystemId
+            {
+                IsGuid = true,
+                uuid   = _superblock.uuid
+            }
+        };
+
+        return ErrorNumber.NoError;
+    }
 }
