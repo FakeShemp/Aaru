@@ -109,7 +109,7 @@ public sealed partial class ext2FS
     /// <param name="inode">The inode to get blocks for</param>
     /// <param name="blockList">List of (physical block number, number of contiguous blocks)</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber GetInodeDataBlocks(Inode inode, out List<(ulong physicalBlock, uint length)> blockList)
+    ErrorNumber GetInodeDataBlocks(Inode inode, out List<(ulong physicalBlock, uint length, bool unwritten)> blockList)
     {
         blockList = [];
 

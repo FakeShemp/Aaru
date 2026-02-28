@@ -51,7 +51,7 @@ public sealed partial class ext2FS
         internal Inode Inode { get; init; }
 
         /// <summary>Pre-computed list of physical data blocks for this file</summary>
-        internal List<(ulong physicalBlock, uint length)> BlockList { get; init; }
+        internal List<(ulong physicalBlock, uint length, bool unwritten)> BlockList { get; init; }
 
         /// <summary>Cached block data from the last read</summary>
         internal byte[] CachedBlock { get; set; }

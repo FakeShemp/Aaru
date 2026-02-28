@@ -154,7 +154,7 @@ public sealed partial class ext2FS
         }
 
         // Pre-compute data block list
-        errno = GetInodeDataBlocks(inode, out List<(ulong physicalBlock, uint length)> blockList);
+        errno = GetInodeDataBlocks(inode, out List<(ulong physicalBlock, uint length, bool unwritten)> blockList);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -394,18 +394,26 @@ public sealed partial class ext2FS
         }
 
         // Slow symlink: target stored in data blocks
-        errno = GetInodeDataBlocks(inode, out List<(ulong physicalBlock, uint length)> blockList);
+        errno = GetInodeDataBlocks(inode, out List<(ulong physicalBlock, uint length, bool unwritten)> blockList);
 
         if(errno != ErrorNumber.NoError) return errno;
 
         var   targetData = new byte[linkSize];
         ulong bytesRead  = 0;
 
-        foreach((ulong physicalBlock, uint length) in blockList)
+        foreach((ulong physicalBlock, uint length, bool unwritten) in blockList)
         {
             if(bytesRead >= linkSize) break;
 
             var toRead = (uint)Math.Min(length * _blockSize, linkSize - bytesRead);
+
+            if(unwritten)
+            {
+                // Unwritten extents are zeroes, just advance
+                bytesRead += toRead;
+
+                continue;
+            }
 
             errno = ReadBytes(physicalBlock * _blockSize, toRead, out byte[] blockData);
 

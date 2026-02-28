@@ -187,18 +187,27 @@ public sealed partial class ext2FS
 
         // Standard block-based directory reading
         // Get all data blocks for the inode
-        ErrorNumber errno = GetInodeDataBlocks(inode, out List<(ulong physicalBlock, uint length)> blockList);
+        ErrorNumber errno =
+            GetInodeDataBlocks(inode, out List<(ulong physicalBlock, uint length, bool unwritten)> blockList);
 
         if(errno != ErrorNumber.NoError) return errno;
 
         ulong bytesRead = 0;
 
-        foreach((ulong physicalBlock, uint length) in blockList)
+        foreach((ulong physicalBlock, uint length, bool unwritten) in blockList)
         {
             if(bytesRead >= size) break;
 
             // Read the data blocks
             var bytesToRead = (uint)Math.Min(length * _blockSize, size - bytesRead);
+
+            if(unwritten)
+            {
+                // Unwritten extents are zeroes, skip — no valid directory entries
+                bytesRead += length * _blockSize;
+
+                continue;
+            }
 
             errno = ReadBytes(physicalBlock * _blockSize, bytesToRead, out byte[] blockData);
 

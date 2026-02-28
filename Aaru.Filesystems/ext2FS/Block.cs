@@ -44,7 +44,7 @@ public sealed partial class ext2FS
     /// <param name="inode">The inode with traditional block pointers</param>
     /// <param name="blockList">List to add blocks to</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber GetIndirectBlocks(Inode inode, List<(ulong physicalBlock, uint length)> blockList)
+    ErrorNumber GetIndirectBlocks(Inode inode, List<(ulong physicalBlock, uint length, bool unwritten)> blockList)
     {
         ulong fileSize   = (ulong)inode.size_high << 32 | inode.size_lo;
         var   blocksUsed = (uint)((fileSize + _blockSize - 1) / _blockSize);
@@ -54,8 +54,9 @@ public sealed partial class ext2FS
 
         // Direct blocks (0-11)
         for(uint i = 0; i < 12 && blockIndex < blocksUsed; i++, blockIndex++)
-            if(inode.block[i] != 0)
-                blockList.Add((inode.block[i], 1));
+        {
+            if(inode.block[i] != 0) blockList.Add((inode.block[i], 1, false));
+        }
 
         // Single indirect (block[12])
         if(blockIndex < blocksUsed && inode.block[12] != 0)
@@ -141,7 +142,7 @@ public sealed partial class ext2FS
     /// <param name="blockList">List to add blocks to</param>
     /// <returns>Error number indicating success or failure</returns>
     ErrorNumber ReadIndirectBlock(uint indirectBlock, uint addrsPerBlock, uint blocksUsed, ref uint blockIndex,
-                                  List<(ulong physicalBlock, uint length)> blockList)
+                                  List<(ulong physicalBlock, uint length, bool unwritten)> blockList)
     {
         ErrorNumber errno = ReadBytes(indirectBlock * _blockSize, _blockSize, out byte[] indData);
 
@@ -151,7 +152,7 @@ public sealed partial class ext2FS
         {
             var blockAddr = BitConverter.ToUInt32(indData, (int)(i * 4));
 
-            if(blockAddr != 0) blockList.Add((blockAddr, 1));
+            if(blockAddr != 0) blockList.Add((blockAddr, 1, false));
         }
 
         return ErrorNumber.NoError;
@@ -204,18 +205,26 @@ public sealed partial class ext2FS
     /// <param name="logicalBlock">The logical block index to read</param>
     /// <param name="blockData">The block data</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ReadLogicalBlock(List<(ulong physicalBlock, uint length)> blockList, ulong logicalBlock,
-                                 out byte[]                               blockData)
+    ErrorNumber ReadLogicalBlock(List<(ulong physicalBlock, uint length, bool unwritten)> blockList, ulong logicalBlock,
+                                 out byte[]                                               blockData)
     {
         blockData = null;
 
         // Walk the block list to find which entry covers this logical block
         ulong currentLogical = 0;
 
-        foreach((ulong physicalBlock, uint length) in blockList)
+        foreach((ulong physicalBlock, uint length, bool unwritten) in blockList)
         {
             if(logicalBlock < currentLogical + length)
             {
+                // Unwritten (uninitialized) extents should return zeroes
+                if(unwritten)
+                {
+                    blockData = new byte[_blockSize];
+
+                    return ErrorNumber.NoError;
+                }
+
                 // Found it — compute the exact physical block
                 ulong offsetInExtent = logicalBlock  - currentLogical;
                 ulong targetPhysical = physicalBlock + offsetInExtent;
@@ -226,8 +235,8 @@ public sealed partial class ext2FS
             currentLogical += length;
         }
 
-        // Logical block not found in block list — sparse/hole, return empty
-        blockData = Array.Empty<byte>();
+        // Logical block not found in block list — sparse/hole, return zeroes
+        blockData = new byte[_blockSize];
 
         return ErrorNumber.NoError;
     }

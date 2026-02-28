@@ -41,7 +41,7 @@ public sealed partial class ext2FS
     /// <param name="inode">The inode with extent data in block[]</param>
     /// <param name="blockList">List to add blocks to</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber GetExtentBlocks(Inode inode, List<(ulong physicalBlock, uint length)> blockList)
+    ErrorNumber GetExtentBlocks(Inode inode, List<(ulong physicalBlock, uint length, bool unwritten)> blockList)
     {
         // The extent tree header and first extents/indexes are stored in inode.block[15]
         // which is 60 bytes. Reinterpret as a byte array.
@@ -61,7 +61,8 @@ public sealed partial class ext2FS
     /// <param name="dataOffset">Offset within data to start parsing</param>
     /// <param name="blockList">List to add leaf extents to</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ParseExtentNode(byte[] data, int dataOffset, List<(ulong physicalBlock, uint length)> blockList)
+    ErrorNumber ParseExtentNode(byte[]                                                   data, int dataOffset,
+                                List<(ulong physicalBlock, uint length, bool unwritten)> blockList)
     {
         if(dataOffset + 12 > data.Length) return ErrorNumber.InvalidArgument;
 
@@ -95,11 +96,12 @@ public sealed partial class ext2FS
                 ulong physBlock = (ulong)extent.start_hi << 32 | extent.start_lo;
 
                 // len MSB is the unwritten flag, mask it off for the actual length
-                var len = (uint)(extent.len & 0x7FFF);
+                bool isUnwritten = (extent.len       & 0x8000) != 0;
+                var  len         = (uint)(extent.len & 0x7FFF);
 
                 if(len == 0) len = 0x8000;
 
-                blockList.Add((physBlock, len));
+                blockList.Add((physBlock, len, isUnwritten));
 
                 entryOffset += extentSize;
             }
