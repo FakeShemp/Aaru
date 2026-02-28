@@ -92,11 +92,16 @@ public sealed partial class BTRFS
     const byte BTRFS_COMPRESS_ZSTD = 3;
 
     // Btrfs inode flags
-    const ulong BTRFS_INODE_NODATASUM = 1UL << 0;
-    const ulong BTRFS_INODE_NODATACOW = 1UL << 1;
-    const ulong BTRFS_INODE_COMPRESS  = 1UL << 11;
-    const ulong BTRFS_INODE_IMMUTABLE = 1UL << 6;
-    const ulong BTRFS_INODE_APPEND    = 1UL << 7;
-    const ulong BTRFS_INODE_SYNC      = 1UL << 5;
-    const ulong BTRFS_INODE_NOATIME   = 1UL << 9;
+    const ulong BTRFS_INODE_NODATASUM  = 1UL << 0;
+    const ulong BTRFS_INODE_NODATACOW  = 1UL << 1;
+    const ulong BTRFS_INODE_READONLY   = 1UL << 2;
+    const ulong BTRFS_INODE_NOCOMPRESS = 1UL << 3;
+    const ulong BTRFS_INODE_PREALLOC   = 1UL << 4;
+    const ulong BTRFS_INODE_SYNC       = 1UL << 5;
+    const ulong BTRFS_INODE_IMMUTABLE  = 1UL << 6;
+    const ulong BTRFS_INODE_APPEND     = 1UL << 7;
+    const ulong BTRFS_INODE_NODUMP     = 1UL << 8;
+    const ulong BTRFS_INODE_NOATIME    = 1UL << 9;
+    const ulong BTRFS_INODE_DIRSYNC    = 1UL << 10;
+    const ulong BTRFS_INODE_COMPRESS   = 1UL << 11;
 }

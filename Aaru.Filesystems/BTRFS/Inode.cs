@@ -175,13 +175,16 @@ public sealed partial class BTRFS
                           };
 
         // Map btrfs inode flags to FileAttributes
+        if((inode.flags & BTRFS_INODE_NODATASUM) != 0) info.Attributes |= FileAttributes.NoScrub;
         if((inode.flags & BTRFS_INODE_NODATACOW) != 0) info.Attributes |= FileAttributes.NoCopyOnWrite;
-        if((inode.flags & BTRFS_INODE_COMPRESS)  != 0) info.Attributes |= FileAttributes.Compressed;
+        if((inode.flags & BTRFS_INODE_READONLY)  != 0) info.Attributes |= FileAttributes.ReadOnly;
+        if((inode.flags & BTRFS_INODE_SYNC)      != 0) info.Attributes |= FileAttributes.Sync;
         if((inode.flags & BTRFS_INODE_IMMUTABLE) != 0) info.Attributes |= FileAttributes.Immutable;
         if((inode.flags & BTRFS_INODE_APPEND)    != 0) info.Attributes |= FileAttributes.AppendOnly;
-        if((inode.flags & BTRFS_INODE_SYNC)      != 0) info.Attributes |= FileAttributes.Sync;
+        if((inode.flags & BTRFS_INODE_NODUMP)    != 0) info.Attributes |= FileAttributes.NoDump;
         if((inode.flags & BTRFS_INODE_NOATIME)   != 0) info.Attributes |= FileAttributes.NoAccessTime;
-        if((inode.flags & BTRFS_INODE_NODATASUM) != 0) info.Attributes |= FileAttributes.NoScrub;
+        if((inode.flags & BTRFS_INODE_DIRSYNC)   != 0) info.Attributes |= FileAttributes.Sync;
+        if((inode.flags & BTRFS_INODE_COMPRESS)  != 0) info.Attributes |= FileAttributes.Compressed;
 
         // Device number for character/block devices
         if((inode.mode & S_IFMT) is S_IFCHR or S_IFBLK) info.DeviceNo = inode.rdev;
