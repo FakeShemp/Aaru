@@ -812,12 +812,12 @@ public static class PFI
 
         switch(decoded.TrackPath)
         {
-            case true when decoded.Layers == 1:
-                sb.AppendLine(Localization.Layers_are_in_parallel_track_path);
-
-                break;
             case false when decoded.Layers == 1:
                 sb.AppendLine(Localization.Layers_are_in_opposite_track_path);
+
+                break;
+            case true when decoded.Layers == 1:
+                sb.AppendLine(Localization.Layers_are_in_parallel_track_path);
 
                 break;
         }
