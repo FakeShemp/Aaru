@@ -143,6 +143,9 @@ public sealed partial class NTFS
             _mftDataRuns = null;
         }
 
+        // Validate $MFTMirr: compare the first 4 system records against their mirror copies
+        ValidateMftMirror();
+
         // Read MFT record #3 ($Volume) to get volume name and version info
         errno = ReadMftRecord((uint)SystemFileNumber.Volume, out byte[] volumeRecord);
 
@@ -463,5 +466,125 @@ public sealed partial class NTFS
         }
 
         AaruLogging.Debug(MODULE_NAME, "Loaded {0} security descriptors from $Secure", _securityDescriptors.Count);
+    }
+
+    /// <summary>
+    ///     Validates the $MFTMirr by reading the mirrored copies of the first system MFT records
+    ///     and comparing them against the primary MFT records. Logs warnings for any mismatches.
+    /// </summary>
+    void ValidateMftMirror()
+    {
+        // $MFTMirr contains copies of the first 4 MFT records on NTFS 3.0+
+        // (records 0–3: $MFT, $MFTMirr, $LogFile, $Volume)
+        const int MIRROR_RECORD_COUNT = 4;
+
+        long mirrorStartByte = _bpb.mftmirror_lsn * _bytesPerCluster;
+
+        // Read all mirror records at once
+        uint totalMirrorSectors = (_mftRecordSize * MIRROR_RECORD_COUNT + _bytesPerSector - 1) / _bytesPerSector;
+
+        ErrorNumber errno = _image.ReadSectors(_partition.Start + (ulong)(mirrorStartByte / _bytesPerSector),
+                                               false,
+                                               totalMirrorSectors,
+                                               out byte[] mirrorData,
+                                               out _);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error reading $MFTMirr data at cluster {0}: {1}",
+                              _bpb.mftmirror_lsn, errno);
+
+            return;
+        }
+
+        var mirrorMismatches = 0;
+
+        for(uint i = 0; i < MIRROR_RECORD_COUNT; i++)
+        {
+            int mirrorOffset = (int)(i * _mftRecordSize);
+
+            if(mirrorOffset + _mftRecordSize > mirrorData.Length) break;
+
+            // Extract the mirror record
+            byte[] mirrorRecord = new byte[_mftRecordSize];
+            Array.Copy(mirrorData, mirrorOffset, mirrorRecord, 0, _mftRecordSize);
+
+            // Apply USA fixup to mirror record
+            ErrorNumber fixupErrno = ApplyUsaFixup(mirrorRecord);
+
+            if(fixupErrno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "$MFTMirr record {0}: USA fixup failed ({1})", i, fixupErrno);
+                mirrorMismatches++;
+
+                continue;
+            }
+
+            // Validate magic
+            MftRecord mirrorHeader = Marshal.ByteArrayToStructureLittleEndian<MftRecord>(mirrorRecord);
+
+            if(mirrorHeader.magic != NtfsRecordMagic.File)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "$MFTMirr record {0}: invalid magic 0x{1:X8}",
+                                  i,
+                                  (uint)mirrorHeader.magic);
+
+                mirrorMismatches++;
+
+                continue;
+            }
+
+            // Read the corresponding primary MFT record
+            errno = ReadMftRecord(i, out byte[] primaryRecord);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "$MFTMirr record {0}: could not read primary MFT record ({1})",
+                                  i, errno);
+
+                mirrorMismatches++;
+
+                continue;
+            }
+
+            // Compare the records byte-for-byte
+            bool match = primaryRecord.Length == mirrorRecord.Length;
+
+            if(match)
+            {
+                for(int b = 0; b < primaryRecord.Length; b++)
+                {
+                    if(primaryRecord[b] != mirrorRecord[b])
+                    {
+                        match = false;
+
+                        break;
+                    }
+                }
+            }
+
+            if(!match)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "$MFTMirr record {0}: does not match primary MFT record (volume may be dirty)",
+                                  i);
+
+                mirrorMismatches++;
+            }
+            else
+                AaruLogging.Debug(MODULE_NAME, "$MFTMirr record {0}: matches primary MFT", i);
+        }
+
+        if(mirrorMismatches > 0)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "$MFTMirr validation: {0} of {1} records do not match primary MFT",
+                              mirrorMismatches,
+                              MIRROR_RECORD_COUNT);
+        }
+        else
+            AaruLogging.Debug(MODULE_NAME, "$MFTMirr validation: all {0} records match primary MFT",
+                              MIRROR_RECORD_COUNT);
     }
 }
