@@ -573,6 +573,192 @@ public sealed partial class NTFS
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize path
+        string normalizedPath = string.IsNullOrWhiteSpace(path) ? "/" : path;
+
+        if(!normalizedPath.StartsWith("/", StringComparison.Ordinal)) normalizedPath = "/" + normalizedPath;
+
+        // Root directory cannot be a symlink
+        if(normalizedPath == "/") return ErrorNumber.InvalidArgument;
+
+        ErrorNumber resolveErrno = ResolvePathToMftRecord(normalizedPath, out uint mftRecordNumber);
+
+        if(resolveErrno != ErrorNumber.NoError) return resolveErrno;
+
+        ErrorNumber errno = ReadMftRecord(mftRecordNumber, out byte[] recordData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        MftRecord header =
+            Marshal.ByteArrayToStructureLittleEndian<MftRecord>(recordData, 0, Marshal.SizeOf<MftRecord>());
+
+        if(header.magic != NtfsRecordMagic.File)
+        {
+            AaruLogging.Debug(MODULE_NAME, "MFT record {0} has invalid magic", mftRecordNumber);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Walk attributes to find $REPARSE_POINT
+        int offset = header.attrs_offset;
+
+        while(offset + 4 <= recordData.Length)
+        {
+            var attrType = (AttributeType)BitConverter.ToUInt32(recordData, offset);
+
+            if(attrType == AttributeType.End || attrType == AttributeType.Unused) break;
+
+            var attrLength = BitConverter.ToUInt32(recordData, offset + 4);
+
+            if(attrLength == 0 || offset + attrLength > recordData.Length) break;
+
+            if(attrType == AttributeType.ReparsePoint)
+            {
+                byte nonResident = recordData[offset + 8];
+
+                if(nonResident != 0)
+                {
+                    // Reparse points should always be resident
+                    AaruLogging.Debug(MODULE_NAME, "Non-resident $REPARSE_POINT in MFT record {0}", mftRecordNumber);
+
+                    return ErrorNumber.InvalidArgument;
+                }
+
+                var valueOffset = BitConverter.ToUInt16(recordData, offset + 0x14);
+                var valueLength = BitConverter.ToUInt32(recordData, offset + 0x10);
+
+                int valueStart        = offset + valueOffset;
+                int reparseHeaderSize = Marshal.SizeOf<ReparsePointAttribute>();
+
+                if(valueStart + reparseHeaderSize > recordData.Length || valueLength < reparseHeaderSize)
+                    return ErrorNumber.InvalidArgument;
+
+                ReparsePointAttribute reparseHeader =
+                    Marshal.ByteArrayToStructureLittleEndian<ReparsePointAttribute>(recordData,
+                        valueStart,
+                        reparseHeaderSize);
+
+                int dataStart = valueStart + reparseHeaderSize;
+
+                switch(reparseHeader.reparse_tag)
+                {
+                    case ReparseTag.Symlink:
+                    {
+                        // Symlink reparse buffer:
+                        // SubstituteNameOffset (2), SubstituteNameLength (2),
+                        // PrintNameOffset (2), PrintNameLength (2), Flags (4),
+                        // then PathBuffer
+                        if(dataStart + 12 > recordData.Length) return ErrorNumber.InvalidArgument;
+
+                        var printNameOffset = BitConverter.ToUInt16(recordData, dataStart + 4);
+                        var printNameLength = BitConverter.ToUInt16(recordData, dataStart + 6);
+
+                        int pathBufferStart = dataStart       + 12;
+                        int printNameStart  = pathBufferStart + printNameOffset;
+
+                        if(printNameLength > 0 && printNameStart + printNameLength <= recordData.Length)
+                            dest = Encoding.Unicode.GetString(recordData, printNameStart, printNameLength);
+                        else
+                        {
+                            // Fall back to SubstituteName
+                            var substituteNameOffset = BitConverter.ToUInt16(recordData, dataStart);
+                            var substituteNameLength = BitConverter.ToUInt16(recordData, dataStart + 2);
+
+                            int substituteNameStart = pathBufferStart + substituteNameOffset;
+
+                            if(substituteNameLength                       == 0 ||
+                               substituteNameStart + substituteNameLength > recordData.Length)
+                                return ErrorNumber.InvalidArgument;
+
+                            dest = Encoding.Unicode.GetString(recordData, substituteNameStart, substituteNameLength);
+
+                            // Strip \??\ prefix from SubstituteName
+                            if(dest.StartsWith(@"\??\", StringComparison.Ordinal)) dest = dest[4..];
+                        }
+
+                        // Convert backslashes to forward slashes
+                        dest = dest.Replace('\\', '/');
+
+                        return ErrorNumber.NoError;
+                    }
+                    case ReparseTag.MountPoint:
+                    {
+                        // Mount point (junction) reparse buffer:
+                        // SubstituteNameOffset (2), SubstituteNameLength (2),
+                        // PrintNameOffset (2), PrintNameLength (2),
+                        // then PathBuffer (no Flags field)
+                        if(dataStart + 8 > recordData.Length) return ErrorNumber.InvalidArgument;
+
+                        var printNameOffset = BitConverter.ToUInt16(recordData, dataStart + 4);
+                        var printNameLength = BitConverter.ToUInt16(recordData, dataStart + 6);
+
+                        int pathBufferStart = dataStart       + 8;
+                        int printNameStart  = pathBufferStart + printNameOffset;
+
+                        if(printNameLength > 0 && printNameStart + printNameLength <= recordData.Length)
+                            dest = Encoding.Unicode.GetString(recordData, printNameStart, printNameLength);
+                        else
+                        {
+                            // Fall back to SubstituteName
+                            var substituteNameOffset = BitConverter.ToUInt16(recordData, dataStart);
+                            var substituteNameLength = BitConverter.ToUInt16(recordData, dataStart + 2);
+
+                            int substituteNameStart = pathBufferStart + substituteNameOffset;
+
+                            if(substituteNameLength                       == 0 ||
+                               substituteNameStart + substituteNameLength > recordData.Length)
+                                return ErrorNumber.InvalidArgument;
+
+                            dest = Encoding.Unicode.GetString(recordData, substituteNameStart, substituteNameLength);
+
+                            // Strip \??\ prefix from SubstituteName
+                            if(dest.StartsWith(@"\??\", StringComparison.Ordinal)) dest = dest[4..];
+                        }
+
+                        // Convert backslashes to forward slashes
+                        dest = dest.Replace('\\', '/');
+
+                        return ErrorNumber.NoError;
+                    }
+                    case ReparseTag.LxSymlink:
+                    {
+                        // WSL symlink: 4-byte version field, then UTF-8 target path
+                        if(dataStart + 4 > recordData.Length) return ErrorNumber.InvalidArgument;
+
+                        int targetStart  = dataStart                         + 4;
+                        int targetLength = reparseHeader.reparse_data_length - 4;
+
+                        if(targetLength <= 0 || targetStart + targetLength > recordData.Length)
+                            return ErrorNumber.InvalidArgument;
+
+                        dest = Encoding.UTF8.GetString(recordData, targetStart, targetLength);
+
+                        return ErrorNumber.NoError;
+                    }
+                    default:
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Unsupported reparse tag 0x{0:X8} in MFT record {1}",
+                                          (uint)reparseHeader.reparse_tag,
+                                          mftRecordNumber);
+
+                        return ErrorNumber.NotSupported;
+                }
+            }
+
+            offset += (int)attrLength;
+        }
+
+        // No $REPARSE_POINT attribute found — not a symbolic link
+        return ErrorNumber.InvalidArgument;
+    }
+
     /// <summary>Sets timestamps on a <see cref="FileEntryInfo" /> from NTFS FILETIME values.</summary>
     /// <param name="info">The file entry info to populate.</param>
     /// <param name="creationTime">NTFS creation time (FILETIME).</param>
