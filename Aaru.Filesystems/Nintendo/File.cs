@@ -39,26 +39,76 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the filesystem used by Nintendo Gamecube and Wii discs</summary>
 public sealed partial class NintendoPlugin
 {
-    /// <summary>Resolve a filesystem path to an FST entry index</summary>
-    /// <param name="path">Absolute or relative path</param>
-    /// <param name="entryIndex">Resulting FST entry index (may be DOL_VIRTUAL_INDEX for main.dol)</param>
+    /// <summary>
+    ///     Resolve a filesystem path to a partition index and FST entry index.
+    ///     In multi-partition mode, the first path component selects the partition.
+    /// </summary>
+    /// <param name="path">Absolute path (e.g., "/" or "/DATA/somefile" or "/somefile")</param>
+    /// <param name="partitionIndex">
+    ///     Index into <see cref="_partitions" />, or -1 for the virtual multi-partition root
+    /// </param>
+    /// <param name="entryIndex">FST entry index within the partition (may be a negative virtual index)</param>
     /// <returns>Error number indicating success or failure</returns>
-    ErrorNumber ResolvePathToIndex(string path, out int entryIndex)
+    ErrorNumber ResolvePath(string path, out int partitionIndex, out int entryIndex)
+    {
+        entryIndex     = 0;
+        partitionIndex = -1;
+
+        if(string.IsNullOrWhiteSpace(path) || path == "/")
+        {
+            if(!_multiPartition) partitionIndex = 0;
+
+            return ErrorNumber.NoError;
+        }
+
+        string   cutPath = path.StartsWith("/", StringComparison.Ordinal) ? path[1..] : path;
+        string[] pieces  = cutPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        if(_multiPartition)
+        {
+            // First component is partition name
+            for(var i = 0; i < _partitions.Length; i++)
+            {
+                if(!_partitions[i].Name.Equals(pieces[0], StringComparison.OrdinalIgnoreCase)) continue;
+
+                partitionIndex = i;
+
+                break;
+            }
+
+            if(partitionIndex < 0) return ErrorNumber.NoSuchFile;
+
+            // Only the partition name was given — resolve to its root
+            if(pieces.Length == 1)
+            {
+                entryIndex = 0;
+
+                return ErrorNumber.NoError;
+            }
+
+            return ResolveWithinPartition(_partitions[partitionIndex], pieces[1..], out entryIndex);
+        }
+
+        partitionIndex = 0;
+
+        return ResolveWithinPartition(_partitions[0], pieces, out entryIndex);
+    }
+
+    /// <summary>Resolve path components within a specific partition's FST</summary>
+    /// <param name="partition">Partition whose FST to search</param>
+    /// <param name="pieces">Path components to resolve (no partition prefix)</param>
+    /// <param name="entryIndex">Resulting FST entry index</param>
+    /// <returns>Error number indicating success or failure</returns>
+    static ErrorNumber ResolveWithinPartition(PartitionInfo partition, string[] pieces, out int entryIndex)
     {
         entryIndex = 0;
-
-        if(string.IsNullOrWhiteSpace(path) || path == "/") return ErrorNumber.NoError;
-
-        string cutPath = path.StartsWith("/", StringComparison.Ordinal) ? path[1..] : path;
-
-        string[] pieces          = cutPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        var      currentDirIndex = 0;
+        var currentDirIndex = 0;
 
         for(var p = 0; p < pieces.Length; p++)
         {
             Dictionary<string, int> currentEntries = currentDirIndex == 0
-                                                         ? _rootDirectoryCache
-                                                         : GetDirectoryEntries(currentDirIndex);
+                                                         ? partition.RootDirectoryCache
+                                                         : GetDirectoryEntries(partition, currentDirIndex);
 
             KeyValuePair<string, int> match =
                 currentEntries.FirstOrDefault(e => e.Key.Equals(pieces[p], StringComparison.OrdinalIgnoreCase));
@@ -73,7 +123,7 @@ public sealed partial class NintendoPlugin
                 // Virtual files (negative indices) cannot be directories
                 if(idx < 0) return ErrorNumber.NotDirectory;
 
-                if(_fstEntries[idx].TypeAndNameOffset >> 24 == 0) return ErrorNumber.NotDirectory;
+                if(partition.FstEntries[idx].TypeAndNameOffset >> 24 == 0) return ErrorNumber.NotDirectory;
 
                 currentDirIndex = idx;
             }
@@ -87,6 +137,18 @@ public sealed partial class NintendoPlugin
         return ErrorNumber.NoError;
     }
 
+    /// <summary>Get the path within a partition, stripping the partition prefix in multi-partition mode</summary>
+    string GetInPartitionPath(string path)
+    {
+        string cutPath = path.TrimStart('/');
+
+        if(!_multiPartition || string.IsNullOrEmpty(cutPath)) return cutPath;
+
+        int slashIdx = cutPath.IndexOf('/');
+
+        return slashIdx >= 0 ? cutPath[(slashIdx + 1)..] : "";
+    }
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -96,8 +158,12 @@ public sealed partial class NintendoPlugin
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        // Root directory
-        if(string.IsNullOrWhiteSpace(path) || path == "/")
+        ErrorNumber errno = ResolvePath(path, out int partitionIndex, out int entryIndex);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Virtual root in multi-partition mode
+        if(partitionIndex < 0)
         {
             stat = new FileEntryInfo
             {
@@ -110,17 +176,28 @@ public sealed partial class NintendoPlugin
             return ErrorNumber.NoError;
         }
 
-        // Resolve path to FST index
-        ErrorNumber errno = ResolvePathToIndex(path, out int entryIndex);
+        PartitionInfo partition = _partitions[partitionIndex];
 
-        if(errno != ErrorNumber.NoError) return errno;
+        // Partition root (or root of single partition)
+        if(entryIndex == 0)
+        {
+            stat = new FileEntryInfo
+            {
+                Attributes = FileAttributes.Directory,
+                BlockSize  = 2048,
+                Blocks     = 0,
+                Length     = 0
+            };
+
+            return ErrorNumber.NoError;
+        }
 
         // Handle virtual files
         if(entryIndex is DOL_VIRTUAL_INDEX or BOOT_BIN_VIRTUAL_INDEX or BI2_BIN_VIRTUAL_INDEX)
         {
             long virtualSize = entryIndex switch
                                {
-                                   DOL_VIRTUAL_INDEX      => _dolSize,
+                                   DOL_VIRTUAL_INDEX      => partition.DolSize,
                                    BOOT_BIN_VIRTUAL_INDEX => BOOT_BIN_SIZE,
                                    BI2_BIN_VIRTUAL_INDEX  => BI2_BIN_SIZE,
                                    _                      => 0
@@ -137,7 +214,7 @@ public sealed partial class NintendoPlugin
             return ErrorNumber.NoError;
         }
 
-        bool isDirectory = _fstEntries[entryIndex].TypeAndNameOffset >> 24 != 0;
+        bool isDirectory = partition.FstEntries[entryIndex].TypeAndNameOffset >> 24 != 0;
 
         if(isDirectory)
         {
@@ -151,7 +228,7 @@ public sealed partial class NintendoPlugin
         }
         else
         {
-            long length = _fstEntries[entryIndex].SizeOrNext;
+            long length = partition.FstEntries[entryIndex].SizeOrNext;
 
             stat = new FileEntryInfo
             {
@@ -172,16 +249,23 @@ public sealed partial class NintendoPlugin
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        ErrorNumber errno = ResolvePathToIndex(path, out int entryIndex);
+        ErrorNumber errno = ResolvePath(path, out int partitionIndex, out int entryIndex);
 
         if(errno != ErrorNumber.NoError) return errno;
+
+        // Virtual root and partition roots are directories
+        if(partitionIndex < 0) return ErrorNumber.IsDirectory;
+
+        PartitionInfo partition = _partitions[partitionIndex];
+
+        if(entryIndex == 0) return ErrorNumber.IsDirectory;
 
         // Handle virtual files
         if(entryIndex is DOL_VIRTUAL_INDEX or BOOT_BIN_VIRTUAL_INDEX or BI2_BIN_VIRTUAL_INDEX)
         {
             long virtualSize = entryIndex switch
                                {
-                                   DOL_VIRTUAL_INDEX      => _dolSize,
+                                   DOL_VIRTUAL_INDEX      => partition.DolSize,
                                    BOOT_BIN_VIRTUAL_INDEX => BOOT_BIN_SIZE,
                                    BI2_BIN_VIRTUAL_INDEX  => BI2_BIN_SIZE,
                                    _                      => 0
@@ -189,23 +273,25 @@ public sealed partial class NintendoPlugin
 
             node = new NintendoFileNode
             {
-                Path     = path,
-                Length   = virtualSize,
-                Offset   = 0,
-                FstIndex = entryIndex
+                Path           = path,
+                Length         = virtualSize,
+                Offset         = 0,
+                FstIndex       = entryIndex,
+                PartitionIndex = partitionIndex
             };
 
             return ErrorNumber.NoError;
         }
 
-        if(_fstEntries[entryIndex].TypeAndNameOffset >> 24 != 0) return ErrorNumber.IsDirectory;
+        if(partition.FstEntries[entryIndex].TypeAndNameOffset >> 24 != 0) return ErrorNumber.IsDirectory;
 
         node = new NintendoFileNode
         {
-            Path     = path,
-            Length   = _fstEntries[entryIndex].SizeOrNext,
-            Offset   = 0,
-            FstIndex = entryIndex
+            Path           = path,
+            Length         = partition.FstEntries[entryIndex].SizeOrNext,
+            Offset         = 0,
+            FstIndex       = entryIndex,
+            PartitionIndex = partitionIndex
         };
 
         return ErrorNumber.NoError;
@@ -236,20 +322,21 @@ public sealed partial class NintendoPlugin
 
         if(length > buffer.Length) length = buffer.Length;
 
-        // Get the file's data offset and size from the FST entry
-        // For virtual files, use stored offsets directly
+        PartitionInfo partition = _partitions[myNode.PartitionIndex];
+
+        // Get the file's data offset from the FST entry or virtual file offset
         uint fileDataOffset = myNode.FstIndex switch
                               {
-                                  DOL_VIRTUAL_INDEX      => _dolOffset,
+                                  DOL_VIRTUAL_INDEX      => partition.DolOffset,
                                   BOOT_BIN_VIRTUAL_INDEX => BOOT_BIN_OFFSET,
                                   BI2_BIN_VIRTUAL_INDEX  => BI2_BIN_OFFSET,
-                                  _                      => _fstEntries[myNode.FstIndex].OffsetOrParent
+                                  _                      => partition.FstEntries[myNode.FstIndex].OffsetOrParent
                               };
 
         if(_isWii)
         {
             // Wii: read from encrypted partition data
-            byte[] data = ReadWiiPartitionData((uint)(fileDataOffset + myNode.Offset), (uint)length);
+            byte[] data = ReadWiiPartitionData(partition, (uint)(fileDataOffset + myNode.Offset), (uint)length);
 
             if(data == null) return ErrorNumber.InOutError;
 

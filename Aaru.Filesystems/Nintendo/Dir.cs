@@ -26,7 +26,6 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
@@ -38,33 +37,34 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the filesystem used by Nintendo Gamecube and Wii discs</summary>
 public sealed partial class NintendoPlugin
 {
-    /// <summary>Get the direct children of a directory FST entry</summary>
+    /// <summary>Get the direct children of a directory FST entry within a partition</summary>
+    /// <param name="partition">Partition containing the FST</param>
     /// <param name="dirIndex">FST index of the directory</param>
     /// <returns>Dictionary mapping child names to their FST indices</returns>
-    Dictionary<string, int> GetDirectoryEntries(int dirIndex)
+    static Dictionary<string, int> GetDirectoryEntries(PartitionInfo partition, int dirIndex)
     {
         Dictionary<string, int> entries = new();
 
-        uint dirEnd = _fstEntries[dirIndex].SizeOrNext;
+        uint dirEnd = partition.FstEntries[dirIndex].SizeOrNext;
 
         for(int i = dirIndex + 1; i < (int)dirEnd; i++)
         {
-            bool isDirectory = _fstEntries[i].TypeAndNameOffset >> 24 != 0;
+            bool isDirectory = partition.FstEntries[i].TypeAndNameOffset >> 24 != 0;
 
             if(isDirectory)
             {
                 // A directory is a direct child if its parent index points to dirIndex
-                if((int)_fstEntries[i].OffsetOrParent == dirIndex) entries[_fstNames[i]] = i;
+                if((int)partition.FstEntries[i].OffsetOrParent == dirIndex) entries[partition.FstNames[i]] = i;
 
                 // Skip past this directory's children — they belong to it, not to us
-                i = (int)_fstEntries[i].SizeOrNext - 1; // -1 because loop will i++
+                i = (int)partition.FstEntries[i].SizeOrNext - 1; // -1 because loop will i++
             }
             else
             {
                 // Files between dirIndex+1 and dirEnd that are not inside a subdirectory
                 // are direct children. Since we skip past subdirectories above, any file
                 // we encounter here is a direct child.
-                entries[_fstNames[i]] = i;
+                entries[partition.FstNames[i]] = i;
             }
         }
 
@@ -82,66 +82,65 @@ public sealed partial class NintendoPlugin
 
         if(string.IsNullOrWhiteSpace(path) || path == "/")
         {
+            if(_multiPartition)
+            {
+                // Virtual root: list partition names as subdirectories
+                node = new NintendoDirNode
+                {
+                    Path     = "/",
+                    Contents = _partitions.Select(p => p.Name).ToArray(),
+                    Position = 0
+                };
+
+                return ErrorNumber.NoError;
+            }
+
             node = new NintendoDirNode
             {
                 Path     = "/",
-                Contents = _rootDirectoryCache.Keys.ToArray(),
+                Contents = _partitions[0].RootDirectoryCache.Keys.ToArray(),
                 Position = 0
             };
 
             return ErrorNumber.NoError;
         }
 
-        // Normalize the path: strip leading slash, lowercase for comparison
-        string cutPath = path.StartsWith("/", StringComparison.Ordinal) ? path[1..] : path;
+        ErrorNumber errno = ResolvePath(path, out int partitionIndex, out int entryIndex);
 
-        // Check if already cached
-        if(_directoryCache.TryGetValue(cutPath, out Dictionary<string, int> cachedDir))
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Virtual root shouldn't happen here (we handled "/" above)
+        if(partitionIndex < 0) return ErrorNumber.InvalidArgument;
+
+        PartitionInfo partition = _partitions[partitionIndex];
+
+        // Virtual files are not directories
+        if(entryIndex < 0) return ErrorNumber.NotDirectory;
+
+        // Partition root
+        if(entryIndex == 0)
         {
             node = new NintendoDirNode
             {
                 Path     = path,
-                Contents = cachedDir.Keys.ToArray(),
+                Contents = partition.RootDirectoryCache.Keys.ToArray(),
                 Position = 0
             };
 
             return ErrorNumber.NoError;
         }
 
-        // Walk the path components to find the target directory
-        string[] pieces          = cutPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        var      currentDirIndex = 0; // Start at root
+        // Verify it's a directory entry in the FST
+        if(partition.FstEntries[entryIndex].TypeAndNameOffset >> 24 == 0) return ErrorNumber.NotDirectory;
 
-        for(var p = 0; p < pieces.Length; p++)
+        // Get/cache subdirectory entries using in-partition path as cache key
+        string inPartitionPath = GetInPartitionPath(path);
+
+        if(!partition.DirectoryCache.TryGetValue(inPartitionPath, out Dictionary<string, int> entries))
         {
-            // Get the children of the current directory
-            Dictionary<string, int> currentEntries = currentDirIndex == 0
-                                                         ? _rootDirectoryCache
-                                                         : GetDirectoryEntries(currentDirIndex);
-
-            // Find the matching child
-            KeyValuePair<string, int> match =
-                currentEntries.FirstOrDefault(e => e.Key.Equals(pieces[p], StringComparison.OrdinalIgnoreCase));
-
-            if(match.Key is null) return ErrorNumber.NoSuchFile;
-
-            int entryIndex = match.Value;
-
-            // Verify it's a directory
-            if(_fstEntries[entryIndex].TypeAndNameOffset >> 24 == 0) return ErrorNumber.NotDirectory;
-
-            currentDirIndex = entryIndex;
-
-            // Cache intermediate directories
-            var intermediatePath = string.Join("/", pieces, 0, p + 1);
-
-            if(!_directoryCache.ContainsKey(intermediatePath))
-                _directoryCache[intermediatePath] = GetDirectoryEntries(currentDirIndex);
+            entries                                   = GetDirectoryEntries(partition, entryIndex);
+            partition.DirectoryCache[inPartitionPath] = entries;
         }
-
-        // Build final directory listing
-        Dictionary<string, int> entries = GetDirectoryEntries(currentDirIndex);
-        _directoryCache[cutPath] = entries;
 
         node = new NintendoDirNode
         {

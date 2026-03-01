@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
@@ -42,25 +41,14 @@ public sealed partial class NintendoPlugin : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "Nintendo plugin";
 
-    /// <summary>Cache of subdirectory entries: path → (filename → FST index)</summary>
-    readonly Dictionary<string, Dictionary<string, int>> _directoryCache = new();
-
-    /// <summary>Cache of root directory entries: filename → FST index</summary>
-    readonly Dictionary<string, int> _rootDirectoryCache = new();
-    DiscHeader  _discHeader;
-    uint        _dolOffset;
-    uint        _dolSize;
-    Encoding    _encoding;
-    FstEntry[]  _fstEntries;
-    string[]    _fstNames;
-    IMediaImage _imagePlugin;
-    bool        _isWii;
-
-    bool           _mounted;
-    Aes            _partitionAes;
-    ulong          _partitionDataOffset;
-    ulong          _partitionOffset;
-    FileSystemInfo _statfs;
+    DiscHeader      _discHeader;
+    Encoding        _encoding;
+    IMediaImage     _imagePlugin;
+    bool            _isWii;
+    bool            _mounted;
+    bool            _multiPartition;
+    PartitionInfo[] _partitions;
+    FileSystemInfo  _statfs;
 
 #region IReadOnlyFilesystem Members
 

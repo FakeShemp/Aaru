@@ -26,6 +26,8 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
+using System.Security.Cryptography;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
@@ -53,8 +55,11 @@ public sealed partial class NintendoPlugin
 
     sealed class NintendoFileNode : IFileNode
     {
-        /// <summary>FST index for this file entry</summary>
+        /// <summary>FST index for this file entry (negative for virtual files)</summary>
         internal int FstIndex;
+
+        /// <summary>Index into _partitions identifying which partition this file belongs to</summary>
+        internal int PartitionIndex;
 
 #region IFileNode Members
 
@@ -68,6 +73,49 @@ public sealed partial class NintendoPlugin
         public long Offset { get; set; }
 
 #endregion
+    }
+
+#endregion
+
+#region Nested type: PartitionInfo
+
+    /// <summary>Per-partition state for multi-partition support (Wii discs may have DATA, UPDATE, CHANNEL partitions)</summary>
+    sealed class PartitionInfo
+    {
+        /// <summary>Cache of subdirectory entries: path → (filename → FST index)</summary>
+        internal readonly Dictionary<string, Dictionary<string, int>> DirectoryCache = new();
+
+        /// <summary>Cache of root directory entries: filename → FST index</summary>
+        internal readonly Dictionary<string, int> RootDirectoryCache = new();
+
+        /// <summary>Partition's internal disc header</summary>
+        internal DiscHeader DiscHeader;
+
+        /// <summary>Offset of the DOL executable within partition data</summary>
+        internal uint DolOffset;
+
+        /// <summary>Calculated size of the DOL executable</summary>
+        internal uint DolSize;
+
+        /// <summary>Parsed FST entries for this partition</summary>
+        internal FstEntry[] FstEntries;
+
+        /// <summary>Parsed FST entry names for this partition</summary>
+        internal string[] FstNames;
+        /// <summary>Display name for the partition (e.g., "DATA", "UPDATE", "CHANNEL")</summary>
+        internal string Name;
+
+        /// <summary>AES cipher for decrypting partition data (Wii only, null for GameCube)</summary>
+        internal Aes PartitionAes;
+
+        /// <summary>Offset of the data area within the partition (Wii only)</summary>
+        internal ulong PartitionDataOffset;
+
+        /// <summary>Absolute offset of the partition on disc (Wii only)</summary>
+        internal ulong PartitionOffset;
+
+        /// <summary>Partition type value (0 = DATA, 1 = UPDATE, 2 = CHANNEL)</summary>
+        internal uint Type;
     }
 
 #endregion
