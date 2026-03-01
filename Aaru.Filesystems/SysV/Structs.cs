@@ -252,6 +252,7 @@ public sealed partial class SysVfs
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
+    [SwapPdpEndian]
     partial struct UNIX7thEditionSuperBlock
     {
         /// <summary>0x000, index of first data zone</summary>
@@ -311,6 +312,7 @@ public sealed partial class SysVfs
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
+    [SwapPdpEndian]
     partial struct UNIX7thEditionSuperBlock_CL2
     {
         /// <summary>0x000, index of first data zone</summary>
@@ -370,6 +372,7 @@ public sealed partial class SysVfs
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
+    [SwapPdpEndian]
     partial struct UNIX7thEditionSuperBlock_CL4
     {
         /// <summary>0x000, index of first data zone</summary>
@@ -572,6 +575,7 @@ public sealed partial class SysVfs
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
+    [SwapPdpEndian]
     partial struct Inode
     {
         ///<summary>mode and type of file</summary>
