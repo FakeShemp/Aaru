@@ -98,7 +98,7 @@ public sealed partial class NTFS
                                                header,
                                                mftRecordNumber,
                                                AttributeType.IndexRoot,
-                                               null,
+                                               INDEX_NAME,
                                                out List<FoundAttribute> indexRootAttrs);
 
         if(findErrno != ErrorNumber.NoError) return findErrno;
@@ -138,7 +138,7 @@ public sealed partial class NTFS
                 // Assemble $INDEX_ALLOCATION data runs from all extents
                 ErrorNumber idxAllocErrno = AssembleNonResidentRuns(mftRecordNumber,
                                                                     AttributeType.IndexAllocation,
-                                                                    null,
+                                                                    INDEX_NAME,
                                                                     out List<(long offset, long length)> idxDataRuns,
                                                                     out _,
                                                                     out _,

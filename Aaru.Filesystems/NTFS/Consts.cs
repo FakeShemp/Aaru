@@ -32,6 +32,9 @@ public sealed partial class NTFS
 {
     const string FS_TYPE = "ntfs";
 
+    // Default directory index name ($I30 = filename index)
+    const string INDEX_NAME = "$I30";
+
     // Windows reparse point tags
     const uint IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
     const uint IO_REPARSE_TAG_SYMLINK     = 0xA000000C;
