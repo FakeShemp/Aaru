@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 
@@ -50,6 +51,100 @@ public sealed partial class VxFS
         if(errno != ErrorNumber.NoError) return errno;
 
         stat = InodeToFileEntryInfo(inode, inodeNumber);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(string.IsNullOrEmpty(path) || path == "/") return ErrorNumber.IsDirectory;
+
+        ErrorNumber errno = LookupInode(path, out DiskInode inode, out uint inodeNumber);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        var fileType = (VxfsFileType)(inode.vdi_mode & VXFS_TYPE_MASK);
+
+        if(fileType == VxfsFileType.Dir) return ErrorNumber.IsDirectory;
+
+        node = new VxFsFileNode
+        {
+            Path        = path,
+            Length      = (long)inode.vdi_size,
+            Offset      = 0,
+            InodeNumber = inodeNumber,
+            Inode       = inode
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not VxFsFileNode) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not VxFsFileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        if(buffer == null) return ErrorNumber.InvalidArgument;
+
+        if(fileNode.Offset < 0 || fileNode.Offset >= fileNode.Length) return ErrorNumber.InvalidArgument;
+
+        long toRead = length;
+
+        if(fileNode.Offset + toRead > fileNode.Length) toRead = fileNode.Length - fileNode.Offset;
+
+        if(toRead <= 0) return ErrorNumber.NoError;
+
+        if(toRead > buffer.Length) toRead = buffer.Length;
+
+        int  blockSize     = _superblock.vs_bsize;
+        long bytesRead     = 0;
+        long currentOffset = fileNode.Offset;
+
+        while(bytesRead < toRead)
+        {
+            var blockNum      = (uint)(currentOffset / blockSize);
+            var offsetInBlock = (int)(currentOffset  % blockSize);
+
+            byte[] blockData = ReadInodeBlock(fileNode.Inode, blockNum);
+
+            if(blockData == null)
+            {
+                // Sparse block / hole — fill with zeros
+                long bytesToZero = Math.Min(blockSize - offsetInBlock, toRead - bytesRead);
+                Array.Clear(buffer, (int)bytesRead, (int)bytesToZero);
+                bytesRead     += bytesToZero;
+                currentOffset += bytesToZero;
+
+                continue;
+            }
+
+            long bytesToCopy = Math.Min(blockSize - offsetInBlock, toRead - bytesRead);
+            Array.Copy(blockData, offsetInBlock, buffer, bytesRead, bytesToCopy);
+            bytesRead     += bytesToCopy;
+            currentOffset += bytesToCopy;
+        }
+
+        read            =  bytesRead;
+        fileNode.Offset += bytesRead;
 
         return ErrorNumber.NoError;
     }

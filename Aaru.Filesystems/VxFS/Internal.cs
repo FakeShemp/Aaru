@@ -46,4 +46,23 @@ public sealed partial class VxFS
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>File node for reading file contents</summary>
+    sealed class VxFsFileNode : IFileNode
+    {
+        /// <summary>The inode number</summary>
+        internal uint InodeNumber { get; init; }
+
+        /// <summary>The file's disk inode containing metadata and extent pointers</summary>
+        internal DiskInode Inode { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+    }
 }
