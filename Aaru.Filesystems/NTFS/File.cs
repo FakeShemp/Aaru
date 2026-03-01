@@ -475,6 +475,148 @@ public sealed partial class NTFS
         bool isCompressed            = compUnit != 0 && dataFlags.HasFlag(AttributeFlags.Compressed);
         int  compressionUnitClusters = isCompressed ? 1 << compUnit : 0;
 
+        // Check for WOF (Windows Overlay Filter) external compression via $REPARSE_POINT
+        ErrorNumber rpFindErrno = FindAttributes(recordData,
+                                                 header,
+                                                 mftRecordNumber,
+                                                 AttributeType.ReparsePoint,
+                                                 null,
+                                                 out List<FoundAttribute> rpAttrs);
+
+        if(rpFindErrno == ErrorNumber.NoError && rpAttrs.Count > 0)
+        {
+            FoundAttribute rpAttr        = rpAttrs[0];
+            byte           rpNonResident = rpAttr.RecordData[rpAttr.Offset + 8];
+
+            if(rpNonResident == 0)
+            {
+                var rpValueOffset = BitConverter.ToUInt16(rpAttr.RecordData, rpAttr.Offset + 0x14);
+                var rpValueLength = BitConverter.ToUInt32(rpAttr.RecordData, rpAttr.Offset + 0x10);
+
+                int rpValueStart      = rpAttr.Offset + rpValueOffset;
+                int reparseHeaderSize = Marshal.SizeOf<ReparsePointAttribute>();
+
+                if(rpValueStart + reparseHeaderSize <= rpAttr.RecordData.Length && rpValueLength >= reparseHeaderSize)
+                {
+                    ReparsePointAttribute reparseHeader =
+                        Marshal.ByteArrayToStructureLittleEndian<ReparsePointAttribute>(rpAttr.RecordData,
+                            rpValueStart,
+                            reparseHeaderSize);
+
+                    if(reparseHeader.reparse_tag == ReparseTag.Wof)
+                    {
+                        // Parse WOF reparse buffer: WofVersion(4) + WofProvider(4) + ProviderVer(4) + Algorithm(4)
+                        int wofDataStart = rpValueStart + reparseHeaderSize;
+
+                        if(wofDataStart + 16 <= rpAttr.RecordData.Length)
+                        {
+                            var wofVersion  = BitConverter.ToUInt32(rpAttr.RecordData, wofDataStart);
+                            var wofProvider = BitConverter.ToUInt32(rpAttr.RecordData, wofDataStart + 4);
+                            var providerVer = BitConverter.ToUInt32(rpAttr.RecordData, wofDataStart + 8);
+                            var algorithm   = BitConverter.ToUInt32(rpAttr.RecordData, wofDataStart + 12);
+
+                            if(wofVersion  == WOF_CURRENT_VERSION &&
+                               wofProvider == WOF_PROVIDER_SYSTEM &&
+                               providerVer == WOF_PROVIDER_CURRENT_VERSION)
+                            {
+                                int frameSize = algorithm switch
+                                                {
+                                                    WOF_COMPRESSION_XPRESS4K  => 0x1000, // 4 KiB
+                                                    WOF_COMPRESSION_LZX32K    => 0x8000, // 32 KiB
+                                                    WOF_COMPRESSION_XPRESS8K  => 0x2000, // 8 KiB
+                                                    WOF_COMPRESSION_XPRESS16K => 0x4000, // 16 KiB
+                                                    _                         => 0
+                                                };
+
+                                if(frameSize > 0)
+                                {
+                                    // Read the WofCompressedData named stream
+                                    ErrorNumber wofFindErrno =
+                                        FindAttributes(recordData,
+                                                       header,
+                                                       mftRecordNumber,
+                                                       AttributeType.Data,
+                                                       WOF_COMPRESSED_DATA_STREAM,
+                                                       out List<FoundAttribute> wofAttrs);
+
+                                    if(wofFindErrno == ErrorNumber.NoError && wofAttrs.Count > 0)
+                                    {
+                                        FoundAttribute wofAttr        = wofAttrs[0];
+                                        byte           wofNonResident = wofAttr.RecordData[wofAttr.Offset + 8];
+
+                                        if(wofNonResident == 0)
+                                        {
+                                            // Resident WofCompressedData
+                                            var wofValOff = BitConverter.ToUInt16(wofAttr.RecordData,
+                                                wofAttr.Offset + 0x14);
+
+                                            var wofValLen = BitConverter.ToUInt32(wofAttr.RecordData,
+                                                wofAttr.Offset + 0x10);
+
+                                            int wofValStart = wofAttr.Offset + wofValOff;
+                                            var wofResident = new byte[wofValLen];
+
+                                            if(wofValStart + wofValLen <= wofAttr.RecordData.Length)
+                                            {
+                                                Array.Copy(wofAttr.RecordData, wofValStart, wofResident, 0, wofValLen);
+                                            }
+
+                                            node = new NtfsFileNode
+                                            {
+                                                Path            = normalizedPath,
+                                                Length          = dataSize,
+                                                Offset          = 0,
+                                                IsResident      = false,
+                                                DataRuns        = dataRuns,
+                                                IsWofCompressed = true,
+                                                WofAlgorithm    = algorithm,
+                                                WofFrameSize    = frameSize,
+                                                WofIsResident   = true,
+                                                WofResidentData = wofResident,
+                                                WofDataSize     = wofValLen
+                                            };
+
+                                            return ErrorNumber.NoError;
+                                        }
+
+                                        // Non-resident WofCompressedData
+                                        ErrorNumber wofAsmErrno =
+                                            AssembleNonResidentRuns(mftRecordNumber,
+                                                                    AttributeType.Data,
+                                                                    WOF_COMPRESSED_DATA_STREAM,
+                                                                    out List<(long offset, long length)> wofRuns,
+                                                                    out long wofSize,
+                                                                    out _,
+                                                                    out _,
+                                                                    out _);
+
+                                        if(wofAsmErrno == ErrorNumber.NoError)
+                                        {
+                                            node = new NtfsFileNode
+                                            {
+                                                Path            = normalizedPath,
+                                                Length          = dataSize,
+                                                Offset          = 0,
+                                                IsResident      = false,
+                                                DataRuns        = dataRuns,
+                                                IsWofCompressed = true,
+                                                WofAlgorithm    = algorithm,
+                                                WofFrameSize    = frameSize,
+                                                WofDataRuns     = wofRuns,
+                                                WofDataSize     = wofSize
+                                            };
+
+                                            return ErrorNumber.NoError;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         node = new NtfsFileNode
         {
             Path                    = normalizedPath,
@@ -500,6 +642,10 @@ public sealed partial class NTFS
         mynode.CachedClusterOffset      = -1;
         mynode.CachedCompressionUnit    = null;
         mynode.CachedCompressionUnitVcn = -1;
+        mynode.WofDataRuns              = null;
+        mynode.WofResidentData          = null;
+        mynode.CachedWofFrame           = null;
+        mynode.CachedWofFrameIndex      = -1;
         mynode.Offset                   = -1;
 
         return ErrorNumber.NoError;
@@ -539,6 +685,8 @@ public sealed partial class NTFS
         }
 
         // Non-resident data — read from data runs
+        if(mynode.IsWofCompressed) return ReadWofFile(mynode, length, buffer, out read);
+
         if(mynode.IsCompressed) return ReadCompressedFile(mynode, length, buffer, out read);
 
         return ReadUncompressedFile(mynode, length, buffer, out read);
@@ -995,6 +1143,424 @@ public sealed partial class NTFS
         }
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Reads WOF (Windows Overlay Filter) externally compressed file data by decompressing individual frames
+    ///     using Xpress or LZX algorithms with single-frame caching.
+    /// </summary>
+    /// <param name="mynode">The file node containing WOF compressed data information.</param>
+    /// <param name="length">Number of bytes to read.</param>
+    /// <param name="buffer">Destination buffer.</param>
+    /// <param name="read">Number of bytes actually read.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber ReadWofFile(NtfsFileNode mynode, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+        long bytesRead = 0;
+        int  frameSize = mynode.WofFrameSize;
+
+        // Total number of frames (0-based index of last frame)
+        long lastFrameIndex = mynode.Length > 0 ? (mynode.Length - 1) / frameSize : 0;
+
+        // Offset table size: one entry per frame except the first
+        // For files < 4 GiB, entries are 4 bytes; otherwise 8 bytes
+        int  bytesPerOffset  = mynode.Length < 0x100000000L ? 4 : 8;
+        long offsetTableSize = lastFrameIndex * bytesPerOffset;
+
+        while(bytesRead < length)
+        {
+            long fileOffset    = mynode.Offset;
+            long frameIndex    = fileOffset / frameSize;
+            long offsetInFrame = fileOffset % frameSize;
+
+            // Check cache first
+            if(mynode.CachedWofFrameIndex != frameIndex || mynode.CachedWofFrame == null)
+            {
+                // Need to decompress this frame
+                ErrorNumber frameErrno = DecompressWofFrame(mynode,
+                                                            frameIndex,
+                                                            lastFrameIndex,
+                                                            bytesPerOffset,
+                                                            offsetTableSize,
+                                                            out byte[] frameData);
+
+                if(frameErrno != ErrorNumber.NoError) break;
+
+                mynode.CachedWofFrame      = frameData;
+                mynode.CachedWofFrameIndex = frameIndex;
+            }
+
+            long bytesToCopy = Math.Min(length - bytesRead, mynode.CachedWofFrame.Length - offsetInFrame);
+
+            if(bytesToCopy <= 0) break;
+
+            Array.Copy(mynode.CachedWofFrame, offsetInFrame, buffer, bytesRead, bytesToCopy);
+
+            bytesRead     += bytesToCopy;
+            mynode.Offset += bytesToCopy;
+        }
+
+        read = bytesRead;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Decompresses a single WOF frame from the WofCompressedData stream.</summary>
+    /// <param name="mynode">The file node containing WOF compressed data information.</param>
+    /// <param name="frameIndex">Zero-based index of the frame to decompress.</param>
+    /// <param name="lastFrameIndex">Zero-based index of the last frame in the file.</param>
+    /// <param name="bytesPerOffset">Size of each offset table entry (4 or 8 bytes).</param>
+    /// <param name="offsetTableSize">Total size of the offset table in bytes.</param>
+    /// <param name="frameData">Output decompressed frame data.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber DecompressWofFrame(NtfsFileNode mynode, long frameIndex, long lastFrameIndex, int bytesPerOffset,
+                                   long         offsetTableSize, out byte[] frameData)
+    {
+        frameData = null;
+
+        // Determine the compressed frame boundaries from the offset table.
+        // The offset table has (lastFrameIndex) entries — one for each frame except the first.
+        // Entry[N-1] gives the cumulative end offset of frame N relative to the data area.
+        // Frame 0 starts at offset 0 from the data area (no entry needed).
+        long frameStart;
+        long frameEnd;
+
+        if(mynode.WofIsResident)
+        {
+            // Read offset table from resident data
+            ErrorNumber offsetErrno = ReadWofOffsetTableResident(mynode.WofResidentData,
+                                                                 frameIndex,
+                                                                 lastFrameIndex,
+                                                                 bytesPerOffset,
+                                                                 offsetTableSize,
+                                                                 out frameStart,
+                                                                 out frameEnd);
+
+            if(offsetErrno != ErrorNumber.NoError) return offsetErrno;
+
+            // Read compressed frame data from resident stream
+            var srcStart = (int)(offsetTableSize + frameStart);
+            var srcLen   = (int)(frameEnd        - frameStart);
+
+            if(srcStart + srcLen > mynode.WofResidentData.Length)
+            {
+                AaruLogging.Debug(MODULE_NAME, "WOF resident compressed frame {0} exceeds stream bounds", frameIndex);
+
+                return ErrorNumber.InOutError;
+            }
+
+            var compressedFrame = new byte[srcLen];
+            Array.Copy(mynode.WofResidentData, srcStart, compressedFrame, 0, srcLen);
+
+            // Determine uncompressed size for this frame
+            int uncompressedSize = frameIndex == lastFrameIndex
+                                       ? (int)(1 + (mynode.Length - 1) % mynode.WofFrameSize)
+                                       : mynode.WofFrameSize;
+
+            // If compressed data is same size or larger, it's stored uncompressed
+            if(srcLen >= uncompressedSize)
+            {
+                frameData = new byte[uncompressedSize];
+                Array.Copy(compressedFrame, 0, frameData, 0, uncompressedSize);
+
+                return ErrorNumber.NoError;
+            }
+
+            frameData = DecompressWofFrameData(compressedFrame, uncompressedSize, mynode.WofAlgorithm);
+
+            if(frameData == null)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "WOF decompression failed for frame {0} (algorithm {1})",
+                                  frameIndex,
+                                  mynode.WofAlgorithm);
+
+                return ErrorNumber.InOutError;
+            }
+
+            return ErrorNumber.NoError;
+        }
+
+        // Non-resident WofCompressedData — need to read from data runs
+        // First read the offset table entry to find where the compressed frame lives
+        ErrorNumber nrOffsetErrno = ReadWofOffsetTableNonResident(mynode,
+                                                                  frameIndex,
+                                                                  lastFrameIndex,
+                                                                  bytesPerOffset,
+                                                                  offsetTableSize,
+                                                                  out frameStart,
+                                                                  out frameEnd);
+
+        if(nrOffsetErrno != ErrorNumber.NoError) return nrOffsetErrno;
+
+        // Read compressed frame from non-resident stream
+        long compressedOffset = offsetTableSize + frameStart;
+        var  compressedSize   = (int)(frameEnd - frameStart);
+
+        var compressedBuf = new byte[compressedSize];
+
+        ErrorNumber readErrno = ReadFromDataRuns(mynode.WofDataRuns,
+                                                 mynode.WofDataSize,
+                                                 compressedOffset,
+                                                 compressedBuf,
+                                                 compressedSize);
+
+        if(readErrno != ErrorNumber.NoError) return readErrno;
+
+        // Determine uncompressed size for this frame
+        int uncSize = frameIndex == lastFrameIndex
+                          ? (int)(1 + (mynode.Length - 1) % mynode.WofFrameSize)
+                          : mynode.WofFrameSize;
+
+        // If compressed data is same size or larger, it's stored uncompressed
+        if(compressedSize >= uncSize)
+        {
+            frameData = new byte[uncSize];
+            Array.Copy(compressedBuf, 0, frameData, 0, uncSize);
+
+            return ErrorNumber.NoError;
+        }
+
+        frameData = DecompressWofFrameData(compressedBuf, uncSize, mynode.WofAlgorithm);
+
+        if(frameData == null)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "WOF decompression failed for frame {0} (algorithm {1})",
+                              frameIndex,
+                              mynode.WofAlgorithm);
+
+            return ErrorNumber.InOutError;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads WOF frame offset boundaries from a resident WofCompressedData stream.</summary>
+    /// <param name="data">The complete resident WofCompressedData stream.</param>
+    /// <param name="frameIndex">Zero-based frame index.</param>
+    /// <param name="lastFrameIndex">Zero-based index of the last frame.</param>
+    /// <param name="bytesPerOffset">Size of each offset table entry (4 or 8).</param>
+    /// <param name="offsetTableSize">Total size of the offset table in bytes.</param>
+    /// <param name="frameStart">Output: byte offset where compressed frame starts (relative to data area).</param>
+    /// <param name="frameEnd">Output: byte offset where compressed frame ends (relative to data area).</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    static ErrorNumber ReadWofOffsetTableResident(byte[] data, long frameIndex, long lastFrameIndex, int bytesPerOffset,
+                                                  long   offsetTableSize, out long frameStart, out long frameEnd)
+    {
+        frameStart = 0;
+        frameEnd   = 0;
+
+        if(frameIndex == 0)
+        {
+            // First frame starts at offset 0 from the data area
+            frameStart = 0;
+
+            if(lastFrameIndex == 0)
+            {
+                // Only one frame — compressed data extends to end of stream
+                frameEnd = data.Length - offsetTableSize;
+            }
+            else
+            {
+                // Read offset[0] to get end of first frame
+                if(bytesPerOffset == 4)
+                    frameEnd = BitConverter.ToUInt32(data, 0);
+                else
+                    frameEnd = (long)BitConverter.ToUInt64(data, 0);
+            }
+        }
+        else
+        {
+            // Read offset[frameIndex-1] for start and offset[frameIndex] for end
+            var prevPos = (int)((frameIndex - 1) * bytesPerOffset);
+
+            if(bytesPerOffset == 4)
+                frameStart = BitConverter.ToUInt32(data, prevPos);
+            else
+                frameStart = (long)BitConverter.ToUInt64(data, prevPos);
+
+            if(frameIndex == lastFrameIndex)
+            {
+                // Last frame — compressed data extends to end of stream
+                frameEnd = data.Length - offsetTableSize;
+            }
+            else
+            {
+                var curPos = (int)(frameIndex * bytesPerOffset);
+
+                if(bytesPerOffset == 4)
+                    frameEnd = BitConverter.ToUInt32(data, curPos);
+                else
+                    frameEnd = (long)BitConverter.ToUInt64(data, curPos);
+            }
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads WOF frame offset boundaries from a non-resident WofCompressedData stream.</summary>
+    /// <param name="mynode">File node with WOF data runs.</param>
+    /// <param name="frameIndex">Zero-based frame index.</param>
+    /// <param name="lastFrameIndex">Zero-based index of the last frame.</param>
+    /// <param name="bytesPerOffset">Size of each offset table entry (4 or 8).</param>
+    /// <param name="offsetTableSize">Total size of the offset table in bytes.</param>
+    /// <param name="frameStart">Output: byte offset where compressed frame starts (relative to data area).</param>
+    /// <param name="frameEnd">Output: byte offset where compressed frame ends (relative to data area).</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber ReadWofOffsetTableNonResident(NtfsFileNode mynode,         long frameIndex,      long lastFrameIndex,
+                                              int          bytesPerOffset, long offsetTableSize, out long frameStart,
+                                              out long     frameEnd)
+    {
+        frameStart = 0;
+        frameEnd   = 0;
+
+        if(frameIndex == 0)
+        {
+            frameStart = 0;
+
+            if(lastFrameIndex == 0)
+                frameEnd = mynode.WofDataSize - offsetTableSize;
+            else
+            {
+                // Read offset[0]
+                var offsetBuf = new byte[bytesPerOffset];
+
+                ErrorNumber errno =
+                    ReadFromDataRuns(mynode.WofDataRuns, mynode.WofDataSize, 0, offsetBuf, bytesPerOffset);
+
+                if(errno != ErrorNumber.NoError) return errno;
+
+                frameEnd = bytesPerOffset == 4
+                               ? BitConverter.ToUInt32(offsetBuf, 0)
+                               : (long)BitConverter.ToUInt64(offsetBuf, 0);
+            }
+        }
+        else
+        {
+            // Read both offset[frameIndex-1] and offset[frameIndex] (if not last frame)
+            long prevOff     = (frameIndex - 1) * bytesPerOffset;
+            int  bytesToRead = frameIndex == lastFrameIndex ? bytesPerOffset : bytesPerOffset * 2;
+            var  offsetBuf   = new byte[bytesToRead];
+
+            ErrorNumber errno =
+                ReadFromDataRuns(mynode.WofDataRuns, mynode.WofDataSize, prevOff, offsetBuf, bytesToRead);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            frameStart = bytesPerOffset == 4
+                             ? BitConverter.ToUInt32(offsetBuf, 0)
+                             : (long)BitConverter.ToUInt64(offsetBuf, 0);
+
+            if(frameIndex == lastFrameIndex)
+                frameEnd = mynode.WofDataSize - offsetTableSize;
+            else
+            {
+                frameEnd = bytesPerOffset == 4
+                               ? BitConverter.ToUInt32(offsetBuf, bytesPerOffset)
+                               : (long)BitConverter.ToUInt64(offsetBuf, bytesPerOffset);
+            }
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads bytes from a non-resident data stream at a given byte offset.</summary>
+    /// <param name="dataRuns">The data run list for the stream.</param>
+    /// <param name="dataSize">Total logical size of the stream.</param>
+    /// <param name="offset">Byte offset within the stream to start reading.</param>
+    /// <param name="buffer">Destination buffer.</param>
+    /// <param name="count">Number of bytes to read.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber ReadFromDataRuns(List<(long clusterOffset, long clusterLength)> dataRuns, long dataSize, long offset,
+                                 byte[]                                         buffer,   int  count)
+    {
+        if(offset + count > dataSize) return ErrorNumber.InvalidArgument;
+
+        var  bytesRead    = 0;
+        long runStartByte = 0;
+
+        foreach((long clusterOffset, long clusterLength) in dataRuns)
+        {
+            long runBytes   = clusterLength * _bytesPerCluster;
+            long runEndByte = runStartByte + runBytes;
+
+            if(offset + bytesRead >= runEndByte)
+            {
+                runStartByte = runEndByte;
+
+                continue;
+            }
+
+            if(offset + bytesRead < runStartByte)
+            {
+                runStartByte = runEndByte;
+
+                continue;
+            }
+
+            long offsetInRun    = offset + bytesRead - runStartByte;
+            long availableBytes = runBytes           - offsetInRun;
+            var  toRead         = (int)Math.Min(count - bytesRead, availableBytes);
+
+            if(clusterOffset == 0)
+            {
+                // Sparse run — fill with zeros
+                Array.Clear(buffer, bytesRead, toRead);
+                bytesRead += toRead;
+            }
+            else
+            {
+                long clusterInRun    = offsetInRun / _bytesPerCluster;
+                long offsetInCluster = offsetInRun % _bytesPerCluster;
+                long physicalCluster = clusterOffset + clusterInRun;
+
+                while(toRead > 0)
+                {
+                    ulong sectorStart = (ulong)physicalCluster * _sectorsPerCluster;
+
+                    ErrorNumber errno = _image.ReadSectors(_partition.Start + sectorStart,
+                                                           false,
+                                                           _sectorsPerCluster,
+                                                           out byte[] clusterData,
+                                                           out _);
+
+                    if(errno != ErrorNumber.NoError) return errno;
+
+                    var copyLen = (int)Math.Min(toRead, _bytesPerCluster - offsetInCluster);
+                    Array.Copy(clusterData, offsetInCluster, buffer, bytesRead, copyLen);
+
+                    bytesRead += copyLen;
+                    toRead    -= copyLen;
+                    physicalCluster++;
+                    offsetInCluster = 0;
+                }
+            }
+
+            runStartByte = runEndByte;
+
+            if(bytesRead >= count) break;
+        }
+
+        return bytesRead >= count ? ErrorNumber.NoError : ErrorNumber.InOutError;
+    }
+
+    /// <summary>Decompresses a WOF compressed frame using the appropriate algorithm.</summary>
+    /// <param name="compressedData">The compressed frame data.</param>
+    /// <param name="uncompressedSize">Expected uncompressed size of the frame.</param>
+    /// <param name="algorithm">WOF compression algorithm identifier.</param>
+    /// <returns>The decompressed data, or <c>null</c> if decompression fails.</returns>
+    static byte[] DecompressWofFrameData(byte[] compressedData, int uncompressedSize, uint algorithm)
+    {
+        return algorithm switch
+               {
+                   WOF_COMPRESSION_XPRESS4K  => DecompressXpress(compressedData, uncompressedSize),
+                   WOF_COMPRESSION_XPRESS8K  => DecompressXpress(compressedData, uncompressedSize),
+                   WOF_COMPRESSION_XPRESS16K => DecompressXpress(compressedData, uncompressedSize),
+                   WOF_COMPRESSION_LZX32K    => DecompressLzx(compressedData, uncompressedSize),
+                   _                         => null
+               };
     }
 
     /// <summary>Sets timestamps on a <see cref="FileEntryInfo" /> from NTFS FILETIME values.</summary>

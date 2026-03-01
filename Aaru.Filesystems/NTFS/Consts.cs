@@ -36,10 +36,27 @@ public sealed partial class NTFS
     const uint IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
     const uint IO_REPARSE_TAG_SYMLINK     = 0xA000000C;
 
+    // Windows Overlay Filter reparse tag
+    const uint IO_REPARSE_TAG_WOF = 0x80000017;
+
     // WSL reparse point tags
     const uint IO_REPARSE_TAG_AF_UNIX    = 0x80000023;
     const uint IO_REPARSE_TAG_LX_FIFO    = 0x80000024;
     const uint IO_REPARSE_TAG_LX_CHR     = 0x80000025;
     const uint IO_REPARSE_TAG_LX_BLK     = 0x80000026;
     const uint IO_REPARSE_TAG_LX_SYMLINK = 0xA000001D;
+
+    // WOF compression algorithms
+    const uint WOF_COMPRESSION_XPRESS4K  = 0;
+    const uint WOF_COMPRESSION_LZX32K    = 1;
+    const uint WOF_COMPRESSION_XPRESS8K  = 2;
+    const uint WOF_COMPRESSION_XPRESS16K = 3;
+
+    // WOF provider constants
+    const uint WOF_CURRENT_VERSION          = 1;
+    const uint WOF_PROVIDER_SYSTEM          = 2;
+    const uint WOF_PROVIDER_CURRENT_VERSION = 1;
+
+    // WofCompressedData named stream
+    const string WOF_COMPRESSED_DATA_STREAM = "WofCompressedData";
 }

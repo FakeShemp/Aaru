@@ -72,6 +72,12 @@ public sealed partial class NTFS
         /// <summary>VCN of the first cluster in the cached compression unit (-1 if none cached).</summary>
         internal long CachedCompressionUnitVcn = -1;
 
+        /// <summary>Cached WOF decompressed frame data.</summary>
+        internal byte[] CachedWofFrame;
+
+        /// <summary>Index of the cached WOF frame (-1 if none cached).</summary>
+        internal long CachedWofFrameIndex = -1;
+
         /// <summary>Number of clusters per compression unit (0 if not compressed).</summary>
         internal int CompressionUnitClusters;
         /// <summary>Pre-computed data run list: (absolute cluster offset, length in clusters) tuples.</summary>
@@ -83,8 +89,29 @@ public sealed partial class NTFS
         /// <summary>Whether the file data is resident (stored in the MFT record).</summary>
         internal bool IsResident;
 
+        /// <summary>Whether the file is WOF (Windows Overlay Filter) externally compressed.</summary>
+        internal bool IsWofCompressed;
+
         /// <summary>Resident file data (small files stored entirely within the MFT record).</summary>
         internal byte[] ResidentData;
+
+        /// <summary>WOF compression algorithm (0=Xpress4K, 1=LZX32K, 2=Xpress8K, 3=Xpress16K).</summary>
+        internal uint WofAlgorithm;
+
+        /// <summary>Data runs for the WofCompressedData named stream.</summary>
+        internal List<(long clusterOffset, long clusterLength)> WofDataRuns;
+
+        /// <summary>Total size of the WofCompressedData stream in bytes.</summary>
+        internal long WofDataSize;
+
+        /// <summary>WOF decompression frame size in bytes.</summary>
+        internal int WofFrameSize;
+
+        /// <summary>Whether the WofCompressedData stream is resident.</summary>
+        internal bool WofIsResident;
+
+        /// <summary>Resident data from the WofCompressedData stream.</summary>
+        internal byte[] WofResidentData;
 
 #region IFileNode Members
 
