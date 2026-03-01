@@ -43,20 +43,21 @@ public sealed partial class NTFS : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "NTFS";
 
-    BiosParameterBlock        _bpb;
-    uint                      _bytesPerCluster;
-    uint                      _bytesPerSector;
-    bool                      _debug;
-    Encoding                  _encoding;
-    IMediaImage               _image;
-    uint                      _indexBlockSize;
-    uint                      _mftRecordSize;
-    bool                      _mounted;
-    string                    _ntfsVersion;
-    Partition                 _partition;
-    Dictionary<string, ulong> _rootDirectoryCache;
-    uint                      _sectorsPerCluster;
-    FileSystemInfo            _statfs;
+    BiosParameterBlock               _bpb;
+    uint                             _bytesPerCluster;
+    uint                             _bytesPerSector;
+    bool                             _debug;
+    Encoding                         _encoding;
+    IMediaImage                      _image;
+    uint                             _indexBlockSize;
+    List<(long offset, long length)> _mftDataRuns;
+    uint                             _mftRecordSize;
+    bool                             _mounted;
+    string                           _ntfsVersion;
+    Partition                        _partition;
+    Dictionary<string, ulong>        _rootDirectoryCache;
+    uint                             _sectorsPerCluster;
+    FileSystemInfo                   _statfs;
 
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }

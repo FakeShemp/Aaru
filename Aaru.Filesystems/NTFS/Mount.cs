@@ -133,6 +133,16 @@ public sealed partial class NTFS
             return ErrorNumber.InvalidArgument;
         }
 
+        // Parse $MFT's own $DATA attribute data runs for fragmented MFT support
+        _mftDataRuns = ParseMftDataRuns(mftRecord0, mftHeader);
+
+        if(_mftDataRuns == null || _mftDataRuns.Count == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Could not parse $MFT data runs, MFT access will be limited");
+
+            _mftDataRuns = null;
+        }
+
         // Read MFT record #3 ($Volume) to get volume name and version info
         errno = ReadMftRecord((uint)SystemFileNumber.Volume, out byte[] volumeRecord);
 
