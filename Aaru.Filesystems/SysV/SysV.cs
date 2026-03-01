@@ -76,7 +76,9 @@ public sealed partial class SysVfs : IReadOnlyFilesystem
         /// <summary>Coherent UNIX</summary>
         Coherent,
         /// <summary>UNIX 7th Edition</summary>
-        UnixV7
+        UnixV7,
+        /// <summary>Extended Acer File System</summary>
+        Eafs
     }
 
     /// <summary>Root inode number (1-based)</summary>

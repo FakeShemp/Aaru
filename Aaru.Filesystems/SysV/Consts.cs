@@ -45,6 +45,8 @@ public sealed partial class SysVfs
     const uint SYSV_MAGIC = 0xFD187E20;
     /// <summary>Byte swapped magic number for System V</summary>
     const uint SYSV_CIGAM = 0x207E18FD;
+    /// <summary>Magic number for Extended Acer File System</summary>
+    const uint EAFS_MAGIC = 0xFD187E21;
 
     // Rest have no magic.
     // Per a Linux kernel, Coherent fs has following:
@@ -69,6 +71,7 @@ public sealed partial class SysVfs
     const string FS_TYPE_AFS      = "sco_afs";
     const string FS_TYPE_COHERENT = "coherent";
     const string FS_TYPE_UNIX7    = "unix7fs";
+    const string FS_TYPE_EAFS     = "eafs";
 
     /// <summary>January 1st, 1980 in UNIX time. Used to discriminate SysV R2 from R4.</summary>
     const int JAN_1_1980 = (10 * 365 + 2) * 24 * 60 * 60;
@@ -101,4 +104,7 @@ public sealed partial class SysVfs
 
     /// <summary>Maximum size of a filename</summary>
     const int DIRSIZE = 14;
+
+    /// <summary>Inode number indicating a long filename continuation entry in EAFS directories</summary>
+    const ushort EAFS_LONG_NAME_INO = 0xFFFF;
 }

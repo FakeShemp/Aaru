@@ -52,6 +52,7 @@ public sealed partial class SysVfs
                             SysVVariant.ScoAfs    => FS_TYPE_AFS,
                             SysVVariant.Coherent  => FS_TYPE_COHERENT,
                             SysVVariant.UnixV7    => FS_TYPE_UNIX7,
+                            SysVVariant.Eafs      => FS_TYPE_EAFS,
                             _                     => FS_TYPE_SVR4
                         };
 

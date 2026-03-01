@@ -109,6 +109,7 @@ public sealed partial class SysVfs
                             SysVVariant.ScoAfs    => FS_TYPE_AFS,
                             SysVVariant.Coherent  => FS_TYPE_COHERENT,
                             SysVVariant.UnixV7    => FS_TYPE_UNIX7,
+                            SysVVariant.Eafs      => FS_TYPE_EAFS,
                             _                     => FS_TYPE_SVR4
                         };
 
@@ -197,11 +198,22 @@ public sealed partial class SysVfs
             // Check XENIX magic at 0x3F8
             var magic = BitConverter.ToUInt32(sbSector, 0x3F8);
 
-            if(magic is XENIX_MAGIC or SYSV_MAGIC)
+            if(magic is XENIX_MAGIC or SYSV_MAGIC or EAFS_MAGIC)
             {
-                if(magic == SYSV_MAGIC)
+                if(magic is SYSV_MAGIC or EAFS_MAGIC)
                 {
                     _superblockOffset = 0x200;
+
+                    if(magic == EAFS_MAGIC)
+                    {
+                        _bytesex = Bytesex.LittleEndian;
+
+                        ErrorNumber eafsErrno = DetectSysVVariant(i, sbSector);
+
+                        _variant = SysVVariant.Eafs;
+
+                        return eafsErrno;
+                    }
 
                     return DetectSysVVariant(i, sbSector);
                 }
@@ -247,15 +259,19 @@ public sealed partial class SysVfs
                 return ReadXenix3Superblock(sbSector);
             }
 
-            // Check SYSV magic at 0x1F8
+            // Check SYSV/EAFS magic at 0x1F8
             magic = BitConverter.ToUInt32(sbSector, 0x1F8);
 
-            if(magic == SYSV_MAGIC)
+            if(magic is SYSV_MAGIC or EAFS_MAGIC)
             {
                 _bytesex          = Bytesex.LittleEndian;
                 _superblockOffset = 0;
 
-                return DetectSysVVariant(i, sbSector);
+                ErrorNumber sysVErrno = DetectSysVVariant(i, sbSector);
+
+                if(magic == EAFS_MAGIC) _variant = SysVVariant.Eafs;
+
+                return sysVErrno;
             }
 
             if(magic == SYSV_CIGAM)
@@ -628,7 +644,8 @@ public sealed partial class SysVfs
             }
 
             // Parse directory entries from this block
-            var blockOffset = 0;
+            var    blockOffset = 0;
+            string pendingName = null;
 
             while(blockOffset + entrySize <= blockData.Length && bytesRead < dirSize)
             {
@@ -649,11 +666,21 @@ public sealed partial class SysVfs
                         break;
                 }
 
-                if(dIno != 0)
+                if(dIno == EAFS_LONG_NAME_INO && _variant == SysVVariant.Eafs)
+                {
+                    // EAFS long filename continuation entry
+                    var nameBytes = new byte[DIRSIZE];
+                    Array.Copy(entryData, 2, nameBytes, 0, DIRSIZE);
+                    pendingName = (pendingName ?? "") + _encoding.GetString(nameBytes);
+                }
+                else if(dIno != 0)
                 {
                     var nameBytes = new byte[DIRSIZE];
                     Array.Copy(entryData, 2, nameBytes, 0, DIRSIZE);
-                    string name = StringHandlers.CToString(nameBytes, _encoding);
+                    string namePart = StringHandlers.CToString(nameBytes, _encoding);
+
+                    string name = pendingName != null ? pendingName + namePart : namePart;
+                    pendingName = null;
 
                     if(!string.IsNullOrEmpty(name) && name is not ("." or ".."))
                     {
@@ -662,6 +689,8 @@ public sealed partial class SysVfs
                         AaruLogging.Debug(MODULE_NAME, "Cached entry: {0} -> inode {1}", name, dIno);
                     }
                 }
+                else
+                    pendingName = null;
 
                 blockOffset += entrySize;
                 bytesRead   += entrySize;

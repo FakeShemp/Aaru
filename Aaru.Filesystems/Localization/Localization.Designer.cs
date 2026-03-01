@@ -7204,6 +7204,12 @@ namespace Aaru.Filesystems {
             }
         }
 
+        internal static string EAFS_filesystem {
+            get {
+                return ResourceManager.GetString("EAFS_filesystem", resourceCulture);
+            }
+        }
+
         internal static string ISC_long_filenames_detected {
             get {
                 return ResourceManager.GetString("ISC_long_filenames_detected", resourceCulture);

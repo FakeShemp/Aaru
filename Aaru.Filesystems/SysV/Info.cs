@@ -100,11 +100,11 @@ public sealed partial class SysVfs
 
             var magic = BitConverter.ToUInt32(sb_sector, 0x3F8);
 
-            if(magic is XENIX_MAGIC or XENIX_CIGAM or SYSV_MAGIC or SYSV_CIGAM) return true;
+            if(magic is XENIX_MAGIC or XENIX_CIGAM or SYSV_MAGIC or SYSV_CIGAM or EAFS_MAGIC) return true;
 
             magic = BitConverter.ToUInt32(sb_sector, 0x1F8); // System V magic location
 
-            if(magic is SYSV_MAGIC or SYSV_CIGAM) return true;
+            if(magic is SYSV_MAGIC or SYSV_CIGAM or EAFS_MAGIC) return true;
 
             magic = BitConverter.ToUInt32(sb_sector, 0x1F0); // XENIX 3 magic location
 
@@ -200,6 +200,7 @@ public sealed partial class SysVfs
         var    sys7th    = false;
         var    coherent  = false;
         var    xenix3    = false;
+        var    eafs      = false;
         byte[] sb_sector;
         byte   sb_size_in_sectors;
         var    offset = 0;
@@ -244,11 +245,12 @@ public sealed partial class SysVfs
 
             var magic = BitConverter.ToUInt32(sb_sector, 0x3F8);
 
-            if(magic is XENIX_MAGIC or SYSV_MAGIC)
+            if(magic is XENIX_MAGIC or SYSV_MAGIC or EAFS_MAGIC)
             {
-                if(magic == SYSV_MAGIC)
+                if(magic is SYSV_MAGIC or EAFS_MAGIC)
                 {
                     sysv   = true;
+                    eafs   = magic == EAFS_MAGIC;
                     offset = 0x200;
                 }
                 else
@@ -297,9 +299,10 @@ public sealed partial class SysVfs
 
             magic = BitConverter.ToUInt32(sb_sector, 0x1F8); // XENIX magic location
 
-            if(magic == SYSV_MAGIC)
+            if(magic is SYSV_MAGIC or EAFS_MAGIC)
             {
                 sysv  = true;
+                eafs  = magic == EAFS_MAGIC;
                 start = i;
 
                 break;
@@ -402,7 +405,7 @@ public sealed partial class SysVfs
             }
         }
 
-        if(!sys7th && !sysv && !coherent && !xenix && !xenix3) return;
+        if(!sys7th && !sysv && !coherent && !xenix && !xenix3 && !eafs) return;
 
         metadata = new FileSystem();
 
@@ -713,6 +716,11 @@ public sealed partial class SysVfs
                 {
                     sb.AppendLine(Localization.SCO_AFS_filesystem);
                     metadata.Type = FS_TYPE_AFS;
+                }
+                else if(eafs)
+                {
+                    sb.AppendLine(Localization.EAFS_filesystem);
+                    metadata.Type = FS_TYPE_EAFS;
                 }
                 else
                 {

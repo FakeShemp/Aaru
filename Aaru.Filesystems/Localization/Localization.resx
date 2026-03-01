@@ -3608,6 +3608,9 @@
     <data name="SCO_AFS_filesystem" xml:space="preserve">
     <value>Acer File System (AFS)</value>
   </data>
+    <data name="EAFS_filesystem" xml:space="preserve">
+    <value>Extended Acer File System (EAFS)</value>
+  </data>
     <data name="ISC_long_filenames_detected" xml:space="preserve">
     <value>ISC long filenames detected</value>
   </data>

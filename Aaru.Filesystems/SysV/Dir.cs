@@ -212,7 +212,8 @@ public sealed partial class SysVfs
                 continue;
             }
 
-            var blockOffset = 0;
+            var    blockOffset = 0;
+            string pendingName = null;
 
             while(blockOffset + entrySize <= blockData.Length && bytesRead < dirSize)
             {
@@ -230,14 +231,26 @@ public sealed partial class SysVfs
                         break;
                 }
 
-                if(dIno != 0)
+                if(dIno == EAFS_LONG_NAME_INO && _variant == SysVVariant.Eafs)
+                {
+                    // EAFS long filename continuation entry
+                    var nameBytes = new byte[DIRSIZE];
+                    Array.Copy(blockData, blockOffset + 2, nameBytes, 0, DIRSIZE);
+                    pendingName = (pendingName ?? "") + _encoding.GetString(nameBytes);
+                }
+                else if(dIno != 0)
                 {
                     var nameBytes = new byte[DIRSIZE];
                     Array.Copy(blockData, blockOffset + 2, nameBytes, 0, DIRSIZE);
-                    string name = StringHandlers.CToString(nameBytes, _encoding);
+                    string namePart = StringHandlers.CToString(nameBytes, _encoding);
+
+                    string name = pendingName != null ? pendingName + namePart : namePart;
+                    pendingName = null;
 
                     if(!string.IsNullOrEmpty(name) && name is not ("." or "..")) entries[name] = dIno;
                 }
+                else
+                    pendingName = null;
 
                 blockOffset += entrySize;
                 bytesRead   += entrySize;
