@@ -115,15 +115,23 @@ public sealed partial class NintendoPlugin
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        // Handle virtual DOL file
-        if(entryIndex == DOL_VIRTUAL_INDEX)
+        // Handle virtual files
+        if(entryIndex is DOL_VIRTUAL_INDEX or BOOT_BIN_VIRTUAL_INDEX or BI2_BIN_VIRTUAL_INDEX)
         {
+            long virtualSize = entryIndex switch
+                               {
+                                   DOL_VIRTUAL_INDEX      => _dolSize,
+                                   BOOT_BIN_VIRTUAL_INDEX => BOOT_BIN_SIZE,
+                                   BI2_BIN_VIRTUAL_INDEX  => BI2_BIN_SIZE,
+                                   _                      => 0
+                               };
+
             stat = new FileEntryInfo
             {
                 Attributes = FileAttributes.File,
                 BlockSize  = 2048,
-                Blocks     = (_dolSize + 2047) / 2048,
-                Length     = _dolSize
+                Blocks     = (virtualSize + 2047) / 2048,
+                Length     = virtualSize
             };
 
             return ErrorNumber.NoError;
@@ -168,15 +176,23 @@ public sealed partial class NintendoPlugin
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        // Handle virtual DOL file
-        if(entryIndex == DOL_VIRTUAL_INDEX)
+        // Handle virtual files
+        if(entryIndex is DOL_VIRTUAL_INDEX or BOOT_BIN_VIRTUAL_INDEX or BI2_BIN_VIRTUAL_INDEX)
         {
+            long virtualSize = entryIndex switch
+                               {
+                                   DOL_VIRTUAL_INDEX      => _dolSize,
+                                   BOOT_BIN_VIRTUAL_INDEX => BOOT_BIN_SIZE,
+                                   BI2_BIN_VIRTUAL_INDEX  => BI2_BIN_SIZE,
+                                   _                      => 0
+                               };
+
             node = new NintendoFileNode
             {
                 Path     = path,
-                Length   = _dolSize,
+                Length   = virtualSize,
                 Offset   = 0,
-                FstIndex = DOL_VIRTUAL_INDEX
+                FstIndex = entryIndex
             };
 
             return ErrorNumber.NoError;
@@ -221,10 +237,14 @@ public sealed partial class NintendoPlugin
         if(length > buffer.Length) length = buffer.Length;
 
         // Get the file's data offset and size from the FST entry
-        // For virtual files (like main.dol), use stored offset directly
-        uint fileDataOffset = myNode.FstIndex == DOL_VIRTUAL_INDEX
-                                  ? _dolOffset
-                                  : _fstEntries[myNode.FstIndex].OffsetOrParent;
+        // For virtual files, use stored offsets directly
+        uint fileDataOffset = myNode.FstIndex switch
+                              {
+                                  DOL_VIRTUAL_INDEX      => _dolOffset,
+                                  BOOT_BIN_VIRTUAL_INDEX => BOOT_BIN_OFFSET,
+                                  BI2_BIN_VIRTUAL_INDEX  => BI2_BIN_OFFSET,
+                                  _                      => _fstEntries[myNode.FstIndex].OffsetOrParent
+                              };
 
         if(_isWii)
         {

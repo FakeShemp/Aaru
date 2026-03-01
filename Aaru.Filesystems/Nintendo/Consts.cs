@@ -39,6 +39,24 @@ public sealed partial class NintendoPlugin
     /// <summary>Virtual FST index for the main DOL executable (not in the real FST)</summary>
     const int DOL_VIRTUAL_INDEX = -1;
 
+    /// <summary>Virtual FST index for boot.bin (disc header)</summary>
+    const int BOOT_BIN_VIRTUAL_INDEX = -2;
+
+    /// <summary>Virtual FST index for bi2.bin (boot info 2)</summary>
+    const int BI2_BIN_VIRTUAL_INDEX = -3;
+
+    /// <summary>Offset of boot.bin within partition data (always 0)</summary>
+    const uint BOOT_BIN_OFFSET = 0x000;
+
+    /// <summary>Size of boot.bin (disc header)</summary>
+    const uint BOOT_BIN_SIZE = 0x440;
+
+    /// <summary>Offset of bi2.bin within partition data</summary>
+    const uint BI2_BIN_OFFSET = 0x440;
+
+    /// <summary>Size of bi2.bin (boot info 2)</summary>
+    const uint BI2_BIN_SIZE = 0x2000;
+
     /// <summary>Size of the DOL header in bytes</summary>
     const int DOL_HEADER_SIZE = 0x100;
 

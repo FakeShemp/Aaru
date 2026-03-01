@@ -469,7 +469,10 @@ public sealed partial class NintendoPlugin
     {
         _rootDirectoryCache.Clear();
 
-        // Add the main DOL executable as a virtual file
+        // Add virtual system files
+        _rootDirectoryCache["boot.bin"] = BOOT_BIN_VIRTUAL_INDEX;
+        _rootDirectoryCache["bi2.bin"]  = BI2_BIN_VIRTUAL_INDEX;
+
         if(_dolSize > 0) _rootDirectoryCache["main.dol"] = DOL_VIRTUAL_INDEX;
 
         // Root is entry 0. Its children are entries 1..(SizeOrNext - 1) that have parent == 0
