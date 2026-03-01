@@ -27,15 +27,24 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
-// Information from Inside Windows NT
+// Information from Inside Windows NT and the Linux kernel NTFS driver (fs/ntfs)
 /// <inheritdoc />
-/// <summary>Implements detection of the New Technology File System (NTFS)</summary>
-public sealed partial class NTFS : IFilesystem
+/// <summary>Implements the New Technology File System (NTFS)</summary>
+public sealed partial class NTFS : IReadOnlyFilesystem
 {
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces => [];
+
 #region IFilesystem Members
 
     /// <inheritdoc />

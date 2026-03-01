@@ -31,9 +31,6 @@ using System.Runtime.InteropServices;
 
 namespace Aaru.Filesystems;
 
-// Information from Inside Windows NT and the Linux kernel NTFS driver (fs/ntfs)
-/// <inheritdoc />
-/// <summary>Implements detection of the New Technology File System (NTFS)</summary>
 public sealed partial class NTFS
 {
 #region Nested type: BiosParameterBlock

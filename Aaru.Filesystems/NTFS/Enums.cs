@@ -34,7 +34,6 @@ using System;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
 public sealed partial class NTFS
 {
 #region Nested type: NtfsRecordMagic

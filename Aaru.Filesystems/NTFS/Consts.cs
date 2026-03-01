@@ -28,9 +28,6 @@
 
 namespace Aaru.Filesystems;
 
-// Information from Inside Windows NT
-/// <inheritdoc />
-/// <summary>Implements detection of the New Technology File System (NTFS)</summary>
 public sealed partial class NTFS
 {
     const string FS_TYPE = "ntfs";
