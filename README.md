@@ -230,6 +230,7 @@ Fully supported file-systems (identify and extraction)
 * Microsoft/IBM High Performance File System (HPFS)
 * Minix v1/v2/v3 file systems
 * NILFS2
+* Nintendo optical filesystems (GameCube and Wii)
 * OS-9 Random Block File
 * Professional File System
 * QNX4 filesystems
@@ -264,7 +265,6 @@ Supported file systems for identification and information only
 * Microsoft Resilient File System (ReFS)
 * NEC PC-Engine executable
 * NEC PC-FX executable
-* Nintendo optical filesystems (GameCube and Wii)
 * SolarOS file system
 * UNICOS file system
 * UNIX System V file system
