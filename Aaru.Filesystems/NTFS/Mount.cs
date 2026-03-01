@@ -254,14 +254,21 @@ public sealed partial class NTFS
             Dirty        = isDirty
         };
 
+        // Parse $Bitmap (MFT #6) to count free clusters
+        var   totalClusters = (ulong)(_bpb.sectors / _bpb.spc);
+        ulong freeClusters  = CountFreeClusters(totalClusters);
+
+        // Parse $MFT's $BITMAP attribute to count in-use MFT records
+        (ulong totalFiles, ulong freeFiles) = CountMftRecords();
+
         // Build filesystem info for StatFs
         _statfs = new FileSystemInfo
         {
-            Blocks         = (ulong)(_bpb.sectors / _bpb.spc),
+            Blocks         = totalClusters,
             FilenameLength = 255,
-            Files          = 0,
-            FreeBlocks     = 0,
-            FreeFiles      = 0,
+            Files          = totalFiles,
+            FreeBlocks     = freeClusters,
+            FreeFiles      = freeFiles,
             Id = new FileSystemId
             {
                 IsLong   = true,
@@ -474,6 +481,246 @@ public sealed partial class NTFS
     }
 
     /// <summary>
+    ///     Reads the volume $Bitmap (MFT record #6) and counts how many clusters are free.
+    /// </summary>
+    /// <param name="totalClusters">Total number of clusters on the volume.</param>
+    /// <returns>Number of free clusters, or 0 if the bitmap cannot be read.</returns>
+    ulong CountFreeClusters(ulong totalClusters)
+    {
+        // Try non-resident first (volume bitmap is almost always non-resident)
+        ErrorNumber runErrno = AssembleNonResidentRuns((uint)SystemFileNumber.Bitmap,
+                                                       AttributeType.Data,
+                                                       null,
+                                                       out List<(long offset, long length)> dataRuns,
+                                                       out long dataSize,
+                                                       out _,
+                                                       out _,
+                                                       out _);
+
+        byte[] bitmapData = null;
+
+        if(runErrno == ErrorNumber.NoError && dataRuns.Count > 0 && dataSize > 0)
+        {
+            byte[]      readBuf = Array.Empty<byte>();
+            ErrorNumber errno   = ReadNonResidentData(dataRuns, dataSize, ref readBuf);
+
+            if(errno == ErrorNumber.NoError) bitmapData = readBuf;
+        }
+        else
+        {
+            // Resident fallback (unlikely for volume bitmap)
+            ErrorNumber errno = ReadMftRecord((uint)SystemFileNumber.Bitmap, out byte[] bitmapRecord);
+
+            if(errno != ErrorNumber.NoError) return 0;
+
+            MftRecord bitmapHeader = Marshal.ByteArrayToStructureLittleEndian<MftRecord>(bitmapRecord);
+
+            if(bitmapHeader.magic != NtfsRecordMagic.File) return 0;
+
+            ErrorNumber findErrno = FindAttributes(bitmapRecord,
+                                                   bitmapHeader,
+                                                   (uint)SystemFileNumber.Bitmap,
+                                                   AttributeType.Data,
+                                                   null,
+                                                   out List<FoundAttribute> results);
+
+            if(findErrno != ErrorNumber.NoError || results.Count == 0) return 0;
+
+            FoundAttribute attr   = results[0];
+            byte           nonRes = attr.RecordData[attr.Offset + 8];
+
+            if(nonRes != 0) return 0;
+
+            var valueOffset = BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x14);
+            var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
+
+            int valueStart = attr.Offset + valueOffset;
+
+            if(valueStart + valueLength > attr.RecordData.Length || valueLength == 0) return 0;
+
+            bitmapData = new byte[valueLength];
+            Array.Copy(attr.RecordData, valueStart, bitmapData, 0, valueLength);
+        }
+
+        if(bitmapData == null || bitmapData.Length == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Could not read $Bitmap data");
+
+            return 0;
+        }
+
+        ulong freeClusters = CountZeroBits(bitmapData, totalClusters);
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "Volume bitmap: {0} total clusters, {1} free clusters",
+                          totalClusters,
+                          freeClusters);
+
+        return freeClusters;
+    }
+
+    /// <summary>
+    ///     Reads the $MFT's own $BITMAP attribute and counts in-use and free MFT records.
+    /// </summary>
+    /// <returns>Tuple of (total MFT records, free MFT records), or (0, 0) on failure.</returns>
+    (ulong totalFiles, ulong freeFiles) CountMftRecords()
+    {
+        // The MFT bitmap is the $BITMAP attribute of the $MFT file (record #0)
+        ErrorNumber runErrno = AssembleNonResidentRuns((uint)SystemFileNumber.Mft,
+                                                       AttributeType.Bitmap,
+                                                       null,
+                                                       out List<(long offset, long length)> dataRuns,
+                                                       out long dataSize,
+                                                       out _,
+                                                       out _,
+                                                       out _);
+
+        byte[] mftBitmapData = null;
+
+        if(runErrno == ErrorNumber.NoError && dataRuns.Count > 0 && dataSize > 0)
+        {
+            byte[]      readBuf = Array.Empty<byte>();
+            ErrorNumber errno   = ReadNonResidentData(dataRuns, dataSize, ref readBuf);
+
+            if(errno == ErrorNumber.NoError) mftBitmapData = readBuf;
+        }
+        else
+        {
+            // Resident fallback (possible for very small volumes)
+            ErrorNumber errno = ReadMftRecord((uint)SystemFileNumber.Mft, out byte[] mftRecord);
+
+            if(errno != ErrorNumber.NoError) return (0, 0);
+
+            MftRecord mftHeader = Marshal.ByteArrayToStructureLittleEndian<MftRecord>(mftRecord);
+
+            if(mftHeader.magic != NtfsRecordMagic.File) return (0, 0);
+
+            ErrorNumber findErrno = FindAttributes(mftRecord,
+                                                   mftHeader,
+                                                   (uint)SystemFileNumber.Mft,
+                                                   AttributeType.Bitmap,
+                                                   null,
+                                                   out List<FoundAttribute> results);
+
+            if(findErrno != ErrorNumber.NoError || results.Count == 0) return (0, 0);
+
+            FoundAttribute attr   = results[0];
+            byte           nonRes = attr.RecordData[attr.Offset + 8];
+
+            if(nonRes != 0) return (0, 0);
+
+            var valueOffset = BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x14);
+            var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
+
+            int valueStart = attr.Offset + valueOffset;
+
+            if(valueStart + valueLength > attr.RecordData.Length || valueLength == 0) return (0, 0);
+
+            mftBitmapData = new byte[valueLength];
+            Array.Copy(attr.RecordData, valueStart, mftBitmapData, 0, valueLength);
+        }
+
+        if(mftBitmapData == null || mftBitmapData.Length == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Could not read $MFT bitmap");
+
+            return (0, 0);
+        }
+
+        // Each bit = one MFT record. Total records = bitmap bits.
+        ulong totalRecords = (ulong)mftBitmapData.Length * 8;
+        ulong usedRecords  = CountOneBits(mftBitmapData, totalRecords);
+        ulong freeRecords  = totalRecords - usedRecords;
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "MFT bitmap: {0} total records, {1} in use, {2} free",
+                          totalRecords,
+                          usedRecords,
+                          freeRecords);
+
+        return (totalRecords, freeRecords);
+    }
+
+    /// <summary>Counts the number of zero (free) bits in a bitmap, up to <paramref name="maxBits" />.</summary>
+    /// <param name="bitmap">Raw bitmap data.</param>
+    /// <param name="maxBits">Maximum number of bits to count (prevents counting padding bits).</param>
+    /// <returns>Number of zero bits.</returns>
+    static ulong CountZeroBits(byte[] bitmap, ulong maxBits)
+    {
+        ulong zeroBits = 0;
+        ulong bitIndex = 0;
+
+        for(var i = 0; i < bitmap.Length && bitIndex < maxBits; i++)
+        {
+            byte b = bitmap[i];
+
+            // Fast path: whole byte
+            if(bitIndex + 8 <= maxBits)
+            {
+                // Count zero bits = 8 - popcount
+                zeroBits += (ulong)(8 - PopCount(b));
+                bitIndex += 8;
+            }
+            else
+            {
+                // Partial byte at end
+                for(var bit = 0; bit < 8 && bitIndex < maxBits; bit++)
+                {
+                    if((b & 1 << bit) == 0) zeroBits++;
+
+                    bitIndex++;
+                }
+            }
+        }
+
+        return zeroBits;
+    }
+
+    /// <summary>Counts the number of set (in-use) bits in a bitmap, up to <paramref name="maxBits" />.</summary>
+    /// <param name="bitmap">Raw bitmap data.</param>
+    /// <param name="maxBits">Maximum number of bits to count.</param>
+    /// <returns>Number of set bits.</returns>
+    static ulong CountOneBits(byte[] bitmap, ulong maxBits)
+    {
+        ulong oneBits  = 0;
+        ulong bitIndex = 0;
+
+        for(var i = 0; i < bitmap.Length && bitIndex < maxBits; i++)
+        {
+            byte b = bitmap[i];
+
+            if(bitIndex + 8 <= maxBits)
+            {
+                oneBits  += (ulong)PopCount(b);
+                bitIndex += 8;
+            }
+            else
+            {
+                for(var bit = 0; bit < 8 && bitIndex < maxBits; bit++)
+                {
+                    if((b & 1 << bit) != 0) oneBits++;
+
+                    bitIndex++;
+                }
+            }
+        }
+
+        return oneBits;
+    }
+
+    /// <summary>Returns the number of set bits in a byte (population count).</summary>
+    /// <param name="b">Input byte.</param>
+    /// <returns>Number of set bits (0-8).</returns>
+    static int PopCount(byte b)
+    {
+        int v = b;
+        v -= v >> 1 & 0x55;
+        v =  (v & 0x33) + (v >> 2 & 0x33);
+
+        return v + (v >> 4) & 0x0F;
+    }
+
+    /// <summary>
     ///     Validates the $MFTMirr by reading the mirrored copies of the first system MFT records
     ///     and comparing them against the primary MFT records. Logs warnings for any mismatches.
     /// </summary>
@@ -496,8 +743,10 @@ public sealed partial class NTFS
 
         if(errno != ErrorNumber.NoError)
         {
-            AaruLogging.Debug(MODULE_NAME, "Error reading $MFTMirr data at cluster {0}: {1}",
-                              _bpb.mftmirror_lsn, errno);
+            AaruLogging.Debug(MODULE_NAME,
+                              "Error reading $MFTMirr data at cluster {0}: {1}",
+                              _bpb.mftmirror_lsn,
+                              errno);
 
             return;
         }
@@ -506,12 +755,12 @@ public sealed partial class NTFS
 
         for(uint i = 0; i < MIRROR_RECORD_COUNT; i++)
         {
-            int mirrorOffset = (int)(i * _mftRecordSize);
+            var mirrorOffset = (int)(i * _mftRecordSize);
 
             if(mirrorOffset + _mftRecordSize > mirrorData.Length) break;
 
             // Extract the mirror record
-            byte[] mirrorRecord = new byte[_mftRecordSize];
+            var mirrorRecord = new byte[_mftRecordSize];
             Array.Copy(mirrorData, mirrorOffset, mirrorRecord, 0, _mftRecordSize);
 
             // Apply USA fixup to mirror record
@@ -545,8 +794,10 @@ public sealed partial class NTFS
 
             if(errno != ErrorNumber.NoError)
             {
-                AaruLogging.Debug(MODULE_NAME, "$MFTMirr record {0}: could not read primary MFT record ({1})",
-                                  i, errno);
+                AaruLogging.Debug(MODULE_NAME,
+                                  "$MFTMirr record {0}: could not read primary MFT record ({1})",
+                                  i,
+                                  errno);
 
                 mirrorMismatches++;
 
@@ -558,7 +809,7 @@ public sealed partial class NTFS
 
             if(match)
             {
-                for(int b = 0; b < primaryRecord.Length; b++)
+                for(var b = 0; b < primaryRecord.Length; b++)
                 {
                     if(primaryRecord[b] != mirrorRecord[b])
                     {
@@ -589,8 +840,11 @@ public sealed partial class NTFS
                               MIRROR_RECORD_COUNT);
         }
         else
-            AaruLogging.Debug(MODULE_NAME, "$MFTMirr validation: all {0} records match primary MFT",
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "$MFTMirr validation: all {0} records match primary MFT",
                               MIRROR_RECORD_COUNT);
+        }
     }
 
     /// <summary>
@@ -613,11 +867,10 @@ public sealed partial class NTFS
 
         if(runErrno == ErrorNumber.NoError && dataRuns.Count > 0 && dataSize > 0)
         {
-            byte[] readBuf = Array.Empty<byte>();
-            ErrorNumber errno = ReadNonResidentData(dataRuns, dataSize, ref readBuf);
+            byte[]      readBuf = Array.Empty<byte>();
+            ErrorNumber errno   = ReadNonResidentData(dataRuns, dataSize, ref readBuf);
 
-            if(errno == ErrorNumber.NoError)
-                attrDefData = readBuf;
+            if(errno == ErrorNumber.NoError) attrDefData = readBuf;
         }
         else
         {
@@ -672,7 +925,7 @@ public sealed partial class NTFS
 
         // Parse entries: each AttrDef is 160 bytes (0xA0)
         int entrySize = Marshal.SizeOf<AttrDef>();
-        int pos       = 0;
+        var pos       = 0;
 
         while(pos + entrySize <= attrDefData.Length)
         {
@@ -681,13 +934,11 @@ public sealed partial class NTFS
             // End of table: type == 0
             if(entry.type == 0) break;
 
-            if(!_attributeDefinitions.ContainsKey(entry.type))
-                _attributeDefinitions[entry.type] = entry;
+            if(!_attributeDefinitions.ContainsKey(entry.type)) _attributeDefinitions[entry.type] = entry;
 
             pos += entrySize;
         }
 
-        AaruLogging.Debug(MODULE_NAME, "Loaded {0} attribute definitions from $AttrDef",
-                          _attributeDefinitions.Count);
+        AaruLogging.Debug(MODULE_NAME, "Loaded {0} attribute definitions from $AttrDef", _attributeDefinitions.Count);
     }
 }
