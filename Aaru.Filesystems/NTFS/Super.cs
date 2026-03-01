@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemente.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Microsoft NT File System plugin.
@@ -26,13 +26,23 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
+/// <inheritdoc />
 public sealed partial class NTFS
 {
     /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        stat = _statfs.ShallowCopy();
+
+        return ErrorNumber.NoError;
+    }
 }
