@@ -28,8 +28,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -38,12 +41,36 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the New Technology File System (NTFS)</summary>
 public sealed partial class NTFS : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "NTFS";
+
+    BiosParameterBlock        _bpb;
+    uint                      _bytesPerCluster;
+    uint                      _bytesPerSector;
+    bool                      _debug;
+    Encoding                  _encoding;
+    IMediaImage               _image;
+    uint                      _indexBlockSize;
+    uint                      _mftRecordSize;
+    bool                      _mounted;
+    string                    _ntfsVersion;
+    Partition                 _partition;
+    Dictionary<string, ulong> _rootDirectoryCache;
+    uint                      _sectorsPerCluster;
+    FileSystemInfo            _statfs;
+
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
     /// <inheritdoc />
     public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces => [];
+
+    static Dictionary<string, string> GetDefaultOptions() => new()
+    {
+        {
+            "debug", false.ToString()
+        }
+    };
 
 #region IFilesystem Members
 
