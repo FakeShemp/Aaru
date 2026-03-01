@@ -87,8 +87,10 @@ public sealed partial class NTFS
                              : FileAttributes.File
         };
 
-        // Walk attributes to find $STANDARD_INFORMATION, $FILE_NAME, and $DATA
-        int offset = header.attrs_offset;
+        // Walk attributes (including extension records via $ATTRIBUTE_LIST)
+        ErrorNumber findErrno = FindAllAttributes(recordData, header, mftRecordNumber, out List<FoundAttribute> attrs);
+
+        if(findErrno != ErrorNumber.NoError) return findErrno;
 
         FileAttributeFlags ntfsAttributes    = 0;
         var                foundStdInfo      = false;
@@ -106,33 +108,30 @@ public sealed partial class NTFS
         DateTime?          lxMtime           = null;
         DateTime?          lxCtime           = null;
 
-        while(offset + 4 <= recordData.Length)
+        foreach(FoundAttribute attr in attrs)
         {
-            var attrType = (AttributeType)BitConverter.ToUInt32(recordData, offset);
+            var attrType   = (AttributeType)BitConverter.ToUInt32(attr.RecordData, attr.Offset);
+            var attrLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 4);
 
-            if(attrType == AttributeType.End || attrType == AttributeType.Unused) break;
+            if(attrLength == 0) continue;
 
-            var attrLength = BitConverter.ToUInt32(recordData, offset + 4);
-
-            if(attrLength == 0 || offset + attrLength > recordData.Length) break;
-
-            byte nonResident = recordData[offset + 8];
+            byte nonResident = attr.RecordData[attr.Offset + 8];
 
             switch(attrType)
             {
                 case AttributeType.StandardInformation when nonResident == 0:
                 {
-                    var valueOffset = BitConverter.ToUInt16(recordData, offset + 0x14);
-                    var valueLength = BitConverter.ToUInt32(recordData, offset + 0x10);
+                    var valueOffset = BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x14);
+                    var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
 
-                    int valueStart = offset + valueOffset;
+                    int valueStart = attr.Offset + valueOffset;
 
-                    if(valueStart + valueLength <= recordData.Length)
+                    if(valueStart + valueLength <= attr.RecordData.Length)
                     {
                         if(valueLength >= Marshal.SizeOf<StandardInformationV3>())
                         {
                             StandardInformationV3 stdInfo =
-                                Marshal.ByteArrayToStructureLittleEndian<StandardInformationV3>(recordData,
+                                Marshal.ByteArrayToStructureLittleEndian<StandardInformationV3>(attr.RecordData,
                                     valueStart,
                                     Marshal.SizeOf<StandardInformationV3>());
 
@@ -149,7 +148,7 @@ public sealed partial class NTFS
                         else if(valueLength >= (uint)Marshal.SizeOf<StandardInformationV1>())
                         {
                             StandardInformationV1 stdInfo =
-                                Marshal.ByteArrayToStructureLittleEndian<StandardInformationV1>(recordData,
+                                Marshal.ByteArrayToStructureLittleEndian<StandardInformationV1>(attr.RecordData,
                                     valueStart,
                                     Marshal.SizeOf<StandardInformationV1>());
 
@@ -169,15 +168,15 @@ public sealed partial class NTFS
                 }
                 case AttributeType.FileName when nonResident == 0:
                 {
-                    var valueOffset = BitConverter.ToUInt16(recordData, offset + 0x14);
-                    var valueLength = BitConverter.ToUInt32(recordData, offset + 0x10);
+                    var valueOffset = BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x14);
+                    var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
 
-                    int valueStart = offset + valueOffset;
+                    int valueStart = attr.Offset + valueOffset;
 
-                    if(valueStart + Marshal.SizeOf<FileNameAttribute>() <= recordData.Length)
+                    if(valueStart + Marshal.SizeOf<FileNameAttribute>() <= attr.RecordData.Length)
                     {
                         FileNameAttribute fnAttr =
-                            Marshal.ByteArrayToStructureLittleEndian<FileNameAttribute>(recordData,
+                            Marshal.ByteArrayToStructureLittleEndian<FileNameAttribute>(attr.RecordData,
                                 valueStart,
                                 Marshal.SizeOf<FileNameAttribute>());
 
@@ -197,23 +196,23 @@ public sealed partial class NTFS
                 case AttributeType.Data:
                 {
                     // Only process the unnamed (default) $DATA attribute
-                    byte nameLength = recordData[offset + 9];
+                    byte nameLength = attr.RecordData[attr.Offset + 9];
 
-                    if(nameLength == 0)
+                    if(nameLength == 0 && !foundData)
                     {
                         if(nonResident == 0)
                         {
                             // Resident $DATA
-                            var valueLength = BitConverter.ToUInt32(recordData, offset + 0x10);
+                            var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
                             dataSize          = valueLength;
                             dataAllocatedSize = valueLength;
                         }
                         else
                         {
-                            // Non-resident $DATA
+                            // Non-resident $DATA — use first extent for size info
                             NonResidentAttributeRecord nrAttr =
-                                Marshal.ByteArrayToStructureLittleEndian<NonResidentAttributeRecord>(recordData,
-                                    offset,
+                                Marshal.ByteArrayToStructureLittleEndian<NonResidentAttributeRecord>(attr.RecordData,
+                                    attr.Offset,
                                     Marshal.SizeOf<NonResidentAttributeRecord>());
 
                             dataSize          = (long)nrAttr.data_size;
@@ -227,8 +226,11 @@ public sealed partial class NTFS
                 }
                 case AttributeType.Ea:
                 {
-                    ErrorNumber eaErrno =
-                        ReadEaAttributeData(recordData, offset, nonResident, out byte[] eaData, out int eaLength);
+                    ErrorNumber eaErrno = ReadEaAttributeData(attr.RecordData,
+                                                              attr.Offset,
+                                                              nonResident,
+                                                              out byte[] eaData,
+                                                              out int eaLength);
 
                     if(eaErrno == ErrorNumber.NoError && eaLength > 0)
                     {
@@ -247,8 +249,6 @@ public sealed partial class NTFS
                     break;
                 }
             }
-
-            offset += (int)attrLength;
         }
 
         // Set file size from $DATA or $FILE_NAME
@@ -366,87 +366,74 @@ public sealed partial class NTFS
         // Reject directories
         if(header.flags.HasFlag(MftRecordFlags.IsDirectory)) return ErrorNumber.IsDirectory;
 
-        // Find the unnamed $DATA attribute
-        int offset = header.attrs_offset;
+        // Find the unnamed $DATA attribute across base + extension records
+        ErrorNumber findErrno = FindAttributes(recordData,
+                                               header,
+                                               mftRecordNumber,
+                                               AttributeType.Data,
+                                               null,
+                                               out List<FoundAttribute> dataAttrs);
 
-        while(offset + 4 <= recordData.Length)
+        if(findErrno != ErrorNumber.NoError) return findErrno;
+
+        if(dataAttrs.Count == 0) return ErrorNumber.NoSuchFile;
+
+        // Check first extent — if resident, data is inline
+        FoundAttribute firstAttr   = dataAttrs[0];
+        byte           nonResident = firstAttr.RecordData[firstAttr.Offset + 8];
+
+        if(nonResident == 0)
         {
-            var attrType = (AttributeType)BitConverter.ToUInt32(recordData, offset);
+            // Resident $DATA — small file stored in MFT record
+            var valueOffset = BitConverter.ToUInt16(firstAttr.RecordData, firstAttr.Offset + 0x14);
+            var valueLength = BitConverter.ToUInt32(firstAttr.RecordData, firstAttr.Offset + 0x10);
 
-            if(attrType == AttributeType.End || attrType == AttributeType.Unused) break;
+            int valueStart = firstAttr.Offset + valueOffset;
 
-            var attrLength = BitConverter.ToUInt32(recordData, offset + 4);
+            var residentData = new byte[valueLength];
 
-            if(attrLength == 0 || offset + attrLength > recordData.Length) break;
+            if(valueStart + valueLength <= firstAttr.RecordData.Length)
+                Array.Copy(firstAttr.RecordData, valueStart, residentData, 0, valueLength);
 
-            byte nonResident = recordData[offset + 8];
-
-            if(attrType == AttributeType.Data)
+            node = new NtfsFileNode
             {
-                // Only process the unnamed (default) $DATA attribute
-                byte nameLength = recordData[offset + 9];
+                Path         = normalizedPath,
+                Length       = valueLength,
+                Offset       = 0,
+                IsResident   = true,
+                ResidentData = residentData
+            };
 
-                if(nameLength == 0)
-                {
-                    if(nonResident == 0)
-                    {
-                        // Resident $DATA — small file stored in MFT record
-                        var valueOffset = BitConverter.ToUInt16(recordData, offset + 0x14);
-                        var valueLength = BitConverter.ToUInt32(recordData, offset + 0x10);
-
-                        int valueStart = offset + valueOffset;
-
-                        var residentData = new byte[valueLength];
-
-                        if(valueStart + valueLength <= recordData.Length)
-                            Array.Copy(recordData, valueStart, residentData, 0, valueLength);
-
-                        node = new NtfsFileNode
-                        {
-                            Path         = normalizedPath,
-                            Length       = valueLength,
-                            Offset       = 0,
-                            IsResident   = true,
-                            ResidentData = residentData
-                        };
-
-                        return ErrorNumber.NoError;
-                    }
-
-                    // Non-resident $DATA — parse data runs
-                    NonResidentAttributeRecord nrAttr =
-                        Marshal.ByteArrayToStructureLittleEndian<NonResidentAttributeRecord>(recordData,
-                            offset,
-                            Marshal.SizeOf<NonResidentAttributeRecord>());
-
-                    int runListOffset = offset + nrAttr.mapping_pairs_offset;
-
-                    List<(long offset, long length)> dataRuns =
-                        ParseDataRuns(recordData, runListOffset, offset + (int)attrLength);
-
-                    bool isCompressed = nrAttr.compression_unit != 0 && nrAttr.flags.HasFlag(AttributeFlags.Compressed);
-                    int  compressionUnitClusters = isCompressed ? 1 << nrAttr.compression_unit : 0;
-
-                    node = new NtfsFileNode
-                    {
-                        Path                    = normalizedPath,
-                        Length                  = (long)nrAttr.data_size,
-                        Offset                  = 0,
-                        IsResident              = false,
-                        DataRuns                = dataRuns,
-                        IsCompressed            = isCompressed,
-                        CompressionUnitClusters = compressionUnitClusters
-                    };
-
-                    return ErrorNumber.NoError;
-                }
-            }
-
-            offset += (int)attrLength;
+            return ErrorNumber.NoError;
         }
 
-        // No unnamed $DATA attribute found
-        return ErrorNumber.NoSuchFile;
+        // Non-resident $DATA — assemble data runs from all extents
+        ErrorNumber asmErrno = AssembleNonResidentRuns(mftRecordNumber,
+                                                       AttributeType.Data,
+                                                       null,
+                                                       out List<(long offset, long length)> dataRuns,
+                                                       out long dataSize,
+                                                       out _,
+                                                       out AttributeFlags dataFlags,
+                                                       out byte compUnit);
+
+        if(asmErrno != ErrorNumber.NoError) return asmErrno;
+
+        bool isCompressed            = compUnit != 0 && dataFlags.HasFlag(AttributeFlags.Compressed);
+        int  compressionUnitClusters = isCompressed ? 1 << compUnit : 0;
+
+        node = new NtfsFileNode
+        {
+            Path                    = normalizedPath,
+            Length                  = dataSize,
+            Offset                  = 0,
+            IsResident              = false,
+            DataRuns                = dataRuns,
+            IsCompressed            = isCompressed,
+            CompressionUnitClusters = compressionUnitClusters
+        };
+
+        return ErrorNumber.NoError;
     }
 
     /// <inheritdoc />
@@ -537,157 +524,131 @@ public sealed partial class NTFS
             return ErrorNumber.InvalidArgument;
         }
 
-        // Walk attributes to find $REPARSE_POINT
-        int offset = header.attrs_offset;
+        // Find $REPARSE_POINT attribute across base + extension records
+        ErrorNumber findErrno = FindAttributes(recordData,
+                                               header,
+                                               mftRecordNumber,
+                                               AttributeType.ReparsePoint,
+                                               null,
+                                               out List<FoundAttribute> reparseAttrs);
 
-        while(offset + 4 <= recordData.Length)
+        if(findErrno != ErrorNumber.NoError) return findErrno;
+
+        if(reparseAttrs.Count == 0) return ErrorNumber.InvalidArgument;
+
+        FoundAttribute reparseAttr = reparseAttrs[0];
+        byte           nonResident = reparseAttr.RecordData[reparseAttr.Offset + 8];
+
+        if(nonResident != 0)
         {
-            var attrType = (AttributeType)BitConverter.ToUInt32(recordData, offset);
+            // Reparse points should always be resident
+            AaruLogging.Debug(MODULE_NAME, "Non-resident $REPARSE_POINT in MFT record {0}", mftRecordNumber);
 
-            if(attrType == AttributeType.End || attrType == AttributeType.Unused) break;
-
-            var attrLength = BitConverter.ToUInt32(recordData, offset + 4);
-
-            if(attrLength == 0 || offset + attrLength > recordData.Length) break;
-
-            if(attrType == AttributeType.ReparsePoint)
-            {
-                byte nonResident = recordData[offset + 8];
-
-                if(nonResident != 0)
-                {
-                    // Reparse points should always be resident
-                    AaruLogging.Debug(MODULE_NAME, "Non-resident $REPARSE_POINT in MFT record {0}", mftRecordNumber);
-
-                    return ErrorNumber.InvalidArgument;
-                }
-
-                var valueOffset = BitConverter.ToUInt16(recordData, offset + 0x14);
-                var valueLength = BitConverter.ToUInt32(recordData, offset + 0x10);
-
-                int valueStart        = offset + valueOffset;
-                int reparseHeaderSize = Marshal.SizeOf<ReparsePointAttribute>();
-
-                if(valueStart + reparseHeaderSize > recordData.Length || valueLength < reparseHeaderSize)
-                    return ErrorNumber.InvalidArgument;
-
-                ReparsePointAttribute reparseHeader =
-                    Marshal.ByteArrayToStructureLittleEndian<ReparsePointAttribute>(recordData,
-                        valueStart,
-                        reparseHeaderSize);
-
-                int dataStart = valueStart + reparseHeaderSize;
-
-                switch(reparseHeader.reparse_tag)
-                {
-                    case ReparseTag.Symlink:
-                    {
-                        // Symlink reparse buffer:
-                        // SubstituteNameOffset (2), SubstituteNameLength (2),
-                        // PrintNameOffset (2), PrintNameLength (2), Flags (4),
-                        // then PathBuffer
-                        if(dataStart + 12 > recordData.Length) return ErrorNumber.InvalidArgument;
-
-                        var printNameOffset = BitConverter.ToUInt16(recordData, dataStart + 4);
-                        var printNameLength = BitConverter.ToUInt16(recordData, dataStart + 6);
-
-                        int pathBufferStart = dataStart       + 12;
-                        int printNameStart  = pathBufferStart + printNameOffset;
-
-                        if(printNameLength > 0 && printNameStart + printNameLength <= recordData.Length)
-                            dest = Encoding.Unicode.GetString(recordData, printNameStart, printNameLength);
-                        else
-                        {
-                            // Fall back to SubstituteName
-                            var substituteNameOffset = BitConverter.ToUInt16(recordData, dataStart);
-                            var substituteNameLength = BitConverter.ToUInt16(recordData, dataStart + 2);
-
-                            int substituteNameStart = pathBufferStart + substituteNameOffset;
-
-                            if(substituteNameLength                       == 0 ||
-                               substituteNameStart + substituteNameLength > recordData.Length)
-                                return ErrorNumber.InvalidArgument;
-
-                            dest = Encoding.Unicode.GetString(recordData, substituteNameStart, substituteNameLength);
-
-                            // Strip \??\ prefix from SubstituteName
-                            if(dest.StartsWith(@"\??\", StringComparison.Ordinal)) dest = dest[4..];
-                        }
-
-                        // Convert backslashes to forward slashes
-                        dest = dest.Replace('\\', '/');
-
-                        return ErrorNumber.NoError;
-                    }
-                    case ReparseTag.MountPoint:
-                    {
-                        // Mount point (junction) reparse buffer:
-                        // SubstituteNameOffset (2), SubstituteNameLength (2),
-                        // PrintNameOffset (2), PrintNameLength (2),
-                        // then PathBuffer (no Flags field)
-                        if(dataStart + 8 > recordData.Length) return ErrorNumber.InvalidArgument;
-
-                        var printNameOffset = BitConverter.ToUInt16(recordData, dataStart + 4);
-                        var printNameLength = BitConverter.ToUInt16(recordData, dataStart + 6);
-
-                        int pathBufferStart = dataStart       + 8;
-                        int printNameStart  = pathBufferStart + printNameOffset;
-
-                        if(printNameLength > 0 && printNameStart + printNameLength <= recordData.Length)
-                            dest = Encoding.Unicode.GetString(recordData, printNameStart, printNameLength);
-                        else
-                        {
-                            // Fall back to SubstituteName
-                            var substituteNameOffset = BitConverter.ToUInt16(recordData, dataStart);
-                            var substituteNameLength = BitConverter.ToUInt16(recordData, dataStart + 2);
-
-                            int substituteNameStart = pathBufferStart + substituteNameOffset;
-
-                            if(substituteNameLength                       == 0 ||
-                               substituteNameStart + substituteNameLength > recordData.Length)
-                                return ErrorNumber.InvalidArgument;
-
-                            dest = Encoding.Unicode.GetString(recordData, substituteNameStart, substituteNameLength);
-
-                            // Strip \??\ prefix from SubstituteName
-                            if(dest.StartsWith(@"\??\", StringComparison.Ordinal)) dest = dest[4..];
-                        }
-
-                        // Convert backslashes to forward slashes
-                        dest = dest.Replace('\\', '/');
-
-                        return ErrorNumber.NoError;
-                    }
-                    case ReparseTag.LxSymlink:
-                    {
-                        // WSL symlink: 4-byte version field, then UTF-8 target path
-                        if(dataStart + 4 > recordData.Length) return ErrorNumber.InvalidArgument;
-
-                        int targetStart  = dataStart                         + 4;
-                        int targetLength = reparseHeader.reparse_data_length - 4;
-
-                        if(targetLength <= 0 || targetStart + targetLength > recordData.Length)
-                            return ErrorNumber.InvalidArgument;
-
-                        dest = Encoding.UTF8.GetString(recordData, targetStart, targetLength);
-
-                        return ErrorNumber.NoError;
-                    }
-                    default:
-                        AaruLogging.Debug(MODULE_NAME,
-                                          "Unsupported reparse tag 0x{0:X8} in MFT record {1}",
-                                          (uint)reparseHeader.reparse_tag,
-                                          mftRecordNumber);
-
-                        return ErrorNumber.NotSupported;
-                }
-            }
-
-            offset += (int)attrLength;
+            return ErrorNumber.InvalidArgument;
         }
 
-        // No $REPARSE_POINT attribute found — not a symbolic link
-        return ErrorNumber.InvalidArgument;
+        byte[] rd      = reparseAttr.RecordData;
+        int    attrOff = reparseAttr.Offset;
+
+        var valueOffset = BitConverter.ToUInt16(rd, attrOff + 0x14);
+        var valueLength = BitConverter.ToUInt32(rd, attrOff + 0x10);
+
+        int valueStart        = attrOff + valueOffset;
+        int reparseHeaderSize = Marshal.SizeOf<ReparsePointAttribute>();
+
+        if(valueStart + reparseHeaderSize > rd.Length || valueLength < reparseHeaderSize)
+            return ErrorNumber.InvalidArgument;
+
+        ReparsePointAttribute reparseHeader =
+            Marshal.ByteArrayToStructureLittleEndian<ReparsePointAttribute>(rd, valueStart, reparseHeaderSize);
+
+        int dataStart = valueStart + reparseHeaderSize;
+
+        switch(reparseHeader.reparse_tag)
+        {
+            case ReparseTag.Symlink:
+            {
+                if(dataStart + 12 > rd.Length) return ErrorNumber.InvalidArgument;
+
+                var printNameOffset = BitConverter.ToUInt16(rd, dataStart + 4);
+                var printNameLength = BitConverter.ToUInt16(rd, dataStart + 6);
+
+                int pathBufferStart = dataStart       + 12;
+                int printNameStart  = pathBufferStart + printNameOffset;
+
+                if(printNameLength > 0 && printNameStart + printNameLength <= rd.Length)
+                    dest = Encoding.Unicode.GetString(rd, printNameStart, printNameLength);
+                else
+                {
+                    var substituteNameOffset = BitConverter.ToUInt16(rd, dataStart);
+                    var substituteNameLength = BitConverter.ToUInt16(rd, dataStart + 2);
+
+                    int substituteNameStart = pathBufferStart + substituteNameOffset;
+
+                    if(substituteNameLength == 0 || substituteNameStart + substituteNameLength > rd.Length)
+                        return ErrorNumber.InvalidArgument;
+
+                    dest = Encoding.Unicode.GetString(rd, substituteNameStart, substituteNameLength);
+
+                    if(dest.StartsWith(@"\??\", StringComparison.Ordinal)) dest = dest[4..];
+                }
+
+                dest = dest.Replace('\\', '/');
+
+                return ErrorNumber.NoError;
+            }
+            case ReparseTag.MountPoint:
+            {
+                if(dataStart + 8 > rd.Length) return ErrorNumber.InvalidArgument;
+
+                var printNameOffset = BitConverter.ToUInt16(rd, dataStart + 4);
+                var printNameLength = BitConverter.ToUInt16(rd, dataStart + 6);
+
+                int pathBufferStart = dataStart       + 8;
+                int printNameStart  = pathBufferStart + printNameOffset;
+
+                if(printNameLength > 0 && printNameStart + printNameLength <= rd.Length)
+                    dest = Encoding.Unicode.GetString(rd, printNameStart, printNameLength);
+                else
+                {
+                    var substituteNameOffset = BitConverter.ToUInt16(rd, dataStart);
+                    var substituteNameLength = BitConverter.ToUInt16(rd, dataStart + 2);
+
+                    int substituteNameStart = pathBufferStart + substituteNameOffset;
+
+                    if(substituteNameLength == 0 || substituteNameStart + substituteNameLength > rd.Length)
+                        return ErrorNumber.InvalidArgument;
+
+                    dest = Encoding.Unicode.GetString(rd, substituteNameStart, substituteNameLength);
+
+                    if(dest.StartsWith(@"\??\", StringComparison.Ordinal)) dest = dest[4..];
+                }
+
+                dest = dest.Replace('\\', '/');
+
+                return ErrorNumber.NoError;
+            }
+            case ReparseTag.LxSymlink:
+            {
+                if(dataStart + 4 > rd.Length) return ErrorNumber.InvalidArgument;
+
+                int targetStart  = dataStart                         + 4;
+                int targetLength = reparseHeader.reparse_data_length - 4;
+
+                if(targetLength <= 0 || targetStart + targetLength > rd.Length) return ErrorNumber.InvalidArgument;
+
+                dest = Encoding.UTF8.GetString(rd, targetStart, targetLength);
+
+                return ErrorNumber.NoError;
+            }
+            default:
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Unsupported reparse tag 0x{0:X8} in MFT record {1}",
+                                  (uint)reparseHeader.reparse_tag,
+                                  mftRecordNumber);
+
+                return ErrorNumber.NotSupported;
+        }
     }
 
     /// <summary>Reads uncompressed non-resident file data from data runs with single-cluster caching.</summary>

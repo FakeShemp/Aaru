@@ -69,42 +69,25 @@ public sealed partial class NTFS
             if(resolveErrno != ErrorNumber.NoError) return resolveErrno;
         }
 
-        ErrorNumber errno = ReadMftRecord(mftRecordNumber, out byte[] recordData);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
-        MftRecord header =
-            Marshal.ByteArrayToStructureLittleEndian<MftRecord>(recordData, 0, Marshal.SizeOf<MftRecord>());
-
-        if(header.magic != NtfsRecordMagic.File)
-        {
-            AaruLogging.Debug(MODULE_NAME, "MFT record {0} has invalid magic", mftRecordNumber);
-
-            return ErrorNumber.InvalidArgument;
-        }
-
         xattrs = [];
 
-        int offset = header.attrs_offset;
+        // Find all attributes across base + extension records
+        ErrorNumber findErrno = FindAllAttributes(mftRecordNumber, out List<FoundAttribute> attrs);
 
-        while(offset + 4 <= recordData.Length)
+        if(findErrno != ErrorNumber.NoError) return findErrno;
+
+        foreach(FoundAttribute attr in attrs)
         {
-            var attrType = (AttributeType)BitConverter.ToUInt32(recordData, offset);
+            var attrType = (AttributeType)BitConverter.ToUInt32(attr.RecordData, attr.Offset);
 
-            if(attrType == AttributeType.End || attrType == AttributeType.Unused) break;
-
-            var attrLength = BitConverter.ToUInt32(recordData, offset + 4);
-
-            if(attrLength == 0 || offset + attrLength > recordData.Length) break;
-
-            byte nonResident = recordData[offset + 8];
+            byte nonResident = attr.RecordData[attr.Offset + 8];
 
             switch(attrType)
             {
                 // Security descriptor → expose as "com.microsoft.ntacl"
                 case AttributeType.SecurityDescriptor when nonResident == 0:
                 {
-                    var valueLength = BitConverter.ToUInt32(recordData, offset + 0x10);
+                    var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
 
                     if(valueLength > 0) xattrs.Add(NT_ACL);
 
@@ -114,8 +97,11 @@ public sealed partial class NTFS
                 // Extended Attributes → expose each EA prefixed with "com.ibm.os2."
                 case AttributeType.Ea:
                 {
-                    ErrorNumber eaErrno =
-                        ReadEaAttributeData(recordData, offset, nonResident, out byte[] eaData, out int eaLength);
+                    ErrorNumber eaErrno = ReadEaAttributeData(attr.RecordData,
+                                                              attr.Offset,
+                                                              nonResident,
+                                                              out byte[] eaData,
+                                                              out int eaLength);
 
                     if(eaErrno == ErrorNumber.NoError && eaLength > 0) EnumerateEas(eaData, 0, eaLength, xattrs);
 
@@ -125,13 +111,14 @@ public sealed partial class NTFS
                 // Named $DATA attributes → Alternate Data Streams (no prefix)
                 case AttributeType.Data:
                 {
-                    byte nameLength = recordData[offset + 9];
+                    byte nameLength = attr.RecordData[attr.Offset + 9];
 
                     if(nameLength > 0)
                     {
-                        var nameOffset = BitConverter.ToUInt16(recordData, offset + 0x0A);
+                        var nameOffset = BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x0A);
 
-                        string streamName = Encoding.Unicode.GetString(recordData, offset + nameOffset, nameLength * 2);
+                        string streamName =
+                            Encoding.Unicode.GetString(attr.RecordData, attr.Offset + nameOffset, nameLength * 2);
 
                         xattrs.Add(streamName);
                     }
@@ -139,8 +126,6 @@ public sealed partial class NTFS
                     break;
                 }
             }
-
-            offset += (int)attrLength;
         }
 
         return ErrorNumber.NoError;
@@ -184,7 +169,7 @@ public sealed partial class NTFS
         }
 
         // Determine what kind of xattr is being requested
-        if(xattr == NT_ACL) return ReadSecurityDescriptor(recordData, header, ref buf);
+        if(xattr == NT_ACL) return ReadSecurityDescriptor(recordData, header, mftRecordNumber, ref buf);
 
         if(xattr.StartsWith(EA_PREFIX, StringComparison.Ordinal))
         {
@@ -194,91 +179,75 @@ public sealed partial class NTFS
             if(eaName is EA_LXUID or EA_LXGID or EA_LXMOD or EA_LXDEV or EA_LXATTRB)
                 return ErrorNumber.NoSuchExtendedAttribute;
 
-            return ReadEa(recordData, header, eaName, ref buf);
+            return ReadEa(recordData, header, mftRecordNumber, eaName, ref buf);
         }
 
         // Otherwise it's an Alternate Data Stream name
-        return ReadAlternateDataStream(recordData, header, xattr, ref buf);
+        return ReadAlternateDataStream(recordData, header, mftRecordNumber, xattr, ref buf);
     }
 
     /// <summary>Reads the raw security descriptor ($SECURITY_DESCRIPTOR attribute) from an MFT record.</summary>
     /// <param name="recordData">Raw MFT record data.</param>
     /// <param name="header">Parsed MFT record header.</param>
+    /// <param name="mftRecordNumber">MFT record number (for attribute list traversal).</param>
     /// <param name="buf">Output buffer for the raw security descriptor bytes.</param>
     /// <returns>Error number indicating success or failure.</returns>
-    ErrorNumber ReadSecurityDescriptor(byte[] recordData, in MftRecord header, ref byte[] buf)
+    ErrorNumber ReadSecurityDescriptor(byte[] recordData, in MftRecord header, uint mftRecordNumber, ref byte[] buf)
     {
-        int offset = header.attrs_offset;
+        ErrorNumber findErrno = FindAttributes(recordData,
+                                               header,
+                                               mftRecordNumber,
+                                               AttributeType.SecurityDescriptor,
+                                               null,
+                                               out List<FoundAttribute> results);
 
-        while(offset + 4 <= recordData.Length)
-        {
-            var attrType = (AttributeType)BitConverter.ToUInt32(recordData, offset);
+        if(findErrno != ErrorNumber.NoError || results.Count == 0) return ErrorNumber.NoSuchExtendedAttribute;
 
-            if(attrType == AttributeType.End || attrType == AttributeType.Unused) break;
+        FoundAttribute attr        = results[0];
+        byte           nonResident = attr.RecordData[attr.Offset + 8];
 
-            var attrLength = BitConverter.ToUInt32(recordData, offset + 4);
+        if(nonResident != 0) return ErrorNumber.NoSuchExtendedAttribute;
 
-            if(attrLength == 0 || offset + attrLength > recordData.Length) break;
+        var valueOffset = BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x14);
+        var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
 
-            byte nonResident = recordData[offset + 8];
+        int valueStart = attr.Offset + valueOffset;
 
-            if(attrType == AttributeType.SecurityDescriptor && nonResident == 0)
-            {
-                var valueOffset = BitConverter.ToUInt16(recordData, offset + 0x14);
-                var valueLength = BitConverter.ToUInt32(recordData, offset + 0x10);
+        if(valueStart + valueLength > attr.RecordData.Length) return ErrorNumber.NoSuchExtendedAttribute;
 
-                int valueStart = offset + valueOffset;
+        buf = new byte[valueLength];
+        Array.Copy(attr.RecordData, valueStart, buf, 0, valueLength);
 
-                if(valueStart + valueLength > recordData.Length) break;
-
-                buf = new byte[valueLength];
-                Array.Copy(recordData, valueStart, buf, 0, valueLength);
-
-                return ErrorNumber.NoError;
-            }
-
-            offset += (int)attrLength;
-        }
-
-        return ErrorNumber.NoSuchExtendedAttribute;
+        return ErrorNumber.NoError;
     }
 
     /// <summary>Reads a specific Extended Attribute value from the $EA attribute in an MFT record.</summary>
     /// <param name="recordData">Raw MFT record data.</param>
     /// <param name="header">Parsed MFT record header.</param>
+    /// <param name="mftRecordNumber">MFT record number (for attribute list traversal).</param>
     /// <param name="eaName">EA name to search for (without the "com.ibm.os2." prefix).</param>
     /// <param name="buf">Output buffer for the EA value bytes.</param>
     /// <returns>Error number indicating success or failure.</returns>
-    ErrorNumber ReadEa(byte[] recordData, in MftRecord header, string eaName, ref byte[] buf)
+    ErrorNumber ReadEa(byte[] recordData, in MftRecord header, uint mftRecordNumber, string eaName, ref byte[] buf)
     {
-        int offset = header.attrs_offset;
+        ErrorNumber findErrno = FindAttributes(recordData,
+                                               header,
+                                               mftRecordNumber,
+                                               AttributeType.Ea,
+                                               null,
+                                               out List<FoundAttribute> results);
 
-        while(offset + 4 <= recordData.Length)
-        {
-            var attrType = (AttributeType)BitConverter.ToUInt32(recordData, offset);
+        if(findErrno != ErrorNumber.NoError || results.Count == 0) return ErrorNumber.NoSuchExtendedAttribute;
 
-            if(attrType == AttributeType.End || attrType == AttributeType.Unused) break;
+        FoundAttribute attr        = results[0];
+        byte           nonResident = attr.RecordData[attr.Offset + 8];
 
-            var attrLength = BitConverter.ToUInt32(recordData, offset + 4);
+        ErrorNumber eaErrno =
+            ReadEaAttributeData(attr.RecordData, attr.Offset, nonResident, out byte[] eaData, out int eaLength);
 
-            if(attrLength == 0 || offset + attrLength > recordData.Length) break;
+        if(eaErrno != ErrorNumber.NoError) return eaErrno;
 
-            byte nonResident = recordData[offset + 8];
-
-            if(attrType == AttributeType.Ea)
-            {
-                ErrorNumber eaErrno =
-                    ReadEaAttributeData(recordData, offset, nonResident, out byte[] eaData, out int eaLength);
-
-                if(eaErrno != ErrorNumber.NoError) return eaErrno;
-
-                if(eaLength > 0) return FindEaByName(eaData, 0, eaLength, eaName, ref buf);
-
-                break;
-            }
-
-            offset += (int)attrLength;
-        }
+        if(eaLength > 0) return FindEaByName(eaData, 0, eaLength, eaName, ref buf);
 
         return ErrorNumber.NoSuchExtendedAttribute;
     }
@@ -286,73 +255,54 @@ public sealed partial class NTFS
     /// <summary>Reads a named Alternate Data Stream from an MFT record.</summary>
     /// <param name="recordData">Raw MFT record data.</param>
     /// <param name="header">Parsed MFT record header.</param>
+    /// <param name="mftRecordNumber">MFT record number (for attribute list traversal).</param>
     /// <param name="streamName">ADS name to search for.</param>
     /// <param name="buf">Output buffer for the stream data.</param>
     /// <returns>Error number indicating success or failure.</returns>
-    ErrorNumber ReadAlternateDataStream(byte[] recordData, in MftRecord header, string streamName, ref byte[] buf)
+    ErrorNumber ReadAlternateDataStream(byte[] recordData, in MftRecord header, uint mftRecordNumber, string streamName,
+                                        ref byte[] buf)
     {
-        int offset = header.attrs_offset;
+        ErrorNumber findErrno = FindAttributes(recordData,
+                                               header,
+                                               mftRecordNumber,
+                                               AttributeType.Data,
+                                               streamName,
+                                               out List<FoundAttribute> results);
 
-        while(offset + 4 <= recordData.Length)
+        if(findErrno != ErrorNumber.NoError || results.Count == 0) return ErrorNumber.NoSuchExtendedAttribute;
+
+        FoundAttribute attr        = results[0];
+        byte           nonResident = attr.RecordData[attr.Offset + 8];
+
+        if(nonResident == 0)
         {
-            var attrType = (AttributeType)BitConverter.ToUInt32(recordData, offset);
+            // Resident ADS
+            var valueOffset = BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x14);
+            var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
 
-            if(attrType == AttributeType.End || attrType == AttributeType.Unused) break;
+            int valueStart = attr.Offset + valueOffset;
 
-            var attrLength = BitConverter.ToUInt32(recordData, offset + 4);
+            if(valueStart + valueLength > attr.RecordData.Length) return ErrorNumber.NoSuchExtendedAttribute;
 
-            if(attrLength == 0 || offset + attrLength > recordData.Length) break;
+            buf = new byte[valueLength];
+            Array.Copy(attr.RecordData, valueStart, buf, 0, valueLength);
 
-            byte nonResident = recordData[offset + 8];
-
-            if(attrType == AttributeType.Data)
-            {
-                byte nameLength = recordData[offset + 9];
-
-                if(nameLength > 0)
-                {
-                    var nameOffset = BitConverter.ToUInt16(recordData, offset + 0x0A);
-
-                    string name = Encoding.Unicode.GetString(recordData, offset + nameOffset, nameLength * 2);
-
-                    if(string.Equals(name, streamName, StringComparison.Ordinal))
-                    {
-                        if(nonResident == 0)
-                        {
-                            // Resident ADS
-                            var valueOffset = BitConverter.ToUInt16(recordData, offset + 0x14);
-                            var valueLength = BitConverter.ToUInt32(recordData, offset + 0x10);
-
-                            int valueStart = offset + valueOffset;
-
-                            if(valueStart + valueLength > recordData.Length) break;
-
-                            buf = new byte[valueLength];
-                            Array.Copy(recordData, valueStart, buf, 0, valueLength);
-
-                            return ErrorNumber.NoError;
-                        }
-
-                        // Non-resident ADS — read via data runs
-                        NonResidentAttributeRecord nrAttr =
-                            Marshal.ByteArrayToStructureLittleEndian<NonResidentAttributeRecord>(recordData,
-                                offset,
-                                Marshal.SizeOf<NonResidentAttributeRecord>());
-
-                        int runListOffset = offset + nrAttr.mapping_pairs_offset;
-
-                        List<(long offset, long length)> dataRuns =
-                            ParseDataRuns(recordData, runListOffset, offset + (int)attrLength);
-
-                        return ReadNonResidentData(dataRuns, (long)nrAttr.data_size, ref buf);
-                    }
-                }
-            }
-
-            offset += (int)attrLength;
+            return ErrorNumber.NoError;
         }
 
-        return ErrorNumber.NoSuchExtendedAttribute;
+        // Non-resident ADS — assemble data runs from all extents
+        ErrorNumber asmErrno = AssembleNonResidentRuns(mftRecordNumber,
+                                                       AttributeType.Data,
+                                                       streamName,
+                                                       out List<(long offset, long length)> dataRuns,
+                                                       out long dataSize,
+                                                       out _,
+                                                       out _,
+                                                       out _);
+
+        if(asmErrno != ErrorNumber.NoError) return asmErrno;
+
+        return ReadNonResidentData(dataRuns, dataSize, ref buf);
     }
 
     /// <summary>Enumerates EA entries and adds their names (prefixed with "com.ibm.os2.") to the xattr list.</summary>

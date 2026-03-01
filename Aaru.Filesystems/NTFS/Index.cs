@@ -68,7 +68,7 @@ public sealed partial class NTFS
             return ErrorNumber.NotDirectory;
         }
 
-        return CacheDirectoryEntries(recordData, header, entries);
+        return CacheDirectoryEntries(recordData, header, mftRecordNumber, entries);
     }
 
     /// <summary>Caches the root directory entries from the $INDEX_ROOT attribute in the root MFT record.</summary>
@@ -76,76 +76,78 @@ public sealed partial class NTFS
     /// <param name="header">Parsed MFT record header.</param>
     /// <returns>Error number indicating success or failure.</returns>
     ErrorNumber CacheRootDirectory(byte[] recordData, in MftRecord header) =>
-        CacheDirectoryEntries(recordData, header, _rootDirectoryCache);
+        CacheDirectoryEntries(recordData, header, (uint)SystemFileNumber.Root, _rootDirectoryCache);
 
     /// <summary>Caches directory entries from the $INDEX_ROOT attribute in an MFT record.</summary>
     /// <param name="recordData">Raw directory MFT record data after USA fixup.</param>
     /// <param name="header">Parsed MFT record header.</param>
+    /// <param name="mftRecordNumber">MFT record number (for attribute list traversal).</param>
     /// <param name="cache">Target dictionary to populate with file names and MFT references.</param>
     /// <returns>Error number indicating success or failure.</returns>
-    ErrorNumber CacheDirectoryEntries(byte[] recordData, in MftRecord header, Dictionary<string, ulong> cache)
+    ErrorNumber CacheDirectoryEntries(byte[]                    recordData, in MftRecord header, uint mftRecordNumber,
+                                      Dictionary<string, ulong> cache)
     {
-        int offset = header.attrs_offset;
+        // Find the $INDEX_ROOT attribute across base + extension records
+        ErrorNumber findErrno = FindAttributes(recordData,
+                                               header,
+                                               mftRecordNumber,
+                                               AttributeType.IndexRoot,
+                                               null,
+                                               out List<FoundAttribute> indexRootAttrs);
 
-        // Find the $INDEX_ROOT attribute
-        while(offset + 4 <= recordData.Length)
+        if(findErrno != ErrorNumber.NoError) return findErrno;
+
+        foreach(FoundAttribute attr in indexRootAttrs)
         {
-            var attrType = (AttributeType)BitConverter.ToUInt32(recordData, offset);
+            byte nonResident = attr.RecordData[attr.Offset + 8];
 
-            if(attrType == AttributeType.End || attrType == AttributeType.Unused) break;
+            if(nonResident != 0) continue;
 
-            var attrLength = BitConverter.ToUInt32(recordData, offset + 4);
+            var valueOffset = BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x14);
+            var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
 
-            if(attrLength == 0 || offset + attrLength > recordData.Length) break;
+            int valueStart = attr.Offset + valueOffset;
 
-            byte nonResident = recordData[offset + 8];
+            if(valueStart + valueLength > attr.RecordData.Length) continue;
 
-            if(attrType == AttributeType.IndexRoot && nonResident == 0)
+            // Parse the INDEX_ROOT header
+            IndexRoot indexRoot =
+                Marshal.ByteArrayToStructureLittleEndian<IndexRoot>(attr.RecordData, valueStart, (int)valueLength);
+
+            // Only process directory ($FILE_NAME) indexes
+            if(indexRoot.type != AttributeType.FileName) continue;
+
+            // The IndexHeader starts at offset 0x10 within INDEX_ROOT
+            int indexHeaderOffset = valueStart + 0x10;
+
+            // Parse index entries starting from entries_offset relative to the IndexHeader
+            int entriesStart = indexHeaderOffset + (int)indexRoot.index.entries_offset;
+            int entriesEnd   = indexHeaderOffset + (int)indexRoot.index.index_length;
+
+            ParseIndexEntries(attr.RecordData, entriesStart, entriesEnd, cache);
+
+            // If the index has sub-nodes (LARGE_INDEX), we also need to read $INDEX_ALLOCATION
+            if(indexRoot.index.flags.HasFlag(IndexHeaderFlags.LargeIndex))
             {
-                var valueOffset = BitConverter.ToUInt16(recordData, offset + 0x14);
-                var valueLength = BitConverter.ToUInt32(recordData, offset + 0x10);
+                // Assemble $INDEX_ALLOCATION data runs from all extents
+                ErrorNumber idxAllocErrno = AssembleNonResidentRuns(mftRecordNumber,
+                                                                    AttributeType.IndexAllocation,
+                                                                    null,
+                                                                    out List<(long offset, long length)> idxDataRuns,
+                                                                    out _,
+                                                                    out _,
+                                                                    out _,
+                                                                    out _);
 
-                int valueStart = offset + valueOffset;
-
-                if(valueStart + valueLength > recordData.Length)
-                {
-                    offset += (int)attrLength;
-
-                    continue;
-                }
-
-                // Parse the INDEX_ROOT header
-                IndexRoot indexRoot =
-                    Marshal.ByteArrayToStructureLittleEndian<IndexRoot>(recordData, valueStart, (int)valueLength);
-
-                // Only process directory ($FILE_NAME) indexes
-                if(indexRoot.type != AttributeType.FileName)
-                {
-                    offset += (int)attrLength;
-
-                    continue;
-                }
-
-                // The IndexHeader starts at offset 0x10 within INDEX_ROOT
-                int indexHeaderOffset = valueStart + 0x10;
-
-                // Parse index entries starting from entries_offset relative to the IndexHeader
-                int entriesStart = indexHeaderOffset + (int)indexRoot.index.entries_offset;
-                int entriesEnd   = indexHeaderOffset + (int)indexRoot.index.index_length;
-
-                ParseIndexEntries(recordData, entriesStart, entriesEnd, cache);
-
-                // If the index has sub-nodes (LARGE_INDEX), we also need to read $INDEX_ALLOCATION
-                if(indexRoot.index.flags.HasFlag(IndexHeaderFlags.LargeIndex))
-                    CacheIndexAllocation(recordData, header, cache);
-
-                return ErrorNumber.NoError;
+                if(idxAllocErrno == ErrorNumber.NoError && idxDataRuns.Count > 0) ReadIndexBlocks(idxDataRuns, cache);
             }
 
-            offset += (int)attrLength;
+            return ErrorNumber.NoError;
         }
 
-        AaruLogging.Debug(MODULE_NAME, "Could not find $INDEX_ROOT attribute in root directory");
+        AaruLogging.Debug(MODULE_NAME,
+                          "Could not find $INDEX_ROOT attribute in directory MFT record {0}",
+                          mftRecordNumber);
 
         return ErrorNumber.InvalidArgument;
     }
@@ -217,52 +219,6 @@ public sealed partial class NTFS
     }
 
     /// <summary>
-    ///     Reads and parses index allocation blocks ($INDEX_ALLOCATION) from the root directory MFT record to cache
-    ///     additional directory entries beyond those in the $INDEX_ROOT.
-    /// </summary>
-    /// <param name="recordData">Raw root directory MFT record data after USA fixup.</param>
-    /// <param name="header">Parsed MFT record header.</param>
-    /// <param name="cache">Target dictionary to populate with file names and MFT references.</param>
-    void CacheIndexAllocation(byte[] recordData, in MftRecord header, Dictionary<string, ulong> cache)
-    {
-        int offset = header.attrs_offset;
-
-        // Find the $INDEX_ALLOCATION attribute
-        while(offset + 4 <= recordData.Length)
-        {
-            var attrType = (AttributeType)BitConverter.ToUInt32(recordData, offset);
-
-            if(attrType == AttributeType.End || attrType == AttributeType.Unused) break;
-
-            var attrLength = BitConverter.ToUInt32(recordData, offset + 4);
-
-            if(attrLength == 0 || offset + attrLength > recordData.Length) break;
-
-            byte nonResident = recordData[offset + 8];
-
-            if(attrType == AttributeType.IndexAllocation && nonResident == 1)
-            {
-                // Parse data runs to read index blocks
-                NonResidentAttributeRecord nrAttr =
-                    Marshal.ByteArrayToStructureLittleEndian<NonResidentAttributeRecord>(recordData,
-                        offset,
-                        Marshal.SizeOf<NonResidentAttributeRecord>());
-
-                int runListOffset = offset + nrAttr.mapping_pairs_offset;
-
-                List<(long offset, long length)> dataRuns =
-                    ParseDataRuns(recordData, runListOffset, offset + (int)attrLength);
-
-                ReadIndexBlocks(dataRuns, cache);
-
-                return;
-            }
-
-            offset += (int)attrLength;
-        }
-    }
-
-    /// <summary>
     ///     Parses the NTFS data run (mapping pairs) encoding to produce a list of (cluster offset, cluster length)
     ///     pairs.
     /// </summary>
@@ -302,9 +258,8 @@ public sealed partial class NTFS
 
             // Sign-extend if negative
             if(offsetSize > 0 && (data[offset + offsetSize - 1] & 0x80) != 0)
-            {
-                for(int i = offsetSize; i < 8; i++) runOffset |= (long)0xFF << i * 8;
-            }
+                for(int i = offsetSize; i < 8; i++)
+                    runOffset |= (long)0xFF << i * 8;
 
             offset += offsetSize;
 
