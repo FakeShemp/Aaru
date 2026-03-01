@@ -182,6 +182,10 @@ public sealed partial class NTFS
 
         _ntfsVersion = $"{majorVer}.{minorVer}";
 
+        // Load $AttrDef (MFT record #4) for attribute type definitions
+        _attributeDefinitions = new Dictionary<AttributeType, AttrDef>();
+        LoadAttributeDefinitions();
+
         // Read MFT record #5 (root directory)
         errno = ReadMftRecord((uint)SystemFileNumber.Root, out byte[] rootRecord);
 
@@ -279,6 +283,7 @@ public sealed partial class NTFS
 
         _rootDirectoryCache?.Clear();
         _securityDescriptors?.Clear();
+        _attributeDefinitions?.Clear();
         _mounted = false;
 
         return ErrorNumber.NoError;
@@ -586,5 +591,103 @@ public sealed partial class NTFS
         else
             AaruLogging.Debug(MODULE_NAME, "$MFTMirr validation: all {0} records match primary MFT",
                               MIRROR_RECORD_COUNT);
+    }
+
+    /// <summary>
+    ///     Loads the attribute definition table from the $AttrDef system file (MFT record #4).
+    ///     Populates <see cref="_attributeDefinitions" /> with a mapping from attribute type to its definition.
+    /// </summary>
+    void LoadAttributeDefinitions()
+    {
+        // Read the $AttrDef unnamed $DATA attribute
+        ErrorNumber runErrno = AssembleNonResidentRuns((uint)SystemFileNumber.AttrDef,
+                                                       AttributeType.Data,
+                                                       null,
+                                                       out List<(long offset, long length)> dataRuns,
+                                                       out long dataSize,
+                                                       out _,
+                                                       out _,
+                                                       out _);
+
+        byte[] attrDefData = null;
+
+        if(runErrno == ErrorNumber.NoError && dataRuns.Count > 0 && dataSize > 0)
+        {
+            byte[] readBuf = Array.Empty<byte>();
+            ErrorNumber errno = ReadNonResidentData(dataRuns, dataSize, ref readBuf);
+
+            if(errno == ErrorNumber.NoError)
+                attrDefData = readBuf;
+        }
+        else
+        {
+            // Try resident fallback
+            ErrorNumber errno = ReadMftRecord((uint)SystemFileNumber.AttrDef, out byte[] attrDefRecord);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME, "Error reading $AttrDef MFT record: {0}", errno);
+
+                return;
+            }
+
+            MftRecord attrDefHeader = Marshal.ByteArrayToStructureLittleEndian<MftRecord>(attrDefRecord);
+
+            if(attrDefHeader.magic != NtfsRecordMagic.File) return;
+
+            ErrorNumber findErrno = FindAttributes(attrDefRecord,
+                                                   attrDefHeader,
+                                                   (uint)SystemFileNumber.AttrDef,
+                                                   AttributeType.Data,
+                                                   null,
+                                                   out List<FoundAttribute> results);
+
+            if(findErrno == ErrorNumber.NoError && results.Count > 0)
+            {
+                FoundAttribute attr   = results[0];
+                byte           nonRes = attr.RecordData[attr.Offset + 8];
+
+                if(nonRes == 0)
+                {
+                    var valueOffset = BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x14);
+                    var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
+
+                    int valueStart = attr.Offset + valueOffset;
+
+                    if(valueStart + valueLength <= attr.RecordData.Length && valueLength > 0)
+                    {
+                        attrDefData = new byte[valueLength];
+                        Array.Copy(attr.RecordData, valueStart, attrDefData, 0, valueLength);
+                    }
+                }
+            }
+        }
+
+        if(attrDefData == null || attrDefData.Length == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Could not read $AttrDef data");
+
+            return;
+        }
+
+        // Parse entries: each AttrDef is 160 bytes (0xA0)
+        int entrySize = Marshal.SizeOf<AttrDef>();
+        int pos       = 0;
+
+        while(pos + entrySize <= attrDefData.Length)
+        {
+            AttrDef entry = Marshal.ByteArrayToStructureLittleEndian<AttrDef>(attrDefData, pos, entrySize);
+
+            // End of table: type == 0
+            if(entry.type == 0) break;
+
+            if(!_attributeDefinitions.ContainsKey(entry.type))
+                _attributeDefinitions[entry.type] = entry;
+
+            pos += entrySize;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "Loaded {0} attribute definitions from $AttrDef",
+                          _attributeDefinitions.Count);
     }
 }

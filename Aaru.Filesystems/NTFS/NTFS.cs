@@ -43,7 +43,8 @@ public sealed partial class NTFS : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "NTFS";
 
-    BiosParameterBlock               _bpb;
+    Dictionary<AttributeType, AttrDef>  _attributeDefinitions;
+    BiosParameterBlock                  _bpb;
     uint                             _bytesPerCluster;
     uint                             _bytesPerSector;
     bool                             _debug;
