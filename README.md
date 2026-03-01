@@ -243,6 +243,7 @@ Fully supported file-systems (identify and extraction)
 * U.C.S.D Pascal file system
 * Universal Disk Format (UDF)
 * UNIX boot file system
+* Veritas file system
 * Xbox filesystems
 * Xia filesystem
 
@@ -268,7 +269,6 @@ Supported file systems for identification and information only
 * UNICOS file system
 * UNIX System V file system
 * UNIX Version 7 file system
-* Veritas file system
 * VMware file system (VMFS)
 * Xenix file system
 * Zettabyte File System (ZFS)
