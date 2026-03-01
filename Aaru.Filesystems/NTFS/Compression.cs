@@ -138,4 +138,89 @@ public sealed partial class NTFS
 
         return output;
     }
+
+    /// <summary>
+    ///     Decompresses a single Xpress (LZ77) compressed frame.
+    ///     Implements the Microsoft Xpress Compression Algorithm (MS-XCA 2.3, plain LZ77).
+    /// </summary>
+    /// <param name="compressedData">The compressed frame data.</param>
+    /// <param name="uncompressedSize">Expected size of the decompressed output.</param>
+    /// <returns>The decompressed data, or <c>null</c> if decompression fails.</returns>
+    static byte[] DecompressXpress(byte[] compressedData, int uncompressedSize)
+    {
+        var output    = new byte[uncompressedSize];
+        var srcOffset = 0;
+        var dstOffset = 0;
+
+        while(dstOffset < uncompressedSize)
+        {
+            // Read 32-bit flags word
+            if(srcOffset + 4 > compressedData.Length) break;
+
+            var flags = BitConverter.ToUInt32(compressedData, srcOffset);
+            srcOffset += 4;
+
+            // Process 32 bits, LSB first
+            for(var bit = 0; bit < 32 && dstOffset < uncompressedSize; bit++)
+            {
+                if((flags & 1u << bit) == 0)
+                {
+                    // Literal byte
+                    if(srcOffset >= compressedData.Length) return output;
+
+                    output[dstOffset++] = compressedData[srcOffset++];
+                }
+                else
+                {
+                    // Match reference
+                    if(srcOffset + 2 > compressedData.Length) return output;
+
+                    var matchValue = BitConverter.ToUInt16(compressedData, srcOffset);
+                    srcOffset += 2;
+
+                    int matchOffset = (matchValue >> 3) + 1;
+                    int matchLength = (matchValue & 7)  + 3;
+
+                    // Extended length encoding
+                    if((matchValue & 7) == 7)
+                    {
+                        if(srcOffset >= compressedData.Length) return output;
+
+                        byte extraLength = compressedData[srcOffset++];
+
+                        if(extraLength == 255)
+                        {
+                            // Read 16-bit length
+                            if(srcOffset + 2 > compressedData.Length) return output;
+
+                            matchLength =  BitConverter.ToUInt16(compressedData, srcOffset);
+                            srcOffset   += 2;
+
+                            // If the 16-bit length is 0, read 32-bit length
+                            if(matchLength == 0)
+                            {
+                                if(srcOffset + 4 > compressedData.Length) return output;
+
+                                matchLength =  (int)BitConverter.ToUInt32(compressedData, srcOffset);
+                                srcOffset   += 4;
+                            }
+                        }
+                        else
+                            matchLength = extraLength + 7 + 3;
+                    }
+
+                    // Validate back-reference
+                    if(dstOffset - matchOffset < 0) return null;
+
+                    // Copy bytes (byte-by-byte for overlapping regions)
+                    int srcPos = dstOffset - matchOffset;
+
+                    for(var i = 0; i < matchLength && dstOffset < uncompressedSize; i++)
+                        output[dstOffset++] = output[srcPos++];
+                }
+            }
+        }
+
+        return output;
+    }
 }
