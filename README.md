@@ -192,6 +192,7 @@ Fully supported file-systems (identify and extraction)
 ======================================================
 
 * 3DO Opera file system
+* Acer File System (AFS)
 * Acorn Advanced Disc Filing System
 * Amiga Fast File System, with international characters, directory cache and multi-user patches
 * Amiga Original File System, with international characters, directory cache and multi-user patches
@@ -208,10 +209,12 @@ Fully supported file-systems (identify and extraction)
 * CD-i file system
 * Commodore 1540/1541/1571/1581 filesystems
 * CP/M file system
+* Coherent UNIX file system
 * Cram file system
 * DEC Files-11 (aka ODS)
 * DEC RT-11 file system
 * ECMA-67: 130mm Flexible Disk Cartridge Labelling and File Structure for Information Interchange
+* Extended Acer File System (EAFS)
 * Flash-Friendly File System (F2FS)
 * High Sierra Format
 * HP Logical Interchange Format
@@ -245,8 +248,11 @@ Fully supported file-systems (identify and extraction)
 * U.C.S.D Pascal file system
 * Universal Disk Format (UDF)
 * UNIX boot file system
+* UNIX System V file system
+* UNIX Version 7 file system
 * Veritas file system
 * Xbox filesystems
+* Xenix file system
 * Xia filesystem
 
 Supported file systems for identification and information only
@@ -257,7 +263,6 @@ Supported file systems for identification and information only
 * Apple File System (preliminary detection until on-disk layout is stable)
 * BSD Fast File System (FFS) / Unix File System (UFS)
 * BSD Unix File System 2 (UFS2)
-* Coherent UNIX file system
 * dump(8) (Old historic BSD, AIX, UFS and UFS2 types)
 * Fossil file system (from Plan9)
 * HAMMER file system
@@ -267,10 +272,7 @@ Supported file systems for identification and information only
 * NEC PC-FX executable
 * SolarOS file system
 * UNICOS file system
-* UNIX System V file system
-* UNIX Version 7 file system
 * VMware file system (VMFS)
-* Xenix file system
 * Zettabyte File System (ZFS)
 
 Supported checksums
