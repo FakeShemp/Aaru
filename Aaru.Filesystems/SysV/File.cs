@@ -73,6 +73,66 @@ public sealed partial class SysVfs
     }
 
     /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize path
+        string normalizedPath = path ?? "/";
+
+        if(normalizedPath is "" or "." or "./") normalizedPath = "/";
+
+        if(!normalizedPath.StartsWith('/')) normalizedPath = "/" + normalizedPath;
+
+        if(normalizedPath.Length > 1 && normalizedPath.EndsWith('/')) normalizedPath = normalizedPath[..^1];
+
+        ushort inodeNumber;
+
+        if(normalizedPath == "/")
+            return ErrorNumber.InvalidArgument; // root is not a symlink
+        else
+        {
+            ErrorNumber errno = ResolvePath(normalizedPath, out inodeNumber);
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+
+        ErrorNumber readErrno = ReadInode(inodeNumber, out Inode inode);
+
+        if(readErrno != ErrorNumber.NoError) return readErrno;
+
+        // Must be a symlink (S_IFLNK = 0xA000)
+        if((inode.di_mode & S_IFMT) != 0xA000) return ErrorNumber.InvalidArgument;
+
+        if(inode.di_size <= 0) return ErrorNumber.InvalidArgument;
+
+        // Read symlink target from data blocks
+        var linkData = new byte[inode.di_size];
+        var bytesRead = 0;
+
+        for(var i = 0; i < 10 && bytesRead < inode.di_size; i++)
+        {
+            uint blockNumber = Read3ByteAddress(inode.di_addr, i);
+
+            if(blockNumber == 0) continue;
+
+            ErrorNumber errno = ReadBlock(blockNumber, out byte[] blockData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            int toCopy = Math.Min(_blockSize, inode.di_size - bytesRead);
+            Array.Copy(blockData, 0, linkData, bytesRead, toCopy);
+            bytesRead += toCopy;
+        }
+
+        dest = _encoding.GetString(linkData, 0, bytesRead).TrimEnd('\0');
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node)
     {
         node = null;
