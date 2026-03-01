@@ -94,7 +94,8 @@ public sealed partial class SysVfs
 
     /// <summary>
     ///     Reads a 3-byte disk address from an inode's di_addr field and converts it to a 32-bit block number,
-    ///     respecting the filesystem's byte sex.
+    ///     respecting the filesystem's byte sex. The di_addr byte array is raw (not endian-swapped by the marshaler),
+    ///     so only big-endian filesystems store addresses in reversed byte order.
     /// </summary>
     /// <param name="addr">The 39-byte di_addr array</param>
     /// <param name="index">The address index (0-12)</param>
@@ -102,36 +103,18 @@ public sealed partial class SysVfs
     uint Read3ByteAddress(byte[] addr, int index)
     {
         int off = index * 3;
-        var to  = new byte[4];
 
-        switch(_bytesex)
+        if(_bytesex == Bytesex.BigEndian) return (uint)addr[off] << 16 | (uint)addr[off + 1] << 8 | addr[off + 2];
+
+        if(_bytesex == Bytesex.Pdp)
         {
-            case Bytesex.Pdp:
-                // NXI -> N0XI: to[0]=from[0], to[1]=0, to[2]=from[1], to[3]=from[2]
-                to[0] = addr[off];
-                to[1] = 0;
-                to[2] = addr[off + 1];
-                to[3] = addr[off + 2];
-
-                break;
-            case Bytesex.LittleEndian:
-                // XIN -> XIN0: to[0]=from[0], to[1]=from[1], to[2]=from[2], to[3]=0
-                to[0] = addr[off];
-                to[1] = addr[off + 1];
-                to[2] = addr[off + 2];
-                to[3] = 0;
-
-                break;
-            case Bytesex.BigEndian:
-                // NIX -> 0NIX: to[0]=0, to[1]=from[0], to[2]=from[1], to[3]=from[2]
-                to[0] = 0;
-                to[1] = addr[off];
-                to[2] = addr[off + 1];
-                to[3] = addr[off + 2];
-
-                break;
+            // PDP-11 stores 3-byte addresses as [high_byte, low_lo, low_hi].
+            // Padded to 4-byte PDP value: [addr[0], 0, addr[1], addr[2]]
+            // PDP-to-native: high_word=(addr[0]|0<<8)<<16, low_word=addr[1]|addr[2]<<8
+            return addr[off + 1] | (uint)addr[off + 2] << 8 | (uint)addr[off] << 16;
         }
 
-        return BitConverter.ToUInt32(to, 0);
+        // Little-endian: LSB first
+        return addr[off] | (uint)addr[off + 1] << 8 | (uint)addr[off + 2] << 16;
     }
 }
