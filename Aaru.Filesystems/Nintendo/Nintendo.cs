@@ -27,17 +27,43 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements detection of the filesystem used by Nintendo Gamecube and Wii discs</summary>
-public sealed partial class NintendoPlugin : IFilesystem
+/// <summary>Implements the filesystem used by Nintendo Gamecube and Wii discs</summary>
+public sealed partial class NintendoPlugin : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "Nintendo plugin";
 
-#region IFilesystem Members
+    /// <summary>Cache of subdirectory entries: path → (filename → FST index)</summary>
+    readonly Dictionary<string, Dictionary<string, int>> _directoryCache = new();
+
+    /// <summary>Cache of root directory entries: filename → FST index</summary>
+    readonly Dictionary<string, int> _rootDirectoryCache = new();
+    DiscHeader  _discHeader;
+    Encoding    _encoding;
+    FstEntry[]  _fstEntries;
+    string[]    _fstNames;
+    IMediaImage _imagePlugin;
+    bool        _isWii;
+
+    bool           _mounted;
+    Aes            _partitionAes;
+    ulong          _partitionDataOffset;
+    ulong          _partitionOffset;
+    FileSystemInfo _statfs;
+
+#region IReadOnlyFilesystem Members
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
 
     /// <inheritdoc />
     public string Name => Localization.NintendoPlugin_Name;
@@ -47,6 +73,12 @@ public sealed partial class NintendoPlugin : IFilesystem
 
     /// <inheritdoc />
     public string Author => Authors.NataliaPortillo;
+
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces => null;
 
 #endregion
 }

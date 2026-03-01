@@ -1,8 +1,8 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Consts.cs
+// Filename       : Internal.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Nintendo optical filesystems plugin.
@@ -26,34 +26,49 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using Aaru.CommonTypes.Interfaces;
+
 namespace Aaru.Filesystems;
 
 public sealed partial class NintendoPlugin
 {
-    const string FS_TYPE_NGC = "ngcfs";
-    const string FS_TYPE_WII = "wiifs";
+#region Nested type: NintendoDirNode
 
-    const uint GC_MAGIC  = 0xC2339F3D;
-    const uint WII_MAGIC = 0x5D1C9EA3;
+    sealed class NintendoDirNode : IDirNode
+    {
+        internal string[] Contents;
+        internal int      Position;
 
-    /// <summary>Size of a Wii data cluster on disk (hash + data)</summary>
-    const int WII_CLUSTER_SIZE = 0x8000;
+#region IDirNode Members
 
-    /// <summary>Size of the hash/metadata portion at the start of each Wii cluster</summary>
-    const int WII_CLUSTER_HASH_SIZE = 0x400;
+        /// <inheritdoc />
+        public string Path { get; init; }
 
-    /// <summary>Size of the decrypted data portion of each Wii cluster</summary>
-    const int WII_CLUSTER_DATA_SIZE = 0x7C00;
+#endregion
+    }
 
-    /// <summary>Wii common key used to decrypt partition title keys</summary>
-    static readonly byte[] WII_COMMON_KEY =
-    [
-        0xEB, 0xE4, 0x2A, 0x22, 0x5E, 0x85, 0x93, 0xE4, 0x48, 0xD9, 0xC5, 0x45, 0x73, 0x81, 0xAA, 0xF7
-    ];
+#endregion
 
-    /// <summary>Wii Korean common key</summary>
-    static readonly byte[] WII_KOREAN_KEY =
-    [
-        0x63, 0xB8, 0x2B, 0xB4, 0xF4, 0x61, 0x4E, 0x2E, 0x13, 0xF2, 0xFE, 0xFB, 0xBA, 0x4C, 0x9B, 0x7E
-    ];
+#region Nested type: NintendoFileNode
+
+    sealed class NintendoFileNode : IFileNode
+    {
+        /// <summary>FST index for this file entry</summary>
+        internal int FstIndex;
+
+#region IFileNode Members
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+#endregion
+    }
+
+#endregion
 }

@@ -36,11 +36,9 @@ using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the filesystem used by Nintendo Gamecube and Wii discs</summary>
 public sealed partial class NintendoPlugin
 {
-#region IFilesystem Members
+#region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
     public bool Identify(IMediaImage imagePlugin, Partition partition)

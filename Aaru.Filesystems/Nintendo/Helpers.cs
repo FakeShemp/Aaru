@@ -30,8 +30,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the filesystem used by Nintendo Gamecube and Wii discs</summary>
 public sealed partial class NintendoPlugin
 {
     static string DiscTypeToString(string discType) => discType switch

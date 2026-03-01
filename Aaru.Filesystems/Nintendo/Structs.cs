@@ -31,8 +31,6 @@ using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
-/// <summary>Implements detection of the filesystem used by Nintendo Gamecube and Wii discs</summary>
 public sealed partial class NintendoPlugin
 {
 #region Nested type: FstEntry
