@@ -195,6 +195,14 @@ public sealed partial class NTFS
                         {
                             string fileName = Encoding.Unicode.GetString(data, nameDataOffset, nameBytes);
 
+                            // Skip . and .. entries to avoid infinite recursion
+                            if(fileName is "." or "..")
+                            {
+                                pos += entryHeader.length;
+
+                                continue;
+                            }
+
                             // The MFT reference is the lower 48 bits of indexed_file_or_data
                             ulong mftRef = entryHeader.indexed_file_or_data & 0x0000FFFFFFFFFFFF;
 
@@ -294,8 +302,9 @@ public sealed partial class NTFS
 
             // Sign-extend if negative
             if(offsetSize > 0 && (data[offset + offsetSize - 1] & 0x80) != 0)
-                for(int i = offsetSize; i < 8; i++)
-                    runOffset |= (long)0xFF << i * 8;
+            {
+                for(int i = offsetSize; i < 8; i++) runOffset |= (long)0xFF << i * 8;
+            }
 
             offset += offsetSize;
 

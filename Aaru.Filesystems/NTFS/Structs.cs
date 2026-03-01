@@ -703,6 +703,40 @@ public sealed partial class NTFS
 
 #endregion
 
+#region Nested type: LxAttrb
+
+    /// <summary>WSL1 combined POSIX metadata EA ($LXATTRB) value structure (56 bytes)</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct LxAttrb
+    {
+        /// <summary>0x000, Flags</summary>
+        public readonly ushort flags;
+        /// <summary>0x002, Version</summary>
+        public readonly ushort version;
+        /// <summary>0x004, POSIX file mode (st_mode)</summary>
+        public readonly uint st_mode;
+        /// <summary>0x008, Owner UID</summary>
+        public readonly uint st_uid;
+        /// <summary>0x00C, Owner GID</summary>
+        public readonly uint st_gid;
+        /// <summary>0x010, Device number (st_rdev)</summary>
+        public readonly uint st_rdev;
+        /// <summary>0x014, Last access time nanoseconds</summary>
+        public readonly uint st_atime_nsec;
+        /// <summary>0x018, Last modification time nanoseconds</summary>
+        public readonly uint st_mtime_nsec;
+        /// <summary>0x01C, Last status change time nanoseconds</summary>
+        public readonly uint st_ctime_nsec;
+        /// <summary>0x020, Last access time (Unix epoch seconds)</summary>
+        public readonly long st_atime;
+        /// <summary>0x028, Last modification time (Unix epoch seconds)</summary>
+        public readonly long st_mtime;
+        /// <summary>0x030, Last status change time (Unix epoch seconds)</summary>
+        public readonly long st_ctime;
+    }
+
+#endregion
+
 #region Nested type: QuotaControlEntry
 
     /// <summary>Quota control entry in $Quota/$Q (fixed part)</summary>

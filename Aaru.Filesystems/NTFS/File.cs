@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -97,6 +98,13 @@ public sealed partial class NTFS
         var                foundData         = false;
         FileNameAttribute  bestFileName      = default;
         FileNameNamespace  bestNamespace     = FileNameNamespace.Dos;
+        uint?              lxUid             = null;
+        uint?              lxGid             = null;
+        uint?              lxMod             = null;
+        ulong?             lxDev             = null;
+        DateTime?          lxAtime           = null;
+        DateTime?          lxMtime           = null;
+        DateTime?          lxCtime           = null;
 
         while(offset + 4 <= recordData.Length)
         {
@@ -217,6 +225,27 @@ public sealed partial class NTFS
 
                     break;
                 }
+                case AttributeType.Ea:
+                {
+                    ErrorNumber eaErrno =
+                        ReadEaAttributeData(recordData, offset, nonResident, out byte[] eaData, out int eaLength);
+
+                    if(eaErrno == ErrorNumber.NoError && eaLength > 0)
+                    {
+                        ParseWslEas(eaData,
+                                    0,
+                                    eaLength,
+                                    ref lxUid,
+                                    ref lxGid,
+                                    ref lxMod,
+                                    ref lxDev,
+                                    ref lxAtime,
+                                    ref lxMtime,
+                                    ref lxCtime);
+                    }
+
+                    break;
+                }
             }
 
             offset += (int)attrLength;
@@ -283,8 +312,20 @@ public sealed partial class NTFS
 
         stat.Mode = mode;
 
-        // Device number: use volume serial number as the device number
-        stat.DeviceNo = _bpb.serial_no;
+        // Override with WSL EA values if present
+        if(lxUid.HasValue) stat.UID = lxUid.Value;
+
+        if(lxGid.HasValue) stat.GID = lxGid.Value;
+
+        if(lxMod.HasValue) stat.Mode = lxMod.Value;
+
+        if(lxDev.HasValue) stat.DeviceNo = lxDev.Value;
+
+        if(lxAtime.HasValue) stat.AccessTimeUtc = lxAtime.Value;
+
+        if(lxMtime.HasValue) stat.LastWriteTimeUtc = lxMtime.Value;
+
+        if(lxCtime.HasValue) stat.StatusChangeTimeUtc = lxCtime.Value;
 
         return ErrorNumber.NoError;
     }
@@ -592,5 +633,116 @@ public sealed partial class NTFS
         }
 
         return ErrorNumber.NoSuchFile;
+    }
+
+    /// <summary>Parses WSL metadata EAs ($LXUID, $LXGID, $LXMOD, $LXDEV) from EA attribute data.</summary>
+    /// <param name="data">Buffer containing the EA data.</param>
+    /// <param name="start">Start offset of the EA data in the buffer.</param>
+    /// <param name="length">Total length of the EA data.</param>
+    /// <param name="lxUid">Output UID if $LXUID is found.</param>
+    /// <param name="lxGid">Output GID if $LXGID is found.</param>
+    /// <param name="lxMod">Output POSIX mode if $LXMOD is found.</param>
+    /// <param name="lxDev">Output device number if $LXDEV is found.</param>
+    /// <param name="lxAtime">Output last access time if $LXATTRB is found.</param>
+    /// <param name="lxMtime">Output last modification time if $LXATTRB is found.</param>
+    /// <param name="lxCtime">Output last status change time if $LXATTRB is found.</param>
+    static void ParseWslEas(byte[]     data,  int start, int length, ref uint? lxUid, ref uint? lxGid, ref uint? lxMod,
+                            ref ulong? lxDev, ref DateTime? lxAtime, ref DateTime? lxMtime, ref DateTime? lxCtime)
+    {
+        int pos          = start;
+        int end          = start + length;
+        int eaHeaderSize = Marshal.SizeOf<EaAttribute>();
+        int lxAttrbSize  = Marshal.SizeOf<LxAttrb>();
+
+        // First pass: parse $LXATTRB (WSL1 combined metadata) as base values
+        int firstPos = pos;
+
+        while(firstPos + eaHeaderSize <= end)
+        {
+            EaAttribute ea = Marshal.ByteArrayToStructureLittleEndian<EaAttribute>(data, firstPos, eaHeaderSize);
+
+            int nameStart = firstPos + eaHeaderSize;
+
+            if(nameStart + ea.ea_name_length > end) break;
+
+            string eaName = Encoding.ASCII.GetString(data, nameStart, ea.ea_name_length);
+
+            if(eaName == EA_LXATTRB)
+            {
+                int valueStart = nameStart + ea.ea_name_length + 1;
+
+                if(ea.ea_value_length >= lxAttrbSize && valueStart + lxAttrbSize <= end)
+                {
+                    LxAttrb lxAttrb = Marshal.ByteArrayToStructureLittleEndian<LxAttrb>(data, valueStart, lxAttrbSize);
+
+                    lxUid = lxAttrb.st_uid;
+                    lxGid = lxAttrb.st_gid;
+                    lxMod = lxAttrb.st_mode;
+
+                    if(lxAttrb.st_rdev != 0)
+                    {
+                        uint major = lxAttrb.st_rdev >> 8 & 0xFF;
+                        uint minor = lxAttrb.st_rdev      & 0xFF;
+                        lxDev = (ulong)major << 32 | minor;
+                    }
+
+                    if(lxAttrb.st_atime != 0)
+                    {
+                        lxAtime = DateTimeOffset.FromUnixTimeSeconds(lxAttrb.st_atime)
+                                                .UtcDateTime.AddTicks(lxAttrb.st_atime_nsec / 100);
+                    }
+
+                    if(lxAttrb.st_mtime != 0)
+                    {
+                        lxMtime = DateTimeOffset.FromUnixTimeSeconds(lxAttrb.st_mtime)
+                                                .UtcDateTime.AddTicks(lxAttrb.st_mtime_nsec / 100);
+                    }
+
+                    if(lxAttrb.st_ctime != 0)
+                    {
+                        lxCtime = DateTimeOffset.FromUnixTimeSeconds(lxAttrb.st_ctime)
+                                                .UtcDateTime.AddTicks(lxAttrb.st_ctime_nsec / 100);
+                    }
+                }
+
+                break;
+            }
+
+            if(ea.next_entry_offset == 0) break;
+
+            firstPos += (int)ea.next_entry_offset;
+        }
+
+        // Second pass: parse individual WSL2 EAs (these override $LXATTRB values)
+        while(pos + eaHeaderSize <= end)
+        {
+            EaAttribute ea = Marshal.ByteArrayToStructureLittleEndian<EaAttribute>(data, pos, eaHeaderSize);
+
+            int nameStart = pos + eaHeaderSize;
+
+            if(nameStart + ea.ea_name_length > end) break;
+
+            string eaName = Encoding.ASCII.GetString(data, nameStart, ea.ea_name_length);
+
+            // EA value follows the name + NUL terminator
+            int valueStart = nameStart + ea.ea_name_length + 1;
+
+            if(eaName == EA_LXUID && ea.ea_value_length >= 4 && valueStart + 4 <= end)
+                lxUid = BitConverter.ToUInt32(data, valueStart);
+            else if(eaName == EA_LXGID && ea.ea_value_length >= 4 && valueStart + 4 <= end)
+                lxGid = BitConverter.ToUInt32(data, valueStart);
+            else if(eaName == EA_LXMOD && ea.ea_value_length >= 4 && valueStart + 4 <= end)
+                lxMod = BitConverter.ToUInt32(data, valueStart);
+            else if(eaName == EA_LXDEV && ea.ea_value_length >= 8 && valueStart + 8 <= end)
+            {
+                var major = BitConverter.ToUInt32(data, valueStart);
+                var minor = BitConverter.ToUInt32(data, valueStart + 4);
+                lxDev = (ulong)major << 32 | minor;
+            }
+
+            if(ea.next_entry_offset == 0) break;
+
+            pos += (int)ea.next_entry_offset;
+        }
     }
 }
