@@ -59,6 +59,13 @@ public sealed partial class NTFS
             return ErrorNumber.InvalidArgument;
         }
 
+        if(!header.flags.HasFlag(MftRecordFlags.InUse))
+        {
+            AaruLogging.Debug(MODULE_NAME, "MFT record {0} is not in use", mftRecordNumber);
+
+            return ErrorNumber.NoSuchFile;
+        }
+
         // Check that this is a directory
         if(!header.flags.HasFlag(MftRecordFlags.IsDirectory))
         {
@@ -257,9 +264,8 @@ public sealed partial class NTFS
 
             // Sign-extend if negative
             if(offsetSize > 0 && (data[offset + offsetSize - 1] & 0x80) != 0)
-            {
-                for(int i = offsetSize; i < 8; i++) runOffset |= (long)0xFF << i * 8;
-            }
+                for(int i = offsetSize; i < 8; i++)
+                    runOffset |= (long)0xFF << i * 8;
 
             offset += offsetSize;
 

@@ -199,6 +199,13 @@ public sealed partial class NTFS
             return ErrorNumber.InvalidArgument;
         }
 
+        if(!header.flags.HasFlag(MftRecordFlags.InUse))
+        {
+            AaruLogging.Debug(MODULE_NAME, "MFT record {0} is not in use", mftRecordNumber);
+
+            return ErrorNumber.NoSuchFile;
+        }
+
         // Determine what kind of xattr is being requested
         if(xattr == NT_ACL) return ReadSecurityDescriptor(recordData, header, mftRecordNumber, ref buf);
 

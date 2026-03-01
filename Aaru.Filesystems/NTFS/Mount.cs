@@ -143,6 +143,13 @@ public sealed partial class NTFS
             return ErrorNumber.InvalidArgument;
         }
 
+        if(!mftHeader.flags.HasFlag(MftRecordFlags.InUse))
+        {
+            AaruLogging.Debug(MODULE_NAME, "$MFT record is not marked as in use");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
         // Parse $MFT's own $DATA attribute data runs for fragmented MFT support
         _mftDataRuns = ParseMftDataRuns(mftRecord0, mftHeader);
 
@@ -174,6 +181,13 @@ public sealed partial class NTFS
                               "Invalid $Volume magic: 0x{0:X8} (expected 0x{1:X8})",
                               (uint)volHeader.magic,
                               (uint)NtfsRecordMagic.File);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        if(!volHeader.flags.HasFlag(MftRecordFlags.InUse))
+        {
+            AaruLogging.Debug(MODULE_NAME, "$Volume record is not marked as in use");
 
             return ErrorNumber.InvalidArgument;
         }
@@ -216,6 +230,13 @@ public sealed partial class NTFS
                               "Invalid root directory magic: 0x{0:X8} (expected 0x{1:X8})",
                               (uint)rootHeader.magic,
                               (uint)NtfsRecordMagic.File);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        if(!rootHeader.flags.HasFlag(MftRecordFlags.InUse))
+        {
+            AaruLogging.Debug(MODULE_NAME, "Root directory record is not marked as in use");
 
             return ErrorNumber.InvalidArgument;
         }
@@ -401,6 +422,8 @@ public sealed partial class NTFS
 
         if(secureHeader.magic != NtfsRecordMagic.File) return;
 
+        if(!secureHeader.flags.HasFlag(MftRecordFlags.InUse)) return;
+
         // Read the $SDS stream data (may be non-resident)
         byte[] sdsData = null;
 
@@ -531,6 +554,8 @@ public sealed partial class NTFS
 
             if(bitmapHeader.magic != NtfsRecordMagic.File) return 0;
 
+            if(!bitmapHeader.flags.HasFlag(MftRecordFlags.InUse)) return 0;
+
             ErrorNumber findErrno = FindAttributes(bitmapRecord,
                                                    bitmapHeader,
                                                    (uint)SystemFileNumber.Bitmap,
@@ -608,6 +633,8 @@ public sealed partial class NTFS
             MftRecord mftHeader = ParseMftRecordHeader(mftRecord);
 
             if(mftHeader.magic != NtfsRecordMagic.File) return (0, 0);
+
+            if(!mftHeader.flags.HasFlag(MftRecordFlags.InUse)) return (0, 0);
 
             ErrorNumber findErrno = FindAttributes(mftRecord,
                                                    mftHeader,
@@ -803,6 +830,15 @@ public sealed partial class NTFS
                 continue;
             }
 
+            if(!mirrorHeader.flags.HasFlag(MftRecordFlags.InUse))
+            {
+                AaruLogging.Debug(MODULE_NAME, "$MFTMirr record {0}: not marked as in use", i);
+
+                mirrorMismatches++;
+
+                continue;
+            }
+
             // Read the corresponding primary MFT record
             errno = ReadMftRecord(i, out byte[] primaryRecord);
 
@@ -901,6 +937,8 @@ public sealed partial class NTFS
             MftRecord attrDefHeader = ParseMftRecordHeader(attrDefRecord);
 
             if(attrDefHeader.magic != NtfsRecordMagic.File) return;
+
+            if(!attrDefHeader.flags.HasFlag(MftRecordFlags.InUse)) return;
 
             ErrorNumber findErrno = FindAttributes(attrDefRecord,
                                                    attrDefHeader,

@@ -76,6 +76,13 @@ public sealed partial class NTFS
             return ErrorNumber.InvalidArgument;
         }
 
+        if(!header.flags.HasFlag(MftRecordFlags.InUse))
+        {
+            AaruLogging.Debug(MODULE_NAME, "MFT record {0} is not in use", mftRecordNumber);
+
+            return ErrorNumber.NoSuchFile;
+        }
+
         stat = new FileEntryInfo
         {
             Inode     = mftRecordNumber,
@@ -416,6 +423,13 @@ public sealed partial class NTFS
             return ErrorNumber.InvalidArgument;
         }
 
+        if(!header.flags.HasFlag(MftRecordFlags.InUse))
+        {
+            AaruLogging.Debug(MODULE_NAME, "MFT record {0} is not in use", mftRecordNumber);
+
+            return ErrorNumber.NoSuchFile;
+        }
+
         // Reject directories
         if(header.flags.HasFlag(MftRecordFlags.IsDirectory)) return ErrorNumber.IsDirectory;
 
@@ -557,9 +571,7 @@ public sealed partial class NTFS
                                             var wofResident = new byte[wofValLen];
 
                                             if(wofValStart + wofValLen <= wofAttr.RecordData.Length)
-                                            {
                                                 Array.Copy(wofAttr.RecordData, wofValStart, wofResident, 0, wofValLen);
-                                            }
 
                                             node = new NtfsFileNode
                                             {
@@ -722,6 +734,13 @@ public sealed partial class NTFS
             AaruLogging.Debug(MODULE_NAME, "MFT record {0} has invalid magic", mftRecordNumber);
 
             return ErrorNumber.InvalidArgument;
+        }
+
+        if(!header.flags.HasFlag(MftRecordFlags.InUse))
+        {
+            AaruLogging.Debug(MODULE_NAME, "MFT record {0} is not in use", mftRecordNumber);
+
+            return ErrorNumber.NoSuchFile;
         }
 
         // Find $REPARSE_POINT attribute across base + extension records

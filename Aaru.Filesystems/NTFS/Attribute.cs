@@ -68,6 +68,13 @@ public sealed partial class NTFS
             return ErrorNumber.InvalidArgument;
         }
 
+        if(!header.flags.HasFlag(MftRecordFlags.InUse))
+        {
+            AaruLogging.Debug(MODULE_NAME, "MFT record {0} is not in use", mftRecordNumber);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
         return FindAttributes(recordData, header, mftRecordNumber, targetType, targetName, out results);
     }
 
@@ -194,6 +201,15 @@ public sealed partial class NTFS
 
                             continue;
                         }
+
+                        if(!extHeader.flags.HasFlag(MftRecordFlags.InUse))
+                        {
+                            AaruLogging.Debug(MODULE_NAME, "Extension MFT record {0} is not in use", refRecordNumber);
+
+                            alOffset += entry.length;
+
+                            continue;
+                        }
                     }
 
                     // Find the specific attribute in this record matching the instance number
@@ -236,6 +252,13 @@ public sealed partial class NTFS
         if(header.magic != NtfsRecordMagic.File)
         {
             AaruLogging.Debug(MODULE_NAME, "MFT record {0} has invalid magic", mftRecordNumber);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        if(!header.flags.HasFlag(MftRecordFlags.InUse))
+        {
+            AaruLogging.Debug(MODULE_NAME, "MFT record {0} is not in use", mftRecordNumber);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -319,6 +342,15 @@ public sealed partial class NTFS
                 if(extHeader.magic != NtfsRecordMagic.File)
                 {
                     AaruLogging.Debug(MODULE_NAME, "Extension MFT record {0} has invalid magic", refRecordNumber);
+
+                    alOffset += entry.length;
+
+                    continue;
+                }
+
+                if(!extHeader.flags.HasFlag(MftRecordFlags.InUse))
+                {
+                    AaruLogging.Debug(MODULE_NAME, "Extension MFT record {0} is not in use", refRecordNumber);
 
                     alOffset += entry.length;
 
