@@ -139,6 +139,8 @@ public sealed partial class SysVfs
         _partition   = default(Partition);
         _encoding    = null;
         _blockSize   = 0;
+        _freeBlocks  = 0;
+        _freeInodes  = 0;
         Metadata     = null;
 
         AaruLogging.Debug(MODULE_NAME, "Volume unmounted");
@@ -426,6 +428,8 @@ public sealed partial class SysVfs
         _variant       = SysVVariant.Xenix;
         _firstDataZone = xnxSb.s_isize;
         _totalZones    = xnxSb.s_fsize;
+        _freeBlocks    = xnxSb.s_tfree;
+        _freeInodes    = xnxSb.s_tinode;
 
         _blockSize = xnxSb.s_type switch
                      {
@@ -450,6 +454,8 @@ public sealed partial class SysVfs
         _variant       = SysVVariant.Xenix3;
         _firstDataZone = xnx3Sb.s_isize;
         _totalZones    = xnx3Sb.s_fsize;
+        _freeBlocks    = xnx3Sb.s_tfree;
+        _freeInodes    = xnx3Sb.s_tinode;
 
         _blockSize = xnx3Sb.s_type switch
                      {
@@ -483,6 +489,8 @@ public sealed partial class SysVfs
 
         _firstDataZone = sysvSb.s_isize;
         _totalZones    = sysvSb.s_fsize;
+        _freeBlocks    = sysvSb.s_tfree;
+        _freeInodes    = sysvSb.s_tinode;
 
         AaruLogging.Debug(MODULE_NAME,
                           "SysV R4 superblock read, s_isize={0}, s_fsize={1}",
@@ -508,6 +516,8 @@ public sealed partial class SysVfs
 
         _firstDataZone = sysvSb.s_isize;
         _totalZones    = sysvSb.s_fsize;
+        _freeBlocks    = sysvSb.s_tfree;
+        _freeInodes    = sysvSb.s_tinode;
 
         AaruLogging.Debug(MODULE_NAME,
                           "SysV R2 superblock read, s_isize={0}, s_fsize={1}",
@@ -526,6 +536,8 @@ public sealed partial class SysVfs
         _blockSize     = 512;
         _firstDataZone = cohSb.s_isize;
         _totalZones    = cohSb.s_fsize;
+        _freeBlocks    = cohSb.s_tfree;
+        _freeInodes    = cohSb.s_tinode;
 
         AaruLogging.Debug(MODULE_NAME,
                           "Coherent superblock read, s_isize={0}, s_fsize={1}",
@@ -551,6 +563,8 @@ public sealed partial class SysVfs
         _blockSize     = 512;
         _firstDataZone = v7Sb.s_isize;
         _totalZones    = v7Sb.s_fsize;
+        _freeBlocks    = v7Sb.s_tfree;
+        _freeInodes    = v7Sb.s_tinode;
 
         AaruLogging.Debug(MODULE_NAME, "V7 superblock read, s_isize={0}, s_fsize={1}", _firstDataZone, _totalZones);
 

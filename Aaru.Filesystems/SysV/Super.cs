@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : UNIX System V filesystem plugin.
@@ -26,26 +26,46 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-// ReSharper disable NotAccessedField.Local
-
-using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class SysVfs
 {
     /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+        // Total inodes = inode blocks * inodes per block
+        long totalInodes = (_firstDataZone - FIRST_INODE_ZONE) * _inodesPerBlock;
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        string fsType = _variant switch
+                        {
+                            SysVVariant.Xenix     => FS_TYPE_XENIX,
+                            SysVVariant.Xenix3    => FS_TYPE_XENIX3,
+                            SysVVariant.SystemVR4 => FS_TYPE_SVR4,
+                            SysVVariant.SystemVR2 => FS_TYPE_SVR2,
+                            SysVVariant.ScoAfs    => FS_TYPE_AFS,
+                            SysVVariant.Coherent  => FS_TYPE_COHERENT,
+                            SysVVariant.UnixV7    => FS_TYPE_UNIX7,
+                            _                     => FS_TYPE_SVR4
+                        };
+
+        stat = new FileSystemInfo
+        {
+            Blocks         = (ulong)_totalZones,
+            FreeBlocks     = (ulong)_freeBlocks,
+            Files          = (ulong)totalInodes,
+            FreeFiles      = (ulong)_freeInodes,
+            FilenameLength = DIRSIZE,
+            Type           = fsType,
+            PluginId       = Id
+        };
+
+        return ErrorNumber.NoError;
+    }
 }

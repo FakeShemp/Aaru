@@ -133,6 +133,12 @@ public sealed partial class SysVfs : IReadOnlyFilesystem
     /// <summary>Total number of zones (blocks) in the filesystem</summary>
     long _totalZones;
 
+    /// <summary>Total number of free blocks from superblock</summary>
+    long _freeBlocks;
+
+    /// <summary>Total number of free inodes from superblock</summary>
+    long _freeInodes;
+
 #region IFilesystem Members
 
     /// <inheritdoc />
