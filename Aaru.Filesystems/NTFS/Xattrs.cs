@@ -38,7 +38,6 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class NTFS
 {
-    const string EA_PREFIX  = "com.ibm.os2.";
     const string NT_ACL     = "com.microsoft.ntacl";
     const string EA_LXUID   = "$LXUID";
     const string EA_LXGID   = "$LXGID";
@@ -123,7 +122,7 @@ public sealed partial class NTFS
                     break;
                 }
 
-                // Extended Attributes → expose each EA prefixed with "com.ibm.os2."
+                // Extended Attributes → expose each EA by its raw name
                 case AttributeType.Ea:
                 {
                     ErrorNumber eaErrno = ReadEaAttributeData(attr.RecordData,
@@ -209,16 +208,14 @@ public sealed partial class NTFS
         // Determine what kind of xattr is being requested
         if(xattr == NT_ACL) return ReadSecurityDescriptor(recordData, header, mftRecordNumber, ref buf);
 
-        if(xattr.StartsWith(EA_PREFIX, StringComparison.Ordinal))
-        {
-            string eaName = xattr[EA_PREFIX.Length..];
+        // WSL metadata EAs are not exposed as xattrs
+        if(xattr is EA_LXUID or EA_LXGID or EA_LXMOD or EA_LXDEV or EA_LXATTRB)
+            return ErrorNumber.NoSuchExtendedAttribute;
 
-            // WSL metadata EAs are not exposed as xattrs
-            if(eaName is EA_LXUID or EA_LXGID or EA_LXMOD or EA_LXDEV or EA_LXATTRB)
-                return ErrorNumber.NoSuchExtendedAttribute;
+        // Try reading as an Extended Attribute first
+        ErrorNumber eaErrno = ReadEa(recordData, header, mftRecordNumber, xattr, ref buf);
 
-            return ReadEa(recordData, header, mftRecordNumber, eaName, ref buf);
-        }
+        if(eaErrno != ErrorNumber.NoSuchExtendedAttribute) return eaErrno;
 
         // Otherwise it's an Alternate Data Stream name
         return ReadAlternateDataStream(recordData, header, mftRecordNumber, xattr, ref buf);
@@ -307,7 +304,7 @@ public sealed partial class NTFS
     /// <param name="recordData">Raw MFT record data.</param>
     /// <param name="header">Parsed MFT record header.</param>
     /// <param name="mftRecordNumber">MFT record number (for attribute list traversal).</param>
-    /// <param name="eaName">EA name to search for (without the "com.ibm.os2." prefix).</param>
+    /// <param name="eaName">EA name to search for.</param>
     /// <param name="buf">Output buffer for the EA value bytes.</param>
     /// <returns>Error number indicating success or failure.</returns>
     ErrorNumber ReadEa(byte[] recordData, in MftRecord header, uint mftRecordNumber, string eaName, ref byte[] buf)
@@ -387,7 +384,7 @@ public sealed partial class NTFS
         return ReadNonResidentData(dataRuns, dataSize, ref buf);
     }
 
-    /// <summary>Enumerates EA entries and adds their names (prefixed with "com.ibm.os2.") to the xattr list.</summary>
+    /// <summary>Enumerates EA entries and adds their names to the xattr list.</summary>
     /// <param name="data">Buffer containing the EA data.</param>
     /// <param name="start">Start offset of the EA data in the buffer.</param>
     /// <param name="length">Total length of the EA data.</param>
@@ -418,7 +415,7 @@ public sealed partial class NTFS
                 continue;
             }
 
-            xattrs.Add(EA_PREFIX + eaName);
+            xattrs.Add(eaName);
 
             if(ea.next_entry_offset == 0) break;
 
