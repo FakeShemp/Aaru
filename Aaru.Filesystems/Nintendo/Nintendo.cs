@@ -48,6 +48,8 @@ public sealed partial class NintendoPlugin : IReadOnlyFilesystem
     /// <summary>Cache of root directory entries: filename → FST index</summary>
     readonly Dictionary<string, int> _rootDirectoryCache = new();
     DiscHeader  _discHeader;
+    uint        _dolOffset;
+    uint        _dolSize;
     Encoding    _encoding;
     FstEntry[]  _fstEntries;
     string[]    _fstNames;

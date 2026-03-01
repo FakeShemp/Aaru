@@ -36,6 +36,18 @@ public sealed partial class NintendoPlugin
     const uint GC_MAGIC  = 0xC2339F3D;
     const uint WII_MAGIC = 0x5D1C9EA3;
 
+    /// <summary>Virtual FST index for the main DOL executable (not in the real FST)</summary>
+    const int DOL_VIRTUAL_INDEX = -1;
+
+    /// <summary>Size of the DOL header in bytes</summary>
+    const int DOL_HEADER_SIZE = 0x100;
+
+    /// <summary>Number of code (text) segments in a DOL file</summary>
+    const int DOL_CODE_SEGMENTS = 7;
+
+    /// <summary>Number of data segments in a DOL file</summary>
+    const int DOL_DATA_SEGMENTS = 11;
+
     /// <summary>Size of a Wii data cluster on disk (hash + data)</summary>
     const int WII_CLUSTER_SIZE = 0x8000;
 

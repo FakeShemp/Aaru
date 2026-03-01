@@ -58,7 +58,7 @@ public sealed partial class NintendoPlugin
         }
 
         // FST may not be sector-aligned, account for sub-sector offset
-        var   sectorSize     = _imagePlugin.Info.SectorSize;
+        uint  sectorSize     = _imagePlugin.Info.SectorSize;
         ulong fstStartSector = fstOff                               / sectorSize;
         uint  fstBase        = fstOff                               % sectorSize;
         ulong fstSectorCount = (fstBase + fstSize + sectorSize - 1) / sectorSize;
@@ -85,7 +85,29 @@ public sealed partial class NintendoPlugin
         var fstData = new byte[fstSize];
         Array.Copy(sectorData, fstBase, fstData, 0, fstSize);
 
-        return ParseFst(fstData, false);
+        ErrorNumber fstResult = ParseFst(fstData, false);
+
+        if(fstResult != ErrorNumber.NoError) return fstResult;
+
+        // Calculate DOL size from its header
+        _dolOffset = _discHeader.DolOff;
+
+        ulong dolStartSector   = _dolOffset                                   / sectorSize;
+        uint  dolBase          = _dolOffset                                   % sectorSize;
+        uint  dolSectorsNeeded = (dolBase + DOL_HEADER_SIZE + sectorSize - 1) / sectorSize;
+
+        errno = _imagePlugin.ReadSectors(dolStartSector, false, dolSectorsNeeded, out byte[] dolSectorData, out _);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        var dolHeader = new byte[DOL_HEADER_SIZE];
+        Array.Copy(dolSectorData, dolBase, dolHeader, 0, DOL_HEADER_SIZE);
+
+        _dolSize = CalculateDolSize(dolHeader);
+
+        AaruLogging.Debug(MODULE_NAME, "GameCube DOL at 0x{0:X8}, size {1} bytes", _dolOffset, _dolSize);
+
+        return ErrorNumber.NoError;
     }
 
     /// <summary>Mount a Wii disc filesystem (encrypted partitions)</summary>
@@ -259,7 +281,27 @@ public sealed partial class NintendoPlugin
             return ErrorNumber.InvalidArgument;
         }
 
-        return ParseFst(fstData, true);
+        ErrorNumber fstResult = ParseFst(fstData, true);
+
+        if(fstResult != ErrorNumber.NoError) return fstResult;
+
+        // Calculate DOL size from its header within the encrypted partition data
+        _dolOffset = partDiscHeader.DolOff << 2;
+
+        byte[] dolHeader = ReadWiiPartitionData(_dolOffset, DOL_HEADER_SIZE);
+
+        if(dolHeader == null)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Failed to read Wii DOL header");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        _dolSize = CalculateDolSize(dolHeader);
+
+        AaruLogging.Debug(MODULE_NAME, "Wii DOL at 0x{0:X8}, size {1} bytes", _dolOffset, _dolSize);
+
+        return ErrorNumber.NoError;
     }
 
     /// <summary>Read data from a Wii encrypted partition, decrypting the cluster blocks</summary>
@@ -318,6 +360,34 @@ public sealed partial class NintendoPlugin
         }
 
         return result;
+    }
+
+    /// <summary>Calculate the total size of a DOL executable from its header</summary>
+    /// <param name="dolHeader">The first 0x100 bytes of the DOL file</param>
+    /// <returns>Total size of the DOL file on disc</returns>
+    static uint CalculateDolSize(byte[] dolHeader)
+    {
+        uint max = 0;
+
+        // 7 code (text) segments: offsets at 0x00, sizes at 0x90
+        for(var i = 0; i < DOL_CODE_SEGMENTS; i++)
+        {
+            var offset = BigEndianBitConverter.ToUInt32(dolHeader, i * 4);
+            var size   = BigEndianBitConverter.ToUInt32(dolHeader, 0x90 + i * 4);
+
+            if(offset + size > max) max = offset + size;
+        }
+
+        // 11 data segments: offsets at 0x1C, sizes at 0xAC
+        for(var i = 0; i < DOL_DATA_SEGMENTS; i++)
+        {
+            var offset = BigEndianBitConverter.ToUInt32(dolHeader, 0x1C + i * 4);
+            var size   = BigEndianBitConverter.ToUInt32(dolHeader, 0xAC + i * 4);
+
+            if(offset + size > max) max = offset + size;
+        }
+
+        return max;
     }
 
     /// <summary>Parse the FST (File System Table) from raw FST data</summary>
@@ -398,6 +468,9 @@ public sealed partial class NintendoPlugin
     void CacheRootDirectory()
     {
         _rootDirectoryCache.Clear();
+
+        // Add the main DOL executable as a virtual file
+        if(_dolSize > 0) _rootDirectoryCache["main.dol"] = DOL_VIRTUAL_INDEX;
 
         // Root is entry 0. Its children are entries 1..(SizeOrNext - 1) that have parent == 0
         for(var i = 1; i < _fstEntries.Length; i++)

@@ -41,7 +41,7 @@ public sealed partial class NintendoPlugin
 {
     /// <summary>Resolve a filesystem path to an FST entry index</summary>
     /// <param name="path">Absolute or relative path</param>
-    /// <param name="entryIndex">Resulting FST entry index</param>
+    /// <param name="entryIndex">Resulting FST entry index (may be DOL_VIRTUAL_INDEX for main.dol)</param>
     /// <returns>Error number indicating success or failure</returns>
     ErrorNumber ResolvePathToIndex(string path, out int entryIndex)
     {
@@ -70,6 +70,9 @@ public sealed partial class NintendoPlugin
             if(p < pieces.Length - 1)
             {
                 // Intermediate components must be directories
+                // Virtual files (negative indices) cannot be directories
+                if(idx < 0) return ErrorNumber.NotDirectory;
+
                 if(_fstEntries[idx].TypeAndNameOffset >> 24 == 0) return ErrorNumber.NotDirectory;
 
                 currentDirIndex = idx;
@@ -112,6 +115,20 @@ public sealed partial class NintendoPlugin
 
         if(errno != ErrorNumber.NoError) return errno;
 
+        // Handle virtual DOL file
+        if(entryIndex == DOL_VIRTUAL_INDEX)
+        {
+            stat = new FileEntryInfo
+            {
+                Attributes = FileAttributes.File,
+                BlockSize  = 2048,
+                Blocks     = (_dolSize + 2047) / 2048,
+                Length     = _dolSize
+            };
+
+            return ErrorNumber.NoError;
+        }
+
         bool isDirectory = _fstEntries[entryIndex].TypeAndNameOffset >> 24 != 0;
 
         if(isDirectory)
@@ -150,6 +167,20 @@ public sealed partial class NintendoPlugin
         ErrorNumber errno = ResolvePathToIndex(path, out int entryIndex);
 
         if(errno != ErrorNumber.NoError) return errno;
+
+        // Handle virtual DOL file
+        if(entryIndex == DOL_VIRTUAL_INDEX)
+        {
+            node = new NintendoFileNode
+            {
+                Path     = path,
+                Length   = _dolSize,
+                Offset   = 0,
+                FstIndex = DOL_VIRTUAL_INDEX
+            };
+
+            return ErrorNumber.NoError;
+        }
 
         if(_fstEntries[entryIndex].TypeAndNameOffset >> 24 != 0) return ErrorNumber.IsDirectory;
 
@@ -190,7 +221,10 @@ public sealed partial class NintendoPlugin
         if(length > buffer.Length) length = buffer.Length;
 
         // Get the file's data offset and size from the FST entry
-        uint fileDataOffset = _fstEntries[myNode.FstIndex].OffsetOrParent;
+        // For virtual files (like main.dol), use stored offset directly
+        uint fileDataOffset = myNode.FstIndex == DOL_VIRTUAL_INDEX
+                                  ? _dolOffset
+                                  : _fstEntries[myNode.FstIndex].OffsetOrParent;
 
         if(_isWii)
         {
@@ -205,7 +239,7 @@ public sealed partial class NintendoPlugin
         {
             // GameCube: read directly from image, accounting for sub-sector offset
             ulong absoluteOffset = fileDataOffset + (ulong)myNode.Offset;
-            var   sectorSize     = _imagePlugin.Info.SectorSize;
+            uint  sectorSize     = _imagePlugin.Info.SectorSize;
             ulong startSector    = absoluteOffset / sectorSize;
             var   sectorOffset   = (uint)(absoluteOffset % sectorSize);
             uint  sectorsToRead  = (sectorOffset + (uint)length + sectorSize - 1) / sectorSize;
