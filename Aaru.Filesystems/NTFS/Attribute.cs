@@ -59,8 +59,7 @@ public sealed partial class NTFS
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        MftRecord header =
-            Marshal.ByteArrayToStructureLittleEndian<MftRecord>(recordData, 0, Marshal.SizeOf<MftRecord>());
+        MftRecord header = ParseMftRecordHeader(recordData);
 
         if(header.magic != NtfsRecordMagic.File)
         {
@@ -183,10 +182,7 @@ public sealed partial class NTFS
                         }
 
                         // Validate extension record
-                        MftRecord extHeader =
-                            Marshal.ByteArrayToStructureLittleEndian<MftRecord>(extRecordData,
-                                                                                    0,
-                                                                                    Marshal.SizeOf<MftRecord>());
+                        MftRecord extHeader = ParseMftRecordHeader(extRecordData);
 
                         if(extHeader.magic != NtfsRecordMagic.File)
                         {
@@ -235,8 +231,7 @@ public sealed partial class NTFS
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        MftRecord header =
-            Marshal.ByteArrayToStructureLittleEndian<MftRecord>(recordData, 0, Marshal.SizeOf<MftRecord>());
+        MftRecord header = ParseMftRecordHeader(recordData);
 
         if(header.magic != NtfsRecordMagic.File)
         {
@@ -319,8 +314,7 @@ public sealed partial class NTFS
                     continue;
                 }
 
-                MftRecord extHeader =
-                    Marshal.ByteArrayToStructureLittleEndian<MftRecord>(extRecordData, 0, Marshal.SizeOf<MftRecord>());
+                MftRecord extHeader = ParseMftRecordHeader(extRecordData);
 
                 if(extHeader.magic != NtfsRecordMagic.File)
                 {
@@ -605,8 +599,7 @@ public sealed partial class NTFS
                                         ulong  lowestVcn,  List<FoundAttribute> results)
     {
         // We need to find the attrs_offset from the MFT record header
-        MftRecord header =
-            Marshal.ByteArrayToStructureLittleEndian<MftRecord>(recordData, 0, Marshal.SizeOf<MftRecord>());
+        MftRecord header = ParseMftRecordHeader(recordData);
 
         int offset = header.attrs_offset;
 

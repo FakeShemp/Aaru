@@ -190,8 +190,7 @@ public sealed partial class NTFS
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        MftRecord header =
-            Marshal.ByteArrayToStructureLittleEndian<MftRecord>(recordData, 0, Marshal.SizeOf<MftRecord>());
+        MftRecord header = ParseMftRecordHeader(recordData);
 
         if(header.magic != NtfsRecordMagic.File)
         {

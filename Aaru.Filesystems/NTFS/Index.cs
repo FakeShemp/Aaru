@@ -50,8 +50,7 @@ public sealed partial class NTFS
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        MftRecord header =
-            Marshal.ByteArrayToStructureLittleEndian<MftRecord>(recordData, 0, Marshal.SizeOf<MftRecord>());
+        MftRecord header = ParseMftRecordHeader(recordData);
 
         if(header.magic != NtfsRecordMagic.File)
         {
@@ -258,8 +257,9 @@ public sealed partial class NTFS
 
             // Sign-extend if negative
             if(offsetSize > 0 && (data[offset + offsetSize - 1] & 0x80) != 0)
-                for(int i = offsetSize; i < 8; i++)
-                    runOffset |= (long)0xFF << i * 8;
+            {
+                for(int i = offsetSize; i < 8; i++) runOffset |= (long)0xFF << i * 8;
+            }
 
             offset += offsetSize;
 

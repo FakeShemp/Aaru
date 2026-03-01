@@ -121,7 +121,7 @@ public sealed partial class NTFS
             return errno;
         }
 
-        MftRecord mftHeader = Marshal.ByteArrayToStructureLittleEndian<MftRecord>(mftRecord0);
+        MftRecord mftHeader = ParseMftRecordHeader(mftRecord0);
 
         if(mftHeader.magic != NtfsRecordMagic.File)
         {
@@ -156,7 +156,7 @@ public sealed partial class NTFS
             return errno;
         }
 
-        MftRecord volHeader = Marshal.ByteArrayToStructureLittleEndian<MftRecord>(volumeRecord);
+        MftRecord volHeader = ParseMftRecordHeader(volumeRecord);
 
         if(volHeader.magic != NtfsRecordMagic.File)
         {
@@ -180,7 +180,9 @@ public sealed partial class NTFS
         AaruLogging.Debug(MODULE_NAME, "NTFS version: {0}.{1}", majorVer, minorVer);
         AaruLogging.Debug(MODULE_NAME, "Volume dirty: {0}",     isDirty);
 
-        _ntfsVersion = $"{majorVer}.{minorVer}";
+        _ntfsMajorVersion = majorVer;
+        _ntfsMinorVersion = minorVer;
+        _ntfsVersion      = $"{majorVer}.{minorVer}";
 
         // Load $AttrDef (MFT record #4) for attribute type definitions
         _attributeDefinitions = new Dictionary<AttributeType, AttrDef>();
@@ -196,7 +198,7 @@ public sealed partial class NTFS
             return errno;
         }
 
-        MftRecord rootHeader = Marshal.ByteArrayToStructureLittleEndian<MftRecord>(rootRecord);
+        MftRecord rootHeader = ParseMftRecordHeader(rootRecord);
 
         if(rootHeader.magic != NtfsRecordMagic.File)
         {
@@ -226,7 +228,7 @@ public sealed partial class NTFS
         // Parse $Secure (MFT record #9) to load centralized security descriptors (NTFS 3.0+)
         _securityDescriptors = new Dictionary<uint, byte[]>();
 
-        if(majorVer >= 3) LoadSecureDescriptors();
+        if(_ntfsMajorVersion >= 3) LoadSecureDescriptors();
 
         // Initialize caches
         _rootDirectoryCache = new Dictionary<string, ulong>();
@@ -291,7 +293,9 @@ public sealed partial class NTFS
         _rootDirectoryCache?.Clear();
         _securityDescriptors?.Clear();
         _attributeDefinitions?.Clear();
-        _mounted = false;
+        _ntfsMajorVersion = 0;
+        _ntfsMinorVersion = 0;
+        _mounted          = false;
 
         return ErrorNumber.NoError;
     }
@@ -383,7 +387,7 @@ public sealed partial class NTFS
             return;
         }
 
-        MftRecord secureHeader = Marshal.ByteArrayToStructureLittleEndian<MftRecord>(secureRecord);
+        MftRecord secureHeader = ParseMftRecordHeader(secureRecord);
 
         if(secureHeader.magic != NtfsRecordMagic.File) return;
 
@@ -513,7 +517,7 @@ public sealed partial class NTFS
 
             if(errno != ErrorNumber.NoError) return 0;
 
-            MftRecord bitmapHeader = Marshal.ByteArrayToStructureLittleEndian<MftRecord>(bitmapRecord);
+            MftRecord bitmapHeader = ParseMftRecordHeader(bitmapRecord);
 
             if(bitmapHeader.magic != NtfsRecordMagic.File) return 0;
 
@@ -591,7 +595,7 @@ public sealed partial class NTFS
 
             if(errno != ErrorNumber.NoError) return (0, 0);
 
-            MftRecord mftHeader = Marshal.ByteArrayToStructureLittleEndian<MftRecord>(mftRecord);
+            MftRecord mftHeader = ParseMftRecordHeader(mftRecord);
 
             if(mftHeader.magic != NtfsRecordMagic.File) return (0, 0);
 
@@ -775,7 +779,7 @@ public sealed partial class NTFS
             }
 
             // Validate magic
-            MftRecord mirrorHeader = Marshal.ByteArrayToStructureLittleEndian<MftRecord>(mirrorRecord);
+            MftRecord mirrorHeader = ParseMftRecordHeader(mirrorRecord);
 
             if(mirrorHeader.magic != NtfsRecordMagic.File)
             {
@@ -884,7 +888,7 @@ public sealed partial class NTFS
                 return;
             }
 
-            MftRecord attrDefHeader = Marshal.ByteArrayToStructureLittleEndian<MftRecord>(attrDefRecord);
+            MftRecord attrDefHeader = ParseMftRecordHeader(attrDefRecord);
 
             if(attrDefHeader.magic != NtfsRecordMagic.File) return;
 

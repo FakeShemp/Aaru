@@ -37,6 +37,30 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class NTFS
 {
+    /// <summary>
+    ///     Parses an MFT record header from raw record data, handling both NTFS 3.1+ (48-byte header)
+    ///     and pre-3.1 (42-byte header) formats. On pre-3.1 volumes, the <c>reserved</c> and
+    ///     <c>mft_record_number</c> fields in the returned <see cref="MftRecord" /> will be zero.
+    /// </summary>
+    /// <param name="recordData">Raw MFT record data (must be at least 42 bytes).</param>
+    /// <returns>Parsed MFT record header.</returns>
+    static MftRecord ParseMftRecordHeader(byte[] recordData)
+    {
+        int mftRecordSize = Marshal.SizeOf<MftRecord>();
+        var usaOfs        = BitConverter.ToUInt16(recordData, 4);
+
+        // NTFS 3.1+ header: usa_ofs >= 0x30 (48) means the full 48-byte header is present
+        if(usaOfs >= mftRecordSize)
+            return Marshal.ByteArrayToStructureLittleEndian<MftRecord>(recordData, 0, mftRecordSize);
+
+        // Pre-NTFS 3.1 header (42 bytes): zero-pad to 48 bytes so reserved/mft_record_number are 0
+        var padded  = new byte[mftRecordSize];
+        int copyLen = Math.Min(usaOfs, recordData.Length);
+        Array.Copy(recordData, 0, padded, 0, copyLen);
+
+        return Marshal.ByteArrayToStructureLittleEndian<MftRecord>(padded, 0, mftRecordSize);
+    }
+
     /// <summary>Reads an MFT record by record number from the MFT located in the partition.</summary>
     /// <param name="recordNumber">MFT record number to read.</param>
     /// <param name="recordData">Output byte array with the raw MFT record data after USA fixup.</param>
