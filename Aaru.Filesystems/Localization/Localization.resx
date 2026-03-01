@@ -3605,6 +3605,15 @@
     <data name="UNIX_7th_Edition_filesystem" xml:space="preserve">
     <value>UNIX 7th Edition filesystem</value>
   </data>
+    <data name="SCO_AFS_filesystem" xml:space="preserve">
+    <value>Acer File System (AFS)</value>
+  </data>
+    <data name="ISC_long_filenames_detected" xml:space="preserve">
+    <value>ISC long filenames detected</value>
+  </data>
+    <data name="_8192_bytes_per_block" xml:space="preserve">
+    <value>8192 bytes per block</value>
+  </data>
     <data name="UDF_Name" xml:space="preserve">
     <value>Universal Disk Format</value>
   </data>

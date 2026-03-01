@@ -70,10 +70,18 @@ public sealed partial class SysVfs
         // Sectors in a cylinder
         var spc = (int)(imagePlugin.Info.Heads * imagePlugin.Info.SectorsPerTrack);
 
+        // Multiplier to convert 1024-byte block numbers to sector offsets
+        var sectorsPerBlock                     = (int)(1024 / imagePlugin.Info.SectorSize);
+        if(sectorsPerBlock < 1) sectorsPerBlock = 1;
+
         // Superblock can start on 0x000, 0x200, 0x600 and 0x800, not aligned, so we assume 16 (128 bytes/sector) sectors as a safe value
+        // Also include odd SysV locations at blocks 9, 15, 18 (per Linux kernel driver)
         int[] locations =
         [
             0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+
+            // Odd SysV superblock locations (block numbers converted to sector offsets)
+            9 * sectorsPerBlock, 15 * sectorsPerBlock, 18 * sectorsPerBlock,
 
             // Superblock can also skip one cylinder (for boot)
             spc
@@ -114,6 +122,8 @@ public sealed partial class SysVfs
                 return true;
 
             // Now try to identify 7th edition
+            // V7 superblock is always at block 1 (512-byte blocks), so for 512-byte sectors
+            // it's at sector 1, which maps to offset 0 in our read buffer when i=1
             var s_fsize  = BitConverter.ToUInt32(sb_sector, 0x002);
             var s_nfree  = BitConverter.ToUInt16(sb_sector, 0x006);
             var s_ninode = BitConverter.ToUInt16(sb_sector, 0x0D0);
@@ -121,24 +131,52 @@ public sealed partial class SysVfs
             if(s_fsize is <= 0 or >= 0xFFFFFFFF || s_nfree is <= 0 or >= 0xFFFF || s_ninode is <= 0 or >= 0xFFFF)
                 continue;
 
-            if((s_fsize & 0xFF) == 0x00 && (s_nfree & 0xFF) == 0x00 && (s_ninode & 0xFF) == 0x00)
-            {
-                // Byteswap
-                s_fsize = ((s_fsize & 0xFF)       << 24) +
-                          ((s_fsize & 0xFF00)     << 8)  +
-                          ((s_fsize & 0xFF0000)   >> 8)  +
-                          ((s_fsize & 0xFF000000) >> 24);
+            // Try PDP-endian first (like the Linux kernel does), then LE, then BE
+            // PDP-11 stores 32-bit as high word first, each word in LE
+            // When read as LE uint32, PDP_swab = swap the two 16-bit halves
+            uint pdp_fsize = (s_fsize & 0xFFFF0000) >> 16 | (s_fsize & 0x0000FFFF) << 16;
 
-                s_nfree  = (ushort)(s_nfree  >> 8);
-                s_ninode = (ushort)(s_ninode >> 8);
-            }
+            if(pdp_fsize                > 0          &&
+               pdp_fsize                < V7_MAXSIZE &&
+               s_nfree                  > 0          &&
+               s_nfree                  < V7_NICFREE &&
+               s_ninode                 > 0          &&
+               s_ninode                 < V7_NICINOD &&
+               (pdp_fsize & 0xFF000000) == 0x00      &&
+               (pdp_fsize * 512  == (partition.End - partition.Start) * imagePlugin.Info.SectorSize ||
+                pdp_fsize * 1024 == (partition.End - partition.Start) * imagePlugin.Info.SectorSize))
+                return true;
 
-            if((s_fsize & 0xFF000000) != 0x00 || (s_nfree & 0xFF00) != 0x00 || (s_ninode & 0xFF00) != 0x00) continue;
+            // Try LE (values as read)
+            if(s_fsize                > 0          &&
+               s_fsize                < V7_MAXSIZE &&
+               s_nfree                > 0          &&
+               s_nfree                < V7_NICFREE &&
+               s_ninode               > 0          &&
+               s_ninode               < V7_NICINOD &&
+               (s_fsize & 0xFF000000) == 0x00      &&
+               (s_fsize * 512  == (partition.End - partition.Start) * imagePlugin.Info.SectorSize ||
+                s_fsize * 1024 == (partition.End - partition.Start) * imagePlugin.Info.SectorSize))
+                return true;
 
-            if(s_fsize >= V7_MAXSIZE || s_nfree >= V7_NICFREE || s_ninode >= V7_NICINOD) continue;
+            // Try BE: full byte swap of 32-bit and 16-bit values
+            uint be_fsize = (s_fsize & 0xFF)       << 24 |
+                            (s_fsize & 0xFF00)     << 8  |
+                            (s_fsize & 0xFF0000)   >> 8  |
+                            (s_fsize & 0xFF000000) >> 24;
 
-            if(s_fsize * 1024 == (partition.End - partition.Start) * imagePlugin.Info.SectorSize ||
-               s_fsize * 512  == (partition.End - partition.Start) * imagePlugin.Info.SectorSize)
+            var be_nfree  = (ushort)(s_nfree  >> 8 | s_nfree  << 8);
+            var be_ninode = (ushort)(s_ninode >> 8 | s_ninode << 8);
+
+            if(be_fsize                > 0          &&
+               be_fsize                < V7_MAXSIZE &&
+               be_nfree                > 0          &&
+               be_nfree                < V7_NICFREE &&
+               be_ninode               > 0          &&
+               be_ninode               < V7_NICINOD &&
+               (be_fsize & 0xFF000000) == 0x00      &&
+               (be_fsize * 512  == (partition.End - partition.Start) * imagePlugin.Info.SectorSize ||
+                be_fsize * 1024 == (partition.End - partition.Start) * imagePlugin.Info.SectorSize))
                 return true;
         }
 
@@ -155,6 +193,7 @@ public sealed partial class SysVfs
 
         var    sb        = new StringBuilder();
         var    bigEndian = false; // Start in little endian until we know what are we handling here
+        var    pdpEndian = false; // PDP-11 middle-endian
         var    start     = 0;
         var    xenix     = false;
         var    sysv      = false;
@@ -174,10 +213,18 @@ public sealed partial class SysVfs
         // Sectors in a cylinder
         var spc = (int)(imagePlugin.Info.Heads * imagePlugin.Info.SectorsPerTrack);
 
+        // Multiplier to convert 1024-byte block numbers to sector offsets
+        var sectorsPerBlock                     = (int)(1024 / imagePlugin.Info.SectorSize);
+        if(sectorsPerBlock < 1) sectorsPerBlock = 1;
+
         // Superblock can start on 0x000, 0x200, 0x600 and 0x800, not aligned, so we assume 16 (128 bytes/sector) sectors as a safe value
+        // Also include odd SysV locations at blocks 9, 15, 18 (per Linux kernel driver)
         int[] locations =
         [
             0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+
+            // Odd SysV superblock locations (block numbers converted to sector offsets)
+            9 * sectorsPerBlock, 15 * sectorsPerBlock, 18 * sectorsPerBlock,
 
             // Superblock can also skip one cylinder (for boot)
             spc
@@ -284,37 +331,75 @@ public sealed partial class SysVfs
             }
 
             // Now try to identify 7th edition
-            var s_fsize  = BitConverter.ToUInt32(sb_sector, 0x002);
-            var s_nfree  = BitConverter.ToUInt16(sb_sector, 0x006);
-            var s_ninode = BitConverter.ToUInt16(sb_sector, 0x0D0);
+            // V7 superblock is always at block 1 (512-byte blocks)
+            var s_fsize_raw  = BitConverter.ToUInt32(sb_sector, 0x002);
+            var s_nfree_raw  = BitConverter.ToUInt16(sb_sector, 0x006);
+            var s_ninode_raw = BitConverter.ToUInt16(sb_sector, 0x0D0);
 
-            if(s_fsize is <= 0 or >= 0xFFFFFFFF || s_nfree is <= 0 or >= 0xFFFF || s_ninode is <= 0 or >= 0xFFFF)
+            if(s_fsize_raw is <= 0 or >= 0xFFFFFFFF ||
+               s_nfree_raw is <= 0 or >= 0xFFFF     ||
+               s_ninode_raw is <= 0 or >= 0xFFFF)
                 continue;
 
-            if((s_fsize & 0xFF) == 0x00 && (s_nfree & 0xFF) == 0x00 && (s_ninode & 0xFF) == 0x00)
-            {
-                // Byteswap
-                s_fsize = ((s_fsize & 0xFF)       << 24) +
-                          ((s_fsize & 0xFF00)     << 8)  +
-                          ((s_fsize & 0xFF0000)   >> 8)  +
-                          ((s_fsize & 0xFF000000) >> 24);
+            // Try PDP-endian first (like the Linux kernel does), then LE, then BE
+            uint pdp_fsize = (s_fsize_raw & 0xFFFF0000) >> 16 | (s_fsize_raw & 0x0000FFFF) << 16;
 
-                s_nfree  = (ushort)(s_nfree  >> 8);
-                s_ninode = (ushort)(s_ninode >> 8);
+            if(pdp_fsize                > 0          &&
+               pdp_fsize                < V7_MAXSIZE &&
+               s_nfree_raw              > 0          &&
+               s_nfree_raw              < V7_NICFREE &&
+               s_ninode_raw             > 0          &&
+               s_ninode_raw             < V7_NICINOD &&
+               (pdp_fsize & 0xFF000000) == 0x00      &&
+               (pdp_fsize * 512  == (partition.End - partition.Start) * imagePlugin.Info.SectorSize ||
+                pdp_fsize * 1024 == (partition.End - partition.Start) * imagePlugin.Info.SectorSize))
+            {
+                sys7th    = true;
+                pdpEndian = true;
+                start     = i;
+
+                break;
             }
 
-            if((s_fsize & 0xFF000000) != 0x00 || (s_nfree & 0xFF00) != 0x00 || (s_ninode & 0xFF00) != 0x00) continue;
+            // Try LE
+            if(s_fsize_raw                > 0          &&
+               s_fsize_raw                < V7_MAXSIZE &&
+               s_nfree_raw                > 0          &&
+               s_nfree_raw                < V7_NICFREE &&
+               s_ninode_raw               > 0          &&
+               s_ninode_raw               < V7_NICINOD &&
+               (s_fsize_raw & 0xFF000000) == 0x00      &&
+               (s_fsize_raw * 512  == (partition.End - partition.Start) * imagePlugin.Info.SectorSize ||
+                s_fsize_raw * 1024 == (partition.End - partition.Start) * imagePlugin.Info.SectorSize))
+            {
+                sys7th = true;
+                start  = i;
 
-            if(s_fsize >= V7_MAXSIZE || s_nfree >= V7_NICFREE || s_ninode >= V7_NICINOD) continue;
+                break;
+            }
 
-            if(s_fsize * 1024 != (partition.End - partition.Start) * imagePlugin.Info.SectorSize &&
-               s_fsize * 512  != (partition.End - partition.Start) * imagePlugin.Info.SectorSize)
-                continue;
+            // Try BE
+            uint be_fsize = (s_fsize_raw & 0xFF)       << 24 |
+                            (s_fsize_raw & 0xFF00)     << 8  |
+                            (s_fsize_raw & 0xFF0000)   >> 8  |
+                            (s_fsize_raw & 0xFF000000) >> 24;
 
-            sys7th = true;
-            start  = i;
+            if(be_fsize                > 0          &&
+               be_fsize                < V7_MAXSIZE &&
+               s_nfree_raw             > 0          &&
+               s_nfree_raw             < V7_NICFREE &&
+               s_ninode_raw            > 0          &&
+               s_ninode_raw            < V7_NICINOD &&
+               (be_fsize & 0xFF000000) == 0x00      &&
+               (be_fsize * 512  == (partition.End - partition.Start) * imagePlugin.Info.SectorSize ||
+                be_fsize * 1024 == (partition.End - partition.Start) * imagePlugin.Info.SectorSize))
+            {
+                sys7th    = true;
+                bigEndian = true;
+                start     = i;
 
-            break;
+                break;
+            }
         }
 
         if(!sys7th && !sysv && !coherent && !xenix && !xenix3) return;
@@ -388,6 +473,9 @@ public sealed partial class SysVfs
                           .AppendLine();
                     }
                 }
+
+                metadata.Clusters     = (ulong)xnx3_sb.s_fsize;
+                metadata.FreeClusters = (ulong)xnx3_sb.s_tfree;
 
                 sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, xnx3_sb.s_fsize, xnx3_sb.s_fsize * bs)
                   .AppendLine();
@@ -487,6 +575,9 @@ public sealed partial class SysVfs
                     }
                 }
 
+                metadata.Clusters     = (ulong)xnx_sb.s_fsize;
+                metadata.FreeClusters = (ulong)xnx_sb.s_tfree;
+
                 sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, xnx_sb.s_fsize, xnx_sb.s_fsize * bs)
                   .AppendLine();
 
@@ -548,6 +639,21 @@ public sealed partial class SysVfs
 
             if(bigEndian) tempType = (FsType)Swapping.Swap((uint)tempType);
 
+            // Check for SCO AFS: s_nfree == 0xFFFF indicates SCO AFS
+            // s_nfree is at offset 0x008 in R4 struct (after s_isize + pad0 + s_fsize)
+            var tempNfree = BitConverter.ToUInt16(sb_sector, 0x008 + offset);
+
+            if(bigEndian) tempNfree = Swapping.Swap(tempNfree);
+
+            bool scoAfs = tempNfree == SCO_NFREE;
+
+            // ISC long filenames: s_type >= 0x10 means long filename support
+            // Per Linux kernel: the real type is s_type >> 4 when s_type >= 0x10
+            var  rawType = (uint)tempType;
+            bool iscLong = rawType >= 0x10 && rawType <= 0x30;
+
+            if(iscLong) tempType = (FsType)(rawType >> 4);
+
             uint bs = 512;
 
             switch(tempType)
@@ -582,12 +688,14 @@ public sealed partial class SysVfs
                     break;
             }
 
-            // Read s_fsize to determine if it's Release 4 or Release 2
-            var tempFsize = BitConverter.ToInt32(sb_sector, 0x002 + offset);
+            // Read s_time to determine if it's Release 4 or Release 2
+            // Per Linux kernel: s_time < JAN_1_1980 indicates R2
+            // Use R4 struct's s_time offset (0x1A4 from struct start)
+            var tempTime = BitConverter.ToInt32(sb_sector, 0x1A4 + offset);
 
-            if(bigEndian) tempFsize = Swapping.Swap(tempFsize);
+            if(bigEndian) tempTime = Swapping.Swap(tempTime);
 
-            bool sysvr4 = tempFsize * bs <= 0 || tempFsize * bs != (long)partition.Size;
+            bool sysvr4 = tempTime >= JAN_1_1980;
 
             if(sysvr4)
             {
@@ -601,12 +709,23 @@ public sealed partial class SysVfs
                                                         : Marshal.ByteArrayToStructureLittleEndian<
                                                             SystemVRelease4SuperBlock>(offsetBuffer);
 
-                sb.AppendLine(Localization.System_V_Release_4_filesystem);
-                metadata.Type = FS_TYPE_SVR4;
+                if(scoAfs)
+                {
+                    sb.AppendLine(Localization.SCO_AFS_filesystem);
+                    metadata.Type = FS_TYPE_AFS;
+                }
+                else
+                {
+                    sb.AppendLine(Localization.System_V_Release_4_filesystem);
+                    metadata.Type = FS_TYPE_SVR4;
+                }
+
+                if(iscLong) sb.AppendLine(Localization.ISC_long_filenames_detected);
 
                 sb.AppendFormat(Localization._0_bytes_per_block, bs).AppendLine();
 
-                metadata.Clusters = (ulong)sysv_sb.s_fsize;
+                metadata.Clusters     = (ulong)sysv_sb.s_fsize;
+                metadata.FreeClusters = (ulong)sysv_sb.s_tfree;
 
                 sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, sysv_sb.s_fsize, sysv_sb.s_fsize * bs)
                   .AppendLine();
@@ -669,7 +788,8 @@ public sealed partial class SysVfs
 
                 sb.AppendFormat(Localization._0_bytes_per_block, bs).AppendLine();
 
-                metadata.Clusters = (ulong)sysv_sb.s_fsize;
+                metadata.Clusters     = (ulong)sysv_sb.s_fsize;
+                metadata.FreeClusters = (ulong)sysv_sb.s_tfree;
 
                 sb.AppendFormat(Localization._0_zones_in_volume_1_bytes, sysv_sb.s_fsize, sysv_sb.s_fsize * bs)
                   .AppendLine();
@@ -730,9 +850,10 @@ public sealed partial class SysVfs
             // Coherent uses PDP-endian, the [SwapPdpEndian] attribute handles this
             CoherentSuperBlock coh_sb = Marshal.ByteArrayToStructurePdpEndian<CoherentSuperBlock>(sb_sector);
 
-            metadata.Type        = FS_TYPE_COHERENT;
-            metadata.ClusterSize = 512;
-            metadata.Clusters    = (ulong)coh_sb.s_fsize;
+            metadata.Type         = FS_TYPE_COHERENT;
+            metadata.ClusterSize  = 512;
+            metadata.Clusters     = (ulong)coh_sb.s_fsize;
+            metadata.FreeClusters = (ulong)coh_sb.s_tfree;
 
             sb.AppendLine(Localization.Coherent_UNIX_filesystem);
 
@@ -741,7 +862,7 @@ public sealed partial class SysVfs
                 sb.AppendFormat(Localization
                                    .WARNING_Filesystem_indicates_0_bytes_block_while_device_indicates_1_bytes_block,
                                 512,
-                                2048)
+                                imagePlugin.Info.SectorSize)
                   .AppendLine();
             }
 
@@ -785,12 +906,19 @@ public sealed partial class SysVfs
 
             if(errno != ErrorNumber.NoError) return;
 
-            UNIX7thEditionSuperBlock v7_sb =
-                Marshal.ByteArrayToStructureLittleEndian<UNIX7thEditionSuperBlock>(sb_sector);
+            UNIX7thEditionSuperBlock v7_sb;
 
-            metadata.Type        = FS_TYPE_UNIX7;
-            metadata.ClusterSize = 512;
-            metadata.Clusters    = v7_sb.s_fsize;
+            if(pdpEndian)
+                v7_sb = Marshal.ByteArrayToStructurePdpEndian<UNIX7thEditionSuperBlock>(sb_sector);
+            else if(bigEndian)
+                v7_sb = Marshal.ByteArrayToStructureBigEndian<UNIX7thEditionSuperBlock>(sb_sector);
+            else
+                v7_sb = Marshal.ByteArrayToStructureLittleEndian<UNIX7thEditionSuperBlock>(sb_sector);
+
+            metadata.Type         = FS_TYPE_UNIX7;
+            metadata.ClusterSize  = 512;
+            metadata.Clusters     = v7_sb.s_fsize;
+            metadata.FreeClusters = (ulong)v7_sb.s_tfree;
             sb.AppendLine(Localization.UNIX_7th_Edition_filesystem);
 
             if(imagePlugin.Info.SectorSize != 512)
@@ -798,7 +926,7 @@ public sealed partial class SysVfs
                 sb.AppendFormat(Localization
                                    .WARNING_Filesystem_indicates_0_bytes_block_while_device_indicates_1_bytes_block,
                                 512,
-                                2048)
+                                imagePlugin.Info.SectorSize)
                   .AppendLine();
             }
 

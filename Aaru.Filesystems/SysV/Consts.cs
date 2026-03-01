@@ -65,8 +65,12 @@ public sealed partial class SysVfs
     const string FS_TYPE_XENIX    = "xenixfs";
     const string FS_TYPE_SVR4     = "sysv_r4";
     const string FS_TYPE_SVR2     = "sysv_r2";
+    const string FS_TYPE_AFS      = "sco_afs";
     const string FS_TYPE_COHERENT = "coherent";
     const string FS_TYPE_UNIX7    = "unix7fs";
+
+    /// <summary>January 1st, 1980 in UNIX time. Used to discriminate SysV R2 from R4.</summary>
+    const int JAN_1_1980 = (10 * 365 + 2) * 24 * 60 * 60;
 
     /// <summary>Number of superblock inodes</summary>
     const int NICINOD = 100;

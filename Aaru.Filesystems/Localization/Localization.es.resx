@@ -2389,6 +2389,15 @@
     <data name="UNIX_7th_Edition_filesystem" xml:space="preserve">
     <value>Sistema de ficheros de UNIX 7ª edición</value>
   </data>
+    <data name="SCO_AFS_filesystem" xml:space="preserve">
+    <value>Acer File System (AFS)</value>
+  </data>
+    <data name="ISC_long_filenames_detected" xml:space="preserve">
+    <value>Detectados nombres largos de ISC</value>
+  </data>
+    <data name="_8192_bytes_per_block" xml:space="preserve">
+    <value>8192 bytes por bloque</value>
+  </data>
     <data name="UNIX_Boot_Filesystem" xml:space="preserve">
     <value>Sistema de ficheros de arranque de UNIX</value>
   </data>
