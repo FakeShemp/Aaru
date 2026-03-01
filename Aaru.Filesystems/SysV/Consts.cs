@@ -32,9 +32,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Aaru.Filesystems;
 
-// Information from the Linux kernel
-/// <inheritdoc />
-/// <summary>Implements detection of the UNIX System V filesystem</summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 [SuppressMessage("ReSharper", "UnusedType.Local")]

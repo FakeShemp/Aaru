@@ -32,7 +32,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Aaru.Filesystems;
 
-/// <inheritdoc />
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 [SuppressMessage("ReSharper", "UnusedType.Local")]

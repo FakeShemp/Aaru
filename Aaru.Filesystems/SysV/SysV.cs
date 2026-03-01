@@ -29,18 +29,21 @@
 // ReSharper disable NotAccessedField.Local
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
-// Information from the Linux kernel
+// Information from the Linux kernel, Coherent source code, XENIX includes, System V includes, 32V includes,
+// OpenServer includes, and many other operating systems include headers
 /// <inheritdoc />
-/// <summary>Implements detection of the UNIX System V filesystem</summary>
+/// <summary>Implements the UNIX System V filesystem</summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 [SuppressMessage("ReSharper", "UnusedType.Local")]
-public sealed partial class SysVfs : IFilesystem
+public sealed partial class SysVfs : IReadOnlyFilesystem
 {
 #region IFilesystem Members
 
@@ -54,4 +57,11 @@ public sealed partial class SysVfs : IFilesystem
     public string Author => Authors.NataliaPortillo;
 
 #endregion
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces => [];
 }
