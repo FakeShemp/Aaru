@@ -289,9 +289,64 @@ public sealed partial class NTFS
         }
         else if(ntfsAttributes.HasFlag(FileAttributeFlags.ReparsePoint))
         {
-            // S_IFLNK | rwxrwxrwx (reparse points are often symlinks)
-            mode            =  0xA000 | 0777;
-            stat.Attributes |= FileAttributes.Symlink;
+            // Read the reparse tag from $REPARSE_POINT attribute to determine the actual file type
+            uint reparseTag = 0;
+
+            ErrorNumber rpErrno = FindAttributes(recordData,
+                                                 header,
+                                                 mftRecordNumber,
+                                                 AttributeType.ReparsePoint,
+                                                 null,
+                                                 out List<FoundAttribute> rpResults);
+
+            if(rpErrno == ErrorNumber.NoError && rpResults.Count > 0)
+            {
+                FoundAttribute rpAttr   = rpResults[0];
+                byte           rpNonRes = rpAttr.RecordData[rpAttr.Offset + 8];
+
+                if(rpNonRes == 0)
+                {
+                    var rpValueOffset = BitConverter.ToUInt16(rpAttr.RecordData, rpAttr.Offset + 0x14);
+                    int rpValueStart  = rpAttr.Offset + rpValueOffset;
+
+                    if(rpValueStart + 4 <= rpAttr.RecordData.Length)
+                        reparseTag = BitConverter.ToUInt32(rpAttr.RecordData, rpValueStart);
+                }
+            }
+
+            switch(reparseTag)
+            {
+                case IO_REPARSE_TAG_LX_FIFO:
+                    // S_IFIFO | rw-rw-rw-
+                    mode            =  0x1000 | 0666;
+                    stat.Attributes |= FileAttributes.FIFO;
+
+                    break;
+                case IO_REPARSE_TAG_LX_CHR:
+                    // S_IFCHR | rw-rw-rw-
+                    mode            =  0x2000 | 0666;
+                    stat.Attributes |= FileAttributes.CharDevice;
+
+                    break;
+                case IO_REPARSE_TAG_LX_BLK:
+                    // S_IFBLK | rw-rw-rw-
+                    mode            =  0x6000 | 0660;
+                    stat.Attributes |= FileAttributes.BlockDevice;
+
+                    break;
+                case IO_REPARSE_TAG_AF_UNIX:
+                    // S_IFSOCK | rwxrwxrwx
+                    mode            =  0xC000 | 0777;
+                    stat.Attributes |= FileAttributes.Socket;
+
+                    break;
+                default:
+                    // S_IFLNK | rwxrwxrwx (symlinks, mount points, and unknown reparse points)
+                    mode            =  0xA000 | 0777;
+                    stat.Attributes |= FileAttributes.Symlink;
+
+                    break;
+            }
         }
         else if(ntfsAttributes.HasFlag(FileAttributeFlags.Device))
         {

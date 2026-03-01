@@ -31,4 +31,15 @@ namespace Aaru.Filesystems;
 public sealed partial class NTFS
 {
     const string FS_TYPE = "ntfs";
+
+    // Windows reparse point tags
+    const uint IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
+    const uint IO_REPARSE_TAG_SYMLINK     = 0xA000000C;
+
+    // WSL reparse point tags
+    const uint IO_REPARSE_TAG_AF_UNIX    = 0x80000023;
+    const uint IO_REPARSE_TAG_LX_FIFO    = 0x80000024;
+    const uint IO_REPARSE_TAG_LX_CHR     = 0x80000025;
+    const uint IO_REPARSE_TAG_LX_BLK     = 0x80000026;
+    const uint IO_REPARSE_TAG_LX_SYMLINK = 0xA000001D;
 }
