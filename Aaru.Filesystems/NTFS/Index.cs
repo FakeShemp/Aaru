@@ -38,11 +38,52 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 public sealed partial class NTFS
 {
+    /// <summary>Reads and caches the directory entries for an arbitrary directory given its MFT record number.</summary>
+    /// <param name="mftRecordNumber">MFT record number of the directory.</param>
+    /// <param name="entries">Output dictionary mapping file names to MFT references.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber ReadDirectoryEntries(uint mftRecordNumber, out Dictionary<string, ulong> entries)
+    {
+        entries = new Dictionary<string, ulong>(StringComparer.OrdinalIgnoreCase);
+
+        ErrorNumber errno = ReadMftRecord(mftRecordNumber, out byte[] recordData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        MftRecord header =
+            Marshal.ByteArrayToStructureLittleEndian<MftRecord>(recordData, 0, Marshal.SizeOf<MftRecord>());
+
+        if(header.magic != NtfsRecordMagic.File)
+        {
+            AaruLogging.Debug(MODULE_NAME, "MFT record {0} has invalid magic", mftRecordNumber);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Check that this is a directory
+        if(!header.flags.HasFlag(MftRecordFlags.IsDirectory))
+        {
+            AaruLogging.Debug(MODULE_NAME, "MFT record {0} is not a directory", mftRecordNumber);
+
+            return ErrorNumber.NotDirectory;
+        }
+
+        return CacheDirectoryEntries(recordData, header, entries);
+    }
+
     /// <summary>Caches the root directory entries from the $INDEX_ROOT attribute in the root MFT record.</summary>
     /// <param name="recordData">Raw root directory MFT record data after USA fixup.</param>
     /// <param name="header">Parsed MFT record header.</param>
     /// <returns>Error number indicating success or failure.</returns>
-    ErrorNumber CacheRootDirectory(byte[] recordData, in MftRecord header)
+    ErrorNumber CacheRootDirectory(byte[] recordData, in MftRecord header) =>
+        CacheDirectoryEntries(recordData, header, _rootDirectoryCache);
+
+    /// <summary>Caches directory entries from the $INDEX_ROOT attribute in an MFT record.</summary>
+    /// <param name="recordData">Raw directory MFT record data after USA fixup.</param>
+    /// <param name="header">Parsed MFT record header.</param>
+    /// <param name="cache">Target dictionary to populate with file names and MFT references.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber CacheDirectoryEntries(byte[] recordData, in MftRecord header, Dictionary<string, ulong> cache)
     {
         int offset = header.attrs_offset;
 
@@ -92,10 +133,11 @@ public sealed partial class NTFS
                 int entriesStart = indexHeaderOffset + (int)indexRoot.index.entries_offset;
                 int entriesEnd   = indexHeaderOffset + (int)indexRoot.index.index_length;
 
-                ParseIndexEntries(recordData, entriesStart, entriesEnd);
+                ParseIndexEntries(recordData, entriesStart, entriesEnd, cache);
 
                 // If the index has sub-nodes (LARGE_INDEX), we also need to read $INDEX_ALLOCATION
-                if(indexRoot.index.flags.HasFlag(IndexHeaderFlags.LargeIndex)) CacheIndexAllocation(recordData, header);
+                if(indexRoot.index.flags.HasFlag(IndexHeaderFlags.LargeIndex))
+                    CacheIndexAllocation(recordData, header, cache);
 
                 return ErrorNumber.NoError;
             }
@@ -112,7 +154,8 @@ public sealed partial class NTFS
     /// <param name="data">Buffer containing the index entries.</param>
     /// <param name="start">Start offset of the first entry.</param>
     /// <param name="end">End offset (exclusive) of the entries area.</param>
-    void ParseIndexEntries(byte[] data, int start, int end)
+    /// <param name="cache">Target dictionary to populate with file names and MFT references.</param>
+    void ParseIndexEntries(byte[] data, int start, int end, Dictionary<string, ulong> cache)
     {
         int pos = start;
 
@@ -155,7 +198,7 @@ public sealed partial class NTFS
                             // The MFT reference is the lower 48 bits of indexed_file_or_data
                             ulong mftRef = entryHeader.indexed_file_or_data & 0x0000FFFFFFFFFFFF;
 
-                            _rootDirectoryCache.TryAdd(fileName, mftRef);
+                            cache.TryAdd(fileName, mftRef);
                         }
                     }
                 }
@@ -171,7 +214,8 @@ public sealed partial class NTFS
     /// </summary>
     /// <param name="recordData">Raw root directory MFT record data after USA fixup.</param>
     /// <param name="header">Parsed MFT record header.</param>
-    void CacheIndexAllocation(byte[] recordData, in MftRecord header)
+    /// <param name="cache">Target dictionary to populate with file names and MFT references.</param>
+    void CacheIndexAllocation(byte[] recordData, in MftRecord header, Dictionary<string, ulong> cache)
     {
         int offset = header.attrs_offset;
 
@@ -201,7 +245,7 @@ public sealed partial class NTFS
                 List<(long offset, long length)> dataRuns =
                     ParseDataRuns(recordData, runListOffset, offset + (int)attrLength);
 
-                ReadIndexBlocks(dataRuns);
+                ReadIndexBlocks(dataRuns, cache);
 
                 return;
             }
@@ -250,9 +294,8 @@ public sealed partial class NTFS
 
             // Sign-extend if negative
             if(offsetSize > 0 && (data[offset + offsetSize - 1] & 0x80) != 0)
-            {
-                for(int i = offsetSize; i < 8; i++) runOffset |= (long)0xFF << i * 8;
-            }
+                for(int i = offsetSize; i < 8; i++)
+                    runOffset |= (long)0xFF << i * 8;
 
             offset += offsetSize;
 
@@ -271,9 +314,10 @@ public sealed partial class NTFS
         return runs;
     }
 
-    /// <summary>Reads index blocks from data runs and parses their entries into the root directory cache.</summary>
+    /// <summary>Reads index blocks from data runs and parses their entries into the directory cache.</summary>
     /// <param name="dataRuns">List of (absolute cluster offset, length in clusters) tuples.</param>
-    void ReadIndexBlocks(List<(long offset, long length)> dataRuns)
+    /// <param name="cache">Target dictionary to populate with file names and MFT references.</param>
+    void ReadIndexBlocks(List<(long offset, long length)> dataRuns, Dictionary<string, ulong> cache)
     {
         foreach((long clusterOffset, long clusterLength) in dataRuns)
         {
@@ -327,7 +371,7 @@ public sealed partial class NTFS
                 int entriesStart      = indexHeaderOffset + (int)indexBlock.index.entries_offset;
                 int entriesEnd        = indexHeaderOffset + (int)indexBlock.index.index_length;
 
-                ParseIndexEntries(blockData, entriesStart, entriesEnd);
+                ParseIndexEntries(blockData, entriesStart, entriesEnd, cache);
             }
         }
     }
