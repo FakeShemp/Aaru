@@ -424,13 +424,18 @@ public sealed partial class NTFS
                     List<(long offset, long length)> dataRuns =
                         ParseDataRuns(recordData, runListOffset, offset + (int)attrLength);
 
+                    bool isCompressed = nrAttr.compression_unit != 0 && nrAttr.flags.HasFlag(AttributeFlags.Compressed);
+                    int  compressionUnitClusters = isCompressed ? 1 << nrAttr.compression_unit : 0;
+
                     node = new NtfsFileNode
                     {
-                        Path       = normalizedPath,
-                        Length     = (long)nrAttr.data_size,
-                        Offset     = 0,
-                        IsResident = false,
-                        DataRuns   = dataRuns
+                        Path                    = normalizedPath,
+                        Length                  = (long)nrAttr.data_size,
+                        Offset                  = 0,
+                        IsResident              = false,
+                        DataRuns                = dataRuns,
+                        IsCompressed            = isCompressed,
+                        CompressionUnitClusters = compressionUnitClusters
                     };
 
                     return ErrorNumber.NoError;
@@ -449,11 +454,13 @@ public sealed partial class NTFS
     {
         if(node is not NtfsFileNode mynode) return ErrorNumber.InvalidArgument;
 
-        mynode.DataRuns            = null;
-        mynode.ResidentData        = null;
-        mynode.CachedCluster       = null;
-        mynode.CachedClusterOffset = -1;
-        mynode.Offset              = -1;
+        mynode.DataRuns                 = null;
+        mynode.ResidentData             = null;
+        mynode.CachedCluster            = null;
+        mynode.CachedClusterOffset      = -1;
+        mynode.CachedCompressionUnit    = null;
+        mynode.CachedCompressionUnitVcn = -1;
+        mynode.Offset                   = -1;
 
         return ErrorNumber.NoError;
     }
@@ -491,86 +498,10 @@ public sealed partial class NTFS
             return ErrorNumber.NoError;
         }
 
-        // Non-resident data — read from data runs, caching one cluster at a time
-        long bytesRead = 0;
+        // Non-resident data — read from data runs
+        if(mynode.IsCompressed) return ReadCompressedFile(mynode, length, buffer, out read);
 
-        while(bytesRead < length)
-        {
-            long fileOffset      = mynode.Offset;
-            long clusterIndex    = fileOffset / _bytesPerCluster;
-            long offsetInCluster = fileOffset % _bytesPerCluster;
-
-            // Translate logical cluster to physical cluster via data runs
-            long physicalCluster = -1;
-            long runStartVcn     = 0;
-
-            foreach((long clusterOffset, long clusterLength) in mynode.DataRuns)
-            {
-                if(clusterIndex >= runStartVcn && clusterIndex < runStartVcn + clusterLength)
-                {
-                    // Sparse run (offset 0 with no offset bytes stored as 0)
-                    if(clusterOffset == 0 && clusterLength > 0)
-                    {
-                        physicalCluster = 0; // Will be treated as sparse below
-
-                        break;
-                    }
-
-                    physicalCluster = clusterOffset + (clusterIndex - runStartVcn);
-
-                    break;
-                }
-
-                runStartVcn += clusterLength;
-            }
-
-            // Beyond the end of data runs
-            if(physicalCluster < 0) break;
-
-            long bytesToCopy = Math.Min(length - bytesRead, _bytesPerCluster - offsetInCluster);
-
-            if(physicalCluster == 0)
-            {
-                // Sparse cluster — fill with zeros
-                Array.Clear(buffer, (int)bytesRead, (int)bytesToCopy);
-            }
-            else if(mynode.CachedClusterOffset == physicalCluster && mynode.CachedCluster != null)
-            {
-                // Cache hit — copy from cached cluster
-                Array.Copy(mynode.CachedCluster, offsetInCluster, buffer, bytesRead, bytesToCopy);
-            }
-            else
-            {
-                // Read cluster from disk
-                ulong sectorStart = (ulong)physicalCluster * _sectorsPerCluster;
-
-                ErrorNumber errno = _image.ReadSectors(_partition.Start + sectorStart,
-                                                       false,
-                                                       _sectorsPerCluster,
-                                                       out byte[] clusterData,
-                                                       out _);
-
-                if(errno != ErrorNumber.NoError)
-                {
-                    AaruLogging.Debug(MODULE_NAME, "Error reading cluster {0}: {1}", physicalCluster, errno);
-
-                    break;
-                }
-
-                // Cache this cluster
-                mynode.CachedCluster       = clusterData;
-                mynode.CachedClusterOffset = physicalCluster;
-
-                Array.Copy(clusterData, offsetInCluster, buffer, bytesRead, bytesToCopy);
-            }
-
-            bytesRead     += bytesToCopy;
-            mynode.Offset += bytesToCopy;
-        }
-
-        read = bytesRead;
-
-        return ErrorNumber.NoError;
+        return ReadUncompressedFile(mynode, length, buffer, out read);
     }
 
     /// <inheritdoc />
@@ -757,6 +688,300 @@ public sealed partial class NTFS
 
         // No $REPARSE_POINT attribute found — not a symbolic link
         return ErrorNumber.InvalidArgument;
+    }
+
+    /// <summary>Reads uncompressed non-resident file data from data runs with single-cluster caching.</summary>
+    /// <param name="mynode">The file node containing data runs and read state.</param>
+    /// <param name="length">Number of bytes to read.</param>
+    /// <param name="buffer">Destination buffer.</param>
+    /// <param name="read">Number of bytes actually read.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber ReadUncompressedFile(NtfsFileNode mynode, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+        long bytesRead = 0;
+
+        while(bytesRead < length)
+        {
+            long fileOffset      = mynode.Offset;
+            long clusterIndex    = fileOffset / _bytesPerCluster;
+            long offsetInCluster = fileOffset % _bytesPerCluster;
+
+            // Translate logical cluster to physical cluster via data runs
+            long physicalCluster = -1;
+            long runStartVcn     = 0;
+
+            foreach((long clusterOffset, long clusterLength) in mynode.DataRuns)
+            {
+                if(clusterIndex >= runStartVcn && clusterIndex < runStartVcn + clusterLength)
+                {
+                    // Sparse run (offset 0 with no offset bytes stored as 0)
+                    if(clusterOffset == 0 && clusterLength > 0)
+                    {
+                        physicalCluster = 0; // Will be treated as sparse below
+
+                        break;
+                    }
+
+                    physicalCluster = clusterOffset + (clusterIndex - runStartVcn);
+
+                    break;
+                }
+
+                runStartVcn += clusterLength;
+            }
+
+            // Beyond the end of data runs
+            if(physicalCluster < 0) break;
+
+            long bytesToCopy = Math.Min(length - bytesRead, _bytesPerCluster - offsetInCluster);
+
+            if(physicalCluster == 0)
+            {
+                // Sparse cluster — fill with zeros
+                Array.Clear(buffer, (int)bytesRead, (int)bytesToCopy);
+            }
+            else if(mynode.CachedClusterOffset == physicalCluster && mynode.CachedCluster != null)
+            {
+                // Cache hit — copy from cached cluster
+                Array.Copy(mynode.CachedCluster, offsetInCluster, buffer, bytesRead, bytesToCopy);
+            }
+            else
+            {
+                // Read cluster from disk
+                ulong sectorStart = (ulong)physicalCluster * _sectorsPerCluster;
+
+                ErrorNumber errno = _image.ReadSectors(_partition.Start + sectorStart,
+                                                       false,
+                                                       _sectorsPerCluster,
+                                                       out byte[] clusterData,
+                                                       out _);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME, "Error reading cluster {0}: {1}", physicalCluster, errno);
+
+                    break;
+                }
+
+                // Cache this cluster
+                mynode.CachedCluster       = clusterData;
+                mynode.CachedClusterOffset = physicalCluster;
+
+                Array.Copy(clusterData, offsetInCluster, buffer, bytesRead, bytesToCopy);
+            }
+
+            bytesRead     += bytesToCopy;
+            mynode.Offset += bytesToCopy;
+        }
+
+        read = bytesRead;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Reads compressed non-resident file data by decompressing LZNT1 compression units on demand with caching.
+    /// </summary>
+    /// <param name="mynode">The file node containing data runs and read state.</param>
+    /// <param name="length">Number of bytes to read.</param>
+    /// <param name="buffer">Destination buffer.</param>
+    /// <param name="read">Number of bytes actually read.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber ReadCompressedFile(NtfsFileNode mynode, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+        long bytesRead               = 0;
+        int  compressionUnitClusters = mynode.CompressionUnitClusters;
+        long compressionUnitBytes    = compressionUnitClusters * _bytesPerCluster;
+
+        while(bytesRead < length)
+        {
+            long fileOffset = mynode.Offset;
+
+            // Determine which compression unit this offset falls in
+            long compressionUnitIndex = fileOffset           / compressionUnitBytes;
+            long offsetInUnit         = fileOffset           % compressionUnitBytes;
+            long compressionUnitVcn   = compressionUnitIndex * compressionUnitClusters;
+
+            // Check cache first
+            if(mynode.CachedCompressionUnitVcn != compressionUnitVcn || mynode.CachedCompressionUnit == null)
+            {
+                // Need to decompress this compression unit
+                ErrorNumber decompressErrno =
+                    DecompressCompressionUnit(mynode, compressionUnitVcn, compressionUnitClusters, out byte[] unitData);
+
+                if(decompressErrno != ErrorNumber.NoError) break;
+
+                mynode.CachedCompressionUnit    = unitData;
+                mynode.CachedCompressionUnitVcn = compressionUnitVcn;
+            }
+
+            long bytesToCopy = Math.Min(length - bytesRead, compressionUnitBytes - offsetInUnit);
+
+            // Clamp to what the cached unit actually contains
+            if(offsetInUnit + bytesToCopy > mynode.CachedCompressionUnit.Length)
+                bytesToCopy = mynode.CachedCompressionUnit.Length - offsetInUnit;
+
+            if(bytesToCopy <= 0) break;
+
+            Array.Copy(mynode.CachedCompressionUnit, offsetInUnit, buffer, bytesRead, bytesToCopy);
+
+            bytesRead     += bytesToCopy;
+            mynode.Offset += bytesToCopy;
+        }
+
+        read = bytesRead;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads and decompresses a single compression unit from the data runs.</summary>
+    /// <param name="mynode">The file node containing data runs.</param>
+    /// <param name="unitStartVcn">VCN of the first cluster in the compression unit.</param>
+    /// <param name="compressionUnitClusters">Number of clusters in a compression unit.</param>
+    /// <param name="unitData">Output decompressed data for the compression unit.</param>
+    /// <returns>Error number indicating success or failure.</returns>
+    ErrorNumber DecompressCompressionUnit(NtfsFileNode mynode, long unitStartVcn, int compressionUnitClusters,
+                                          out byte[]   unitData)
+    {
+        unitData = null;
+        long unitEndVcn = unitStartVcn + compressionUnitClusters;
+
+        // Collect physical cluster mappings for this compression unit
+        // A compression unit may span multiple data runs, and sparse runs within indicate
+        // that the remaining clusters in the unit are compressed (or entirely sparse)
+        List<(long physicalCluster, long count)> physicalRuns  = [];
+        long                                     totalClusters = 0;
+        var                                      hasSparseRun  = false;
+
+        long runStartVcn = 0;
+
+        foreach((long clusterOffset, long clusterLength) in mynode.DataRuns)
+        {
+            long runEndVcn = runStartVcn + clusterLength;
+
+            // Skip runs entirely before or after this compression unit
+            if(runEndVcn <= unitStartVcn)
+            {
+                runStartVcn = runEndVcn;
+
+                continue;
+            }
+
+            if(runStartVcn >= unitEndVcn) break;
+
+            // Clamp run to the compression unit boundaries
+            long overlapStart = Math.Max(runStartVcn, unitStartVcn);
+            long overlapEnd   = Math.Min(runEndVcn, unitEndVcn);
+            long overlapCount = overlapEnd - overlapStart;
+
+            if(clusterOffset == 0)
+            {
+                // Sparse run
+                hasSparseRun  =  true;
+                totalClusters += overlapCount;
+            }
+            else
+            {
+                long physStart = clusterOffset + (overlapStart - runStartVcn);
+                physicalRuns.Add((physStart, overlapCount));
+                totalClusters += overlapCount;
+            }
+
+            runStartVcn = runEndVcn;
+        }
+
+        int unitBytes = compressionUnitClusters * (int)_bytesPerCluster;
+
+        // If the entire compression unit is sparse, return zeros
+        if(physicalRuns.Count == 0)
+        {
+            unitData = new byte[unitBytes];
+
+            return ErrorNumber.NoError;
+        }
+
+        // Count physical (non-sparse) clusters
+        long physicalCount = 0;
+
+        foreach((long _, long count) in physicalRuns) physicalCount += count;
+
+        // If the physical clusters fill the entire compression unit, data is uncompressed
+        if(physicalCount >= compressionUnitClusters && !hasSparseRun)
+        {
+            unitData = new byte[unitBytes];
+            var dstOffset = 0;
+
+            foreach((long physicalCluster, long count) in physicalRuns)
+            {
+                ulong sectorStart = (ulong)physicalCluster * _sectorsPerCluster;
+                var   sectorCount = (uint)(count * _sectorsPerCluster);
+
+                ErrorNumber errno = _image.ReadSectors(_partition.Start + sectorStart,
+                                                       false,
+                                                       sectorCount,
+                                                       out byte[] clusterData,
+                                                       out _);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME, "Error reading clusters at LCN {0}: {1}", physicalCluster, errno);
+
+                    return errno;
+                }
+
+                int copyLen = Math.Min(clusterData.Length, unitBytes - dstOffset);
+                Array.Copy(clusterData, 0, unitData, dstOffset, copyLen);
+                dstOffset += copyLen;
+            }
+
+            return ErrorNumber.NoError;
+        }
+
+        // Compressed: read the physical clusters and decompress
+        var compressedBytes  = (int)(physicalCount * _bytesPerCluster);
+        var compressedData   = new byte[compressedBytes];
+        var compressedOffset = 0;
+
+        foreach((long physicalCluster, long count) in physicalRuns)
+        {
+            ulong sectorStart = (ulong)physicalCluster * _sectorsPerCluster;
+            var   sectorCount = (uint)(count * _sectorsPerCluster);
+
+            ErrorNumber errno = _image.ReadSectors(_partition.Start + sectorStart,
+                                                   false,
+                                                   sectorCount,
+                                                   out byte[] clusterData,
+                                                   out _);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Error reading compressed clusters at LCN {0}: {1}",
+                                  physicalCluster,
+                                  errno);
+
+                return errno;
+            }
+
+            int copyLen = Math.Min(clusterData.Length, compressedBytes - compressedOffset);
+            Array.Copy(clusterData, 0, compressedData, compressedOffset, copyLen);
+            compressedOffset += copyLen;
+        }
+
+        unitData = DecompressLznt1(compressedData, unitBytes);
+
+        if(unitData == null)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "LZNT1 decompression failed for compression unit starting at VCN {0}",
+                              unitStartVcn);
+
+            return ErrorNumber.InOutError;
+        }
+
+        return ErrorNumber.NoError;
     }
 
     /// <summary>Sets timestamps on a <see cref="FileEntryInfo" /> from NTFS FILETIME values.</summary>

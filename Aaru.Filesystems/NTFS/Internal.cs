@@ -65,8 +65,20 @@ public sealed partial class NTFS
 
         /// <summary>Absolute cluster offset of the cached cluster (-1 if none cached).</summary>
         internal long CachedClusterOffset = -1;
+
+        /// <summary>Cached decompressed compression unit data.</summary>
+        internal byte[] CachedCompressionUnit;
+
+        /// <summary>VCN of the first cluster in the cached compression unit (-1 if none cached).</summary>
+        internal long CachedCompressionUnitVcn = -1;
+
+        /// <summary>Number of clusters per compression unit (0 if not compressed).</summary>
+        internal int CompressionUnitClusters;
         /// <summary>Pre-computed data run list: (absolute cluster offset, length in clusters) tuples.</summary>
         internal List<(long clusterOffset, long clusterLength)> DataRuns;
+
+        /// <summary>Whether the file data is compressed.</summary>
+        internal bool IsCompressed;
 
         /// <summary>Whether the file data is resident (stored in the MFT record).</summary>
         internal bool IsResident;
