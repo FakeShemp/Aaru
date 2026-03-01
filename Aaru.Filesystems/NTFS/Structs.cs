@@ -48,8 +48,8 @@ public sealed partial class NTFS
         public readonly byte[] oem_name;
         /// <summary>0x00B, Bytes per sector</summary>
         public readonly ushort bps;
-        /// <summary>0x00D, Sectors per cluster</summary>
-        public readonly byte spc;
+        /// <summary>0x00D, Sectors per cluster (negative value = log2 of bytes per cluster)</summary>
+        public readonly sbyte spc;
         /// <summary>0x00E, Reserved sectors, seems 0</summary>
         public readonly ushort rsectors;
         /// <summary>0x010, Number of FATs... obviously, 0</summary>

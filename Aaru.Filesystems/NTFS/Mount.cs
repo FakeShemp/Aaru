@@ -89,9 +89,19 @@ public sealed partial class NTFS
         }
 
         // Calculate sizes
-        _bytesPerSector    = _bpb.bps;
-        _sectorsPerCluster = _bpb.spc;
-        _bytesPerCluster   = _bytesPerSector * _sectorsPerCluster;
+        _bytesPerSector = _bpb.bps;
+
+        // When spc is negative, it encodes the log2 of bytes per cluster (large cluster support, up to 2MB)
+        if(_bpb.spc < 0)
+        {
+            _bytesPerCluster   = (uint)(1 << -_bpb.spc);
+            _sectorsPerCluster = _bytesPerCluster / _bytesPerSector;
+        }
+        else
+        {
+            _sectorsPerCluster = (uint)_bpb.spc;
+            _bytesPerCluster   = _bytesPerSector * _sectorsPerCluster;
+        }
 
         if(_bpb.mft_rc_clusters > 0)
             _mftRecordSize = (uint)(_bpb.mft_rc_clusters * _bytesPerCluster);
@@ -250,14 +260,14 @@ public sealed partial class NTFS
         {
             Type         = FS_TYPE,
             ClusterSize  = _bytesPerCluster,
-            Clusters     = (ulong)(_bpb.sectors / _bpb.spc),
+            Clusters     = (ulong)_bpb.sectors / _sectorsPerCluster,
             VolumeSerial = $"{_bpb.serial_no:X16}",
             VolumeName   = volumeName,
             Dirty        = isDirty
         };
 
         // Parse $Bitmap (MFT #6) to count free clusters
-        var   totalClusters = (ulong)(_bpb.sectors / _bpb.spc);
+        ulong totalClusters = (ulong)_bpb.sectors / _sectorsPerCluster;
         ulong freeClusters  = CountFreeClusters(totalClusters);
 
         // Parse $MFT's $BITMAP attribute to count in-use MFT records

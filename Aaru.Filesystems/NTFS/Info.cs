@@ -83,8 +83,24 @@ public sealed partial class NTFS
 
         BiosParameterBlock ntfsBb = Marshal.ByteArrayToStructureLittleEndian<BiosParameterBlock>(ntfsBpb);
 
-        sb.AppendFormat(Localization._0_bytes_per_sector,            ntfsBb.bps).AppendLine();
-        sb.AppendFormat(Localization._0_sectors_per_cluster_1_bytes, ntfsBb.spc, ntfsBb.spc * ntfsBb.bps).AppendLine();
+        // Compute actual cluster size, handling large cluster encoding (negative spc = log2 of bytes per cluster)
+        uint clusterSize;
+        uint sectorsPerCluster;
+
+        if(ntfsBb.spc < 0)
+        {
+            clusterSize       = (uint)(1 << -ntfsBb.spc);
+            sectorsPerCluster = clusterSize / ntfsBb.bps;
+        }
+        else
+        {
+            sectorsPerCluster = (uint)ntfsBb.spc;
+            clusterSize       = sectorsPerCluster * ntfsBb.bps;
+        }
+
+        sb.AppendFormat(Localization._0_bytes_per_sector, ntfsBb.bps).AppendLine();
+
+        sb.AppendFormat(Localization._0_sectors_per_cluster_1_bytes, sectorsPerCluster, clusterSize).AppendLine();
 
         //          sb.AppendFormat("{0} reserved sectors", ntfs_bb.rsectors).AppendLine();
         //          sb.AppendFormat("{0} FATs", ntfs_bb.fats_no).AppendLine();
@@ -112,7 +128,7 @@ public sealed partial class NTFS
         {
             sb.AppendFormat(Localization._0_clusters_per_MFT_record_1_bytes,
                             ntfsBb.mft_rc_clusters,
-                            ntfsBb.mft_rc_clusters * ntfsBb.bps * ntfsBb.spc)
+                            ntfsBb.mft_rc_clusters * clusterSize)
               .AppendLine();
         }
         else
@@ -122,7 +138,7 @@ public sealed partial class NTFS
         {
             sb.AppendFormat(Localization._0_clusters_per_Index_block_1_bytes,
                             ntfsBb.index_blk_cts,
-                            ntfsBb.index_blk_cts * ntfsBb.bps * ntfsBb.spc)
+                            ntfsBb.index_blk_cts * clusterSize)
               .AppendLine();
         }
         else
@@ -142,8 +158,8 @@ public sealed partial class NTFS
             sb.AppendFormat(Localization.Boot_code_SHA1_0, bootChk).AppendLine();
         }
 
-        metadata.ClusterSize  = (uint)(ntfsBb.spc      * ntfsBb.bps);
-        metadata.Clusters     = (ulong)(ntfsBb.sectors / ntfsBb.spc);
+        metadata.ClusterSize  = clusterSize;
+        metadata.Clusters     = (ulong)ntfsBb.sectors / sectorsPerCluster;
         metadata.VolumeSerial = $"{ntfsBb.serial_no:X16}";
         metadata.Type         = FS_TYPE;
 
