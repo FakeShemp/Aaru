@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -51,6 +52,30 @@ public sealed partial class VxFS
         if(errno != ErrorNumber.NoError) return errno;
 
         stat = InodeToFileEntryInfo(inode, inodeNumber);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber errno = LookupInode(path, out DiskInode inode, out uint _);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        var fileType = (VxfsFileType)(inode.vdi_mode & VXFS_TYPE_MASK);
+
+        if(fileType != VxfsFileType.Lnk) return ErrorNumber.InvalidArgument;
+
+        byte[] linkData = ReadInodeData(inode);
+
+        if(linkData == null) return ErrorNumber.InvalidArgument;
+
+        dest = Encoding.UTF8.GetString(linkData).TrimEnd('\0');
 
         return ErrorNumber.NoError;
     }
