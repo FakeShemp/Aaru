@@ -1,4 +1,4 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
@@ -63,6 +63,7 @@ public sealed partial class SysVfs
     const uint   V7_MAXSIZE = 0x00FFFFFF;
 
     const string FS_TYPE_XENIX    = "xenixfs";
+    const string FS_TYPE_XENIX3   = "xenix3fs";
     const string FS_TYPE_SVR4     = "sysv_r4";
     const string FS_TYPE_SVR2     = "sysv_r2";
     const string FS_TYPE_AFS      = "sco_afs";
