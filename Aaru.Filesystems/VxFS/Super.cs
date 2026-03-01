@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Veritas File System plugin.
@@ -26,14 +26,33 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
+/// <inheritdoc />
+/// <summary>Implements the Veritas filesystem</summary>
 public sealed partial class VxFS
 {
     /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        stat = new FileSystemInfo
+        {
+            Blocks         = (ulong)_superblock.vs_size,
+            FreeBlocks     = (ulong)_superblock.vs_free,
+            Files          = (ulong)(_superblock.vs_size - _superblock.vs_free - _superblock.vs_ifree),
+            FreeFiles      = (ulong)_superblock.vs_ifree,
+            FilenameLength = VXFS_NAMELEN,
+            Type           = FS_TYPE,
+            PluginId       = Id
+        };
+
+        return ErrorNumber.NoError;
+    }
 }
