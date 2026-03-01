@@ -228,6 +228,7 @@ Fully supported file-systems (identify and extraction)
 * Microsoft 32-bit File Allocation Table (FAT32), including FAT+ extension
 * Microsoft Extended File Allocation Table (exFAT)
 * Microsoft/IBM High Performance File System (HPFS)
+* Microsoft New Technology File System (NTFS)
 * Minix v1/v2/v3 file systems
 * NILFS2
 * Nintendo optical filesystems (GameCube and Wii)
@@ -261,7 +262,6 @@ Supported file systems for identification and information only
 * Fossil file system (from Plan9)
 * HAMMER file system
 * High Performance Optical File System (HPOFS)
-* Microsoft New Technology File System (NTFS)
 * Microsoft Resilient File System (ReFS)
 * NEC PC-Engine executable
 * NEC PC-FX executable
