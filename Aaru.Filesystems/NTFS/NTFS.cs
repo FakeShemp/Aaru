@@ -57,6 +57,7 @@ public sealed partial class NTFS : IReadOnlyFilesystem
     Partition                        _partition;
     Dictionary<string, ulong>        _rootDirectoryCache;
     uint                             _sectorsPerCluster;
+    Dictionary<uint, byte[]>         _securityDescriptors;
     FileSystemInfo                   _statfs;
 
     /// <inheritdoc />

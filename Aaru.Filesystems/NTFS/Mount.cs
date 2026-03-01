@@ -216,6 +216,11 @@ public sealed partial class NTFS
             return ErrorNumber.InvalidArgument;
         }
 
+        // Parse $Secure (MFT record #9) to load centralized security descriptors (NTFS 3.0+)
+        _securityDescriptors = new Dictionary<uint, byte[]>();
+
+        if(majorVer >= 3) LoadSecureDescriptors();
+
         // Initialize caches
         _rootDirectoryCache = new Dictionary<string, ulong>();
 
@@ -270,6 +275,7 @@ public sealed partial class NTFS
         if(!_mounted) return ErrorNumber.AccessDenied;
 
         _rootDirectoryCache?.Clear();
+        _securityDescriptors?.Clear();
         _mounted = false;
 
         return ErrorNumber.NoError;
@@ -345,5 +351,117 @@ public sealed partial class NTFS
 
             offset += (int)attrLength;
         }
+    }
+
+    /// <summary>
+    ///     Loads security descriptors from the $Secure system file's $SDS named data stream.
+    ///     Populates <see cref="_securityDescriptors" /> with a mapping from security_id to raw descriptor bytes.
+    /// </summary>
+    void LoadSecureDescriptors()
+    {
+        ErrorNumber errno = ReadMftRecord((uint)SystemFileNumber.Secure, out byte[] secureRecord);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Error reading $Secure MFT record: {0}", errno);
+
+            return;
+        }
+
+        MftRecord secureHeader = Marshal.ByteArrayToStructureLittleEndian<MftRecord>(secureRecord);
+
+        if(secureHeader.magic != NtfsRecordMagic.File) return;
+
+        // Read the $SDS stream data (may be non-resident)
+        byte[] sdsData = null;
+
+        // Try assembling non-resident data runs for $SDS
+        ErrorNumber runErrno = AssembleNonResidentRuns((uint)SystemFileNumber.Secure,
+                                                       AttributeType.Data,
+                                                       "$SDS",
+                                                       out List<(long offset, long length)> allDataRuns,
+                                                       out long sdsDataSize,
+                                                       out _,
+                                                       out _,
+                                                       out _);
+
+        if(runErrno == ErrorNumber.NoError && allDataRuns.Count > 0 && sdsDataSize > 0)
+        {
+            byte[] readBuf = Array.Empty<byte>();
+            errno = ReadNonResidentData(allDataRuns, sdsDataSize, ref readBuf);
+
+            if(errno == ErrorNumber.NoError) sdsData = readBuf;
+        }
+        else
+        {
+            // Resident $SDS (unlikely but handle it)
+            ErrorNumber findErrno = FindAttributes(secureRecord,
+                                                   secureHeader,
+                                                   (uint)SystemFileNumber.Secure,
+                                                   AttributeType.Data,
+                                                   "$SDS",
+                                                   out List<FoundAttribute> sdsResults);
+
+            if(findErrno == ErrorNumber.NoError && sdsResults.Count > 0)
+            {
+                FoundAttribute attr   = sdsResults[0];
+                byte           nonRes = attr.RecordData[attr.Offset + 8];
+
+                if(nonRes == 0)
+                {
+                    var valueOffset = BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x14);
+                    var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
+
+                    int valueStart = attr.Offset + valueOffset;
+
+                    if(valueStart + valueLength <= attr.RecordData.Length && valueLength > 0)
+                    {
+                        sdsData = new byte[valueLength];
+                        Array.Copy(attr.RecordData, valueStart, sdsData, 0, valueLength);
+                    }
+                }
+            }
+        }
+
+        if(sdsData == null || sdsData.Length == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Could not read $Secure::$SDS data stream");
+
+            return;
+        }
+
+        // Parse SDS entries: each has a 20-byte SdsEntryHeader followed by the security descriptor
+        int sdsHeaderSize = Marshal.SizeOf<SdsEntryHeader>();
+        var pos           = 0;
+
+        while(pos + sdsHeaderSize <= sdsData.Length)
+        {
+            SdsEntryHeader entryHeader =
+                Marshal.ByteArrayToStructureLittleEndian<SdsEntryHeader>(sdsData, pos, sdsHeaderSize);
+
+            // End marker or invalid entry
+            if(entryHeader.size < sdsHeaderSize || entryHeader.security_id == 0) break;
+
+            // Validate bounds
+            if(pos + entryHeader.size > sdsData.Length) break;
+
+            int sdSize = (int)entryHeader.size - sdsHeaderSize;
+
+            if(sdSize > 0 && !_securityDescriptors.ContainsKey(entryHeader.security_id))
+            {
+                var sd = new byte[sdSize];
+                Array.Copy(sdsData, pos + sdsHeaderSize, sd, 0, sdSize);
+                _securityDescriptors[entryHeader.security_id] = sd;
+            }
+
+            // Entries are 16-byte aligned
+            var totalSize = (int)(entryHeader.size + 15 & ~15u);
+
+            if(totalSize == 0) break;
+
+            pos += totalSize;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "Loaded {0} security descriptors from $Secure", _securityDescriptors.Count);
     }
 }

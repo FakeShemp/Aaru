@@ -827,6 +827,24 @@ public sealed partial class NTFS
 
 #endregion
 
+#region Nested type: SdsEntryHeader
+
+    /// <summary>Security Descriptor Stream ($SDS) entry header in $Secure, 20 bytes</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct SdsEntryHeader
+    {
+        /// <summary>0x000, Hash of the security descriptor</summary>
+        public readonly uint hash;
+        /// <summary>0x004, Security identifier (unique per volume)</summary>
+        public readonly uint security_id;
+        /// <summary>0x008, Offset of this entry within the $SDS stream</summary>
+        public readonly ulong offset;
+        /// <summary>0x010, Total size of this entry including header, 16-byte aligned</summary>
+        public readonly uint size;
+    }
+
+#endregion
+
 #region Nested type: LogClientRecord
 
     /// <summary>LogFile client record</summary>

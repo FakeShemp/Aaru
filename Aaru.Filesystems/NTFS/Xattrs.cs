@@ -71,6 +71,9 @@ public sealed partial class NTFS
 
         xattrs = [];
 
+        var  foundInlineSd = false;
+        uint securityId    = 0;
+
         // Find all attributes across base + extension records
         ErrorNumber findErrno = FindAllAttributes(mftRecordNumber, out List<FoundAttribute> attrs);
 
@@ -89,7 +92,33 @@ public sealed partial class NTFS
                 {
                     var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
 
-                    if(valueLength > 0) xattrs.Add(NT_ACL);
+                    if(valueLength > 0)
+                    {
+                        foundInlineSd = true;
+                        xattrs.Add(NT_ACL);
+                    }
+
+                    break;
+                }
+
+                // Track security_id from $STANDARD_INFORMATION for $Secure lookup
+                case AttributeType.StandardInformation when nonResident == 0:
+                {
+                    var valueOffset = BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x14);
+                    var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
+
+                    int valueStart = attr.Offset + valueOffset;
+
+                    if(valueLength >= (uint)Marshal.SizeOf<StandardInformationV3>() &&
+                       valueStart + Marshal.SizeOf<StandardInformationV3>() <= attr.RecordData.Length)
+                    {
+                        StandardInformationV3 stdInfo =
+                            Marshal.ByteArrayToStructureLittleEndian<StandardInformationV3>(attr.RecordData,
+                                valueStart,
+                                Marshal.SizeOf<StandardInformationV3>());
+
+                        securityId = stdInfo.security_id;
+                    }
 
                     break;
                 }
@@ -127,6 +156,9 @@ public sealed partial class NTFS
                 }
             }
         }
+
+        // If no inline $SECURITY_DESCRIPTOR was found, check $Secure by security_id
+        if(!foundInlineSd && securityId != 0 && _securityDescriptors.ContainsKey(securityId)) xattrs.Add(NT_ACL);
 
         return ErrorNumber.NoError;
     }
@@ -186,7 +218,10 @@ public sealed partial class NTFS
         return ReadAlternateDataStream(recordData, header, mftRecordNumber, xattr, ref buf);
     }
 
-    /// <summary>Reads the raw security descriptor ($SECURITY_DESCRIPTOR attribute) from an MFT record.</summary>
+    /// <summary>
+    ///     Reads the security descriptor for a file, first trying the inline $SECURITY_DESCRIPTOR attribute,
+    ///     then falling back to $Secure via the security_id in $STANDARD_INFORMATION.
+    /// </summary>
     /// <param name="recordData">Raw MFT record data.</param>
     /// <param name="header">Parsed MFT record header.</param>
     /// <param name="mftRecordNumber">MFT record number (for attribute list traversal).</param>
@@ -194,6 +229,7 @@ public sealed partial class NTFS
     /// <returns>Error number indicating success or failure.</returns>
     ErrorNumber ReadSecurityDescriptor(byte[] recordData, in MftRecord header, uint mftRecordNumber, ref byte[] buf)
     {
+        // Try inline $SECURITY_DESCRIPTOR attribute first
         ErrorNumber findErrno = FindAttributes(recordData,
                                                header,
                                                mftRecordNumber,
@@ -201,22 +237,62 @@ public sealed partial class NTFS
                                                null,
                                                out List<FoundAttribute> results);
 
-        if(findErrno != ErrorNumber.NoError || results.Count == 0) return ErrorNumber.NoSuchExtendedAttribute;
+        if(findErrno == ErrorNumber.NoError && results.Count > 0)
+        {
+            FoundAttribute attr        = results[0];
+            byte           nonResident = attr.RecordData[attr.Offset + 8];
 
-        FoundAttribute attr        = results[0];
-        byte           nonResident = attr.RecordData[attr.Offset + 8];
+            if(nonResident == 0)
+            {
+                var valueOffset = BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x14);
+                var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
 
-        if(nonResident != 0) return ErrorNumber.NoSuchExtendedAttribute;
+                int valueStart = attr.Offset + valueOffset;
 
-        var valueOffset = BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x14);
-        var valueLength = BitConverter.ToUInt32(attr.RecordData, attr.Offset + 0x10);
+                if(valueStart + valueLength <= attr.RecordData.Length && valueLength > 0)
+                {
+                    buf = new byte[valueLength];
+                    Array.Copy(attr.RecordData, valueStart, buf, 0, valueLength);
 
-        int valueStart = attr.Offset + valueOffset;
+                    return ErrorNumber.NoError;
+                }
+            }
+        }
 
-        if(valueStart + valueLength > attr.RecordData.Length) return ErrorNumber.NoSuchExtendedAttribute;
+        // Fall back to $Secure via security_id from $STANDARD_INFORMATION
+        findErrno = FindAttributes(recordData,
+                                   header,
+                                   mftRecordNumber,
+                                   AttributeType.StandardInformation,
+                                   null,
+                                   out List<FoundAttribute> stdInfoResults);
 
-        buf = new byte[valueLength];
-        Array.Copy(attr.RecordData, valueStart, buf, 0, valueLength);
+        if(findErrno != ErrorNumber.NoError || stdInfoResults.Count == 0) return ErrorNumber.NoSuchExtendedAttribute;
+
+        FoundAttribute stdAttr   = stdInfoResults[0];
+        byte           stdNonRes = stdAttr.RecordData[stdAttr.Offset + 8];
+
+        if(stdNonRes != 0) return ErrorNumber.NoSuchExtendedAttribute;
+
+        var stdValueOffset = BitConverter.ToUInt16(stdAttr.RecordData, stdAttr.Offset + 0x14);
+        var stdValueLength = BitConverter.ToUInt32(stdAttr.RecordData, stdAttr.Offset + 0x10);
+
+        int stdValueStart = stdAttr.Offset + stdValueOffset;
+
+        if(stdValueLength                                          < (uint)Marshal.SizeOf<StandardInformationV3>() ||
+           stdValueStart + Marshal.SizeOf<StandardInformationV3>() > stdAttr.RecordData.Length)
+            return ErrorNumber.NoSuchExtendedAttribute;
+
+        StandardInformationV3 stdInfo =
+            Marshal.ByteArrayToStructureLittleEndian<StandardInformationV3>(stdAttr.RecordData,
+                                                                            stdValueStart,
+                                                                            Marshal.SizeOf<StandardInformationV3>());
+
+        if(stdInfo.security_id == 0 || !_securityDescriptors.TryGetValue(stdInfo.security_id, out byte[] sd))
+            return ErrorNumber.NoSuchExtendedAttribute;
+
+        buf = new byte[sd.Length];
+        Array.Copy(sd, 0, buf, 0, sd.Length);
 
         return ErrorNumber.NoError;
     }
