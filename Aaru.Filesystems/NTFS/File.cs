@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
@@ -284,6 +285,249 @@ public sealed partial class NTFS
 
         // Device number: use volume serial number as the device number
         stat.DeviceNo = _bpb.serial_no;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // Normalize path
+        string normalizedPath = string.IsNullOrWhiteSpace(path) ? "/" : path;
+
+        if(!normalizedPath.StartsWith("/", StringComparison.Ordinal)) normalizedPath = "/" + normalizedPath;
+
+        // Root directory is not a file
+        if(normalizedPath == "/") return ErrorNumber.IsDirectory;
+
+        ErrorNumber resolveErrno = ResolvePathToMftRecord(normalizedPath, out uint mftRecordNumber);
+
+        if(resolveErrno != ErrorNumber.NoError) return resolveErrno;
+
+        ErrorNumber errno = ReadMftRecord(mftRecordNumber, out byte[] recordData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        MftRecord header =
+            Marshal.ByteArrayToStructureLittleEndian<MftRecord>(recordData, 0, Marshal.SizeOf<MftRecord>());
+
+        if(header.magic != NtfsRecordMagic.File)
+        {
+            AaruLogging.Debug(MODULE_NAME, "MFT record {0} has invalid magic", mftRecordNumber);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Reject directories
+        if(header.flags.HasFlag(MftRecordFlags.IsDirectory)) return ErrorNumber.IsDirectory;
+
+        // Find the unnamed $DATA attribute
+        int offset = header.attrs_offset;
+
+        while(offset + 4 <= recordData.Length)
+        {
+            var attrType = (AttributeType)BitConverter.ToUInt32(recordData, offset);
+
+            if(attrType == AttributeType.End || attrType == AttributeType.Unused) break;
+
+            var attrLength = BitConverter.ToUInt32(recordData, offset + 4);
+
+            if(attrLength == 0 || offset + attrLength > recordData.Length) break;
+
+            byte nonResident = recordData[offset + 8];
+
+            if(attrType == AttributeType.Data)
+            {
+                // Only process the unnamed (default) $DATA attribute
+                byte nameLength = recordData[offset + 9];
+
+                if(nameLength == 0)
+                {
+                    if(nonResident == 0)
+                    {
+                        // Resident $DATA — small file stored in MFT record
+                        var valueOffset = BitConverter.ToUInt16(recordData, offset + 0x14);
+                        var valueLength = BitConverter.ToUInt32(recordData, offset + 0x10);
+
+                        int valueStart = offset + valueOffset;
+
+                        var residentData = new byte[valueLength];
+
+                        if(valueStart + valueLength <= recordData.Length)
+                            Array.Copy(recordData, valueStart, residentData, 0, valueLength);
+
+                        node = new NtfsFileNode
+                        {
+                            Path         = normalizedPath,
+                            Length       = valueLength,
+                            Offset       = 0,
+                            IsResident   = true,
+                            ResidentData = residentData
+                        };
+
+                        return ErrorNumber.NoError;
+                    }
+
+                    // Non-resident $DATA — parse data runs
+                    NonResidentAttributeRecord nrAttr =
+                        Marshal.ByteArrayToStructureLittleEndian<NonResidentAttributeRecord>(recordData,
+                            offset,
+                            Marshal.SizeOf<NonResidentAttributeRecord>());
+
+                    int runListOffset = offset + nrAttr.mapping_pairs_offset;
+
+                    List<(long offset, long length)> dataRuns =
+                        ParseDataRuns(recordData, runListOffset, offset + (int)attrLength);
+
+                    node = new NtfsFileNode
+                    {
+                        Path       = normalizedPath,
+                        Length     = (long)nrAttr.data_size,
+                        Offset     = 0,
+                        IsResident = false,
+                        DataRuns   = dataRuns
+                    };
+
+                    return ErrorNumber.NoError;
+                }
+            }
+
+            offset += (int)attrLength;
+        }
+
+        // No unnamed $DATA attribute found
+        return ErrorNumber.NoSuchFile;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not NtfsFileNode mynode) return ErrorNumber.InvalidArgument;
+
+        mynode.DataRuns            = null;
+        mynode.ResidentData        = null;
+        mynode.CachedCluster       = null;
+        mynode.CachedClusterOffset = -1;
+        mynode.Offset              = -1;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not NtfsFileNode mynode) return ErrorNumber.InvalidArgument;
+
+        if(mynode.Offset < 0) return ErrorNumber.InvalidArgument;
+
+        if(length <= 0) return ErrorNumber.NoError;
+
+        // Clamp to remaining file size
+        long remaining = mynode.Length - mynode.Offset;
+
+        if(remaining <= 0) return ErrorNumber.NoError;
+
+        if(length > remaining) length = remaining;
+
+        // Clamp to buffer size
+        if(length > buffer.Length) length = buffer.Length;
+
+        if(mynode.IsResident)
+        {
+            // Resident data — direct copy
+            Array.Copy(mynode.ResidentData, mynode.Offset, buffer, 0, length);
+            mynode.Offset += length;
+            read          =  length;
+
+            return ErrorNumber.NoError;
+        }
+
+        // Non-resident data — read from data runs, caching one cluster at a time
+        long bytesRead = 0;
+
+        while(bytesRead < length)
+        {
+            long fileOffset      = mynode.Offset;
+            long clusterIndex    = fileOffset / _bytesPerCluster;
+            long offsetInCluster = fileOffset % _bytesPerCluster;
+
+            // Translate logical cluster to physical cluster via data runs
+            long physicalCluster = -1;
+            long runStartVcn     = 0;
+
+            foreach((long clusterOffset, long clusterLength) in mynode.DataRuns)
+            {
+                if(clusterIndex >= runStartVcn && clusterIndex < runStartVcn + clusterLength)
+                {
+                    // Sparse run (offset 0 with no offset bytes stored as 0)
+                    if(clusterOffset == 0 && clusterLength > 0)
+                    {
+                        physicalCluster = 0; // Will be treated as sparse below
+
+                        break;
+                    }
+
+                    physicalCluster = clusterOffset + (clusterIndex - runStartVcn);
+
+                    break;
+                }
+
+                runStartVcn += clusterLength;
+            }
+
+            // Beyond the end of data runs
+            if(physicalCluster < 0) break;
+
+            long bytesToCopy = Math.Min(length - bytesRead, _bytesPerCluster - offsetInCluster);
+
+            if(physicalCluster == 0)
+            {
+                // Sparse cluster — fill with zeros
+                Array.Clear(buffer, (int)bytesRead, (int)bytesToCopy);
+            }
+            else if(mynode.CachedClusterOffset == physicalCluster && mynode.CachedCluster != null)
+            {
+                // Cache hit — copy from cached cluster
+                Array.Copy(mynode.CachedCluster, offsetInCluster, buffer, bytesRead, bytesToCopy);
+            }
+            else
+            {
+                // Read cluster from disk
+                ulong sectorStart = (ulong)physicalCluster * _sectorsPerCluster;
+
+                ErrorNumber errno = _image.ReadSectors(_partition.Start + sectorStart,
+                                                       false,
+                                                       _sectorsPerCluster,
+                                                       out byte[] clusterData,
+                                                       out _);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    AaruLogging.Debug(MODULE_NAME, "Error reading cluster {0}: {1}", physicalCluster, errno);
+
+                    break;
+                }
+
+                // Cache this cluster
+                mynode.CachedCluster       = clusterData;
+                mynode.CachedClusterOffset = physicalCluster;
+
+                Array.Copy(clusterData, offsetInCluster, buffer, bytesRead, bytesToCopy);
+            }
+
+            bytesRead     += bytesToCopy;
+            mynode.Offset += bytesToCopy;
+        }
+
+        read = bytesRead;
 
         return ErrorNumber.NoError;
     }

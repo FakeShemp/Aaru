@@ -26,6 +26,7 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
@@ -48,6 +49,41 @@ public sealed partial class NTFS
 
         /// <inheritdoc />
         public string Path { get; init; }
+
+#endregion
+    }
+
+#endregion
+
+#region Nested type: NtfsFileNode
+
+    /// <summary>File node implementation for NTFS file reading.</summary>
+    sealed class NtfsFileNode : IFileNode
+    {
+        /// <summary>Cached cluster data for sequential read optimization.</summary>
+        internal byte[] CachedCluster;
+
+        /// <summary>Absolute cluster offset of the cached cluster (-1 if none cached).</summary>
+        internal long CachedClusterOffset = -1;
+        /// <summary>Pre-computed data run list: (absolute cluster offset, length in clusters) tuples.</summary>
+        internal List<(long clusterOffset, long clusterLength)> DataRuns;
+
+        /// <summary>Whether the file data is resident (stored in the MFT record).</summary>
+        internal bool IsResident;
+
+        /// <summary>Resident file data (small files stored entirely within the MFT record).</summary>
+        internal byte[] ResidentData;
+
+#region IFileNode Members
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
 
 #endregion
     }
