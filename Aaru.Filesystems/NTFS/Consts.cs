@@ -36,6 +36,9 @@ public sealed partial class NTFS
     const uint IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
     const uint IO_REPARSE_TAG_SYMLINK     = 0xA000000C;
 
+    // Data Deduplication reparse tag
+    const uint IO_REPARSE_TAG_DEDUP = 0x80000013;
+
     // Windows Overlay Filter reparse tag
     const uint IO_REPARSE_TAG_WOF = 0x80000017;
 

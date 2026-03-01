@@ -104,6 +104,8 @@ public sealed partial class NTFS
         long               dataSize          = 0;
         long               dataAllocatedSize = 0;
         var                foundData         = false;
+        var                isDataEncrypted   = false;
+        var                isDeduplicated    = false;
         FileNameAttribute  bestFileName      = default;
         FileNameNamespace  bestNamespace     = FileNameNamespace.Dos;
         uint?              lxUid             = null;
@@ -206,6 +208,11 @@ public sealed partial class NTFS
 
                     if(nameLength == 0 && !foundData)
                     {
+                        // Check attribute flags for encryption (EFS)
+                        var dataAttrFlags = (AttributeFlags)BitConverter.ToUInt16(attr.RecordData, attr.Offset + 0x0C);
+
+                        if(dataAttrFlags.HasFlag(AttributeFlags.Encrypted)) isDataEncrypted = true;
+
                         if(nonResident == 0)
                         {
                             // Resident $DATA
@@ -284,6 +291,12 @@ public sealed partial class NTFS
 
         if(ntfsAttributes.HasFlag(FileAttributeFlags.NotContentIndexed)) stat.Attributes |= FileAttributes.NotIndexed;
 
+        // If $DATA attribute is EFS-encrypted, ensure the Encrypted flag is set
+        if(isDataEncrypted) stat.Attributes |= FileAttributes.Encrypted;
+
+        // If file is deduplicated, set Sparse attribute (dedup files are stored as sparse + reparse)
+        if(isDeduplicated) stat.Attributes |= FileAttributes.Sparse;
+
         // Synthesize POSIX mode from NTFS attributes
         // NTFS doesn't store POSIX mode natively, but we can approximate:
         //   directories get 0755, files get 0644, read-only files get 0444
@@ -345,6 +358,16 @@ public sealed partial class NTFS
                     // S_IFSOCK | rwxrwxrwx
                     mode            =  0xC000 | 0777;
                     stat.Attributes |= FileAttributes.Socket;
+
+                    break;
+                case IO_REPARSE_TAG_DEDUP:
+                    // Deduplicated file — treat as regular file
+                    isDeduplicated = true;
+
+                    if(ntfsAttributes.HasFlag(FileAttributeFlags.ReadOnly))
+                        mode = 0x8000 | 0444; // S_IFREG | r--r--r--
+                    else
+                        mode = 0x8000 | 0644; // S_IFREG | rw-r--r--
 
                     break;
                 default:
