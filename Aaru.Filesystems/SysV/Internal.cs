@@ -47,4 +47,23 @@ public sealed partial class SysVfs
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>File node for reading file contents block by block</summary>
+    sealed class SysVFileNode : IFileNode
+    {
+        /// <summary>The file's inode number</summary>
+        internal ushort InodeNumber { get; init; }
+
+        /// <summary>Raw di_addr array from the inode (39 bytes containing 13 × 3-byte addresses)</summary>
+        internal byte[] DiAddr { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+    }
 }
