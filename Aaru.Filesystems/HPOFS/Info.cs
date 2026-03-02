@@ -131,10 +131,11 @@ public sealed partial class HPOFS
 
         AaruLogging.Debug(MODULE_NAME, "bpb.boot_code is empty? = {0}", ArrayHelpers.ArrayIsNullOrEmpty(bpb.boot_code));
 
-        AaruLogging.Debug(MODULE_NAME, "bpb.unknown = {0}",     bpb.unknown);
-        AaruLogging.Debug(MODULE_NAME, "bpb.unknown2 = {0}",    bpb.unknown2);
-        AaruLogging.Debug(MODULE_NAME, "bpb.signature2 = {0}",  bpb.signature2);
-        AaruLogging.Debug(MODULE_NAME, "mib.blockId = \"{0}\"", StringHandlers.CToString(mib.blockId));
+        AaruLogging.Debug(MODULE_NAME, "bpb.hpofsMarker = 0x{0:X4}", bpb.hpofsMarker);
+        AaruLogging.Debug(MODULE_NAME, "bpb.hpofsReserved = {0}",    bpb.hpofsReserved);
+        AaruLogging.Debug(MODULE_NAME, "bpb.hpofsVersion = {0}",     bpb.hpofsVersion);
+        AaruLogging.Debug(MODULE_NAME, "bpb.signature2 = 0x{0:X4}",  bpb.signature2);
+        AaruLogging.Debug(MODULE_NAME, "mib.blockId = \"{0}\"",      StringHandlers.CToString(mib.blockId));
 
         AaruLogging.Debug(MODULE_NAME,
                           "mib.volumeLabel = \"{0}\"",
