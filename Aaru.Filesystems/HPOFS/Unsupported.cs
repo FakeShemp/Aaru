@@ -51,4 +51,12 @@ public sealed partial class HPOFS
 
     /// <inheritdoc />
     public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => ErrorNumber.NotSupported;
+
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        return ErrorNumber.NotSupported;
+    }
 }
