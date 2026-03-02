@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
 
@@ -113,17 +114,29 @@ public sealed partial class AaruFormat
 
             if(_tracks is null) return _tracks;
 
+            // CD-family media (CD, CD-R, CD-RW, etc.) have a standard 150-sector pregap before the first track; DVDs and
+            // other optical formats do not
+            bool isCdFamily = (_imageInfo.MediaType >= MediaType.CD && _imageInfo.MediaType < MediaType.DVDROM)
+            || _imageInfo.MediaType == MediaType.PS1CD || _imageInfo.MediaType == MediaType.PS2CD || _imageInfo.MediaType == MediaType.MilCD
+            || _imageInfo.MediaType == MediaType.SuperCDROM2 || _imageInfo.MediaType == MediaType.JaguarCD
+            || _imageInfo.MediaType == MediaType.ThreeDO || _imageInfo.MediaType == MediaType.PCFX || _imageInfo.MediaType == MediaType.NeoGeoCD
+            || _imageInfo.MediaType == MediaType.CDTV || _imageInfo.MediaType == MediaType.CD32 || _imageInfo.MediaType == MediaType.Playdia
+            || _imageInfo.MediaType == MediaType.Pippin || _imageInfo.MediaType == MediaType.VideoNow || _imageInfo.MediaType == MediaType.VideoNowColor
+            || _imageInfo.MediaType == MediaType.VideoNowXp || _imageInfo.MediaType == MediaType.CVD || _imageInfo.MediaType == MediaType.FMTOWNS
+            || _imageInfo.MediaType == MediaType.GDR || _imageInfo.MediaType == MediaType.GDROM || _imageInfo.MediaType == MediaType.MEGACD
+            || _imageInfo.MediaType == MediaType.SATURNCD;
+
             foreach(Track track in Tracks.OrderBy(static t => t.StartSector))
             {
                 switch(track.Sequence)
                 {
-                    case 0:
+                    case 0 when isCdFamily:
                         track.Pregap     = 150;
                         track.Indexes[0] = -150;
                         track.Indexes[1] = (int)track.StartSector;
 
                         continue;
-                    case 1 when Tracks.All(static t => t.Sequence != 0):
+                    case 1 when isCdFamily && Tracks.All(static t => t.Sequence != 0):
                         track.Pregap     = 150;
                         track.Indexes[0] = -150;
                         track.Indexes[1] = (int)track.StartSector;

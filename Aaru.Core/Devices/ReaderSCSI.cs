@@ -55,6 +55,7 @@ sealed partial class Reader
     // TODO: Raw reading
     public bool HldtstReadRaw;
     public uint layerbreak;
+    public bool OmniDriveReadRaw;
     public bool ReadBuffer3CReadRaw;
     public bool otp;
 
@@ -587,7 +588,14 @@ sealed partial class Reader
                 ReadBuffer3CReadRaw =
                     !_dev.ReadBuffer3CRawDvd(out _, out senseBuf, 0, 1, _timeout, out _, layerbreak, otp);
 
-                if(HldtstReadRaw || _plextorReadRaw || ReadBuffer3CReadRaw)
+                // Try OmniDrive on drives with OmniDrive firmware
+                if(_dev.IsOmniDriveFirmware())
+                {
+                    OmniDriveReadRaw =
+                        !_dev.OmniDriveReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _);
+                }
+
+                if(HldtstReadRaw || _plextorReadRaw || ReadBuffer3CReadRaw || OmniDriveReadRaw)
                 {
                     CanReadRaw    = true;
                     LongBlockSize = 2064;
@@ -622,6 +630,8 @@ sealed partial class Reader
                 AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_HL_DT_ST_raw_DVD_reading}[/]");
             else if(_plextorReadRaw)
                 AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_Plextor_raw_DVD_reading}[/]");
+            else if(OmniDriveReadRaw)
+                AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_OmniDrive_raw_DVD_reading}[/]");
             else if(ReadBuffer3CReadRaw)
                 AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_ReadBuffer_3C_raw_DVD_reading}[/]");
         }
@@ -687,6 +697,8 @@ sealed partial class Reader
         {
             if(HldtstReadRaw || ReadBuffer3CReadRaw)
                 BlocksToRead = 1;
+            else if(OmniDriveReadRaw)
+                BlocksToRead = (uint)Math.Min(31, startWithBlocks);
             else if(_read6)
             {
                 _dev.Read6(out _, out _, 0, LogicalBlockSize, (byte)BlocksToRead, _timeout, out _);
@@ -771,7 +783,7 @@ sealed partial class Reader
     }
 
     bool ScsiReadBlocks(out byte[] buffer, ulong block, uint count, out double duration, out bool recoveredError,
-                        out bool   blankCheck)
+                        out bool   blankCheck, bool negative = false)
     {
         bool               sense;
         ReadOnlySpan<byte> senseBuf;
@@ -832,6 +844,16 @@ sealed partial class Reader
                                                LongBlockSize,
                                                _timeout,
                                                out duration);
+            }
+            else if(OmniDriveReadRaw)
+            {
+                uint lba = negative ? (uint)(-(long)block) : (uint)block;
+                sense = _dev.OmniDriveReadRawDvd(out buffer,
+                                                 out senseBuf,
+                                                 lba,
+                                                 count,
+                                                 _timeout,
+                                                 out duration);
             }
             else if(ReadBuffer3CReadRaw)
             {

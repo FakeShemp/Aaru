@@ -37,6 +37,7 @@ using Aaru.Gui.Controls;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using JetBrains.Annotations;
+using Spectre.Console;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
@@ -72,15 +73,7 @@ public sealed partial class ViewSectorViewModel : ViewModelBase
         set
         {
             SetProperty(ref field, value);
-
-            ErrorNumber errno = LongSectorChecked
-                                    ? _inputFormat.ReadSectorLong((ulong)SectorNumber, false, out byte[] sector, out _)
-                                    : _inputFormat.ReadSector((ulong)SectorNumber, false, out sector, out _);
-
-            if(errno != ErrorNumber.NoError) return;
-
-            SectorData = sector;
-            ColorSector();
+            ReadSectorAt((long)SectorNumber);
         }
     }
 
@@ -90,20 +83,71 @@ public sealed partial class ViewSectorViewModel : ViewModelBase
         set
         {
             SetProperty(ref field, value);
-
-            ErrorNumber errno = LongSectorChecked
-                                    ? _inputFormat.ReadSectorLong((ulong)SectorNumber, false, out byte[] sector, out _)
-                                    : _inputFormat.ReadSector((ulong)SectorNumber, false, out sector, out _);
-
-            if(errno != ErrorNumber.NoError) return;
-
-            SectorData = sector;
-            ColorSector();
+            ReadSectorAt((long)SectorNumber);
         }
+    }
+
+    void ReadSectorAt(long displaySector)
+    {
+        bool negative = displaySector < 0;
+        ulong sectorAddress = negative ? (ulong)-displaySector : (ulong)displaySector;
+
+        ErrorNumber errno = LongSectorChecked
+                                ? _inputFormat.ReadSectorLong(sectorAddress, negative, out byte[] sector, out _)
+                                : _inputFormat.ReadSector(sectorAddress, negative, out sector, out _);
+
+        if(errno != ErrorNumber.NoError) return;
+
+        SectorData = sector;
+        ColorSector();
     }
 
     void ColorSector()
     {
+        if(SectorData.LongLength == 2064 && LongSectorChecked)
+        {
+            // DVD sector
+
+            ColorRange dvd_id_si = new ColorRange
+            {
+                Color = Brushes.DeepPink,
+                Start = 0,
+                End   = 0
+            };
+
+            ColorRange dvd_id_sn = new ColorRange
+            {
+                Color = Brushes.Yellow,
+                Start = 1,
+                End   = 3
+            };
+
+            ColorRange dvd_ied = new ColorRange
+            {
+                Color = Brushes.Green,
+                Start = 4,
+                End   = 5
+            };
+
+            ColorRange dvd_cprmai = new ColorRange
+            {
+                Color = Brushes.Orange,
+                Start = 6,
+                End   = 11
+            };
+
+            ColorRange dvd_edc = new ColorRange
+            {
+                Color = Brushes.LimeGreen,
+                Start = 2060,
+                End   = 2063
+            };
+
+            HighlightRanges = [dvd_id_si, dvd_id_sn, dvd_ied, dvd_cprmai, dvd_edc];
+
+            return;
+        }
+
         // Not a standard CD sector
         if(SectorData.Length != 2352) return;
 

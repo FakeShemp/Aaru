@@ -1,4 +1,4 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
@@ -104,6 +104,11 @@ public static class ImageInfo
                               imageFormat.Info.Sectors,
                               imageFormat.Info.SectorSize,
                               ByteSize.FromBytes(imageFormat.Info.Sectors * imageFormat.Info.SectorSize).Humanize());
+
+        if(imageFormat.Info.NegativeSectors > 0 || imageFormat.Info.OverflowSectors > 0)
+            AaruLogging.WriteLine(Localization.Core.Image_has_0_leadin_and_1_leadout_sectors_WithMarkup,
+                                  imageFormat.Info.NegativeSectors,
+                                  imageFormat.Info.OverflowSectors);
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.Creator))
             AaruLogging.WriteLine(Localization.Core.Created_by_0_WithMarkup, Markup.Escape(imageFormat.Info.Creator));

@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 // /***************************************************************************
 // Aaru Data Preservation Suite
 // ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐
@@ -59,7 +59,7 @@
             <TextBlock Text="{x:Static localization:UI.Title_Sector}"
                        VerticalAlignment="Center" />
             <NumericUpDown Value="{Binding SectorNumber, Mode=TwoWay}"
-                           Width="120" />
+                           Width="160" />
             <TextBlock Text="{Binding TotalSectorsText, Mode=OneWay}"
                        VerticalAlignment="Center" />
         </StackPanel>

@@ -306,7 +306,7 @@ partial class Dump
                 _resume.BadBlocks.Remove(badSector);
                 extents.Add(badSector);
 
-                if(scsiReader.ReadBuffer3CReadRaw || scsiReader.HldtstReadRaw)
+                if(scsiReader.ReadBuffer3CReadRaw || scsiReader.OmniDriveReadRaw || scsiReader.HldtstReadRaw)
                 {
                     var cmi = new byte[1];
 
