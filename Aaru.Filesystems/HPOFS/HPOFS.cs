@@ -75,7 +75,11 @@ public sealed partial class HPOFS : IReadOnlyFilesystem
         public byte Attributes;
         /// <summary>Creation timestamp (Unix epoch, from record +0x1C)</summary>
         public uint CreationTimestamp;
-        /// <summary>File size in bytes (from record +0x4C)</summary>
+        /// <summary>Sector count of the first inline data extent (from record +0x40)</summary>
+        public ushort DataSectorCount;
+        /// <summary>Start LBA of the first inline data extent (from record +0x44)</summary>
+        public uint DataStartLba;
+        /// <summary>File size in bytes (from record +0x58)</summary>
         public uint FileSize;
         /// <summary>Is this entry a directory?</summary>
         public bool IsDirectory;
@@ -85,6 +89,8 @@ public sealed partial class HPOFS : IReadOnlyFilesystem
         public string Name;
         /// <summary>Sector address this entry points to</summary>
         public uint SectorAddress;
+        /// <summary>SUBF sector for additional file data extents (0xFFFFFFFF = none)</summary>
+        public uint SubfSector;
         /// <summary>Timestamp or checksum value from the INDX entry</summary>
         public uint Timestamp;
     }
@@ -99,6 +105,24 @@ public sealed partial class HPOFS : IReadOnlyFilesystem
         internal Dictionary<string, CachedDirectoryEntry> Entries;
         internal int                                      Position;
         public   string                                   Path { get; init; }
+    }
+
+#endregion
+
+#region Nested type: HpofsFileNode
+
+    sealed class HpofsFileNode : IFileNode
+    {
+        internal List<(uint startLba, ushort sectorCount)> Extents;
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
     }
 
 #endregion

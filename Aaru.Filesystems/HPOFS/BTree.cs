@@ -117,13 +117,18 @@ public sealed partial class HPOFS
     ///     +0x0E: dosAttributes (uint8: 0x01=rdonly, 0x02=hidden, 0x04=system, 0x10=dir, 0x20=archive)
     ///     +0x1C: timestamp1 (uint32 BE, creation time, Unix epoch)
     ///     +0x20: timestamp2 (uint32 BE, modification time, Unix epoch)
+    ///     +0x40: dataSectorCount (uint16 BE, sector count for first inline data extent)
+    ///     +0x44: dataStartLba (uint32 BE, start LBA for first inline data extent)
+    ///     +0x4C: subfSector (uint32 BE, SUBF sector for additional extents; 0xFFFFFFFF = none)
     ///     +0x58: fileSize (uint32 BE)
     /// </remarks>
     List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress, uint creationTimestamp, uint
-        modificationTimestamp, uint fileSize)> ParseDataEntries(byte[] nodeData)
+            modificationTimestamp, uint fileSize, ushort dataSectorCount, uint dataStartLba, uint subfSector)>
+        ParseDataEntries(byte[] nodeData)
     {
         List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress, uint creationTimestamp, uint
-            modificationTimestamp, uint fileSize)> entries = new();
+            modificationTimestamp, uint fileSize, ushort dataSectorCount, uint dataStartLba, uint subfSector)> entries =
+            new();
 
         var offset = 0x24;
 
@@ -153,12 +158,15 @@ public sealed partial class HPOFS
                 name = _encoding.GetString(nodeData, offset + 8, nameAreaLen).TrimEnd('\0');
 
             // Parse record data
-            int  recordStart           = offset + 4 + kl;
-            uint sectorAddress         = 0;
-            byte attributes            = 0;
-            uint creationTimestamp     = 0;
-            uint modificationTimestamp = 0;
-            uint fileSize              = 0;
+            int    recordStart           = offset + 4 + kl;
+            uint   sectorAddress         = 0;
+            byte   attributes            = 0;
+            uint   creationTimestamp     = 0;
+            uint   modificationTimestamp = 0;
+            uint   fileSize              = 0;
+            ushort dataSectorCount       = 0;
+            uint   dataStartLba          = 0;
+            var    subfSector            = 0xFFFFFFFF;
 
             if(rd >= 4) sectorAddress = BigEndianBitConverter.ToUInt32(nodeData, recordStart);
 
@@ -171,6 +179,15 @@ public sealed partial class HPOFS
             if(rd >= 0x5C && (attributes & 0x10) == 0)
                 fileSize = BigEndianBitConverter.ToUInt32(nodeData, recordStart + 0x58);
 
+            if(rd >= 0x48 && (attributes & 0x10) == 0)
+            {
+                dataSectorCount = BigEndianBitConverter.ToUInt16(nodeData, recordStart + 0x40);
+                dataStartLba    = BigEndianBitConverter.ToUInt32(nodeData, recordStart + 0x44);
+            }
+
+            if(rd >= 0x50 && (attributes & 0x10) == 0)
+                subfSector = BigEndianBitConverter.ToUInt32(nodeData, recordStart + 0x4C);
+
             if(!string.IsNullOrWhiteSpace(name))
             {
                 AaruLogging.Debug(MODULE_NAME,
@@ -181,7 +198,7 @@ public sealed partial class HPOFS
                                   sectorAddress);
 
                 entries.Add((name, timestamp, attributes, sectorAddress, creationTimestamp, modificationTimestamp,
-                             fileSize));
+                             fileSize, dataSectorCount, dataStartLba, subfSector));
             }
 
             offset += stride;
