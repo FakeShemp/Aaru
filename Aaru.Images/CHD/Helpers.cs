@@ -36,6 +36,7 @@ using System.IO;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
+using Aaru.Compression;
 using Aaru.Helpers;
 using Aaru.Logging;
 using SharpCompress.Compressors;
@@ -123,40 +124,30 @@ public sealed partial class Chd
                                 goto uncompressedV3;
                             case Compression.Zlib:
                             case Compression.ZlibPlus:
-                                if(_isHdd)
+                            {
+                                var zHunk = new byte[entry.length << 16 | entry.lengthLsb];
+                                _imageStream.Seek((long)entry.offset, SeekOrigin.Begin);
+                                _imageStream.EnsureRead(zHunk, 0, zHunk.Length);
+
+                                var zStream = new DeflateStream(new MemoryStream(zHunk), CompressionMode.Decompress);
+
+                                buffer = new byte[_bytesPerHunk];
+                                int read = zStream.EnsureRead(buffer, 0, (int)_bytesPerHunk);
+
+                                if(read != _bytesPerHunk)
                                 {
-                                    var zHunk = new byte[(entry.lengthLsb << 16) + entry.lengthLsb];
-                                    _imageStream.Seek((long)entry.offset, SeekOrigin.Begin);
-                                    _imageStream.EnsureRead(zHunk, 0, zHunk.Length);
+                                    AaruLogging.Error(string.Format(Localization
+                                                                       .Unable_to_decompress_hunk_correctly_got_0_bytes_expected_1,
+                                                                    read,
+                                                                    _bytesPerHunk));
 
-                                    var zStream =
-                                        new DeflateStream(new MemoryStream(zHunk), CompressionMode.Decompress);
-
-                                    buffer = new byte[_bytesPerHunk];
-                                    int read = zStream.EnsureRead(buffer, 0, (int)_bytesPerHunk);
-
-                                    if(read != _bytesPerHunk)
-                                    {
-                                        AaruLogging.Error(string.Format(Localization
-                                                                           .Unable_to_decompress_hunk_correctly_got_0_bytes_expected_1,
-                                                                        read,
-                                                                        _bytesPerHunk));
-
-                                        return ErrorNumber.InOutError;
-                                    }
-
-                                    zStream.Close();
+                                    return ErrorNumber.InOutError;
                                 }
 
-                                // TODO: Guess wth is MAME doing with these hunks
-                                else
-                                {
-                                    AaruLogging.Error(Localization.Compressed_CD_GD_ROM_hunks_are_not_yet_supported);
-
-                                    return ErrorNumber.NotImplemented;
-                                }
+                                zStream.Close();
 
                                 break;
+                            }
                             case Compression.Av:
                                 AaruLogging.Error(string.Format(Localization.Unsupported_compression_0,
                                                                 (Compression)_hdrCompression));
@@ -186,9 +177,47 @@ public sealed partial class Chd
 
                         return ErrorNumber.NotImplemented;
                     case EntryFlagsV3.SecondCompressed:
-                        AaruLogging.Error(Localization.FLAC_is_not_supported);
+                    {
+                        if(!FLAC.IsSupported)
+                        {
+                            AaruLogging.Error(Localization.FLAC_is_not_supported);
 
-                        return ErrorNumber.NotImplemented;
+                            return ErrorNumber.NotImplemented;
+                        }
+
+                        int compLength = entry.length << 16 | entry.lengthLsb;
+                        var flacHunk   = new byte[compLength];
+                        _imageStream.Seek((long)entry.offset, SeekOrigin.Begin);
+                        _imageStream.EnsureRead(flacHunk, 0, flacHunk.Length);
+
+                        // MAME's FLAC format: byte 0 = endianness marker ('L' or 'B'),
+                        // followed by raw FLAC stream data
+                        bool swapEndian = flacHunk[0] == 'B';
+
+                        var flacData = new byte[compLength - 1];
+                        Array.Copy(flacHunk, 1, flacData, 0, compLength - 1);
+
+                        buffer = new byte[_bytesPerHunk];
+                        int decoded = FLAC.DecodeBuffer(flacData, buffer);
+
+                        if(decoded != _bytesPerHunk)
+                        {
+                            AaruLogging.Error(string.Format(Localization
+                                                               .Unable_to_decompress_hunk_correctly_got_0_bytes_expected_1,
+                                                            decoded,
+                                                            _bytesPerHunk));
+
+                            return ErrorNumber.InOutError;
+                        }
+
+                        if(swapEndian)
+                        {
+                            for(var i = 0; i < _bytesPerHunk; i += 2)
+                                (buffer[i], buffer[i + 1]) = (buffer[i + 1], buffer[i]);
+                        }
+
+                        break;
+                    }
                     default:
                         AaruLogging.Error(string.Format(Localization.Hunk_type_0_is_not_supported, entry.flags & 0xF));
 

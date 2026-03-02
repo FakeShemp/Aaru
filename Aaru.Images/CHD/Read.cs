@@ -1209,7 +1209,7 @@ public sealed partial class Chd
             else if(_isCdrom)
             {
                 // Hardcoded on MAME for CD-ROM
-                _sectorsPerHunk              = 8;
+                _sectorsPerHunk              = 4;
                 _imageInfo.MediaType         = MediaType.CDROM;
                 _imageInfo.MetadataMediaType = MetadataMediaType.OpticalDisc;
 
@@ -1219,7 +1219,7 @@ public sealed partial class Chd
             else if(_isGdrom)
             {
                 // Hardcoded on MAME for GD-ROM
-                _sectorsPerHunk              = 8;
+                _sectorsPerHunk              = 4;
                 _imageInfo.MediaType         = MediaType.GDROM;
                 _imageInfo.MetadataMediaType = MetadataMediaType.OpticalDisc;
 
@@ -1367,18 +1367,20 @@ public sealed partial class Chd
                 sectorSize = _imageInfo.SectorSize;
             else
             {
-                track      = GetTrack(sectorAddress);
-                sectorSize = (uint)track.RawBytesPerSector;
+                track = GetTrack(sectorAddress);
+
+                sectorSize = (uint)track.RawBytesPerSector +
+                             (track.SubchannelType != TrackSubchannelType.None ? 96u : 0u);
             }
 
-            ulong hunkNo = sectorAddress              / _sectorsPerHunk;
-            ulong secOff = sectorAddress * sectorSize % (_sectorsPerHunk * sectorSize);
+            ulong hunkNo = sectorAddress                   / _sectorsPerHunk;
+            ulong secOff = sectorAddress % _sectorsPerHunk * sectorSize;
 
             ErrorNumber errno = GetHunk(hunkNo, out byte[] hunk);
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            sector = new byte[_imageInfo.SectorSize];
+            sector = new byte[sectorSize];
             Array.Copy(hunk, (int)secOff, sector, 0, sector.Length);
 
             if(_sectorCache.Count >= _maxSectorCache) _sectorCache.Clear();
@@ -1506,17 +1508,18 @@ public sealed partial class Chd
 
         if(!_sectorCache.TryGetValue(sectorAddress, out byte[] sector))
         {
-            track      = GetTrack(sectorAddress);
-            sectorSize = (uint)track.RawBytesPerSector;
+            track = GetTrack(sectorAddress);
 
-            ulong hunkNo = sectorAddress              / _sectorsPerHunk;
-            ulong secOff = sectorAddress * sectorSize % (_sectorsPerHunk * sectorSize);
+            sectorSize = (uint)track.RawBytesPerSector + (track.SubchannelType != TrackSubchannelType.None ? 96u : 0u);
+
+            ulong hunkNo = sectorAddress                   / _sectorsPerHunk;
+            ulong secOff = sectorAddress % _sectorsPerHunk * sectorSize;
 
             ErrorNumber errno = GetHunk(hunkNo, out byte[] hunk);
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            sector = new byte[_imageInfo.SectorSize];
+            sector = new byte[sectorSize];
             Array.Copy(hunk, (int)secOff, sector, 0, sector.Length);
 
             if(_sectorCache.Count >= _maxSectorCache) _sectorCache.Clear();
@@ -1844,17 +1847,19 @@ public sealed partial class Chd
         if(!_sectorCache.TryGetValue(sectorAddress, out byte[] sector))
         {
             track = GetTrack(sectorAddress);
-            var sectorSize = (uint)track.RawBytesPerSector;
 
-            ulong hunkNo = sectorAddress              / _sectorsPerHunk;
-            ulong secOff = sectorAddress * sectorSize % (_sectorsPerHunk * sectorSize);
+            uint sectorSize = (uint)track.RawBytesPerSector +
+                              (track.SubchannelType != TrackSubchannelType.None ? 96u : 0u);
+
+            ulong hunkNo = sectorAddress                   / _sectorsPerHunk;
+            ulong secOff = sectorAddress % _sectorsPerHunk * sectorSize;
 
             ErrorNumber errno = GetHunk(hunkNo, out byte[] hunk);
 
             if(errno != ErrorNumber.NoError) return errno;
 
             sectorStatus = SectorStatus.Dumped;
-            sector       = new byte[_imageInfo.SectorSize];
+            sector       = new byte[sectorSize];
             Array.Copy(hunk, (int)secOff, sector, 0, sector.Length);
 
             if(_sectorCache.Count >= _maxSectorCache) _sectorCache.Clear();
