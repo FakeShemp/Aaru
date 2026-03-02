@@ -28,8 +28,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -39,7 +42,22 @@ namespace Aaru.Filesystems;
 /// <summary>Implements IBM's High Performance Optical File System</summary>
 public sealed partial class HPOFS : IReadOnlyFilesystem
 {
-    const string MODULE_NAME = "HPOFS Plugin";
+    const string       MODULE_NAME = "HPOFS Plugin";
+    BiosParameterBlock _bpb;
+    DciRecord          _dciRecord;
+
+    bool                                                         _debug;
+    Dictionary<string, Dictionary<string, CachedDirectoryEntry>> _directoryCache;
+    Encoding                                                     _encoding;
+    bool                                                         _hasSmiBlock;
+    IMediaImage                                                  _image;
+    MediaInformationBlock                                        _medInfo;
+    bool                                                         _mounted;
+    Partition                                                    _partition;
+    Dictionary<string, CachedDirectoryEntry>                     _rootDirectoryCache;
+    SmiBlock                                                     _smiBlock;
+    FileSystemInfo                                               _statfs;
+    VolumeInformationBlock                                       _volInfo;
 
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
@@ -47,6 +65,35 @@ public sealed partial class HPOFS : IReadOnlyFilesystem
     public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces => [];
+
+#region Nested type: CachedDirectoryEntry
+
+    /// <summary>Cached directory entry for mounted filesystem operations</summary>
+    sealed class CachedDirectoryEntry
+    {
+        /// <summary>Is this entry a directory?</summary>
+        public bool IsDirectory;
+        /// <summary>Filename (last path component)</summary>
+        public string Name;
+        /// <summary>Sector address this entry points to</summary>
+        public uint SectorAddress;
+        /// <summary>Timestamp or checksum value from the INDX entry</summary>
+        public uint Timestamp;
+    }
+
+#endregion
+
+#region Nested type: HpofsDirNode
+
+    sealed class HpofsDirNode : IDirNode
+    {
+        internal string[]                                 Contents;
+        internal Dictionary<string, CachedDirectoryEntry> Entries;
+        internal int                                      Position;
+        public   string                                   Path { get; init; }
+    }
+
+#endregion
 
 #region IFilesystem Members
 

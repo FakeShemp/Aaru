@@ -150,7 +150,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct VmiBlock
+    partial struct VmiBlock
     {
         /// <summary>0x000, Signature "VMISUBCL"</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
@@ -270,7 +270,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct SmiBlock
+    partial struct SmiBlock
     {
         /// <summary>0x000, Signature "SMISUBCL"</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
@@ -513,7 +513,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct CodepageEntry
+    partial struct CodepageEntry
     {
         /// <summary>0x00, Codepage identifier</summary>
         public ushort codepageId;
@@ -562,7 +562,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct CodepageInfo
+    partial struct CodepageInfo
     {
         /// <summary>0x00, File type or record index</summary>
         public uint field00;
@@ -626,7 +626,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct SystemFileEntry
+    partial struct SystemFileEntry
     {
         /// <summary>0x00, File type index (low word = type, hi = 0)</summary>
         public uint fileType;
@@ -678,7 +678,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct ExtentEntry
+    partial struct ExtentEntry
     {
         /// <summary>0x00, Extent type / allocation flags</summary>
         public ushort extentType;
@@ -703,11 +703,11 @@ public sealed partial class HPOFS
     ///     Each node is followed by a record of recordDescriptor bytes (typically 0x74 or 0xDC for directories).
     ///     Standard stride = 0x8C (0x18 + 0x74), small stride = 0x88 (0x14 + 0x74).
     ///     Swapped by SwapAllocNodeEndian (UHPOFS.DLL VA: 1008:07a6).
-    ///     This struct represents the standard (keyLength=0x14) layout.
+    ///     This partial struct represents the standard (keyLength=0x14) layout.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct AllocNode
+    partial struct AllocNode
     {
         /// <summary>0x00, Key area size (0x14=standard, 0x10=small)</summary>
         public ushort keyLength;
@@ -757,7 +757,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct BandHeader
+    partial struct BandHeader
     {
         /// <summary>0x00, Signature "DATA"</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -828,7 +828,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct DciRecord
+    partial struct DciRecord
     {
         /// <summary>0x00, Signature "MAST"</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -877,7 +877,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct DirectoryMasterRecord
+    partial struct DirectoryMasterRecord
     {
         /// <summary>0x00, Signature "INDX"</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -934,7 +934,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct DirectoryEntryHeader
+    partial struct DirectoryEntryHeader
     {
         /// <summary>0x00, Total entry length in bytes</summary>
         public ushort entryLength;
@@ -963,7 +963,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct DirectoryEntryRecord
+    partial struct DirectoryEntryRecord
     {
         /// <summary>0x00, Signature "INDX"</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -1001,7 +1001,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct SfaDescriptor
+    partial struct SfaDescriptor
     {
         /// <summary>0x00, Signature "DATA"</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -1028,7 +1028,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct FreeSectorEntry
+    partial struct FreeSectorEntry
     {
         /// <summary>0x00, Entry type (=7)</summary>
         public ushort entryType;
@@ -1063,7 +1063,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct FreeSectorsRecord
+    partial struct FreeSectorsRecord
     {
         /// <summary>0x00, Record header (8 bytes, not swapped)</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
@@ -1099,7 +1099,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct ExtentListHeader
+    partial struct ExtentListHeader
     {
         /// <summary>0x00, "SUBF" magic identifier</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -1130,7 +1130,7 @@ public sealed partial class HPOFS
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct ExtentDescriptor
+    partial struct ExtentDescriptor
     {
         /// <summary>0x00, Number of sectors in this extent</summary>
         public ushort sectorCount;
