@@ -32,6 +32,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
@@ -214,8 +215,8 @@ public sealed partial class HPOFS
     }
 
     /// <summary>
-    ///     Finds and decodes all directory entries by scanning for INDX sectors and building a directory tree from
-    ///     full paths
+    ///     Finds and decodes all directory entries by reading the root directory system file entry
+    ///     at sector 6, extracting its SUBF extent list pointer, and parsing the directory B-tree.
     /// </summary>
     ErrorNumber FindAndDecodeRootDirectory(out Dictionary<string, CachedDirectoryEntry> rootEntries)
     {
@@ -223,74 +224,52 @@ public sealed partial class HPOFS
 
         uint totalSectors = _bpb.big_sectors > 0 ? _bpb.big_sectors : _bpb.sectors;
 
-        // Collect all entries from all leaf INDX sectors
-        List<(string fullPath, uint sectorAddr, uint timestamp)> allEntries = new();
+        // Collect all entries from directory DATA sectors
+        List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress)> allEntries = new();
 
-        for(ulong s = 0; s < totalSectors; s++)
+        // Read the root directory system file entry at sector 6.
+        // This sector contains the directory's SUBF extent list pointer at offset +0x4C.
+        ErrorNumber dirEntryErrno =
+            _image.ReadSector(ROOT_DIR_ENTRY_SECTOR + _partition.Start, false, out byte[] dirEntryData, out _);
+
+        if(dirEntryErrno != ErrorNumber.NoError || dirEntryData.Length < 0x50)
         {
-            ErrorNumber errno = _image.ReadSector(s + _partition.Start, false, out byte[] sectorData, out _);
+            AaruLogging.Debug(MODULE_NAME, "Failed to read root directory entry at sector {0}", ROOT_DIR_ENTRY_SECTOR);
 
-            if(errno != ErrorNumber.NoError || sectorData.Length < 0x24) continue;
-
-            // Check for INDX signature
-            if(!sectorData[..4].SequenceEqual(_indxSignature)) continue;
-
-            // Determine if this is a master (non-leaf) or leaf node
-            // Master nodes have key separator character at header offset 0x18
-            var fieldAt18 = BigEndianBitConverter.ToUInt16(sectorData, 0x18);
-
-            bool isMaster = fieldAt18 == KEY_SEPARATOR_ASCII || fieldAt18 == KEY_SEPARATOR_EBCDIC;
-
-            if(isMaster)
-            {
-                AaruLogging.Debug(MODULE_NAME,
-                                  "INDX sector 0x{0:X4}: master node (keySep=0x{1:X2}), skipping",
-                                  s,
-                                  fieldAt18);
-
-                continue;
-            }
-
-            // For leaf nodes, fieldAt18 is the total data size in bytes
-            ushort totalDataSize = fieldAt18;
-
-            var sectorsToRead = (uint)((0x24 + totalDataSize + _bpb.bps - 1) / _bpb.bps);
-
-            if(sectorsToRead < 1) sectorsToRead = 1;
-
-            if(sectorsToRead > 64) sectorsToRead = 64;
-
-            byte[] nodeData;
-
-            if(sectorsToRead > 1)
-            {
-                errno = _image.ReadSectors(s + _partition.Start, false, sectorsToRead, out nodeData, out _);
-
-                if(errno != ErrorNumber.NoError) nodeData = sectorData;
-            }
-            else
-                nodeData = sectorData;
-
-            AaruLogging.Debug(MODULE_NAME,
-                              "INDX sector 0x{0:X4}: leaf node, dataSize={1}, reading {2} sectors",
-                              s,
-                              totalDataSize,
-                              sectorsToRead);
-
-            // Parse leaf entries
-            List<(string fullPath, uint sectorAddr, uint timestamp)> sectorEntries = ParseLeafEntries(nodeData);
-
-            AaruLogging.Debug(MODULE_NAME, "Parsed {0} entries from INDX at 0x{1:X4}", sectorEntries.Count, s);
-
-            allEntries.AddRange(sectorEntries);
-
-            // Skip continuation sectors of multi-sector nodes
-            s += sectorsToRead - 1;
+            return ErrorNumber.NoSuchFile;
         }
+
+        // Verify the system file type is SYSFILE_TYPE_DIRECTORY (3)
+        var sysFileType = BigEndianBitConverter.ToUInt32(dirEntryData, 0x00);
+
+        if(sysFileType != SYSFILE_TYPE_DIRECTORY)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "Sector {0} is not a directory system file entry (type={1}, expected={2})",
+                              ROOT_DIR_ENTRY_SECTOR,
+                              sysFileType,
+                              SYSFILE_TYPE_DIRECTORY);
+
+            return ErrorNumber.NoSuchFile;
+        }
+
+        // Extract the SUBF extent list sector from offset +0x4C
+        var subfSector = BigEndianBitConverter.ToUInt32(dirEntryData, 0x4C);
+
+        AaruLogging.Debug(MODULE_NAME, "Root directory SUBF sector=0x{0:X4}", subfSector);
+
+        if(subfSector == 0 || subfSector >= totalSectors || subfSector == EXTENT_END_MARKER)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Invalid SUBF sector pointer: 0x{0:X4}", subfSector);
+
+            return ErrorNumber.NoSuchFile;
+        }
+
+        ReadDirectoryFromSubf(subfSector, allEntries);
 
         if(allEntries.Count == 0)
         {
-            AaruLogging.Debug(MODULE_NAME, "FindAndDecodeRootDirectory: no entries found in any INDX sector");
+            AaruLogging.Debug(MODULE_NAME, "FindAndDecodeRootDirectory: no entries found in any DATA sector");
 
             return ErrorNumber.NoSuchFile;
         }
@@ -305,23 +284,27 @@ public sealed partial class HPOFS
         // Determine directory separator
         var dirSep = '/';
 
-        foreach((string fullPath, uint sectorAddr, uint timestamp) in allEntries)
+        foreach((string fullPath, uint timestamp, byte attributes, uint sectorAddress) in allEntries)
         {
+            bool isDirectory = (attributes & 0x10) != 0;
+
             int sepIdx = fullPath.IndexOf(dirSep);
 
             if(sepIdx < 0)
             {
-                // Root-level file
+                // Root-level entry
                 if(!rootEntries.ContainsKey(fullPath))
                 {
                     rootEntries[fullPath] = new CachedDirectoryEntry
                     {
                         Name          = fullPath,
-                        SectorAddress = sectorAddr,
                         Timestamp     = timestamp,
-                        IsDirectory   = false
+                        IsDirectory   = isDirectory,
+                        Attributes    = attributes,
+                        SectorAddress = sectorAddress
                     };
                 }
+                else if(isDirectory) rootEntries[fullPath].IsDirectory = true;
             }
             else
             {
@@ -348,9 +331,10 @@ public sealed partial class HPOFS
                     _directoryCache[dirPath][fileName] = new CachedDirectoryEntry
                     {
                         Name          = fileName,
-                        SectorAddress = sectorAddr,
                         Timestamp     = timestamp,
-                        IsDirectory   = false
+                        IsDirectory   = isDirectory,
+                        Attributes    = attributes,
+                        SectorAddress = sectorAddress
                     };
                 }
 
@@ -373,9 +357,10 @@ public sealed partial class HPOFS
                         _directoryCache[parentPath][childName] = new CachedDirectoryEntry
                         {
                             Name          = childName,
-                            SectorAddress = 0,
                             Timestamp     = 0,
-                            IsDirectory   = true
+                            IsDirectory   = true,
+                            Attributes    = 0x10,
+                            SectorAddress = 0
                         };
                     }
                 }
@@ -392,13 +377,106 @@ public sealed partial class HPOFS
                 rootEntries[dirName] = new CachedDirectoryEntry
                 {
                     Name          = dirName,
-                    SectorAddress = 0,
                     Timestamp     = 0,
-                    IsDirectory   = true
+                    IsDirectory   = true,
+                    Attributes    = 0x10,
+                    SectorAddress = 0
                 };
             }
         }
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>Reads directory B-tree DATA nodes from a SUBF extent chain</summary>
+    void ReadDirectoryFromSubf(uint                                                                         subfSector,
+                               List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress)> allEntries)
+    {
+        ErrorNumber subfErrno = _image.ReadSector(subfSector + _partition.Start, false, out byte[] subfData, out _);
+
+        if(subfErrno != ErrorNumber.NoError || subfData.Length < 0x20) return;
+
+        if(!subfData[..4].SequenceEqual(_subfSignature)) return;
+
+        var extentCount = BigEndianBitConverter.ToUInt16(subfData, 0x10);
+
+        AaruLogging.Debug(MODULE_NAME, "SUBF at sector 0x{0:X4}: {1} extents", subfSector, extentCount);
+
+        // Collect extent information for both per-extent scanning and gap detection
+        List<(uint startLba, ushort sectorCount)> extents = new();
+
+        for(var ei = 0; ei < extentCount; ei++)
+        {
+            int extOff = 0x20 + ei * 8;
+
+            if(extOff + 8 > subfData.Length) break;
+
+            var sectorCount = BigEndianBitConverter.ToUInt16(subfData, extOff);
+            var startLba    = BigEndianBitConverter.ToUInt32(subfData, extOff + 4);
+
+            if(startLba == EXTENT_END_MARKER) break;
+
+            AaruLogging.Debug(MODULE_NAME, "SUBF extent [{0}]: {1} sectors at LBA 0x{2:X4}", ei, sectorCount, startLba);
+
+            extents.Add((startLba, sectorCount));
+        }
+
+        if(extents.Count == 0) return;
+
+        // Phase 1: Scan within each SUBF extent (nodes are 4-sector aligned from extent start)
+        foreach((uint startLba, ushort sectorCount) in extents)
+        {
+            for(uint nodeOff = 0; nodeOff + 4 <= sectorCount; nodeOff += 4)
+                ReadAndParseDataNode(startLba + nodeOff, allEntries);
+        }
+
+        // Phase 2: Scan gap areas between extents for additional DATA leaf nodes.
+        // B-tree INDX and DATA nodes may exist in sectors between extents.
+        // Sort extents by start LBA and find gaps.
+        var sorted = extents.OrderBy(e => e.startLba).ToList();
+
+        for(var i = 0; i < sorted.Count - 1; i++)
+        {
+            uint gapStart = sorted[i].startLba + sorted[i].sectorCount;
+            uint gapEnd   = sorted[i + 1].startLba;
+
+            if(gapStart >= gapEnd) continue;
+
+            AaruLogging.Debug(MODULE_NAME, "Scanning gap between extents: LBA 0x{0:X4} to 0x{1:X4}", gapStart, gapEnd);
+
+            // Scan gap with step 4, trying both alignments from adjacent extents
+            for(uint sector = gapStart; sector + 4 <= gapEnd; sector += 4) ReadAndParseDataNode(sector, allEntries);
+
+            // Also try offset +2 alignment (in case gap nodes align to the other extent)
+            uint altStart = gapStart + (4 - (gapStart - sorted[0].startLba) % 4) % 4;
+
+            if(altStart != gapStart && altStart + 4 <= gapEnd)
+            {
+                for(uint sector = altStart; sector + 4 <= gapEnd; sector += 4) ReadAndParseDataNode(sector, allEntries);
+            }
+        }
+    }
+
+    /// <summary>Reads a 4-sector B-tree node and parses it if it's a DATA leaf node</summary>
+    void ReadAndParseDataNode(uint                                                                         nodeSector,
+                              List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress)> allEntries)
+    {
+        ErrorNumber nodeErrno = _image.ReadSectors(nodeSector + _partition.Start, false, 4, out byte[] nodeData, out _);
+
+        if(nodeErrno != ErrorNumber.NoError || nodeData.Length < 0x28) return;
+
+        // Check for DATA signature and level 0 (leaf nodes only)
+        if(!nodeData[..4].SequenceEqual(_dataSignature)) return;
+
+        var level = BigEndianBitConverter.ToUInt16(nodeData, 0x14);
+
+        if(level != 0) return;
+
+        List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress)> nodeEntries =
+            ParseDataEntries(nodeData);
+
+        AaruLogging.Debug(MODULE_NAME, "DATA node at sector 0x{0:X4}: {1} entries", nodeSector, nodeEntries.Count);
+
+        allEntries.AddRange(nodeEntries);
     }
 }

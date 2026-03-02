@@ -32,58 +32,144 @@
 
 using System.Collections.Generic;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class HPOFS
 {
-    /// <summary>Parses directory entries from a leaf INDX node's raw sector data</summary>
+    /// <summary>Parses separator keys and child pointers from an INDX (interior) B-tree node</summary>
     /// <remarks>
-    ///     Each INDX entry has the format:
-    ///     [4] sectorAddress (uint32 big-endian)
-    ///     [2] entryDataSize (uint16 big-endian, bytes of entry data NOT including this or sectorAddr or reserved)
-    ///     [2] reserved (zeros, NOT counted in entryDataSize)
-    ///     [4] timestamp (uint32 big-endian)
-    ///     [N] name (entryDataSize - 4 bytes, null-padded)
-    ///     Stride per entry = 8 + entryDataSize
+    ///     INDX node entry area layout (starts at offset 0x24):
+    ///     [4] leftChild (uint32 big-endian) — first child node ID
+    ///     Then alternating entries and child pointers:
+    ///     entry: [2] kl (uint16 BE) + [2] rd (uint16 BE, always 0) + [kl] key bytes
+    ///     [4] childPtr (uint32 big-endian) — child node ID for keys >= this entry's key
+    ///     End marker: kl = 0
+    ///     Key format: [4] timestamp (uint32 BE) + [kl-4] name (null-padded)
     /// </remarks>
-    List<(string fullPath, uint sectorAddr, uint timestamp)> ParseLeafEntries(byte[] nodeData)
+    (List<uint> children, List<(string name, uint timestamp)> keys) ParseIndxEntries(byte[] nodeData)
     {
-        List<(string fullPath, uint sectorAddr, uint timestamp)> entries = new();
-        var                                                      offset  = 0x24;
+        List<uint>                          children = new();
+        List<(string name, uint timestamp)> keys     = new();
 
-        while(offset + 8 <= nodeData.Length)
+        if(nodeData.Length < 0x28) return (children, keys);
+
+        // Read leftChild pointer at +0x24
+        var leftChild = BigEndianBitConverter.ToUInt32(nodeData, 0x24);
+        children.Add(leftChild);
+
+        var offset = 0x28;
+
+        while(offset + 4 <= nodeData.Length)
         {
-            // Read sector address (4 bytes, big-endian)
-            var sectorAddr = BigEndianBitConverter.ToUInt32(nodeData, offset);
+            var kl = BigEndianBitConverter.ToUInt16(nodeData, offset);
 
-            // Read entry data size (2 bytes, big-endian)
-            // Counts bytes of entry data AFTER the 2-byte reserved field
-            var entryDataSize = BigEndianBitConverter.ToUInt16(nodeData, offset + 4);
+            // End marker
+            if(kl == 0) break;
 
-            // End of entries: zero size or too small to hold timestamp
-            if(entryDataSize < 4) break;
+            var rd = BigEndianBitConverter.ToUInt16(nodeData, offset + 2);
 
-            // Bounds check: full entry must fit within the buffer
-            // Entry = 4 (sectorAddr) + 2 (entryDataSize) + 2 (reserved) + entryDataSize (data)
-            if(offset + 8 + entryDataSize > nodeData.Length) break;
+            // Key starts at offset + 4, length = kl bytes
+            if(offset + 4 + kl > nodeData.Length) break;
 
-            // Skip reserved (2 bytes at offset+6) and read timestamp (4 bytes at offset+8)
-            var timestamp = BigEndianBitConverter.ToUInt32(nodeData, offset + 8);
-
-            // Read name: entryDataSize - 4 bytes starting at offset + 12
-            // (entryDataSize includes: 4 timestamp + N name)
-            int nameLength = entryDataSize - 4;
-
-            if(nameLength > 0 && nameLength <= MAX_FILENAME_LENGTH)
+            // Parse key: timestamp(u32) + name(null-padded)
+            if(kl >= 4)
             {
-                string name = _encoding.GetString(nodeData, offset + 12, nameLength).TrimEnd('\0');
+                var timestamp   = BigEndianBitConverter.ToUInt32(nodeData, offset + 4);
+                int nameAreaLen = kl - 4;
+                var name        = "";
 
-                if(!string.IsNullOrWhiteSpace(name) && sectorAddr != 0) entries.Add((name, sectorAddr, timestamp));
+                if(nameAreaLen > 0 && nameAreaLen <= MAX_FILENAME_LENGTH)
+                    name = _encoding.GetString(nodeData, offset + 8, nameAreaLen).TrimEnd('\0');
+
+                keys.Add((name, timestamp));
             }
 
-            // Advance to next entry: stride = 4 + 2 + 2 + entryDataSize = 8 + entryDataSize
-            offset += 8 + entryDataSize;
+            // Skip past entry: kl(2) + rd(2) + key[kl]
+            offset += 4 + kl;
+
+            // Read embedded child pointer after this entry
+            if(offset + 4 > nodeData.Length) break;
+
+            var childPtr = BigEndianBitConverter.ToUInt32(nodeData, offset);
+            children.Add(childPtr);
+            offset += 4;
+        }
+
+        return (children, keys);
+    }
+
+    /// <summary>Parses directory entries from a DATA (leaf) B-tree node</summary>
+    /// <remarks>
+    ///     DATA node entry area layout (starts at offset 0x24):
+    ///     Each entry:
+    ///     [2] kl (uint16 BE, key length)
+    ///     [2] rd (uint16 BE, record descriptor / record length)
+    ///     [kl] key bytes: [4] timestamp (uint32 BE) + [kl-4] name (null-padded)
+    ///     [rd] record bytes
+    ///     End marker: kl = 0
+    ///     Record format (rd = 0xDC = 220 bytes for directory entries):
+    ///     +0x00: sectorAddress (uint32 BE)
+    ///     +0x04: sectorAddressDup (uint32 BE, same value)
+    ///     +0x08: extentCount (uint32 BE)
+    ///     +0x0C: entryType (uint8: 0x20=file/dir, 0x40=attribute, 0x60=system)
+    ///     +0x0E: dosAttributes (uint8: 0x01=rdonly, 0x02=hidden, 0x04=system, 0x10=dir, 0x20=archive)
+    ///     +0x1C: timestamp1 (uint32 BE)
+    ///     +0x20: timestamp2 (uint32 BE)
+    /// </remarks>
+    List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress)> ParseDataEntries(byte[] nodeData)
+    {
+        List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress)> entries = new();
+        var                                                                          offset  = 0x24;
+
+        while(offset + 4 <= nodeData.Length)
+        {
+            var kl = BigEndianBitConverter.ToUInt16(nodeData, offset);
+
+            // End marker
+            if(kl == 0) break;
+
+            var rd = BigEndianBitConverter.ToUInt16(nodeData, offset + 2);
+
+            // Key must hold at least a timestamp
+            if(kl < 4) break;
+
+            int stride = 4 + kl + rd;
+
+            // Bounds check
+            if(offset + stride > nodeData.Length) break;
+
+            // Parse key: timestamp(u32) + name(null-padded)
+            var timestamp   = BigEndianBitConverter.ToUInt32(nodeData, offset + 4);
+            int nameAreaLen = kl - 4;
+            var name        = "";
+
+            if(nameAreaLen > 0 && nameAreaLen <= MAX_FILENAME_LENGTH)
+                name = _encoding.GetString(nodeData, offset + 8, nameAreaLen).TrimEnd('\0');
+
+            // Parse record data
+            int  recordStart   = offset + 4 + kl;
+            uint sectorAddress = 0;
+            byte attributes    = 0;
+
+            if(rd >= 4) sectorAddress = BigEndianBitConverter.ToUInt32(nodeData, recordStart);
+
+            if(rd >= 0x0F) attributes = nodeData[recordStart + 0x0E];
+
+            if(!string.IsNullOrWhiteSpace(name))
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "DATA entry: name='{0}', ts=0x{1:X8}, attrs=0x{2:X2}, sector=0x{3:X8}",
+                                  name,
+                                  timestamp,
+                                  attributes,
+                                  sectorAddress);
+
+                entries.Add((name, timestamp, attributes, sectorAddress));
+            }
+
+            offset += stride;
         }
 
         return entries;

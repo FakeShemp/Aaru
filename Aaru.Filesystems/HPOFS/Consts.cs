@@ -40,6 +40,7 @@ public sealed partial class HPOFS
     const int MEDINFO_SECTOR_PRIMARY = 0x0D;
     const int VOLINFO_SECTOR_PRIMARY = 0x0E;
     const int RWSTATS_SECTOR_PRIMARY = 0x0F;
+    const int ROOT_DIR_ENTRY_SECTOR  = 0x06;
     const int DCI_SECTOR_PRIMARY     = 0x14;
     const int BOOT_SECTOR_BACKUP     = 0x7F;
     const int MEDINFO_SECTOR_BACKUP  = 0x8C;
@@ -99,14 +100,17 @@ public sealed partial class HPOFS
     const ushort DIR_ENTRY_DELETED = 0xFFFF;
 
     // Extent end marker in SUBF extent lists
-    const    uint   EXTENT_END_MARKER = 0xFFFFFFFF;
-    readonly byte[] _dataSignature    = "DATA"u8.ToArray();
-    readonly byte[] _indxSignature    = "INDX"u8.ToArray();
-    readonly byte[] _mastSignature    = "MAST"u8.ToArray();
-    readonly byte[] _medinfoSignature = "MEDINFO "u8.ToArray();
-    readonly byte[] _smiSignature     = "SMISUBCL"u8.ToArray();
-    readonly byte[] _subfSignature    = "SUBF"u8.ToArray();
-    readonly byte[] _type             = "HPOFS\0\0\0"u8.ToArray();
+    const uint EXTENT_END_MARKER = 0xFFFFFFFF;
+
+    // DCI extent map sentinel value (read in reverse, 33 marks end of valid entries)
+    const    uint   DCI_EXTENT_MAP_SENTINEL = 33;
+    readonly byte[] _dataSignature          = "DATA"u8.ToArray();
+    readonly byte[] _indxSignature          = "INDX"u8.ToArray();
+    readonly byte[] _mastSignature          = "MAST"u8.ToArray();
+    readonly byte[] _medinfoSignature       = "MEDINFO "u8.ToArray();
+    readonly byte[] _smiSignature           = "SMISUBCL"u8.ToArray();
+    readonly byte[] _subfSignature          = "SUBF"u8.ToArray();
+    readonly byte[] _type                   = "HPOFS\0\0\0"u8.ToArray();
 
     // Signatures discovered through reverse engineering of UHPOFS.DLL and HPOFS20.IFS
     readonly byte[] _vmiSignature     = "VMISUBCL"u8.ToArray();

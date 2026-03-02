@@ -839,12 +839,12 @@ public sealed partial class HPOFS
         public ushort reserved06;
         /// <summary>0x08, Record checksum / validation (init=0x00000001)</summary>
         public uint recordChecksum;
-        /// <summary>0x0C, Entry type (3 for &gt;= 0x800 sectors, else 4)</summary>
-        public ushort entryType;
-        /// <summary>0x0E, Reserved (=0, part of dword write at 0x0C)</summary>
-        public ushort reserved0E;
+        /// <summary>0x0C, Entry type (3 for &gt;= 0x800 sectors, else 4), dword</summary>
+        public uint entryType;
         /// <summary>0x10, Number of bands on the volume</summary>
-        public ushort bandCount;
+        public byte bandCount;
+        /// <summary>0x11, Reserved (=0)</summary>
+        public byte reserved11;
         /// <summary>0x12, Record type identifier (=0x0109)</summary>
         public ushort recordType;
         /// <summary>0x14, Record size (=0x00DC = 220 bytes)</summary>

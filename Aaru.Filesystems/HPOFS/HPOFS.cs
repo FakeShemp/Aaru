@@ -71,6 +71,8 @@ public sealed partial class HPOFS : IReadOnlyFilesystem
     /// <summary>Cached directory entry for mounted filesystem operations</summary>
     sealed class CachedDirectoryEntry
     {
+        /// <summary>DOS-style attribute byte from the directory entry</summary>
+        public byte Attributes;
         /// <summary>Is this entry a directory?</summary>
         public bool IsDirectory;
         /// <summary>Filename (last path component)</summary>
