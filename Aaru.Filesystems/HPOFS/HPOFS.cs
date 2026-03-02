@@ -73,8 +73,14 @@ public sealed partial class HPOFS : IReadOnlyFilesystem
     {
         /// <summary>DOS-style attribute byte from the directory entry</summary>
         public byte Attributes;
+        /// <summary>Creation timestamp (Unix epoch, from record +0x1C)</summary>
+        public uint CreationTimestamp;
+        /// <summary>File size in bytes (from record +0x4C)</summary>
+        public uint FileSize;
         /// <summary>Is this entry a directory?</summary>
         public bool IsDirectory;
+        /// <summary>Modification timestamp (Unix epoch, from record +0x20)</summary>
+        public uint ModificationTimestamp;
         /// <summary>Filename (last path component)</summary>
         public string Name;
         /// <summary>Sector address this entry points to</summary>

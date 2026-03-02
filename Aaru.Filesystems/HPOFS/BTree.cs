@@ -115,13 +115,17 @@ public sealed partial class HPOFS
     ///     +0x08: extentCount (uint32 BE)
     ///     +0x0C: entryType (uint8: 0x20=file/dir, 0x40=attribute, 0x60=system)
     ///     +0x0E: dosAttributes (uint8: 0x01=rdonly, 0x02=hidden, 0x04=system, 0x10=dir, 0x20=archive)
-    ///     +0x1C: timestamp1 (uint32 BE)
-    ///     +0x20: timestamp2 (uint32 BE)
+    ///     +0x1C: timestamp1 (uint32 BE, creation time, Unix epoch)
+    ///     +0x20: timestamp2 (uint32 BE, modification time, Unix epoch)
+    ///     +0x58: fileSize (uint32 BE)
     /// </remarks>
-    List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress)> ParseDataEntries(byte[] nodeData)
+    List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress, uint creationTimestamp, uint
+        modificationTimestamp, uint fileSize)> ParseDataEntries(byte[] nodeData)
     {
-        List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress)> entries = new();
-        var                                                                          offset  = 0x24;
+        List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress, uint creationTimestamp, uint
+            modificationTimestamp, uint fileSize)> entries = new();
+
+        var offset = 0x24;
 
         while(offset + 4 <= nodeData.Length)
         {
@@ -149,13 +153,23 @@ public sealed partial class HPOFS
                 name = _encoding.GetString(nodeData, offset + 8, nameAreaLen).TrimEnd('\0');
 
             // Parse record data
-            int  recordStart   = offset + 4 + kl;
-            uint sectorAddress = 0;
-            byte attributes    = 0;
+            int  recordStart           = offset + 4 + kl;
+            uint sectorAddress         = 0;
+            byte attributes            = 0;
+            uint creationTimestamp     = 0;
+            uint modificationTimestamp = 0;
+            uint fileSize              = 0;
 
             if(rd >= 4) sectorAddress = BigEndianBitConverter.ToUInt32(nodeData, recordStart);
 
             if(rd >= 0x0F) attributes = nodeData[recordStart + 0x0E];
+
+            if(rd >= 0x20) creationTimestamp = BigEndianBitConverter.ToUInt32(nodeData, recordStart + 0x1C);
+
+            if(rd >= 0x24) modificationTimestamp = BigEndianBitConverter.ToUInt32(nodeData, recordStart + 0x20);
+
+            if(rd >= 0x5C && (attributes & 0x10) == 0)
+                fileSize = BigEndianBitConverter.ToUInt32(nodeData, recordStart + 0x58);
 
             if(!string.IsNullOrWhiteSpace(name))
             {
@@ -166,7 +180,8 @@ public sealed partial class HPOFS
                                   attributes,
                                   sectorAddress);
 
-                entries.Add((name, timestamp, attributes, sectorAddress));
+                entries.Add((name, timestamp, attributes, sectorAddress, creationTimestamp, modificationTimestamp,
+                             fileSize));
             }
 
             offset += stride;

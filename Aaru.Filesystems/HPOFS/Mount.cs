@@ -225,7 +225,8 @@ public sealed partial class HPOFS
         uint totalSectors = _bpb.big_sectors > 0 ? _bpb.big_sectors : _bpb.sectors;
 
         // Collect all entries from directory DATA sectors
-        List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress)> allEntries = new();
+        List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress, uint creationTimestamp, uint
+            modificationTimestamp, uint fileSize)> allEntries = new();
 
         // Read the root directory system file entry at sector 6.
         // This sector contains the directory's SUBF extent list pointer at offset +0x4C.
@@ -284,7 +285,8 @@ public sealed partial class HPOFS
         // Determine directory separator
         var dirSep = '/';
 
-        foreach((string fullPath, uint timestamp, byte attributes, uint sectorAddress) in allEntries)
+        foreach((string fullPath, uint timestamp, byte attributes, uint sectorAddress, uint creationTimestamp,
+                 uint modificationTimestamp, uint fileSize) in allEntries)
         {
             bool isDirectory = (attributes & 0x10) != 0;
 
@@ -297,11 +299,14 @@ public sealed partial class HPOFS
                 {
                     rootEntries[fullPath] = new CachedDirectoryEntry
                     {
-                        Name          = fullPath,
-                        Timestamp     = timestamp,
-                        IsDirectory   = isDirectory,
-                        Attributes    = attributes,
-                        SectorAddress = sectorAddress
+                        Name                  = fullPath,
+                        Timestamp             = timestamp,
+                        IsDirectory           = isDirectory,
+                        Attributes            = attributes,
+                        SectorAddress         = sectorAddress,
+                        CreationTimestamp     = creationTimestamp,
+                        ModificationTimestamp = modificationTimestamp,
+                        FileSize              = fileSize
                     };
                 }
                 else if(isDirectory) rootEntries[fullPath].IsDirectory = true;
@@ -330,11 +335,14 @@ public sealed partial class HPOFS
                 {
                     _directoryCache[dirPath][fileName] = new CachedDirectoryEntry
                     {
-                        Name          = fileName,
-                        Timestamp     = timestamp,
-                        IsDirectory   = isDirectory,
-                        Attributes    = attributes,
-                        SectorAddress = sectorAddress
+                        Name                  = fileName,
+                        Timestamp             = timestamp,
+                        IsDirectory           = isDirectory,
+                        Attributes            = attributes,
+                        SectorAddress         = sectorAddress,
+                        CreationTimestamp     = creationTimestamp,
+                        ModificationTimestamp = modificationTimestamp,
+                        FileSize              = fileSize
                     };
                 }
 
@@ -389,8 +397,9 @@ public sealed partial class HPOFS
     }
 
     /// <summary>Reads directory B-tree DATA nodes from a SUBF extent chain</summary>
-    void ReadDirectoryFromSubf(uint                                                                         subfSector,
-                               List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress)> allEntries)
+    void ReadDirectoryFromSubf(uint subfSector,
+                               List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress, uint
+                                   creationTimestamp, uint modificationTimestamp, uint fileSize)> allEntries)
     {
         ErrorNumber subfErrno = _image.ReadSector(subfSector + _partition.Start, false, out byte[] subfData, out _);
 
@@ -451,15 +460,15 @@ public sealed partial class HPOFS
             uint altStart = gapStart + (4 - (gapStart - sorted[0].startLba) % 4) % 4;
 
             if(altStart != gapStart && altStart + 4 <= gapEnd)
-            {
-                for(uint sector = altStart; sector + 4 <= gapEnd; sector += 4) ReadAndParseDataNode(sector, allEntries);
-            }
+                for(uint sector = altStart; sector + 4 <= gapEnd; sector += 4)
+                    ReadAndParseDataNode(sector, allEntries);
         }
     }
 
     /// <summary>Reads a 4-sector B-tree node and parses it if it's a DATA leaf node</summary>
-    void ReadAndParseDataNode(uint                                                                         nodeSector,
-                              List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress)> allEntries)
+    void ReadAndParseDataNode(uint nodeSector,
+                              List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress, uint
+                                  creationTimestamp, uint modificationTimestamp, uint fileSize)> allEntries)
     {
         ErrorNumber nodeErrno = _image.ReadSectors(nodeSector + _partition.Start, false, 4, out byte[] nodeData, out _);
 
@@ -472,8 +481,8 @@ public sealed partial class HPOFS
 
         if(level != 0) return;
 
-        List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress)> nodeEntries =
-            ParseDataEntries(nodeData);
+        List<(string fullPath, uint timestamp, byte attributes, uint sectorAddress, uint creationTimestamp, uint
+            modificationTimestamp, uint fileSize)> nodeEntries = ParseDataEntries(nodeData);
 
         AaruLogging.Debug(MODULE_NAME, "DATA node at sector 0x{0:X4}: {1} entries", nodeSector, nodeEntries.Count);
 

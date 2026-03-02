@@ -30,6 +30,7 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
@@ -82,12 +83,29 @@ public sealed partial class HPOFS
             if(!dirEntries.TryGetValue(fileName, out entry)) return ErrorNumber.NoSuchFile;
         }
 
+        FileAttributes attrs = FileAttributes.None;
+
+        if(entry.IsDirectory) attrs              |= FileAttributes.Directory;
+        if((entry.Attributes & 0x01) != 0) attrs |= FileAttributes.ReadOnly;
+        if((entry.Attributes & 0x02) != 0) attrs |= FileAttributes.Hidden;
+        if((entry.Attributes & 0x04) != 0) attrs |= FileAttributes.System;
+        if((entry.Attributes & 0x20) != 0) attrs |= FileAttributes.Archive;
+
         stat = new FileEntryInfo
         {
-            Attributes = entry.IsDirectory ? FileAttributes.Directory : FileAttributes.None,
+            Attributes = attrs,
             BlockSize  = _bpb.bps,
-            Links      = 1
+            Links      = 1,
+            Length     = entry.FileSize,
+            Blocks     = entry.FileSize > 0 ? (entry.FileSize + _bpb.bps - 1) / _bpb.bps : 0,
+            Inode      = entry.SectorAddress
         };
+
+        if(entry.CreationTimestamp > 0)
+            stat.CreationTimeUtc = DateTimeOffset.FromUnixTimeSeconds(entry.CreationTimestamp).UtcDateTime;
+
+        if(entry.ModificationTimestamp > 0)
+            stat.LastWriteTimeUtc = DateTimeOffset.FromUnixTimeSeconds(entry.ModificationTimestamp).UtcDateTime;
 
         return ErrorNumber.NoError;
     }
