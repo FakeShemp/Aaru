@@ -81,6 +81,46 @@ public sealed partial class Chd
 
 #endregion
 
+#region Nested type: CompressionV5
+
+    enum CompressionV5 : uint
+    {
+        None    = 0,
+        Zlib    = 0x7A6C6962,
+        Lzma    = 0x6C7A6D61,
+        Huffman = 0x68756666,
+        Flac    = 0x666C6163,
+        Zstd    = 0x7A737464,
+        CdZlib  = 0x63647A6C,
+        CdLzma  = 0x63646C7A,
+        CdFlac  = 0x6364666C,
+        CdZstd  = 0x63647A73
+    }
+
+#endregion
+
+#region Nested type: EntryFlagsV5
+
+    enum EntryFlagsV5 : byte
+    {
+        /// <summary>Compressed with compressor 0</summary>
+        Compressed0 = 0,
+        /// <summary>Compressed with compressor 1</summary>
+        Compressed1 = 1,
+        /// <summary>Compressed with compressor 2</summary>
+        Compressed2 = 2,
+        /// <summary>Compressed with compressor 3</summary>
+        Compressed3 = 3,
+        /// <summary>Uncompressed</summary>
+        Uncompressed = 4,
+        /// <summary>Same as another hunk in file</summary>
+        SelfHunk = 5,
+        /// <summary>Same as another hunk in parent</summary>
+        ParentHunk = 6
+    }
+
+#endregion
+
 #region Nested type: SubTypeOld
 
     enum SubTypeOld : uint

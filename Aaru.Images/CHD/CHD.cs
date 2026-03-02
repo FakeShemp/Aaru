@@ -71,12 +71,14 @@ public sealed partial class Chd : IOpticalMediaImage, IVerifiableImage
     int                       _maxSectorCache;
     Dictionary<ulong, uint>   _offsetmap;
     List<Partition>           _partitions;
+    byte[]                    _rawMap;
     SectorBuilder             _sectorBuilder;
     Dictionary<ulong, byte[]> _sectorCache;
     uint                      _sectorsPerHunk;
     bool                      _swapAudio;
     uint                      _totalHunks;
     Dictionary<uint, Track>   _tracks;
+    uint                      _unitBytes;
 
     public Chd() => _imageInfo = new ImageInfo
     {

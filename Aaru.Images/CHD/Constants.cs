@@ -76,6 +76,15 @@ public sealed partial class Chd
 
     const int MAX_CACHE_SIZE = 16777216;
 
+    const int CD_MAX_SECTOR_DATA  = 2352;
+    const int CD_MAX_SUBCODE_DATA = 96;
+    const int CD_FRAME_SIZE       = CD_MAX_SECTOR_DATA + CD_MAX_SUBCODE_DATA;
+
+    static readonly byte[] _cdSyncHeader =
+    {
+        0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00
+    };
+
     // ReSharper disable InconsistentNaming
     const string TRACK_TYPE_MODE1        = "MODE1";
     const string TRACK_TYPE_MODE1_2K     = "MODE1/2048";

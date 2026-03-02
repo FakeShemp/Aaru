@@ -343,11 +343,6 @@ public sealed partial class Chd
 
             case 5:
             {
-                // TODO: Check why reading is misaligned
-                AaruLogging.Error(Localization.CHD_version_5_is_not_yet_supported);
-
-                return ErrorNumber.NotImplemented;
-
                 HeaderV5 hdrV5 = Marshal.ByteArrayToStructureBigEndian<HeaderV5>(buffer);
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV5.tag = \"{0}\"", Encoding.ASCII.GetString(hdrV5.tag));
@@ -387,68 +382,53 @@ public sealed partial class Chd
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV5.rawsha1 = {0}", ArrayHelpers.ByteArrayToHex(hdrV5.rawsha1));
 
-                // TODO: Implement compressed CHD v5
-                if(hdrV5.compressor0 == 0)
-                {
-                    AaruLogging.Debug(MODULE_NAME, Localization.Reading_Hunk_map);
-                    hunkMapStopwatch.Restart();
-
-                    _hunkTableSmall = new uint[hdrV5.logicalbytes / hdrV5.hunkbytes];
-
-                    var hunkSectorCount = (uint)Math.Ceiling((double)_hunkTableSmall.Length * 4 / 512);
-
-                    var hunkSectorBytes = new byte[512];
-
-                    stream.Seek((long)hdrV5.mapoffset, SeekOrigin.Begin);
-
-                    for(var i = 0; i < hunkSectorCount; i++)
-                    {
-                        stream.EnsureRead(hunkSectorBytes, 0, 512);
-
-                        // This does the big-endian trick but reverses the order of elements also
-                        Array.Reverse(hunkSectorBytes);
-
-                        HunkSectorSmall hunkSector =
-                            Marshal.ByteArrayToStructureLittleEndian<HunkSectorSmall>(hunkSectorBytes);
-
-                        // This restores the order of elements
-                        Array.Reverse(hunkSector.hunkEntry);
-
-                        if(_hunkTableSmall.Length >= i * 512 / 4 + 512 / 4)
-                            Array.Copy(hunkSector.hunkEntry, 0, _hunkTableSmall, i * 512 / 4, 512 / 4);
-                        else
-                        {
-                            Array.Copy(hunkSector.hunkEntry,
-                                       0,
-                                       _hunkTableSmall,
-                                       i                                * 512 / 4,
-                                       _hunkTableSmall.Length - i * 512 / 4);
-                        }
-                    }
-
-                    hunkMapStopwatch.Stop();
-
-                    AaruLogging.Debug(MODULE_NAME, Localization.Took_0_seconds, hunkMapStopwatch.Elapsed.TotalSeconds);
-                }
-                else
-                {
-                    AaruLogging.Error(Localization.Cannot_read_compressed_CHD_version_5);
-
-                    return ErrorNumber.NotSupported;
-                }
-
-                nextMetaOff = hdrV5.metaoffset;
-
-                _imageInfo.ImageSize = hdrV5.logicalbytes;
-                _imageInfo.Version   = "5";
-
-                _totalHunks      = (uint)(hdrV5.logicalbytes / hdrV5.hunkbytes);
+                _totalHunks      = (uint)((hdrV5.logicalbytes + hdrV5.hunkbytes - 1) / hdrV5.hunkbytes);
                 _bytesPerHunk    = hdrV5.hunkbytes;
+                _unitBytes       = hdrV5.unitbytes;
                 _hdrCompression  = hdrV5.compressor0;
                 _hdrCompression1 = hdrV5.compressor1;
                 _hdrCompression2 = hdrV5.compressor2;
                 _hdrCompression3 = hdrV5.compressor3;
                 _mapVersion      = 5;
+
+                AaruLogging.Debug(MODULE_NAME, Localization.Reading_Hunk_map);
+                hunkMapStopwatch.Restart();
+
+                if(hdrV5.compressor0 == 0)
+                {
+                    // Uncompressed map: 4 bytes per hunk (big-endian offset / hunkbytes)
+                    _hunkTableSmall = new uint[_totalHunks];
+                    stream.Seek((long)hdrV5.mapoffset, SeekOrigin.Begin);
+
+                    for(uint i = 0; i < _totalHunks; i++)
+                    {
+                        var entryBytes = new byte[4];
+                        stream.EnsureRead(entryBytes, 0, 4);
+
+                        _hunkTableSmall[i] = BigEndianBitConverter.ToUInt32(entryBytes, 0);
+                    }
+                }
+                else
+                {
+                    // Compressed map
+                    ErrorNumber mapErr = DecompressV5Map(stream,
+                                                         hdrV5.mapoffset,
+                                                         _totalHunks,
+                                                         _bytesPerHunk,
+                                                         _unitBytes,
+                                                         out _rawMap);
+
+                    if(mapErr != ErrorNumber.NoError) return mapErr;
+                }
+
+                hunkMapStopwatch.Stop();
+
+                AaruLogging.Debug(MODULE_NAME, Localization.Took_0_seconds, hunkMapStopwatch.Elapsed.TotalSeconds);
+
+                nextMetaOff = hdrV5.metaoffset;
+
+                _imageInfo.ImageSize = hdrV5.logicalbytes;
+                _imageInfo.Version   = "5";
 
                 break;
             }
@@ -1208,8 +1188,7 @@ public sealed partial class Chd
             }
             else if(_isCdrom)
             {
-                // Hardcoded on MAME for CD-ROM
-                _sectorsPerHunk              = 4;
+                _sectorsPerHunk              = _bytesPerHunk / CD_FRAME_SIZE;
                 _imageInfo.MediaType         = MediaType.CDROM;
                 _imageInfo.MetadataMediaType = MetadataMediaType.OpticalDisc;
 
@@ -1218,8 +1197,7 @@ public sealed partial class Chd
             }
             else if(_isGdrom)
             {
-                // Hardcoded on MAME for GD-ROM
-                _sectorsPerHunk              = 4;
+                _sectorsPerHunk              = _bytesPerHunk / CD_FRAME_SIZE;
                 _imageInfo.MediaType         = MediaType.GDROM;
                 _imageInfo.MetadataMediaType = MetadataMediaType.OpticalDisc;
 
@@ -1358,8 +1336,8 @@ public sealed partial class Chd
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
-        var  track = new Track();
-        uint sectorSize;
+        Track track = _isHdd ? new Track() : GetTrack(sectorAddress);
+        uint  sectorSize;
 
         if(!_sectorCache.TryGetValue(sectorAddress, out byte[] sector))
         {
@@ -1367,8 +1345,6 @@ public sealed partial class Chd
                 sectorSize = _imageInfo.SectorSize;
             else
             {
-                track = GetTrack(sectorAddress);
-
                 sectorSize = (uint)track.RawBytesPerSector +
                              (track.SubchannelType != TrackSubchannelType.None ? 96u : 0u);
             }
@@ -1502,14 +1478,12 @@ public sealed partial class Chd
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
-        var track = new Track();
+        Track track = GetTrack(sectorAddress);
 
         uint sectorSize;
 
         if(!_sectorCache.TryGetValue(sectorAddress, out byte[] sector))
         {
-            track = GetTrack(sectorAddress);
-
             sectorSize = (uint)track.RawBytesPerSector + (track.SubchannelType != TrackSubchannelType.None ? 96u : 0u);
 
             ulong hunkNo = sectorAddress                   / _sectorsPerHunk;
@@ -1842,12 +1816,10 @@ public sealed partial class Chd
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
-        var track = new Track();
+        Track track = GetTrack(sectorAddress);
 
         if(!_sectorCache.TryGetValue(sectorAddress, out byte[] sector))
         {
-            track = GetTrack(sectorAddress);
-
             uint sectorSize = (uint)track.RawBytesPerSector +
                               (track.SubchannelType != TrackSubchannelType.None ? 96u : 0u);
 
