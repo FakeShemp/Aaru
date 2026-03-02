@@ -217,6 +217,7 @@ Fully supported file-systems (identify and extraction)
 * Extended Acer File System (EAFS)
 * Flash-Friendly File System (F2FS)
 * High Sierra Format
+* High Performance Optical File System (HPOFS)
 * HP Logical Interchange Format
 * IBM Journaling File System (JFS)
 * ISO9660, including Apple, Amiga, Rock Ridge, Joliet and Romeo extensions
@@ -266,7 +267,6 @@ Supported file systems for identification and information only
 * dump(8) (Old historic BSD, AIX, UFS and UFS2 types)
 * Fossil file system (from Plan9)
 * HAMMER file system
-* High Performance Optical File System (HPOFS)
 * Microsoft Resilient File System (ReFS)
 * NEC PC-Engine executable
 * NEC PC-FX executable
