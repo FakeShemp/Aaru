@@ -981,5 +981,13 @@ public sealed partial class PowerISO
     public ErrorNumber ReadSectorsTag(ulong      sectorAddress, bool negative, uint length, SectorTagType tag,
                                       out byte[] buffer) => ReadSectorsTag(sectorAddress, length, 1, tag, out buffer);
 
+    /// <inheritdoc />
+    public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer)
+    {
+        buffer = null;
+
+        return ErrorNumber.NotSupported;
+    }
+
 #endregion
 }
