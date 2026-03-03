@@ -36,6 +36,7 @@ using System.IO;
 using System.IO.Compression;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
 using Aaru.Logging;
 using SharpCompress.Compressors.BZip2;
 
@@ -456,6 +457,20 @@ public sealed partial class UltraISO
     /// <inheritdoc />
     public ErrorNumber ReadSectorsTag(ulong      sectorAddress, bool negative, uint length, SectorTagType tag,
                                       out byte[] buffer) => ReadSectorsTag(sectorAddress, length, 1, tag, out buffer);
+
+    /// <inheritdoc />
+    public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer)
+    {
+        buffer = null;
+
+        return ErrorNumber.NotSupported;
+    }
+
+    /// <inheritdoc />
+    public List<Track> GetSessionTracks(Session session) => session.Sequence == 1 ? Tracks : null;
+
+    /// <inheritdoc />
+    public List<Track> GetSessionTracks(ushort session) => session == 1 ? Tracks : null;
 
 #endregion
 }
