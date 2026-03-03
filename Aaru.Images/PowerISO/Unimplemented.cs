@@ -33,7 +33,6 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Images;
@@ -44,17 +43,8 @@ public sealed partial class PowerISO
     public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public ErrorNumber
-        ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber ReadSectorLong(ulong            sectorAddress, bool negative, out byte[] buffer,
                                       out SectorStatus sectorStatus) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
-                                   out SectorStatus[] sectorStatus) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
@@ -76,16 +66,8 @@ public sealed partial class PowerISO
                                out List<ulong> unknownLbas) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber ReadSectorTag(ulong sectorAddress, uint track, SectorTagType tag, out byte[] buffer) =>
         throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
-                                   out SectorStatus[] sectorStatus) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber ReadSectorsTag(ulong      sectorAddress, uint length, uint track, SectorTagType tag,
