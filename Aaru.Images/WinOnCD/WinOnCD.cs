@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Properties.cs
+// Filename       : WinOnCD.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Disc image plugins.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Manages Easy CD Creator disc images.
+//     Manages WinOnCD disc images.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,38 +30,35 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Partition = Aaru.CommonTypes.Partition;
-using Track = Aaru.CommonTypes.Structs.Track;
 
 namespace Aaru.Images;
 
-public sealed partial class EasyCD
+public sealed partial class WinOnCD : IOpticalMediaImage
 {
-    /// <inheritdoc />
-    public string Author => Authors.NataliaPortillo;
-    /// <inheritdoc />
-    public Metadata AaruMetadata => null;
-    /// <inheritdoc />
-    public List<DumpHardware> DumpHardware => null;
-    /// <inheritdoc />
-    public string Format => "EasyCD";
-    /// <inheritdoc />
-    public Guid Id => new("64106380-D6EB-49A7-903B-1FAB4CC1B923");
-    /// <inheritdoc />
+    const string MODULE_NAME = "WinOnCD plugin";
 
-    // ReSharper disable once ConvertToAutoProperty
-    public ImageInfo Info => _imageInfo;
+    readonly ImageInfo _imageInfo;
 
-    /// <inheritdoc />
-    public string Name => Localization.Easy_CD_Creator_disc_image;
-    /// <inheritdoc />
-    public List<Partition> Partitions { get; private set; }
-    /// <inheritdoc />
-    public List<Track> Tracks { get; private set; }
-    /// <inheritdoc />
-    public List<Session> Sessions { get; private set; }
+    public WinOnCD() => _imageInfo = new ImageInfo
+    {
+        ReadableSectorTags    = [],
+        ReadableMediaTags     = [],
+        HasPartitions         = true,
+        HasSessions           = true,
+        Version               = null,
+        ApplicationVersion    = null,
+        MediaTitle            = null,
+        Creator               = null,
+        MediaManufacturer     = null,
+        MediaModel            = null,
+        MediaPartNumber       = null,
+        MediaSequence         = 0,
+        LastMediaSequence     = 0,
+        DriveManufacturer     = null,
+        DriveModel            = null,
+        DriveSerialNumber     = null,
+        DriveFirmwareRevision = null
+    };
 }

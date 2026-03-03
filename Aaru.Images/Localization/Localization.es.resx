@@ -2794,8 +2794,8 @@
     <value>¡Atención! Esta imagen carece de los últimos 150 sectores.</value>
   </data>
     <data name="WCDiskImage_Name" xml:space="preserve">
-    <value>Imagen ed disco d2f</value>
-  </data>
+        <value>Imagen de disco d2f</value>
+    </data>
     <data name="World" xml:space="preserve">
     <value>Todo el mundo</value>
   </data>
@@ -2963,5 +2963,11 @@
     </data>
     <data name="PowerISO_disc_image" xml:space="preserve">
         <value>Imagen de disco de PowerISO</value>
+    </data>
+    <data name="Easy_CD_Creator_disc_image" xml:space="preserve">
+        <value>Imagen de disco de Easy CD Creator</value>
+    </data>
+    <data name="WinOnCD_disc_image" xml:space="preserve">
+        <value>Imagen de disco de WinOnCD</value>
     </data>
 </root>

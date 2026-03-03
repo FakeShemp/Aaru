@@ -5925,5 +5925,17 @@ namespace Aaru.Images {
                 return ResourceManager.GetString("PowerISO_disc_image", resourceCulture);
             }
         }
+        
+        internal static string Easy_CD_Creator_disc_image {
+            get {
+                return ResourceManager.GetString("Easy_CD_Creator_disc_image", resourceCulture);
+            }
+        }
+        
+        internal static string WinOnCD_disc_image {
+            get {
+                return ResourceManager.GetString("WinOnCD_disc_image", resourceCulture);
+            }
+        }
     }
 }

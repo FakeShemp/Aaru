@@ -2974,4 +2974,10 @@
     <data name="PowerISO_disc_image" xml:space="preserve">
         <value>PowerISO disc image</value>
     </data>
+    <data name="Easy_CD_Creator_disc_image" xml:space="preserve">
+        <value>Easy CD Creator disc image</value>
+    </data>
+    <data name="WinOnCD_disc_image" xml:space="preserve">
+        <value>WinOnCD disc image</value>
+    </data>
 </root>

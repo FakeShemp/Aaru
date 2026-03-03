@@ -9,7 +9,7 @@
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Manages Easy CD Creator disc images.
+//     Manages WinOnCD disc images.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,6 +30,7 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.AaruMetadata;
@@ -39,7 +40,7 @@ using Track = Aaru.CommonTypes.Structs.Track;
 
 namespace Aaru.Images;
 
-public sealed partial class EasyCD
+public sealed partial class WinOnCD
 {
     /// <inheritdoc />
     public string Author => Authors.NataliaPortillo;
@@ -48,16 +49,15 @@ public sealed partial class EasyCD
     /// <inheritdoc />
     public List<DumpHardware> DumpHardware => null;
     /// <inheritdoc />
-    public string Format => "EasyCD";
+    public string Format => "WinOnCD";
     /// <inheritdoc />
-    public Guid Id => new("64106380-D6EB-49A7-903B-1FAB4CC1B923");
+    public Guid Id => new("784A2156-A31D-422E-B3F4-A5A581D31430");
     /// <inheritdoc />
 
     // ReSharper disable once ConvertToAutoProperty
     public ImageInfo Info => _imageInfo;
-
     /// <inheritdoc />
-    public string Name => Localization.Easy_CD_Creator_disc_image;
+    public string Name => Localization.WinOnCD_disc_image;
     /// <inheritdoc />
     public List<Partition> Partitions { get; private set; }
     /// <inheritdoc />
