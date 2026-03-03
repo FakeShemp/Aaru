@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Verify.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Disc image plugins.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Manages Easy CD Creator disc images.
+//     Verifies Easy CD Creator disc images.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,17 +30,33 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using Aaru.CommonTypes.Structs;
+using System.Linq;
 
 namespace Aaru.Images;
 
 public sealed partial class EasyCD
 {
     /// <inheritdoc />
-    public List<Track> GetSessionTracks(Session session) => throw new NotImplementedException();
+    public bool? VerifySector(ulong sectorAddress) => null;
 
     /// <inheritdoc />
-    public List<Track> GetSessionTracks(ushort session) => throw new NotImplementedException();
+    public bool? VerifySectors(ulong           sectorAddress, uint length, out List<ulong> failingLbas,
+                               out List<ulong> unknownLbas)
+    {
+        failingLbas = [];
+        unknownLbas = Enumerable.Range((int)sectorAddress, (int)length).Select(i => (ulong)i).ToList();
+
+        return null;
+    }
+
+    /// <inheritdoc />
+    public bool? VerifySectors(ulong           sectorAddress, uint length, uint track, out List<ulong> failingLbas,
+                               out List<ulong> unknownLbas)
+    {
+        failingLbas = [];
+        unknownLbas = Enumerable.Range((int)sectorAddress, (int)length).Select(i => (ulong)i).ToList();
+
+        return null;
+    }
 }
