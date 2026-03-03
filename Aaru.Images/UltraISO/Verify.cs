@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Verify.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Disc image plugins.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Manages UltraISO disc images.
+//     Verifies UltraISO disc images.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,21 +30,36 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Images;
 
 public sealed partial class UltraISO
 {
     /// <inheritdoc />
-    public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer) => throw new NotImplementedException();
+    public bool? VerifySector(ulong sectorAddress) => null;
 
     /// <inheritdoc />
-    public List<Track> GetSessionTracks(Session session) => throw new NotImplementedException();
+    public bool? VerifySectors(ulong           sectorAddress, uint length, out List<ulong> failingLbas,
+                               out List<ulong> unknownLbas)
+    {
+        failingLbas = [];
+        unknownLbas = new List<ulong>((int)length);
+
+        for(ulong i = 0; i < length; i++) unknownLbas.Add(sectorAddress + i);
+
+        return null;
+    }
 
     /// <inheritdoc />
-    public List<Track> GetSessionTracks(ushort session) => throw new NotImplementedException();
+    public bool? VerifySectors(ulong           sectorAddress, uint length, uint track, out List<ulong> failingLbas,
+                               out List<ulong> unknownLbas)
+    {
+        failingLbas = [];
+        unknownLbas = new List<ulong>((int)length);
+
+        for(ulong i = 0; i < length; i++) unknownLbas.Add(sectorAddress + i);
+
+        return null;
+    }
 }
