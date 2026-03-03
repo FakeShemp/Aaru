@@ -40,8 +40,10 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Compression;
+using Aaru.Decoders.CD;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Session = Aaru.CommonTypes.Structs.Session;
 
 namespace Aaru.Images;
 
@@ -743,6 +745,7 @@ public sealed partial class PowerISO
         _sectorCache           = new Dictionary<ulong, byte[]>();
         _inflateBuffer         = new byte[_chunkSize];
         _ioBuffer              = new byte[_chunkSize];
+        _sectorBuilder         = new SectorBuilder();
 
         return ErrorNumber.NoError;
     }
@@ -816,6 +819,66 @@ public sealed partial class PowerISO
     public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                                    out SectorStatus[] sectorStatus) =>
         ReadSectors(sectorAddress, length, 1, out buffer, out sectorStatus);
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
+
+        if(_imageInfo.MediaType != MediaType.CD) return ErrorNumber.NotSupported;
+
+        ErrorNumber errno = ReadSector(sectorAddress, track, out byte[] userData, out sectorStatus);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        buffer = new byte[2352];
+        Array.Copy(userData, 0, buffer, 16, 2048);
+        _sectorBuilder.ReconstructPrefix(ref buffer, TrackType.CdMode1, (long)sectorAddress);
+        _sectorBuilder.ReconstructEcc(ref buffer, TrackType.CdMode1);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
+    {
+        buffer       = null;
+        sectorStatus = null;
+
+        if(_imageInfo.MediaType != MediaType.CD) return ErrorNumber.NotSupported;
+
+        if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
+
+        using var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
+
+        for(uint i = 0; i < length; i++)
+        {
+            ErrorNumber errno =
+                ReadSectorLong(sectorAddress + i, track, out byte[] sectorData, out SectorStatus status);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            ms.Write(sectorData, 0, sectorData.Length);
+            sectorStatus[i] = status;
+        }
+
+        buffer = ms.ToArray();
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorLong(ulong            sectorAddress, bool negative, out byte[] buffer,
+                                      out SectorStatus sectorStatus) =>
+        ReadSectorLong(sectorAddress, 1, out buffer, out sectorStatus);
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus) =>
+        ReadSectorsLong(sectorAddress, length, 1, out buffer, out sectorStatus);
 
 #endregion
 }
