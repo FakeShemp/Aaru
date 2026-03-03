@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : PowerISO.cs
+// Filename       : Properties.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Disc image plugins.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Manages PowerISO disc images.
+//     Manages UltraISO disc images.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -33,14 +33,11 @@
 using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.AaruMetadata;
-using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Partition = Aaru.CommonTypes.Partition;
-using Track = Aaru.CommonTypes.Structs.Track;
 
 namespace Aaru.Images;
 
-public sealed partial class PowerISO : IOpticalMediaImage
+public sealed partial class UltraISO
 {
     /// <inheritdoc />
     public string Author => Authors.NataliaPortillo;
@@ -49,20 +46,12 @@ public sealed partial class PowerISO : IOpticalMediaImage
     /// <inheritdoc />
     public List<DumpHardware> DumpHardware => null;
     /// <inheritdoc />
-    public string Format => "PowerISO";
+    public string Format => "UltraISO";
     /// <inheritdoc />
-    public Guid Id => new("0767C2CE-8F13-4215-BAF7-BEAF5B587C75");
+    public Guid Id => new("12D3690D-FCC9-456C-B3CE-1CEB65416274");
     /// <inheritdoc />
-
-    // ReSharper disable once ConvertToAutoProperty
-    public ImageInfo Info => _imageInfo;
+    public ImageInfo Info { get; }
 
     /// <inheritdoc />
-    public string Name => Localization.PowerISO_disc_image;
-    /// <inheritdoc />
-    public List<Partition> Partitions { get; set; }
-    /// <inheritdoc />
-    public List<Track> Tracks { get; set; }
-    /// <inheritdoc />
-    public List<Session> Sessions { get; set; }
+    public string Name => Localization.UltraISO_disc_image;
 }

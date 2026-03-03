@@ -5913,5 +5913,17 @@ namespace Aaru.Images {
                 return ResourceManager.GetString("HxCStream_Name", resourceCulture);
             }
         }
+        
+        internal static string UltraISO_disc_image {
+            get {
+                return ResourceManager.GetString("UltraISO_disc_image", resourceCulture);
+            }
+        }
+        
+        internal static string PowerISO_disc_image {
+            get {
+                return ResourceManager.GetString("PowerISO_disc_image", resourceCulture);
+            }
+        }
     }
 }

@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : PowerISO.cs
+// Filename       : UltraISO.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Disc image plugins.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Manages PowerISO disc images.
+//     Manages UltraISO disc images.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,39 +30,33 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Partition = Aaru.CommonTypes.Partition;
-using Track = Aaru.CommonTypes.Structs.Track;
 
 namespace Aaru.Images;
 
-public sealed partial class PowerISO : IOpticalMediaImage
+public sealed partial class UltraISO : IOpticalMediaImage
 {
-    /// <inheritdoc />
-    public string Author => Authors.NataliaPortillo;
-    /// <inheritdoc />
-    public Metadata AaruMetadata => null;
-    /// <inheritdoc />
-    public List<DumpHardware> DumpHardware => null;
-    /// <inheritdoc />
-    public string Format => "PowerISO";
-    /// <inheritdoc />
-    public Guid Id => new("0767C2CE-8F13-4215-BAF7-BEAF5B587C75");
-    /// <inheritdoc />
+    const string MODULE_NAME = "UltraISO plugin";
 
-    // ReSharper disable once ConvertToAutoProperty
-    public ImageInfo Info => _imageInfo;
-
-    /// <inheritdoc />
-    public string Name => Localization.PowerISO_disc_image;
-    /// <inheritdoc />
-    public List<Partition> Partitions { get; set; }
-    /// <inheritdoc />
-    public List<Track> Tracks { get; set; }
-    /// <inheritdoc />
-    public List<Session> Sessions { get; set; }
+    public UltraISO() => Info = new ImageInfo
+    {
+        ReadableSectorTags    = [],
+        ReadableMediaTags     = [],
+        HasPartitions         = true,
+        HasSessions           = true,
+        Version               = null,
+        ApplicationVersion    = null,
+        MediaTitle            = null,
+        Creator               = null,
+        MediaManufacturer     = null,
+        MediaModel            = null,
+        MediaPartNumber       = null,
+        MediaSequence         = 0,
+        LastMediaSequence     = 0,
+        DriveManufacturer     = null,
+        DriveModel            = null,
+        DriveSerialNumber     = null,
+        DriveFirmwareRevision = null
+    };
 }

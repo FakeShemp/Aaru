@@ -2958,4 +2958,10 @@
     <data name="Overflow_sectors_are_not_supported" xml:space="preserve">
         <value>Los sectores de sobrecarga no están soportados.</value>
     </data>
+    <data name="UltraISO_disc_image" xml:space="preserve">
+        <value>Imagen de disco de UltraISO</value>
+    </data>
+    <data name="PowerISO_disc_image" xml:space="preserve">
+        <value>Imagen de disco de PowerISO</value>
+    </data>
 </root>

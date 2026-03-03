@@ -2968,4 +2968,10 @@
     <data name="HxCStream_Name" xml:space="preserve">
         <value>HxCStream</value>
     </data>
+    <data name="UltraISO_disc_image" xml:space="preserve">
+        <value>UltraISO disc image</value>
+    </data>
+    <data name="PowerISO_disc_image" xml:space="preserve">
+        <value>PowerISO disc image</value>
+    </data>
 </root>
