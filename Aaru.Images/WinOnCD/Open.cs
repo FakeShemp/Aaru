@@ -96,9 +96,11 @@ public sealed partial class WinOnCD
         }
 
         // Step 3: Process track blocks and build tracks, sessions, and partitions
-        Tracks     = [];
-        Sessions   = [];
-        Partitions = [];
+        Tracks      = [];
+        Sessions    = [];
+        Partitions  = [];
+        _trackFlags = new Dictionary<uint, byte>();
+        _trackIsrcs = new Dictionary<uint, string>();
 
         var    lastSession     = 0;
         var    lastPoint       = 0;
@@ -308,6 +310,14 @@ public sealed partial class WinOnCD
                     Type        = trackType.Humanize()
                 };
 
+                // Store C2D flags for this track
+                _trackFlags[trackSequence] = (byte)entry.flags;
+
+                // Store ISRC if present
+                string isrc = Encoding.ASCII.GetString(entry.isrc).TrimEnd('\0');
+
+                if(!string.IsNullOrWhiteSpace(isrc)) _trackIsrcs[trackSequence] = isrc;
+
                 Tracks.Add(track);
                 Partitions.Add(partition);
             }
@@ -333,7 +343,26 @@ public sealed partial class WinOnCD
 
         if(!string.IsNullOrWhiteSpace(description)) _imageInfo.Comments = description;
 
-        if(header.has_upc_ean != 0) _imageInfo.MediaBarcode = Encoding.ASCII.GetString(header.upc_ean).TrimEnd('\0');
+        if(header.has_upc_ean != 0)
+        {
+            _mcn                    = Encoding.ASCII.GetString(header.upc_ean).TrimEnd('\0');
+            _imageInfo.MediaBarcode = _mcn;
+            _imageInfo.ReadableMediaTags.Add(MediaTagType.CD_MCN);
+        }
+
+        // Read CD-Text if present
+        if(header.size_cdtext > 0)
+        {
+            long cdTextOffset = header.offset_tracks + header.num_track_blocks * Marshal.SizeOf<C2dTrackBlock>();
+
+            stream.Seek(cdTextOffset, SeekOrigin.Begin);
+            _cdtext = new byte[header.size_cdtext];
+            stream.EnsureRead(_cdtext, 0, (int)header.size_cdtext);
+            _imageInfo.ReadableMediaTags.Add(MediaTagType.CD_TEXT);
+        }
+
+        if(_trackIsrcs.Count > 0 && !_imageInfo.ReadableSectorTags.Contains(SectorTagType.CdTrackIsrc))
+            _imageInfo.ReadableSectorTags.Add(SectorTagType.CdTrackIsrc);
 
         // Determine media type based on tracks
         var hasData      = false;

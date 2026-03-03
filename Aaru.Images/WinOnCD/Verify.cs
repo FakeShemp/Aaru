@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : WinOnCD.cs
+// Filename       : Verify.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Disc image plugins.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Manages WinOnCD disc images.
+//     Verifies WinOnCD disc images.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -31,43 +31,35 @@
 // ****************************************************************************/
 
 using System.Collections.Generic;
-using System.IO;
-using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
-using Aaru.Decoders.CD;
 
 namespace Aaru.Images;
 
-public sealed partial class WinOnCD : IOpticalMediaImage
+public sealed partial class WinOnCD
 {
-    const string MODULE_NAME = "WinOnCD plugin";
-    byte[]       _cdtext;
+    /// <inheritdoc />
+    public bool? VerifySector(ulong sectorAddress) => null;
 
-    ImageInfo                _imageInfo;
-    Stream                   _imageStream;
-    string                   _mcn;
-    SectorBuilder            _sectorBuilder;
-    Dictionary<uint, byte>   _trackFlags;
-    Dictionary<uint, string> _trackIsrcs;
-
-    public WinOnCD() => _imageInfo = new ImageInfo
+    /// <inheritdoc />
+    public bool? VerifySectors(ulong           sectorAddress, uint length, out List<ulong> failingLbas,
+                               out List<ulong> unknownLbas)
     {
-        ReadableSectorTags    = [],
-        ReadableMediaTags     = [],
-        HasPartitions         = true,
-        HasSessions           = true,
-        Version               = null,
-        ApplicationVersion    = null,
-        MediaTitle            = null,
-        Creator               = null,
-        MediaManufacturer     = null,
-        MediaModel            = null,
-        MediaPartNumber       = null,
-        MediaSequence         = 0,
-        LastMediaSequence     = 0,
-        DriveManufacturer     = null,
-        DriveModel            = null,
-        DriveSerialNumber     = null,
-        DriveFirmwareRevision = null
-    };
+        failingLbas = [];
+        unknownLbas = [];
+
+        for(ulong i = 0; i < length; i++) unknownLbas.Add(sectorAddress + i);
+
+        return null;
+    }
+
+    /// <inheritdoc />
+    public bool? VerifySectors(ulong           sectorAddress, uint length, uint track, out List<ulong> failingLbas,
+                               out List<ulong> unknownLbas)
+    {
+        failingLbas = [];
+        unknownLbas = [];
+
+        for(ulong i = 0; i < length; i++) unknownLbas.Add(sectorAddress + i);
+
+        return null;
+    }
 }
