@@ -104,6 +104,7 @@ Media image formats we can read
 * Nero Burning ROM (both image formats)
 * Partclone disk images
 * Partimage disk images
+* PowerISO (.DAA/.GBI)
 * Quasi88 disk images (.D77/.D88)
 * Spectrum floppy disk image (.FDI)
 * SuperCardPro
