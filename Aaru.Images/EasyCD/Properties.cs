@@ -52,7 +52,9 @@ public sealed partial class EasyCD
     /// <inheritdoc />
     public Guid Id => new("64106380-D6EB-49A7-903B-1FAB4CC1B923");
     /// <inheritdoc />
-    public ImageInfo Info { get; }
+
+    // ReSharper disable once ConvertToAutoProperty
+    public ImageInfo Info => _imageInfo;
 
     /// <inheritdoc />
     public string Name => "Easy CD Creator disc image";

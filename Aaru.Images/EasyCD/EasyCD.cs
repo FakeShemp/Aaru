@@ -30,8 +30,10 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.IO;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Decoders.CD;
 
 namespace Aaru.Images;
 
@@ -39,7 +41,11 @@ public sealed partial class EasyCD : IOpticalMediaImage
 {
     const string MODULE_NAME = "EasyCD plugin";
 
-    public EasyCD() => Info = new ImageInfo
+    ImageInfo     _imageInfo;
+    Stream        _imageStream;
+    SectorBuilder _sectorBuilder;
+
+    public EasyCD() => _imageInfo = new ImageInfo
     {
         ReadableSectorTags    = [],
         ReadableMediaTags     = [],
