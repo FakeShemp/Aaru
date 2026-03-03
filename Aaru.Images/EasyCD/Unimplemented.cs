@@ -30,17 +30,6 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.Structs;
-
 namespace Aaru.Images;
 
-public sealed partial class EasyCD
-{
-    /// <inheritdoc />
-    public List<Track> GetSessionTracks(Session session) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public List<Track> GetSessionTracks(ushort session) => throw new NotImplementedException();
-}
+public sealed partial class EasyCD;

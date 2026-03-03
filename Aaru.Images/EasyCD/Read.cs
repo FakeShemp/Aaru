@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
@@ -434,4 +435,10 @@ public sealed partial class EasyCD
 
         return ErrorNumber.NotSupported;
     }
+
+    /// <inheritdoc />
+    public List<Track> GetSessionTracks(Session session) => Tracks.Where(t => t.Session == session.Sequence).ToList();
+
+    /// <inheritdoc />
+    public List<Track> GetSessionTracks(ushort session) => Tracks.Where(t => t.Session == session).ToList();
 }
