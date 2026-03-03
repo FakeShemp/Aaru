@@ -880,5 +880,106 @@ public sealed partial class PowerISO
                                        out SectorStatus[] sectorStatus) =>
         ReadSectorsLong(sectorAddress, length, 1, out buffer, out sectorStatus);
 
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, uint track, SectorTagType tag, out byte[] buffer)
+    {
+        buffer = null;
+
+        if(_imageInfo.MediaType != MediaType.CD) return ErrorNumber.NotSupported;
+
+        switch(tag)
+        {
+            case SectorTagType.CdTrackFlags:
+                buffer = [(byte)CdFlags.DataTrack];
+
+                return ErrorNumber.NoError;
+            case SectorTagType.CdSectorSync:
+            case SectorTagType.CdSectorHeader:
+            case SectorTagType.CdSectorEdc:
+            case SectorTagType.CdSectorEccP:
+            case SectorTagType.CdSectorEccQ:
+            case SectorTagType.CdSectorEcc:
+                break;
+            default:
+                return ErrorNumber.NotSupported;
+        }
+
+        ErrorNumber errno = ReadSectorLong(sectorAddress, track, out byte[] fullSector, out SectorStatus _);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        switch(tag)
+        {
+            case SectorTagType.CdSectorSync:
+                buffer = new byte[12];
+                Array.Copy(fullSector, 0, buffer, 0, 12);
+
+                break;
+            case SectorTagType.CdSectorHeader:
+                buffer = new byte[4];
+                Array.Copy(fullSector, 12, buffer, 0, 4);
+
+                break;
+            case SectorTagType.CdSectorEdc:
+                buffer = new byte[4];
+                Array.Copy(fullSector, 2064, buffer, 0, 4);
+
+                break;
+            case SectorTagType.CdSectorEccP:
+                buffer = new byte[172];
+                Array.Copy(fullSector, 2076, buffer, 0, 172);
+
+                break;
+            case SectorTagType.CdSectorEccQ:
+                buffer = new byte[104];
+                Array.Copy(fullSector, 2248, buffer, 0, 104);
+
+                break;
+            case SectorTagType.CdSectorEcc:
+                buffer = new byte[276];
+                Array.Copy(fullSector, 2076, buffer, 0, 276);
+
+                break;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, uint length, uint track, SectorTagType tag,
+                                      out byte[] buffer)
+    {
+        buffer = null;
+
+        if(_imageInfo.MediaType != MediaType.CD) return ErrorNumber.NotSupported;
+
+        if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
+
+        if(tag == SectorTagType.CdTrackFlags) return ReadSectorTag(sectorAddress, track, tag, out buffer);
+
+        using var ms = new MemoryStream();
+
+        for(uint i = 0; i < length; i++)
+        {
+            ErrorNumber errno = ReadSectorTag(sectorAddress + i, track, tag, out byte[] tagData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            ms.Write(tagData, 0, tagData.Length);
+        }
+
+        buffer = ms.ToArray();
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer) =>
+        ReadSectorTag(sectorAddress, 1, tag, out buffer);
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, bool negative, uint length, SectorTagType tag,
+                                      out byte[] buffer) => ReadSectorsTag(sectorAddress, length, 1, tag, out buffer);
+
 #endregion
 }
