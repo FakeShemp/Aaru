@@ -30,8 +30,10 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.IO;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Decoders.CD;
 
 namespace Aaru.Images;
 
@@ -39,7 +41,9 @@ public sealed partial class WinOnCD : IOpticalMediaImage
 {
     const string MODULE_NAME = "WinOnCD plugin";
 
-    readonly ImageInfo _imageInfo;
+    ImageInfo     _imageInfo;
+    Stream        _imageStream;
+    SectorBuilder _sectorBuilder;
 
     public WinOnCD() => _imageInfo = new ImageInfo
     {
