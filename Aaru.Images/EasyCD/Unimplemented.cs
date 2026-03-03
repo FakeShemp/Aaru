@@ -43,27 +43,11 @@ public sealed partial class EasyCD
     public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, bool negative, uint length, SectorTagType tag,
-                                      out byte[] buffer) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
     public bool? VerifySector(ulong sectorAddress) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public bool? VerifySectors(ulong           sectorAddress, uint length, out List<ulong> failingLbas,
                                out List<ulong> unknownLbas) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorTag(ulong sectorAddress, uint track, SectorTagType tag, out byte[] buffer) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, uint length, uint track, SectorTagType tag,
-                                      out byte[] buffer) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public List<Track> GetSessionTracks(Session session) => throw new NotImplementedException();

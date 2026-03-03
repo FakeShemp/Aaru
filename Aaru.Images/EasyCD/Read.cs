@@ -272,4 +272,158 @@ public sealed partial class EasyCD
 
         return ReadSectorsLong(sectorAddress, length, trk.Sequence, out buffer, out sectorStatus);
     }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, uint track, SectorTagType tag, out byte[] buffer)
+    {
+        buffer = null;
+
+        Track trk = Tracks.FirstOrDefault(t => t.Sequence == track);
+
+        if(trk is null) return ErrorNumber.SectorNotFound;
+
+        if(sectorAddress < trk.StartSector || sectorAddress > trk.EndSector) return ErrorNumber.OutOfRange;
+
+        switch(tag)
+        {
+            case SectorTagType.CdTrackFlags:
+                buffer = trk.Type == TrackType.Audio ? new byte[1] : [(byte)CdFlags.DataTrack];
+
+                return ErrorNumber.NoError;
+            case SectorTagType.CdSectorSync:
+            case SectorTagType.CdSectorHeader:
+            case SectorTagType.CdSectorEdc:
+            case SectorTagType.CdSectorEccP:
+            case SectorTagType.CdSectorEccQ:
+            case SectorTagType.CdSectorEcc:
+                if(trk.Type == TrackType.Audio) return ErrorNumber.NotSupported;
+
+                break;
+            case SectorTagType.CdSectorSubHeader:
+                if(trk.Type != TrackType.CdMode2Form1 && trk.Type != TrackType.CdMode2Formless)
+                    return ErrorNumber.NotSupported;
+
+                break;
+            case SectorTagType.CdSectorSubchannel:
+                return ErrorNumber.NotSupported;
+            default:
+                return ErrorNumber.NotSupported;
+        }
+
+        ErrorNumber errno = ReadSectorLong(sectorAddress, track, out byte[] fullSector, out SectorStatus _);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        switch(tag)
+        {
+            case SectorTagType.CdSectorSync:
+                buffer = new byte[12];
+                Array.Copy(fullSector, 0, buffer, 0, 12);
+
+                break;
+            case SectorTagType.CdSectorHeader:
+                buffer = new byte[4];
+                Array.Copy(fullSector, 12, buffer, 0, 4);
+
+                break;
+            case SectorTagType.CdSectorSubHeader:
+                buffer = new byte[8];
+                Array.Copy(fullSector, 16, buffer, 0, 8);
+
+                break;
+            case SectorTagType.CdSectorEdc:
+                buffer = new byte[4];
+
+                if(trk.Type == TrackType.CdMode1)
+                    Array.Copy(fullSector, 2064, buffer, 0, 4);
+                else if(trk.Type == TrackType.CdMode2Form1)
+                    Array.Copy(fullSector, 2072, buffer, 0, 4);
+                else
+                    return ErrorNumber.NotSupported;
+
+                break;
+            case SectorTagType.CdSectorEccP:
+                if(trk.Type == TrackType.CdMode2Formless) return ErrorNumber.NotSupported;
+
+                buffer = new byte[172];
+                Array.Copy(fullSector, 2076, buffer, 0, 172);
+
+                break;
+            case SectorTagType.CdSectorEccQ:
+                if(trk.Type == TrackType.CdMode2Formless) return ErrorNumber.NotSupported;
+
+                buffer = new byte[104];
+                Array.Copy(fullSector, 2248, buffer, 0, 104);
+
+                break;
+            case SectorTagType.CdSectorEcc:
+                if(trk.Type == TrackType.CdMode2Formless) return ErrorNumber.NotSupported;
+
+                buffer = new byte[276];
+                Array.Copy(fullSector, 2076, buffer, 0, 276);
+
+                break;
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, uint length, uint track, SectorTagType tag,
+                                      out byte[] buffer)
+    {
+        buffer = null;
+
+        Track trk = Tracks.FirstOrDefault(t => t.Sequence == track);
+
+        if(trk is null) return ErrorNumber.SectorNotFound;
+
+        if(sectorAddress + length - 1 > trk.EndSector) return ErrorNumber.OutOfRange;
+
+        if(tag == SectorTagType.CdTrackFlags) return ReadSectorTag(sectorAddress, track, tag, out buffer);
+
+        using var ms = new MemoryStream();
+
+        for(uint i = 0; i < length; i++)
+        {
+            ErrorNumber errno = ReadSectorTag(sectorAddress + i, track, tag, out byte[] tagData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            ms.Write(tagData, 0, tagData.Length);
+        }
+
+        buffer = ms.ToArray();
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer)
+    {
+        buffer = null;
+
+        if(negative) return ErrorNumber.NotSupported;
+
+        Track trk = Tracks.FirstOrDefault(t => sectorAddress >= t.StartSector && sectorAddress <= t.EndSector);
+
+        if(trk is null) return ErrorNumber.SectorNotFound;
+
+        return ReadSectorTag(sectorAddress, trk.Sequence, tag, out buffer);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, bool negative, uint length, SectorTagType tag,
+                                      out byte[] buffer)
+    {
+        buffer = null;
+
+        if(negative) return ErrorNumber.NotSupported;
+
+        Track trk = Tracks.FirstOrDefault(t => sectorAddress >= t.StartSector && sectorAddress <= t.EndSector);
+
+        if(trk is null) return ErrorNumber.SectorNotFound;
+
+        return ReadSectorsTag(sectorAddress, length, trk.Sequence, tag, out buffer);
+    }
 }
