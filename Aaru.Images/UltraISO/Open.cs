@@ -37,8 +37,10 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Decoders.CD;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Session = Aaru.CommonTypes.Structs.Session;
 
 namespace Aaru.Images;
 
@@ -201,6 +203,7 @@ public sealed partial class UltraISO
         _sectorCache           = new Dictionary<ulong, byte[]>();
         _inflateBuffer         = new byte[_header.chunkSize];
         _ioBuffer              = new byte[_header.chunkSize];
+        _sectorBuilder         = new SectorBuilder();
 
         return ErrorNumber.NoError;
     }

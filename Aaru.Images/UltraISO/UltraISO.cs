@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.IO;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Decoders.CD;
 
 namespace Aaru.Images;
 
@@ -50,6 +51,7 @@ public sealed partial class UltraISO : IOpticalMediaImage
     byte[]                    _ioBuffer;
     List<Stream>              _partStreams;
     IszPart[]                 _partTable;
+    SectorBuilder             _sectorBuilder;
     Dictionary<ulong, byte[]> _sectorCache;
     IszSegment[]              _segmentTable;
 
