@@ -32,18 +32,13 @@
 
 using System;
 using System.Collections.Generic;
-using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Images;
 
 public sealed partial class UltraISO
 {
-    /// <inheritdoc />
-    public ErrorNumber Open(IFilter imageFilter) => throw new NotImplementedException();
-
     /// <inheritdoc />
     public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer) => throw new NotImplementedException();
 
@@ -73,19 +68,12 @@ public sealed partial class UltraISO
         throw new NotImplementedException();
 
     /// <inheritdoc />
-    public List<Partition> Partitions { get; }
-
-    /// <inheritdoc />
     public bool? VerifySector(ulong sectorAddress) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public bool? VerifySectors(ulong           sectorAddress, uint length, out List<ulong> failingLbas,
                                out List<ulong> unknownLbas) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public List<Track> Tracks { get; }
-    /// <inheritdoc />
-    public List<Session> Sessions { get; }
 
     /// <inheritdoc />
     public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus) =>

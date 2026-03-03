@@ -30,6 +30,8 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
+using System.IO;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 
@@ -37,9 +39,21 @@ namespace Aaru.Images;
 
 public sealed partial class UltraISO : IOpticalMediaImage
 {
-    const string MODULE_NAME = "UltraISO plugin";
+    const string              MODULE_NAME = "UltraISO plugin";
+    Dictionary<int, byte[]>   _chunkCache;
+    IszChunk[]                _chunkTable;
+    uint                      _currentChunkCacheSize;
+    IszHeader                 _header;
+    IFilter                   _imageFilter;
+    ImageInfo                 _imageInfo;
+    byte[]                    _inflateBuffer;
+    byte[]                    _ioBuffer;
+    List<Stream>              _partStreams;
+    IszPart[]                 _partTable;
+    Dictionary<ulong, byte[]> _sectorCache;
+    IszSegment[]              _segmentTable;
 
-    public UltraISO() => Info = new ImageInfo
+    public UltraISO() => _imageInfo = new ImageInfo
     {
         ReadableSectorTags    = [],
         ReadableMediaTags     = [],

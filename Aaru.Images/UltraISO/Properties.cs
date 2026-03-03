@@ -34,6 +34,8 @@ using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Structs;
+using Partition = Aaru.CommonTypes.Partition;
+using Track = Aaru.CommonTypes.Structs.Track;
 
 namespace Aaru.Images;
 
@@ -50,8 +52,13 @@ public sealed partial class UltraISO
     /// <inheritdoc />
     public Guid Id => new("12D3690D-FCC9-456C-B3CE-1CEB65416274");
     /// <inheritdoc />
-    public ImageInfo Info { get; }
-
+    public ImageInfo Info => _imageInfo;
+    /// <inheritdoc />
+    public List<Partition> Partitions { get; private set; }
+    /// <inheritdoc />
+    public List<Track> Tracks { get; private set; }
+    /// <inheritdoc />
+    public List<Session> Sessions { get; private set; }
     /// <inheritdoc />
     public string Name => Localization.UltraISO_disc_image;
 }
