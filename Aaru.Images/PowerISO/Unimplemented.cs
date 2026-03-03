@@ -36,13 +36,10 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 
-namespace Aaru.Images.PowerISO;
+namespace Aaru.Images;
 
 public sealed partial class PowerISO
 {
-    /// <inheritdoc />
-    public bool Identify(IFilter imageFilter) => throw new NotImplementedException();
-
     /// <inheritdoc />
     public ErrorNumber Open(IFilter imageFilter) => throw new NotImplementedException();
 

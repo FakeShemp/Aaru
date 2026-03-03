@@ -33,7 +33,7 @@
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 
-namespace Aaru.Images.PowerISO;
+namespace Aaru.Images;
 
 public sealed partial class PowerISO : IOpticalMediaImage
 {

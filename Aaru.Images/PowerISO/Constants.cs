@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : PowerISO.cs
+// Filename       : Constants.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Disc image plugins.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Manages PowerISO disc images.
+//     Contains constants for PowerISO disc images.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,39 +30,12 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
-using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
-using Partition = Aaru.CommonTypes.Partition;
-using Track = Aaru.CommonTypes.Structs.Track;
-
 namespace Aaru.Images;
 
-public sealed partial class PowerISO : IOpticalMediaImage
+public sealed partial class PowerISO
 {
-    /// <inheritdoc />
-    public string Author => Authors.NataliaPortillo;
-    /// <inheritdoc />
-    public Metadata AaruMetadata => null;
-    /// <inheritdoc />
-    public List<DumpHardware> DumpHardware => null;
-    /// <inheritdoc />
-    public string Format => "PowerISO";
-    /// <inheritdoc />
-    public Guid Id => new("0767C2CE-8F13-4215-BAF7-BEAF5B587C75");
-    /// <inheritdoc />
-
-    // ReSharper disable once ConvertToAutoProperty
-    public ImageInfo Info => _imageInfo;
-
-    /// <inheritdoc />
-    public string Name => "Imagen de disco de PowerISO";
-    /// <inheritdoc />
-    public List<Partition> Partitions { get; }
-    /// <inheritdoc />
-    public List<Track> Tracks { get; }
-    /// <inheritdoc />
-    public List<Session> Sessions { get; }
+    /// <summary>"DAA" in 16-byte null-padded field</summary>
+    readonly byte[] _daaMainSignature = [0x44, 0x41, 0x41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    /// <summary>"GBI" in 16-byte null-padded field</summary>
+    readonly byte[] _gbiMainSignature = [0x47, 0x42, 0x49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 }
