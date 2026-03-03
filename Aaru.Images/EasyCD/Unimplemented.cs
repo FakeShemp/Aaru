@@ -41,9 +41,6 @@ namespace Aaru.Images;
 public sealed partial class EasyCD
 {
     /// <inheritdoc />
-    public bool Identify(IFilter imageFilter) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber Open(IFilter imageFilter) => throw new NotImplementedException();
 
     /// <inheritdoc />
