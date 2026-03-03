@@ -109,6 +109,7 @@ Media image formats we can read
 * Spectrum floppy disk image (.FDI)
 * SuperCardPro
 * TeleDisk
+* UltraISO (.ISZ)
 * X68k DIM disk image files (.DIM)
 
 Media image formats we can write to
