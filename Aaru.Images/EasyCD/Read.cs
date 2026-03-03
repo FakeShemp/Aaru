@@ -426,4 +426,12 @@ public sealed partial class EasyCD
 
         return ReadSectorsTag(sectorAddress, length, trk.Sequence, tag, out buffer);
     }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer)
+    {
+        buffer = null;
+
+        return ErrorNumber.NotSupported;
+    }
 }

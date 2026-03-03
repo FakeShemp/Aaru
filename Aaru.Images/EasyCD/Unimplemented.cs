@@ -32,16 +32,12 @@
 
 using System;
 using System.Collections.Generic;
-using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Images;
 
 public sealed partial class EasyCD
 {
-    /// <inheritdoc />
-    public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer) => throw new NotImplementedException();
-
     /// <inheritdoc />
     public bool? VerifySector(ulong sectorAddress) => throw new NotImplementedException();
 
