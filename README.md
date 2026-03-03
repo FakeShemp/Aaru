@@ -111,6 +111,7 @@ Media image formats we can read
 * SuperCardPro
 * TeleDisk
 * UltraISO (.ISZ)
+* WinOnCD (.C2D)
 * X68k DIM disk image files (.DIM)
 
 Media image formats we can write to
