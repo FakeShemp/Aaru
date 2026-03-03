@@ -97,6 +97,7 @@ Media image formats we can read
 * Dave Dunfield IMD
 * DiscJuggler images
 * Dreamcast GDI
+* Easy CD Creator images (.CIF)
 * HD-Copy disk images
 * HxCStream
 * MAME Compressed Hunks of Data (CHD)
