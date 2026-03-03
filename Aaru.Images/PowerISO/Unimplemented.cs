@@ -41,9 +41,6 @@ namespace Aaru.Images;
 public sealed partial class PowerISO
 {
     /// <inheritdoc />
-    public ErrorNumber Open(IFilter imageFilter) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer) => throw new NotImplementedException();
 
     /// <inheritdoc />

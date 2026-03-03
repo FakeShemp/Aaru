@@ -30,6 +30,8 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
+using System.IO;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 
@@ -37,8 +39,32 @@ namespace Aaru.Images;
 
 public sealed partial class PowerISO : IOpticalMediaImage
 {
-    const    string    MODULE_NAME = "PowerISO plugin";
-    readonly ImageInfo _imageInfo;
+    const    string                  MODULE_NAME = "PowerISO plugin";
+    int                              _bitsizeLength;
+    int                              _bitsizeType;
+    int                              _bitSwapType;
+    int                              _cachedChunk;
+    Dictionary<int, byte[]>          _chunkCache;
+    int                              _chunkDataOffset;
+    uint                             _chunkSize;
+    DaaChunk[]                       _chunkTable;
+    int                              _chunkTableOffset;
+    bool                             _compressedChunkTable;
+    uint                             _currentChunkCacheSize;
+    bool                             _encrypted;
+    DaaMainHeader                    _header;
+    IFilter                          _imageFilter;
+    ImageInfo                        _imageInfo;
+    DaaImageType                     _imageType;
+    byte[]                           _inflateBuffer;
+    byte[]                           _ioBuffer;
+    int                              _numChunks;
+    int                              _numParts;
+    bool                             _obfuscatedBits;
+    bool                             _obfuscatedChunkTable;
+    DaaPart[]                        _partTable;
+    Dictionary<ulong, byte[]>        _sectorCache;
+    List<Stream>                     _partStreams;
 
     public PowerISO() => _imageInfo = new ImageInfo
     {

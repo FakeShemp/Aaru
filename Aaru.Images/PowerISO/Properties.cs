@@ -60,9 +60,9 @@ public sealed partial class PowerISO : IOpticalMediaImage
     /// <inheritdoc />
     public string Name => "Imagen de disco de PowerISO";
     /// <inheritdoc />
-    public List<Partition> Partitions { get; }
+    public List<Partition> Partitions { get; set; }
     /// <inheritdoc />
-    public List<Track> Tracks { get; }
+    public List<Track> Tracks { get; set; }
     /// <inheritdoc />
-    public List<Session> Sessions { get; }
+    public List<Session> Sessions { get; set; }
 }

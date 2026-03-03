@@ -34,8 +34,19 @@ namespace Aaru.Images;
 
 public sealed partial class PowerISO
 {
+    const uint MAX_CACHE_SIZE     = 16777216;
+    const uint SECTOR_SIZE        = 2048;
+    const uint MAX_CACHED_SECTORS = MAX_CACHE_SIZE / SECTOR_SIZE;
+    const int  LZMA_PROPS_SIZE    = 5;
+
     /// <summary>"DAA" in 16-byte null-padded field</summary>
     readonly byte[] _daaMainSignature = [0x44, 0x41, 0x41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    /// <summary>"DAA VOL" in 16-byte null-padded field</summary>
+    readonly byte[] _daaPartSignature =
+        [0x44, 0x41, 0x41, 0x20, 0x56, 0x4F, 0x4C, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     /// <summary>"GBI" in 16-byte null-padded field</summary>
     readonly byte[] _gbiMainSignature = [0x47, 0x42, 0x49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    /// <summary>"GBI VOL" in 16-byte null-padded field</summary>
+    readonly byte[] _gbiPartSignature =
+        [0x47, 0x42, 0x49, 0x20, 0x56, 0x4F, 0x4C, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 }
