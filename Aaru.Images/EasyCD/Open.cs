@@ -162,9 +162,9 @@ public sealed partial class EasyCD
                 return ErrorNumber.InvalidArgument;
             }
 
-            // Adjust length and offset as per libmirage
-            entry.length = entry.length - 4; // Length includes the type field size
-            entry.offset = entry.offset + 4; // Offset points to type field, need to skip it
+            // Adjust length and offset
+            entry.length -= 4;  // Length includes the type field size
+            entry.offset += 12; // Offset points to RIFF block start, skip full 12-byte header
 
             AaruLogging.Debug(MODULE_NAME,
                               "Offset entry #{0}: type '{1}', offset {2} (0x{2:X}), length {3} (0x{3:X})",
@@ -348,9 +348,11 @@ public sealed partial class EasyCD
                    previousTrackType != CifTrackType.Audio && trackDesc.trackType == CifTrackType.Audio)
                     pregap = PREGAP_LENGTH;
 
+                int userDataSize = aTrackType == TrackType.CdMode2Form1 ? MODE1_SECTOR_SIZE : sectorSize;
+
                 var track = new Track
                 {
-                    BytesPerSector    = sectorSize,
+                    BytesPerSector    = userDataSize,
                     RawBytesPerSector = sectorSize,
                     Sequence          = trackSequence,
                     Session           = sessionSequence,
@@ -409,11 +411,11 @@ public sealed partial class EasyCD
                 // Build partition
                 var partition = new Partition
                 {
-                    Sequence    = trackSequence      - 1,
-                    Start       = currentSector      + pregap,
-                    Length      = trackLength        - pregap,
-                    Offset      = offsetEntry.offset + pregap * (ulong)sectorSize,
-                    Size        = (trackLength - pregap) * (ulong)sectorSize,
+                    Sequence    = trackSequence - 1,
+                    Start       = currentSector,
+                    Length      = trackLength,
+                    Offset      = offsetEntry.offset,
+                    Size        = trackLength * (ulong)sectorSize,
                     Description = string.Format(Localization.Track_0, trackSequence),
                     Type        = aTrackType.Humanize()
                 };
