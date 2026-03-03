@@ -989,5 +989,11 @@ public sealed partial class PowerISO
         return ErrorNumber.NotSupported;
     }
 
+    /// <inheritdoc />
+    public List<Track> GetSessionTracks(Session session) => session.Sequence == 1 ? Tracks : null;
+
+    /// <inheritdoc />
+    public List<Track> GetSessionTracks(ushort session) => session == 1 ? Tracks : null;
+
 #endregion
 }
