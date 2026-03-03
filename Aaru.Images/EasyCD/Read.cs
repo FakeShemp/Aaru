@@ -138,4 +138,138 @@ public sealed partial class EasyCD
 
         return ReadSectors(sectorAddress, length, trk.Sequence, out buffer, out sectorStatus);
     }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
+
+        Track trk = Tracks.FirstOrDefault(t => t.Sequence == track);
+
+        if(trk is null) return ErrorNumber.SectorNotFound;
+
+        if(sectorAddress < trk.StartSector || sectorAddress > trk.EndSector) return ErrorNumber.OutOfRange;
+
+        ulong offsetInTrack = sectorAddress - trk.StartSector;
+        var   fileOffset    = (long)(trk.FileOffset + offsetInTrack * (ulong)trk.RawBytesPerSector);
+
+        switch(trk.Type)
+        {
+            case TrackType.Audio:
+            {
+                buffer = new byte[2352];
+                _imageStream.Seek(fileOffset, SeekOrigin.Begin);
+                _imageStream.EnsureRead(buffer, 0, 2352);
+
+                break;
+            }
+            case TrackType.CdMode1:
+            {
+                var userData = new byte[trk.RawBytesPerSector];
+                _imageStream.Seek(fileOffset, SeekOrigin.Begin);
+                _imageStream.EnsureRead(userData, 0, trk.RawBytesPerSector);
+
+                buffer = new byte[2352];
+                Array.Copy(userData, 0, buffer, 16, trk.RawBytesPerSector);
+                _sectorBuilder.ReconstructPrefix(ref buffer, TrackType.CdMode1, (long)sectorAddress);
+                _sectorBuilder.ReconstructEcc(ref buffer, TrackType.CdMode1);
+
+                break;
+            }
+            case TrackType.CdMode2Form1:
+            {
+                var rawData = new byte[trk.RawBytesPerSector];
+                _imageStream.Seek(fileOffset, SeekOrigin.Begin);
+                _imageStream.EnsureRead(rawData, 0, trk.RawBytesPerSector);
+
+                buffer = new byte[2352];
+                Array.Copy(rawData, 0, buffer, 16, trk.RawBytesPerSector);
+                _sectorBuilder.ReconstructPrefix(ref buffer, TrackType.CdMode2Form1, (long)sectorAddress);
+                _sectorBuilder.ReconstructEcc(ref buffer, TrackType.CdMode2Form1);
+
+                break;
+            }
+            case TrackType.CdMode2Formless:
+            {
+                buffer = new byte[2352];
+                _sectorBuilder.ReconstructPrefix(ref buffer, TrackType.CdMode2Formless, (long)sectorAddress);
+
+                _imageStream.Seek(fileOffset, SeekOrigin.Begin);
+                _imageStream.EnsureRead(buffer, 16, trk.RawBytesPerSector);
+
+                break;
+            }
+            default:
+                return ErrorNumber.NotSupported;
+        }
+
+        sectorStatus = SectorStatus.Dumped;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
+    {
+        buffer       = null;
+        sectorStatus = null;
+
+        Track trk = Tracks.FirstOrDefault(t => t.Sequence == track);
+
+        if(trk is null) return ErrorNumber.SectorNotFound;
+
+        if(sectorAddress + length - 1 > trk.EndSector) return ErrorNumber.OutOfRange;
+
+        using var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
+
+        for(uint i = 0; i < length; i++)
+        {
+            ErrorNumber errno =
+                ReadSectorLong(sectorAddress + i, track, out byte[] sectorData, out SectorStatus status);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            ms.Write(sectorData, 0, sectorData.Length);
+            sectorStatus[i] = status;
+        }
+
+        buffer = ms.ToArray();
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorLong(ulong            sectorAddress, bool negative, out byte[] buffer,
+                                      out SectorStatus sectorStatus)
+    {
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
+
+        if(negative) return ErrorNumber.NotSupported;
+
+        Track trk = Tracks.FirstOrDefault(t => sectorAddress >= t.StartSector && sectorAddress <= t.EndSector);
+
+        if(trk is null) return ErrorNumber.SectorNotFound;
+
+        return ReadSectorLong(sectorAddress, trk.Sequence, out buffer, out sectorStatus);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
+    {
+        buffer       = null;
+        sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
+
+        Track trk = Tracks.FirstOrDefault(t => sectorAddress >= t.StartSector && sectorAddress <= t.EndSector);
+
+        if(trk is null) return ErrorNumber.SectorNotFound;
+
+        return ReadSectorsLong(sectorAddress, length, trk.Sequence, out buffer, out sectorStatus);
+    }
 }
