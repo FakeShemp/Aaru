@@ -101,8 +101,8 @@ public static class PFI
         pfi.MaximumRate   =  (MaximumRateField)(response[5] & 0x0F);
         pfi.Reserved3     |= (response[6]                   & 0x80) == 0x80;
         pfi.Layers        =  (byte)((response[6] & 0x60) >> 5);
-        pfi.TrackPath     |= (response[6]                     & 0x08) == 0x08;
-        pfi.LayerType     =  (LayerTypeFieldMask)(response[6] & 0x07);
+        pfi.TrackPath     |= (response[6]                     & 0x10) == 0x10;
+        pfi.LayerType     =  (LayerTypeFieldMask)(response[6] & 0x0F);
         pfi.LinearDensity =  (LinearDensityField)((response[7] & 0xF0) >> 4);
         pfi.TrackDensity  =  (TrackDensityField)(response[7] & 0x0F);
 
