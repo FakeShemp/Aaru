@@ -119,7 +119,7 @@ public partial class Device
             }
             else
             {
-                if(!IsCorrectSlPsn(sectorNumber, (ulong)(firstLba + i))) return false;
+                if(!IsCorrectDlPtpPsn(sectorNumber, (ulong)(firstLba + i), layer, layerbreak)) return false;
             }
         }
 
@@ -144,9 +144,9 @@ public partial class Device
     /// <returns><c>false</c> if the sector is not matching expected value, else <c>true</c></returns>
     static bool IsCorrectDlPtpPsn(uint sectorNumber, ulong lba, byte layer, uint layerbreak)
     {
-        if(layer != 1) return IsCorrectSlPsn(sectorNumber, lba);
+        if(layer == 0) return IsCorrectSlPsn(sectorNumber, lba);
 
-        return sectorNumber == lba - layerbreak + 0x30000;
+        return sectorNumber == lba + 0x30000 - (layerbreak + 1 - 0x30000);
     }
 
     /// <summary>
@@ -258,10 +258,10 @@ public partial class Device
             if(!sense && buffer != null && buffer.Length >= 2236 * 3)
             {
                 // Validate that the data starts with the expected DVD sector header pattern
-                if(buffer.Length >= 3 &&
-                   buffer[0] == 0x00 &&
+                if(buffer.Length >= 4 &&
                    buffer[1] == 0x03 &&
-                   buffer[2] == 0x00)
+                   buffer[2] == 0x00 &&
+                   buffer[3] == 0x00)
                 {
                     AaruLogging.Debug(SCSI_MODULE_NAME, "ReadBuffer 3C variant {0:x2}{1:x2} detected", variant.mode,
                                       variant.bufferId);
@@ -308,12 +308,12 @@ public partial class Device
             return 0; // Detection failed
         }
 
-        // Search for pattern 00 03 00 starting from beginning
+        // Search for pattern 03 00 00 starting from beginning + 1 byte
         // Find first occurrence
         int firstOffset = -1;
         for(int i = 0; i < buffer.Length - 3; i++)
         {
-            if(buffer[i] == 0x00 && buffer[i + 1] == 0x03 && buffer[i + 2] == 0x00)
+            if(buffer[i + 1] == 0x03 && buffer[i + 2] == 0x00 && buffer[i + 3] == 0x00)
             {
                 firstOffset = i;
                 break;
@@ -332,7 +332,7 @@ public partial class Device
         int secondOffset = -1;
         for(int i = firstOffset + 2064; i < Math.Min(firstOffset + 2500, buffer.Length - 3); i++)
         {
-            if(buffer[i] == 0x00 && buffer[i + 1] == 0x03 && buffer[i + 2] == 0x00)
+            if(buffer[i + 1] == 0x03 && buffer[i + 2] == 0x00 && buffer[i + 3] == 0x01)
             {
                 secondOffset = i;
                 break;
@@ -355,9 +355,9 @@ public partial class Device
             int expectedOffset = (int)(firstOffset + stride * sectorNum);
             if(expectedOffset + 3 >= buffer.Length) break;
 
-            if(buffer[expectedOffset] != 0x00 ||
-               buffer[expectedOffset + 1] != 0x03 ||
-               buffer[expectedOffset + 2] != 0x00)
+            if(buffer[expectedOffset + 1] != 0x03 ||
+               buffer[expectedOffset + 2] != 0x00 ||
+               (buffer[expectedOffset + 3] != 0x02 && buffer[expectedOffset + 3] != 0x03))
             {
                 return 0; // Verification failed
             }
@@ -571,7 +571,7 @@ public partial class Device
 
         byte[] deinterleaved = DeinterleaveEccBlock(buffer, transferLength, _detectedBufferStride, _bufferFormat);
 
-        if(!CheckSectorNumber(deinterleaved, lba, transferLength, layerbreak, true))
+        if(!CheckSectorNumber(deinterleaved, lba, transferLength, layerbreak, otp))
         {
             // Buffer offset lost - this means we've wrapped around
             // Use the number of sectors read to detect buffer capacity
