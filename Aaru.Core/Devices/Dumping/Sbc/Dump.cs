@@ -322,8 +322,8 @@ partial class Dump
                 PFI.PhysicalFormatInformation? decodedPfi = PFI.Decode(pfi, dskType);
 
                 scsiReader.layerbreak = decodedPfi?.Layer0EndPSN ?? 0;
+                if(scsiReader.layerbreak == 0) scsiReader.layerbreak = decodedPfi?.DataAreaEndPSN ?? 0;
                 scsiReader.otp        = decodedPfi?.TrackPath ?? false;
-                if(!scsiReader.otp) scsiReader.layerbreak = decodedPfi?.DataAreaEndPSN ?? 0;
 
                 if(scsiReader.HldtstReadRaw) blocksToRead = 1;
                 if(scsiReader.OmniDriveReadRaw) blocksToRead = 31;
