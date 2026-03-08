@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Super.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : AO-DOS file system plugin.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Identifies the AO-DOS file system and shows information.
+//     Filesystem information for the AO-DOS file system plugin.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,21 +30,33 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class AODOS
 {
     /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+    public ErrorNumber StatFs(out FileSystemInfo stat)
+    {
+        stat = null;
 
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
-        throw new NotImplementedException();
+        AaruLogging.Debug(MODULE_NAME, "StatFs: returning filesystem statistics");
+
+        stat = new FileSystemInfo
+        {
+            Blocks         = _imagePlugin.Info.Sectors,
+            FreeBlocks     = _imagePlugin.Info.Sectors - _bootBlock.usedSectors,
+            Files          = _bootBlock.files,
+            FilenameLength = 14,
+            Type           = FS_TYPE,
+            PluginId       = Id
+        };
+
+        return ErrorNumber.NoError;
+    }
 }
