@@ -64,4 +64,28 @@ public sealed partial class AODOS
     }
 
 #endregion
+
+#region Nested type: DirectoryEntry
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct DirectoryEntry
+    {
+        /// <summary>If more than 0, entry is a directory and this is its number</summary>
+        public readonly byte directoryNumber;
+        /// <summary>Directory number file belongs to (0 - root)</summary>
+        public readonly byte directory;
+        /// <summary>File name 14. symbols in ASCII KOI8</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 14)]
+        public readonly byte[] filename;
+        /// <summary>Block number</summary>
+        public readonly ushort blockNumber;
+        /// <summary>Length in blocks</summary>
+        public readonly ushort blocks;
+        /// <summary>Address</summary>
+        public readonly ushort address;
+        /// <summary>Length</summary>
+        public readonly ushort length;
+    }
+
+#endregion
 }
