@@ -48,4 +48,20 @@ public sealed partial class AODOS
         /// <inheritdoc />
         public string Path { get; init; }
     }
+
+    /// <summary>File node for reading file contents with streaming support</summary>
+    sealed class AoDosFileNode : IFileNode
+    {
+        /// <summary>The file's directory entry</summary>
+        internal DirectoryEntry Entry { get; init; }
+
+        /// <inheritdoc />
+        public long Offset { get; set; }
+
+        /// <inheritdoc />
+        public long Length { get; init; }
+
+        /// <inheritdoc />
+        public string Path { get; init; }
+    }
 }
