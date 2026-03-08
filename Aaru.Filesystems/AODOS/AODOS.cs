@@ -32,8 +32,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -42,6 +44,26 @@ namespace Aaru.Filesystems;
 /// <summary>Implements the AO-DOS filesystem</summary>
 public sealed partial class AODOS : IReadOnlyFilesystem
 {
+    const string MODULE_NAME = "AO-DOS plugin";
+
+    /// <summary>Cached root directory entries (filename -> DirectoryEntry)</summary>
+    readonly Dictionary<string, DirectoryEntry> _rootDirectoryCache = new();
+
+    /// <summary>Cached boot block</summary>
+    BootBlock _bootBlock;
+
+    /// <summary>Encoding used for filenames (KOI8-R)</summary>
+    Encoding _encoding;
+
+    /// <summary>Image plugin being accessed</summary>
+    IMediaImage _imagePlugin;
+
+    /// <summary>Whether filesystem is mounted</summary>
+    bool _mounted;
+
+    /// <summary>Partition being mounted</summary>
+    Partition _partition;
+
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
     /// <inheritdoc />

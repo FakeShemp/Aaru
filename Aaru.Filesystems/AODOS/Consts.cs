@@ -34,6 +34,20 @@ namespace Aaru.Filesystems;
 
 public sealed partial class AODOS
 {
-    const    string FS_TYPE     = "aodos";
+    const string FS_TYPE     = "aodos";
+    const int    SECTOR_SIZE = 512;
+
+    /// <summary>Size of a directory entry in bytes</summary>
+    const int DIR_ENTRY_SIZE = 24;
+
+    /// <summary>Offset of first directory entry in the boot block sector</summary>
+    const int DIR_START_OFFSET = 320;
+
+    /// <summary>Maximum number of directory entries in the boot block sector</summary>
+    const int ENTRIES_IN_BLOCK_0 = (SECTOR_SIZE - DIR_START_OFFSET) / DIR_ENTRY_SIZE;
+
+    /// <summary>Maximum number of directory entries per subsequent sector</summary>
+    const int ENTRIES_PER_SECTOR = SECTOR_SIZE / DIR_ENTRY_SIZE;
+
     readonly byte[] _identifier = " AO-DOS "u8.ToArray();
 }
