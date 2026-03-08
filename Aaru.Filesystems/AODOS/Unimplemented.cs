@@ -42,8 +42,6 @@ public sealed partial class AODOS
     /// <inheritdoc />
     public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
