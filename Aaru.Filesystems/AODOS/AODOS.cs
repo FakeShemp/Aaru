@@ -46,8 +46,8 @@ public sealed partial class AODOS : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "AO-DOS plugin";
 
-    /// <summary>Cached root directory entries (filename -> DirectoryEntry)</summary>
-    readonly Dictionary<string, DirectoryEntry> _rootDirectoryCache = new();
+    /// <summary>Cached directory entries (all entries from the directory area)</summary>
+    readonly List<DirectoryEntry> _directoryCache = [];
 
     /// <summary>Cached boot block</summary>
     BootBlock _bootBlock;
