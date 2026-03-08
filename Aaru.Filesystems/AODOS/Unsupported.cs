@@ -1,8 +1,8 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : AODOS.cs
+// Filename       : Unimplemented.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : AO-DOS file system plugin.
@@ -30,35 +30,29 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Enums;
 
 namespace Aaru.Filesystems;
 
-// Information has been extracted looking at available disk images
-/// <inheritdoc />
-/// <summary>Implements the AO-DOS filesystem</summary>
-public sealed partial class AODOS : IReadOnlyFilesystem
+public sealed partial class AODOS
 {
     /// <inheritdoc />
-    public FileSystem Metadata { get; private set; }
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
-    /// <inheritdoc />
-    public Dictionary<string, string> Namespaces => [];
+    public ErrorNumber ListXAttr(string path, out List<string> xattrs)
+    {
+        xattrs = [];
 
-#region IFilesystem Members
-
-    /// <inheritdoc />
-    public string Name => Localization.AODOS_Name;
+        return ErrorNumber.NotSupported;
+    }
 
     /// <inheritdoc />
-    public Guid Id => new("668E5039-9DDD-442A-BE1B-A315D6E38E26");
+    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => ErrorNumber.NotSupported;
 
     /// <inheritdoc />
-    public string Author => Authors.NataliaPortillo;
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
 
-#endregion
+        return ErrorNumber.NotSupported;
+    }
 }

@@ -5,7 +5,7 @@
 // Filename       : Info.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
-// Component      : Commodore file system plugin.
+// Component      : AO-DOS file system plugin.
 //
 // --[ Description ] ----------------------------------------------------------
 //
@@ -40,10 +40,6 @@ using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
-// Information has been extracted looking at available disk images
-// This may be missing fields, or not, I don't know russian so any help is appreciated
-/// <inheritdoc />
-/// <summary>Implements detection of the AO-DOS filesystem</summary>
 public sealed partial class AODOS
 {
 #region IFilesystem Members
