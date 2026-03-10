@@ -143,6 +143,8 @@ public sealed partial class UFSPlugin
     /// <summary>max number inodes/cyl group</summary>
     const int MAXIPG = 2048;
 
+    /// <summary>external addresses in inode</summary>
+    const int NXADDR = 2;
     /// <summary>direct addresses in inode</summary>
     const int NDADDR = 12;
     /// <summary>indirect addresses in inode</summary>

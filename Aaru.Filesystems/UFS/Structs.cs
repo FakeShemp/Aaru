@@ -35,7 +35,7 @@ namespace Aaru.Filesystems;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public sealed partial class UFSPlugin
 {
-#region Nested type: Checksum
+#region Nested type: CylinderSummary
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
@@ -2043,6 +2043,69 @@ public sealed partial class UFSPlugin
         /// <summary>0x78: Reserved; currently unused</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
         public int[] di_spare;
+    }
+
+    /// <summary>UFS2 inode structure</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct Inode2
+    {
+        /// <summary>0x00: IFMT, permissions</summary>
+        public ushort di_mode;
+        /// <summary>0x02: File link count</summary>
+        public ushort di_nlink;
+        /// <summary>0x04: File owner</summary>
+        public uint di_uid;
+        /// <summary>0x08: File group</summary>
+        public uint di_gid;
+        /// <summary>0x0C: Inode blocksize</summary>
+        public uint di_blksize;
+        /// <summary>0x10: File byte count</summary>
+        public ulong di_size;
+        /// <summary>0x18: Blocks actually held</summary>
+        public ulong di_blocks;
+        /// <summary>0x20: Last access time</summary>
+        public long di_atime;
+        /// <summary>0x28: Last modified time</summary>
+        public long di_mtime;
+        /// <summary>0x30: Last inode change time</summary>
+        public long di_ctime;
+        /// <summary>0x38: Inode creation time</summary>
+        public long di_birthtime;
+        /// <summary>0x40: Last modified time (nanoseconds)</summary>
+        public int di_mtimensec;
+        /// <summary>0x44: Last access time (nanoseconds)</summary>
+        public int di_atimensec;
+        /// <summary>0x48: Last inode change time (nanoseconds)</summary>
+        public int di_ctimensec;
+        /// <summary>0x4C: Inode creation time (nanoseconds)</summary>
+        public int di_birthnsec;
+        /// <summary>0x50: Generation number</summary>
+        public uint di_gen;
+        /// <summary>0x54: Kernel flags</summary>
+        public uint di_kernflags;
+        /// <summary>0x58: Status flags (chflags)</summary>
+        public uint di_flags;
+        /// <summary>0x5C: External attributes size</summary>
+        public uint di_extsize;
+        /// <summary>0x60: External attributes block</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NXADDR)]
+        public long[] di_extb;
+        /// <summary>0x70: Direct disk blocks</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NDADDR)]
+        public long[] di_db;
+        /// <summary>0xD0: Indirect disk blocks</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NIADDR)]
+        public long[] di_ib;
+        /// <summary>0xE8: i_modrev for NFSv4</summary>
+        public ulong di_modrev;
+        /// <summary>0xF0: SUJ: Next unlinked inode / IFDIR: depth from root</summary>
+        public uint di_freelink;
+        /// <summary>0xF4: if CK_INODE, its check-hash</summary>
+        public uint di_ckhash;
+        /// <summary>0xF8: Reserved; currently unused</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public uint[] di_spare;
     }
 
     /// <summary>SunOS/Solaris inode structure</summary>
