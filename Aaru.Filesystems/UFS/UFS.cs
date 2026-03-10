@@ -27,16 +27,18 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
-// Using information from Linux kernel headers
+// Using information from Linux kernel headers, several UNIX and BSD headers, and FreeBSD
 /// <inheritdoc />
-/// <summary>Implements detection of BSD Fast File System (FFS, aka UNIX File System)</summary>
+/// <summary>Implements the BSD Fast File System (FFS, aka UNIX File System)</summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public sealed partial class UFSPlugin : IFilesystem
+public sealed partial class UFSPlugin : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "UFS plugin";
 
@@ -52,4 +54,11 @@ public sealed partial class UFSPlugin : IFilesystem
     public string Author => Authors.NataliaPortillo;
 
 #endregion
+
+    /// <inheritdoc />
+    public FileSystem Metadata { get; private set; }
+    /// <inheritdoc />
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+    /// <inheritdoc />
+    public Dictionary<string, string> Namespaces => [];
 }

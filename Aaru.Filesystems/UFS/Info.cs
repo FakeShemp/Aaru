@@ -40,9 +40,6 @@ using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
-// Using information from Linux kernel headers
-/// <inheritdoc />
-/// <summary>Implements detection of BSD Fast File System (FFS, aka UNIX File System)</summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public sealed partial class UFSPlugin
 {
