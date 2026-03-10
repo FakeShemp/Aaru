@@ -29,8 +29,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -41,6 +43,13 @@ namespace Aaru.Filesystems;
 public sealed partial class UFSPlugin : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "UFS plugin";
+
+    bool          _bigEndian;
+    Encoding      _encoding;
+    IMediaImage   _imagePlugin;
+    bool          _mounted;
+    Partition     _partition;
+    UfsSuperBlock _superBlock;
 
 #region IFilesystem Members
 
