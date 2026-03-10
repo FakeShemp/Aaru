@@ -128,6 +128,9 @@ public sealed partial class UFSPlugin
         /// <summary>inodes per group</summary>
         public int fs_ipg;
 
+        /// <summary>true if this is a Solaris/SunOS UFS filesystem (uses InodeSun layout)</summary>
+        public bool fs_isSolaris;
+
         // UFS2 specific
         /// <summary>true if this is a UFS2 filesystem</summary>
         public bool fs_isUfs2;

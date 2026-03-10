@@ -138,6 +138,25 @@ public sealed partial class UFSPlugin
 
         bool isUfs2 = sb.fs_magic == UFS2_MAGIC;
 
+        // Detect Solaris variant
+        bool isSolaris = magic is MTB_UFS_MAGIC or MTB_UFS_CIGAM;
+
+        if(!isUfs2 && !isSolaris)
+        {
+            SuperblockSun sbSun = _bigEndian
+                                      ? Marshal.ByteArrayToStructureBigEndian<SuperblockSun>(ufsSbSectors)
+                                      : Marshal.ByteArrayToStructureLittleEndian<SuperblockSun>(ufsSbSectors);
+
+            unchecked
+            {
+                if(((uint)(sbSun.fs_state + sbSun.fs_time)  == FSOKAY ||
+                    (uint)(sbSun.fs_time  - sbSun.fs_state) == FSOKAY) &&
+                   (sbSun.fs_version > 0 || sbSun.fs_logbno != 0 || sbSun.fs_rolled is > 0 and <= 2))
+                    isSolaris                                             = true;
+                else if(sbSun.fs_clean is 0xFC or 0xFD or 0xFE) isSolaris = true;
+            }
+        }
+
         // Also read variant-specific superblocks for inodefmt/maxsymlinklen detection
         SuperBlock44BSD sb44bsd = _bigEndian
                                       ? Marshal.ByteArrayToStructureBigEndian<SuperBlock44BSD>(ufsSbSectors)
@@ -201,6 +220,7 @@ public sealed partial class UFSPlugin
             fs_flags         = sb.fs_flags,
             fs_fsmnt         = StringHandlers.CToString(sb.fs_fsmnt, _encoding),
             fs_isUfs2        = isUfs2,
+            fs_isSolaris     = isSolaris,
             fs_inodefmt      = inodefmt,
             fs_maxsymlinklen = maxsymlinklen,
             fs_old_spc       = sb.fs_old_spc,
@@ -263,6 +283,23 @@ public sealed partial class UFSPlugin
 
         if(rootErr != ErrorNumber.NoError) return rootErr;
 
+        // Detect FreeBSD UFS1 extended attributes (/.attribute/ directory)
+        _hasFreeBsdExtattr = false;
+        _extAttrDirInode   = 0;
+
+        if(!_superBlock.fs_isUfs2 && !_superBlock.fs_isSolaris)
+        {
+            foreach(DirectoryEntryInfo entry in _rootEntries)
+            {
+                if(entry.Name != ".attribute") continue;
+
+                _extAttrDirInode   = entry.Inode;
+                _hasFreeBsdExtattr = true;
+
+                break;
+            }
+        }
+
         _mounted = true;
 
         return ErrorNumber.NoError;
@@ -271,10 +308,12 @@ public sealed partial class UFSPlugin
     /// <inheritdoc />
     public ErrorNumber Unmount()
     {
-        _mounted     = false;
-        _imagePlugin = null;
-        _superBlock  = null;
-        _rootEntries = null;
+        _mounted           = false;
+        _imagePlugin       = null;
+        _superBlock        = null;
+        _rootEntries       = null;
+        _hasFreeBsdExtattr = false;
+        _extAttrDirInode   = 0;
 
         return ErrorNumber.NoError;
     }

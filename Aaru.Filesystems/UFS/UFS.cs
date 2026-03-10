@@ -46,6 +46,8 @@ public sealed partial class UFSPlugin : IReadOnlyFilesystem
 
     bool                     _bigEndian;
     Encoding                 _encoding;
+    uint                     _extAttrDirInode;
+    bool                     _hasFreeBsdExtattr;
     IMediaImage              _imagePlugin;
     bool                     _mounted;
     Partition                _partition;

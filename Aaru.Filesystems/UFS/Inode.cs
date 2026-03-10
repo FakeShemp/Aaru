@@ -123,6 +123,36 @@ public sealed partial class UFSPlugin
         return ErrorNumber.NoError;
     }
 
+    /// <summary>Reads a SunOS/Solaris inode from disk given its inode number</summary>
+    ErrorNumber ReadInodeSun(uint inodeNumber, out InodeSun inode)
+    {
+        inode = default(InodeSun);
+
+        var cg = (int)(inodeNumber / (uint)_superBlock.fs_ipg);
+
+        long fragAddr = CgImin(cg) +
+                        (inodeNumber % (uint)_superBlock.fs_ipg / _superBlock.fs_inopb << _superBlock.fs_fragshift);
+
+        ErrorNumber errno = ReadFragments(fragAddr, _superBlock.fs_frag, out byte[] data);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Solaris inode is 128 bytes (same size as UFS1)
+        var inodeSize = 128;
+        int offset    = (int)(inodeNumber % _superBlock.fs_inopb) * inodeSize;
+
+        if(offset + inodeSize > data.Length) return ErrorNumber.InvalidArgument;
+
+        var inodeData = new byte[inodeSize];
+        Array.Copy(data, offset, inodeData, 0, inodeSize);
+
+        inode = _bigEndian
+                    ? Marshal.ByteArrayToStructureBigEndian<InodeSun>(inodeData)
+                    : Marshal.ByteArrayToStructureLittleEndian<InodeSun>(inodeData);
+
+        return ErrorNumber.NoError;
+    }
+
     /// <summary>Reads a UFS2 inode from disk given its inode number</summary>
     ErrorNumber ReadInode2(uint inodeNumber, out Inode2 inode)
     {
@@ -216,8 +246,9 @@ public sealed partial class UFSPlugin
             if(errno != ErrorNumber.NoError) return errno;
         }
         else
-            while(blockList.Count < totalBlocks)
-                blockList.Add(0);
+        {
+            while(blockList.Count < totalBlocks) blockList.Add(0);
+        }
 
         return ErrorNumber.NoError;
     }
