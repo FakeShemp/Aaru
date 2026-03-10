@@ -239,6 +239,25 @@ public sealed partial class UFSPlugin
             _superBlock.fs_sblockloc      = 0;
         }
 
+        // Validate by reading the root inode
+        if(_superBlock.fs_isUfs2)
+        {
+            ErrorNumber errno = ReadInode2(UFS_ROOTINO, out Inode2 rootInode);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if((rootInode.di_mode & 0xF000) != 0x4000) // Not a directory
+                return ErrorNumber.InvalidArgument;
+        }
+        else
+        {
+            ErrorNumber errno = ReadInode(UFS_ROOTINO, out Inode rootInode);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if((rootInode.di_mode & 0xF000) != 0x4000) return ErrorNumber.InvalidArgument;
+        }
+
         _mounted = true;
 
         return ErrorNumber.NoError;

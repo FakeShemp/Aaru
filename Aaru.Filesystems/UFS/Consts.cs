@@ -152,6 +152,9 @@ public sealed partial class UFSPlugin
 
     const int MAXNAMLEN = 255;
 
+    /// <summary>Root inode number</summary>
+    const uint UFS_ROOTINO = 2;
+
     /*
      * File types
      */
