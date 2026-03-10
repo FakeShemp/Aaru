@@ -128,6 +128,12 @@ public sealed partial class UFSPlugin
     const int  FS_ALL_ROLLED   = 1;
     const int  FS_NEED_ROLL    = 2;
 
+    const int NRPOS           = 8;
+    const int MAXCPG          = 32;
+    const int MAXCSBUFS       = 32;
+    const int MAXMNTLEN       = 512;
+    const int MAXMNTLEN_SHORT = 512 - 12;
+
     const string FS_TYPE_UFS  = "ufs";
     const string FS_TYPE_UFS2 = "ufs2";
 }

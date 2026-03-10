@@ -303,4 +303,150 @@ public sealed partial class UFSPlugin
     }
 
 #endregion
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct HeadBlock
+    {
+        /// <summary>0 head of blocks for each rotation</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXCPG)]
+        public short[] fs_postbl;
+    }
+
+    /// <summary>
+    ///     A/UX superblock
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct SuperBlockAux
+    {
+        /// <summary>0x000 linked list of file systems</summary>
+        public int fs_link;
+        /// <summary>0x004 used for incore super blocks</summary>
+        public int fs_rlink;
+        /// <summary>0x008 addr of super-block in filesys</summary>
+        public int fs_sblkno;
+        /// <summary>0x00C offset of cyl-block in filesys</summary>
+        public int fs_cblkno;
+        /// <summary>0x010 offset of inode-blocks in filesys</summary>
+        public int fs_iblkno;
+        /// <summary>0x014 offset of first data after cg</summary>
+        public int fs_dblkno;
+        /// <summary>0x018 cylinder group offset in cylinder</summary>
+        public int fs_cgoffset;
+        /// <summary>0x01C used to calc mod fs_ntrak</summary>
+        public int fs_cgmask;
+        /// <summary>0x020 last time written</summary>
+        public int fs_time;
+        /// <summary>0x024 number of blocks in fs</summary>
+        public int fs_size;
+        /// <summary>0x028 number of data blocks in fs</summary>
+        public int fs_dsize;
+        /// <summary>0x02C number of cylinder groups</summary>
+        public int fs_ncg;
+        /// <summary>0x030 size of basic blocks in fs</summary>
+        public int fs_bsize;
+        /// <summary>0x034 size of frag blocks in fs</summary>
+        public int fs_fsize;
+        /// <summary>0x038 number of frags in a block in fs</summary>
+        public int fs_frag;
+        /// <summary>0x03C minimum percentage of free blocks</summary>
+        public int fs_minfree;
+        /// <summary>0x040 num of ms for optimal next block</summary>
+        public int fs_rotdelay;
+        /// <summary>0x044 disk revolutions per second</summary>
+        public int fs_rps;
+        /// <summary>0x048 ``blkoff'' calc of blk offsets</summary>
+        public int fs_bmask;
+        /// <summary>0x04C ``fragoff'' calc of frag offsets</summary>
+        public int fs_fmask;
+        /// <summary>0x050 ``lblkno'' calc of logical blkno</summary>
+        public int fs_bshift;
+        /// <summary>0x054 ``numfrags'' calc number of frags</summary>
+        public int fs_fshift;
+        /// <summary>0x058 max number of contiguous blks</summary>
+        public int fs_maxcontig;
+        /// <summary>0x05C max number of blks per cyl group</summary>
+        public int fs_maxbpg;
+        /// <summary>0x060 block to frag shift</summary>
+        public int fs_fragshift;
+        /// <summary>0x064 fsbtodb and dbtofsb shift constant</summary>
+        public int fs_fsbtodb;
+        /// <summary>0x068 actual size of super block</summary>
+        public int fs_sbsize;
+        /// <summary>0x06C csum block offset</summary>
+        public int fs_csmask;
+        /// <summary>0x070 csum block number</summary>
+        public int fs_csshift;
+        /// <summary>0x074 value of NINDIR</summary>
+        public int fs_nindir;
+        /// <summary>0x078 value of INOPB</summary>
+        public int fs_inopb;
+        /// <summary>0x07C value of NSPF</summary>
+        public int fs_nspf;
+        /// <summary>0x080 optimization preference, see below</summary>
+        public FsOptim fs_optim;
+        /// <summary>0x084 reserved for future constants</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public int[] fs_sparecon;
+        /// <summary>0x08C file system state</summary>
+        public int fs_state;
+        /// <summary>0x090 file system id</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public int[] fs_id;
+        /// <summary>0x098 blk addr of cyl grp summary area</summary>
+        public int fs_csaddr;
+        /// <summary>0x09C size of cyl grp summary area</summary>
+        public int fs_cssize;
+        /// <summary>0x0A0 cylinder group size</summary>
+        public int fs_cgsize;
+        /// <summary>0x0A4 tracks per cylinder</summary>
+        public int fs_ntrak;
+        /// <summary>0x0A8 sectors per track</summary>
+        public int fs_nsect;
+        /// <summary>0x0AC sectors per cylinder</summary>
+        public int fs_spc;
+        /// <summary>0x0B0 cylinders in file system</summary>
+        public int fs_ncyl;
+        /// <summary>0x0B4 cylinders per group</summary>
+        public int fs_cpg;
+        /// <summary>0x0B8 inodes per group</summary>
+        public int fs_ipg;
+        /// <summary>0x0BC blocks per group * fs_frag</summary>
+        public int fs_fpg;
+        /// <summary>0x0C0 cylinder summary information</summary>
+        CylinderSummary fs_cstotal;
+        /// <summary>0x0D0 super block modified flag</summary>
+        byte fs_fmod;
+        /// <summary>0x0D1 file system is clean flag</summary>
+        byte fs_clean;
+        /// <summary>0x0D2 mounted read-only flag</summary>
+        byte fs_ronly;
+        /// <summary>0x0D3 currently unused flag</summary>
+        byte fs_flags;
+        /// <summary>0x0D4 name mounted on</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXMNTLEN_SHORT)]
+        byte[] fs_fsmnt;
+        /// <summary>0x2C8 file system name</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+        byte[] fs_fname;
+        /// <summary>0x2CE file system pack name</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+        byte[] fs_fpack;
+        /// <summary>0x2D4 last cg searched</summary>
+        public int fs_cgrotor;
+        /// <summary>0x2D8 list of fs_cs info buffers</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXCSBUFS)]
+        public int[] fs_csp;
+        /// <summary>0x358 cyl per cycle in postbl</summary>
+        public int fs_cpc;
+        /// <summary>0x35C head of blocks for each rotation</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NRPOS)]
+        public HeadBlock[] fs_postbl;
+        /// <summary>0x55C magic number</summary>
+        public int fs_magic;
+        /// <summary>0x560 list of blocks for each rotation</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
+        byte[] fs_rotbl;
+    }
 }
