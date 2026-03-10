@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -301,6 +302,14 @@ public sealed partial class UFSPlugin
         }
 
         _mounted = true;
+
+        Metadata = new FileSystem
+        {
+            Type        = _superBlock.fs_isUfs2 ? FS_TYPE_UFS2 : FS_TYPE_UFS,
+            ClusterSize = (uint)_superBlock.fs_fsize,
+            Clusters    = (ulong)_superBlock.fs_size,
+            VolumeName  = _superBlock.fs_volname
+        };
 
         return ErrorNumber.NoError;
     }
