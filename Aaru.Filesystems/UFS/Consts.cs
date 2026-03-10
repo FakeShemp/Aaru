@@ -93,8 +93,10 @@ public sealed partial class UFSPlugin
     // Consts for HPUX
     /// <summary>Magic number for file system allowing long file names.</summary>
     const uint FS_MAGIC_LFN = 0x095014;
+    const uint FS_CIGAM_LFN = 0x14500900;
     /// <summary>Magic number for file systems which have their fs_featurebits field set up.</summary>
     const uint FD_FSMAGIC = 0x195612;
+    const uint FD_FSCIGAM = 0x12561900;
     /// <summary>Long file names</summary>
     const int FSF_LFN = 1;
 
@@ -104,6 +106,7 @@ public sealed partial class UFSPlugin
 
     // Consts for OSF/1
     const uint FS_SEC_MAGIC  = 0x80011954;
+    const uint FS_SEC_CIGAM  = 0x54190180;
     const int  OSF1_FS_CLEAN = 3;
 
     // Bitmask for RISCos
@@ -112,6 +115,7 @@ public sealed partial class UFSPlugin
 
     // Solaris
     const uint MTB_UFS_MAGIC   = 0xdecade;
+    const uint MTB_UFS_CIGAM   = 0xdecade00;
     const int  SUN_FSACTIVE    = 0;
     const int  SUN_FSCLEAN     = 1;
     const int  SUN_FSSTABLE    = 2;

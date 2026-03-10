@@ -63,8 +63,8 @@ public sealed partial class UFSPlugin
         ulong[] locations =
         [
             SBLOCK_FLOPPY, SBLOCK, SBLOCK_LONG_BOOT, SBLOCK_PIGGY, SBLOCK_ATT_DSDD,
-            8192   / imagePlugin.Info.SectorSize, 65536 / imagePlugin.Info.SectorSize,
-            262144 / imagePlugin.Info.SectorSize
+            4096  / imagePlugin.Info.SectorSize, 8192   / imagePlugin.Info.SectorSize,
+            65536 / imagePlugin.Info.SectorSize, 262144 / imagePlugin.Info.SectorSize
         ];
 
         try
@@ -89,7 +89,15 @@ public sealed partial class UFSPlugin
                          or UFS2_MAGIC
                          or UFS2_CIGAM
                          or UFS_BAD_MAGIC
-                         or UFS_BAD_CIGAM)
+                         or UFS_BAD_CIGAM
+                         or FS_MAGIC_LFN
+                         or FS_CIGAM_LFN
+                         or FD_FSMAGIC
+                         or FD_FSCIGAM
+                         or FS_SEC_MAGIC
+                         or FS_SEC_CIGAM
+                         or MTB_UFS_MAGIC
+                         or MTB_UFS_CIGAM)
                     return true;
             }
 
@@ -131,8 +139,8 @@ public sealed partial class UFSPlugin
         ulong[] locations =
         [
             SBLOCK_FLOPPY, SBLOCK, SBLOCK_LONG_BOOT, SBLOCK_PIGGY, SBLOCK_ATT_DSDD,
-            8192   / imagePlugin.Info.SectorSize, 65536 / imagePlugin.Info.SectorSize,
-            262144 / imagePlugin.Info.SectorSize
+            4096  / imagePlugin.Info.SectorSize, 8192   / imagePlugin.Info.SectorSize,
+            65536 / imagePlugin.Info.SectorSize, 262144 / imagePlugin.Info.SectorSize
         ];
 
         ErrorNumber errno;
@@ -156,7 +164,15 @@ public sealed partial class UFSPlugin
                      or UFS2_MAGIC
                      or UFS2_CIGAM
                      or UFS_BAD_MAGIC
-                     or UFS_BAD_CIGAM)
+                     or UFS_BAD_CIGAM
+                     or FS_MAGIC_LFN
+                     or FS_CIGAM_LFN
+                     or FD_FSMAGIC
+                     or FD_FSCIGAM
+                     or FS_SEC_MAGIC
+                     or FS_SEC_CIGAM
+                     or MTB_UFS_MAGIC
+                     or MTB_UFS_CIGAM)
             {
                 sb_offset = partition.Start + loc;
 
