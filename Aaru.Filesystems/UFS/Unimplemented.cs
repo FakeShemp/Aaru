@@ -30,7 +30,6 @@ using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
@@ -53,9 +52,6 @@ public sealed partial class UFSPlugin
 
         return ErrorNumber.NotSupported;
     }
-
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
