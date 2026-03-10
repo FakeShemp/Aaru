@@ -2127,6 +2127,72 @@
     <data name="Guessed_as_UFS" xml:space="preserve">
     <value>Guessed as UFS</value>
   </data>
+    <data name="Guessed_as_HPUX_UFS" xml:space="preserve">
+    <value>Guessed as HP-UX UFS</value>
+  </data>
+    <data name="Guessed_as_SVR4_UFS" xml:space="preserve">
+    <value>Guessed as SVR4 UFS</value>
+  </data>
+    <data name="Guessed_as_AUX_UFS" xml:space="preserve">
+    <value>Guessed as A/UX UFS</value>
+  </data>
+    <data name="Guessed_as_Ultrix_UFS" xml:space="preserve">
+    <value>Guessed as Ultrix UFS</value>
+  </data>
+    <data name="Guessed_as_386BSD_FFS" xml:space="preserve">
+    <value>Guessed as 386BSD FFS</value>
+  </data>
+    <data name="Guessed_as_Solaris_UFS" xml:space="preserve">
+    <value>Guessed as Solaris UFS</value>
+  </data>
+    <data name="Guessed_as_OSF1_UFS" xml:space="preserve">
+    <value>Guessed as OSF/1 UFS</value>
+  </data>
+    <data name="HPUX_UFS_filesystem_long_file_names" xml:space="preserve">
+    <value>HP-UX UFS filesystem (long file names)</value>
+  </data>
+    <data name="HPUX_UFS_filesystem_feature_bits" xml:space="preserve">
+    <value>HP-UX UFS filesystem (feature bits)</value>
+  </data>
+    <data name="OSF1_secure_UFS_filesystem" xml:space="preserve">
+    <value>OSF/1 secure UFS filesystem</value>
+  </data>
+    <data name="Big_endian_OSF1_secure_UFS_filesystem" xml:space="preserve">
+    <value>Big-endian OSF/1 secure UFS filesystem</value>
+  </data>
+    <data name="Solaris_multi_terabyte_UFS_filesystem" xml:space="preserve">
+    <value>Solaris multi-terabyte UFS filesystem</value>
+  </data>
+    <data name="Big_endian_Solaris_multi_terabyte_UFS_filesystem" xml:space="preserve">
+    <value>Big-endian Solaris multi-terabyte UFS filesystem</value>
+  </data>
+    <data name="File_system_name_0" xml:space="preserve">
+    <value>File system name: {0}</value>
+  </data>
+    <data name="File_system_pack_name_0" xml:space="preserve">
+    <value>File system pack name: {0}</value>
+  </data>
+    <data name="Last_fsck_on_0" xml:space="preserve">
+    <value>Last fsck on {0}</value>
+  </data>
+    <data name="File_system_generation_number_0" xml:space="preserve">
+    <value>File system generation number: {0}</value>
+  </data>
+    <data name="Solaris_UFS_version_0" xml:space="preserve">
+    <value>Solaris UFS version: {0}</value>
+  </data>
+    <data name="Log_block_number_0" xml:space="preserve">
+    <value>Log block number: {0}</value>
+  </data>
+    <data name="File_system_state_0_X8" xml:space="preserve">
+    <value>File system state: 0x{0:X8}</value>
+  </data>
+    <data name="Feature_bits_0_X8" xml:space="preserve">
+    <value>Feature bits: 0x{0:X8}</value>
+  </data>
+    <data name="Unique_file_system_id_0" xml:space="preserve">
+    <value>Unique file system ID: {0}</value>
+  </data>
     <data name="Linked_list_of_filesystems_0" xml:space="preserve">
     <value>Linked list of filesystems: 0x{0:X8}</value>
   </data>

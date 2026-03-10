@@ -4245,6 +4245,138 @@ namespace Aaru.Filesystems {
             }
         }
         
+        internal static string Guessed_as_HPUX_UFS {
+            get {
+                return ResourceManager.GetString("Guessed_as_HPUX_UFS", resourceCulture);
+            }
+        }
+        
+        internal static string Guessed_as_SVR4_UFS {
+            get {
+                return ResourceManager.GetString("Guessed_as_SVR4_UFS", resourceCulture);
+            }
+        }
+        
+        internal static string Guessed_as_AUX_UFS {
+            get {
+                return ResourceManager.GetString("Guessed_as_AUX_UFS", resourceCulture);
+            }
+        }
+        
+        internal static string Guessed_as_Ultrix_UFS {
+            get {
+                return ResourceManager.GetString("Guessed_as_Ultrix_UFS", resourceCulture);
+            }
+        }
+        
+        internal static string Guessed_as_386BSD_FFS {
+            get {
+                return ResourceManager.GetString("Guessed_as_386BSD_FFS", resourceCulture);
+            }
+        }
+        
+        internal static string Guessed_as_Solaris_UFS {
+            get {
+                return ResourceManager.GetString("Guessed_as_Solaris_UFS", resourceCulture);
+            }
+        }
+        
+        internal static string Guessed_as_OSF1_UFS {
+            get {
+                return ResourceManager.GetString("Guessed_as_OSF1_UFS", resourceCulture);
+            }
+        }
+        
+        internal static string HPUX_UFS_filesystem_long_file_names {
+            get {
+                return ResourceManager.GetString("HPUX_UFS_filesystem_long_file_names", resourceCulture);
+            }
+        }
+        
+        internal static string HPUX_UFS_filesystem_feature_bits {
+            get {
+                return ResourceManager.GetString("HPUX_UFS_filesystem_feature_bits", resourceCulture);
+            }
+        }
+        
+        internal static string OSF1_secure_UFS_filesystem {
+            get {
+                return ResourceManager.GetString("OSF1_secure_UFS_filesystem", resourceCulture);
+            }
+        }
+        
+        internal static string Big_endian_OSF1_secure_UFS_filesystem {
+            get {
+                return ResourceManager.GetString("Big_endian_OSF1_secure_UFS_filesystem", resourceCulture);
+            }
+        }
+        
+        internal static string Solaris_multi_terabyte_UFS_filesystem {
+            get {
+                return ResourceManager.GetString("Solaris_multi_terabyte_UFS_filesystem", resourceCulture);
+            }
+        }
+        
+        internal static string Big_endian_Solaris_multi_terabyte_UFS_filesystem {
+            get {
+                return ResourceManager.GetString("Big_endian_Solaris_multi_terabyte_UFS_filesystem", resourceCulture);
+            }
+        }
+        
+        internal static string File_system_name_0 {
+            get {
+                return ResourceManager.GetString("File_system_name_0", resourceCulture);
+            }
+        }
+        
+        internal static string File_system_pack_name_0 {
+            get {
+                return ResourceManager.GetString("File_system_pack_name_0", resourceCulture);
+            }
+        }
+        
+        internal static string Last_fsck_on_0 {
+            get {
+                return ResourceManager.GetString("Last_fsck_on_0", resourceCulture);
+            }
+        }
+        
+        internal static string File_system_generation_number_0 {
+            get {
+                return ResourceManager.GetString("File_system_generation_number_0", resourceCulture);
+            }
+        }
+        
+        internal static string Solaris_UFS_version_0 {
+            get {
+                return ResourceManager.GetString("Solaris_UFS_version_0", resourceCulture);
+            }
+        }
+        
+        internal static string Log_block_number_0 {
+            get {
+                return ResourceManager.GetString("Log_block_number_0", resourceCulture);
+            }
+        }
+        
+        internal static string File_system_state_0_X8 {
+            get {
+                return ResourceManager.GetString("File_system_state_0_X8", resourceCulture);
+            }
+        }
+        
+        internal static string Feature_bits_0_X8 {
+            get {
+                return ResourceManager.GetString("Feature_bits_0_X8", resourceCulture);
+            }
+        }
+        
+        internal static string Unique_file_system_id_0 {
+            get {
+                return ResourceManager.GetString("Unique_file_system_id_0", resourceCulture);
+            }
+        }
+        
         internal static string Linked_list_of_filesystems_0 {
             get {
                 return ResourceManager.GetString("Linked_list_of_filesystems_0", resourceCulture);

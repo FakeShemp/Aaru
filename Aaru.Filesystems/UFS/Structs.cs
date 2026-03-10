@@ -155,7 +155,7 @@ public sealed partial class UFSPlugin
         public int fs_old_nspf;
         /* yet another configuration parameter */
         /// <summary>optimization preference, see below On SVR: int fs_state; // file system state</summary>
-        public int fs_optim;
+        public FsOptim fs_optim;
         /// <summary># sectors/track including spares</summary>
         public int fs_old_npsect;
         /// <summary>hardware sector interleave</summary>
@@ -554,7 +554,7 @@ public sealed partial class UFSPlugin
         public byte fs_flags;
         /// <summary>0xd4 name mounted on</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXMNTLEN)]
-        public byte fs_fsmnt;
+        public byte[] fs_fsmnt;
         /// <summary>0x2d4 last cg searched</summary>
         public int fs_cgrotor;
         /// <summary>0x2d8 list of fs_cs info buffers</summary>
@@ -1418,7 +1418,7 @@ public sealed partial class UFSPlugin
         public int fs_nspf;
 /* yet another configuration parameter */
         /// <summary>0x080 optimization preference, see below</summary>
-        public int fs_optim;
+        public FsOptim fs_optim;
 /* these fields are derived from the hardware */
         /// <summary>0x084 # sectors/track including spares</summary>
         public int fs_npsect;
@@ -1597,7 +1597,7 @@ public sealed partial class UFSPlugin
         public int fs_nspf;
 /* yet another configuration parameter */
         /// <summary>0x080 optimization preference, see below</summary>
-        public int fs_optim;
+        public FsOptim fs_optim;
 /* these fields are derived from the hardware */
         /// <summary>0x084 # sectors/track including spares</summary>
         public int fs_npsect;
@@ -1776,7 +1776,7 @@ public sealed partial class UFSPlugin
         /// <summary>0x090 feature bit flags</summary>
         public int fs_featurebits;
         /// <summary>0x094 optimization preference - see below</summary>
-        public int fs_optim;
+        public FsOptim fs_optim;
 /* sizes determined by number of cylinder groups and their sizes */
         /// <summary>0x098 blk addr of cyl grp summary area</summary>
         public byte fs_csaddr;
