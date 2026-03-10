@@ -5,7 +5,7 @@
 // Filename       : Info.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
-// Component      : BSD Fast File System plugin.
+// Component      : UNIX FIle System plugin.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -56,13 +56,13 @@ public sealed partial class UFSPlugin
         uint sbSizeInSectors;
 
         if(imagePlugin.Info.SectorSize is 2336 or 2352 or 2448)
-            sbSizeInSectors = block_size / 2048;
+            sbSizeInSectors = SBSIZE / 2048;
         else
-            sbSizeInSectors = block_size / imagePlugin.Info.SectorSize;
+            sbSizeInSectors = SBSIZE / imagePlugin.Info.SectorSize;
 
         ulong[] locations =
         [
-            sb_start_floppy, sb_start_boot, sb_start_long_boot, sb_start_piggy, sb_start_att_dsdd,
+            SBLOCK_FLOPPY, SBLOCK, SBLOCK_LONG_BOOT, SBLOCK_PIGGY, SBLOCK_ATT_DSDD,
             8192   / imagePlugin.Info.SectorSize, 65536 / imagePlugin.Info.SectorSize,
             262144 / imagePlugin.Info.SectorSize
         ];
@@ -124,13 +124,13 @@ public sealed partial class UFSPlugin
         var    fs_type_sun86 = false;
 
         if(imagePlugin.Info.SectorSize is 2336 or 2352 or 2448)
-            sb_size_in_sectors = block_size / 2048;
+            sb_size_in_sectors = SBSIZE / 2048;
         else
-            sb_size_in_sectors = block_size / imagePlugin.Info.SectorSize;
+            sb_size_in_sectors = SBSIZE / imagePlugin.Info.SectorSize;
 
         ulong[] locations =
         [
-            sb_start_floppy, sb_start_boot, sb_start_long_boot, sb_start_piggy, sb_start_att_dsdd,
+            SBLOCK_FLOPPY, SBLOCK, SBLOCK_LONG_BOOT, SBLOCK_PIGGY, SBLOCK_ATT_DSDD,
             8192   / imagePlugin.Info.SectorSize, 65536 / imagePlugin.Info.SectorSize,
             262144 / imagePlugin.Info.SectorSize
         ];

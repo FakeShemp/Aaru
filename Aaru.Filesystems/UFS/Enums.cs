@@ -1,8 +1,8 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : UFS.cs
+// Filename       : Consts.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : UNIX FIle System plugin.
@@ -26,9 +26,10 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using System.Diagnostics.CodeAnalysis;
-using Aaru.CommonTypes.Interfaces;
+
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedType.Local
 
 namespace Aaru.Filesystems;
 
@@ -36,20 +37,29 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 /// <summary>Implements detection of BSD Fast File System (FFS, aka UNIX File System)</summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public sealed partial class UFSPlugin : IFilesystem
+public sealed partial class UFSPlugin
 {
-    const string MODULE_NAME = "UFS plugin";
+    enum FsOptim
+    {
+        /// <summary>minimize allocation time</summary>
+        FS_OPTTIME = 0,
+        /// <summary>minimize disk fragmentation</summary>
+        FS_OPTSPACE = 1
+    }
 
-#region IFilesystem Members
+    enum RotationalFormat
+    {
+        /// <summary>4.2BSD rotational table format</summary>
+        FS_42POSTBLFMT = -1,
+        /// <summary>dynamic rotational table format</summary>
+        FS_DYNAMICPOSTBLFMT = 1
+    }
 
-    /// <inheritdoc />
-    public string Name => Localization.UFSPlugin_Name;
-
-    /// <inheritdoc />
-    public Guid Id => new("CC90D342-05DB-48A8-988C-C1FE000034A3");
-
-    /// <inheritdoc />
-    public string Author => Authors.NataliaPortillo;
-
-#endregion
+    enum InodeFormat
+    {
+        /// <summary>4.2BSD inode format</summary>
+        FS_42INODEFMT = -1,
+        /// <summary>4.4BSD inode format</summary>
+        FS_44INODEFMT = 2
+    }
 }

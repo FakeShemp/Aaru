@@ -5,7 +5,7 @@
 // Filename       : Structs.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
-// Component      : BSD Fast File System plugin.
+// Component      : UNIX FIle System plugin.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -42,7 +42,7 @@ public sealed partial class UFSPlugin
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    partial struct Checksum
+    partial struct CylinderSummary
     {
         /// <summary>number of directories</summary>
         public int cs_ndir;
@@ -192,7 +192,7 @@ public sealed partial class UFSPlugin
         public int fs_fpg;
         /* this data must be re-computed after crashes */
         /// <summary>cylinder summary information</summary>
-        public Checksum fs_old_cstotal;
+        public CylinderSummary fs_old_cstotal;
         /* these fields are cleared at mount time */
         /// <summary>super block modified flag</summary>
         public sbyte fs_fmod;
