@@ -211,6 +211,7 @@ Fully supported file-systems (identify and extraction)
 * B-tree file system (btrfs)
 * BeOS filesystem
 * BeOS (old) filesystem
+* BSD Fast File System (FFS) / Unix File System (UFS)
 * CD-i file system
 * Commodore 1540/1541/1571/1581 filesystems
 * CP/M file system
@@ -266,7 +267,6 @@ Supported file systems for identification and information only
 
 * Amiga Fast File System v2, untested
 * Apple File System (preliminary detection until on-disk layout is stable)
-* BSD Fast File System (FFS) / Unix File System (UFS)
 * BSD Unix File System 2 (UFS2)
 * dump(8) (Old historic BSD, AIX, UFS and UFS2 types)
 * Fossil file system (from Plan9)
