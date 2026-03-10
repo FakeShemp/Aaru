@@ -134,6 +134,9 @@ public sealed partial class UFSPlugin
     const int MAXMNTLEN       = 512;
     const int MAXMNTLEN_SHORT = 512 - 12;
 
+    // OSF/1
+    const int ALPHA_PAD = 6808;
+
     const string FS_TYPE_UFS  = "ufs";
     const string FS_TYPE_UFS2 = "ufs2";
 }
