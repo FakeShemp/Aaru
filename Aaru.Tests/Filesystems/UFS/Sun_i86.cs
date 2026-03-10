@@ -42,7 +42,7 @@ public class Sun_i86 : FilesystemTest
     public override string DataFolder =>
         Path.Combine(Consts.TestFilesRoot, "Filesystems", "UNIX filesystem (SunOS x86)");
 
-    public override IFilesystem Plugin     => new FFSPlugin();
+    public override IFilesystem Plugin     => new UFSPlugin();
     public override bool        Partitions => true;
 
     public override FileSystemTest[] Tests =>

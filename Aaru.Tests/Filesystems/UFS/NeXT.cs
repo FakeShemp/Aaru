@@ -38,7 +38,7 @@ namespace Aaru.Tests.Filesystems.UFS;
 public class NeXT : FilesystemTest
 {
     public override string DataFolder => Path.Combine(Consts.TestFilesRoot, "Filesystems", "UNIX filesystem (NeXT)");
-    public override IFilesystem Plugin => new FFSPlugin();
+    public override IFilesystem Plugin => new UFSPlugin();
     public override bool Partitions => true;
 
     public override FileSystemTest[] Tests =>

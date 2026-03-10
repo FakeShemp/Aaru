@@ -44,7 +44,7 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 /// <summary>Implements detection of BSD Fast File System (FFS, aka UNIX File System)</summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public sealed partial class FFSPlugin
+public sealed partial class UFSPlugin
 {
 #region IFilesystem Members
 

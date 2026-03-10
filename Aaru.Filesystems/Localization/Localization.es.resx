@@ -843,8 +843,8 @@
     <data name="FAT_Plus" xml:space="preserve">
     <value>FAT+</value>
   </data>
-    <data name="FFSPlugin_Name" xml:space="preserve">
-    <value>Sistema de Ficheros Rápido de BSD (o Sistema de Ficheros de UNIX, UFS)</value>
+    <data name="UFSPlugin_Name" xml:space="preserve">
+    <value>Sistema de Ficheros de UNIX</value>
   </data>
     <data name="Filesystem_contains_0_big_blocks_1_bytes" xml:space="preserve">
     <value>El sistema de ficheros contiene {0} "bloques grandes" ({1} bytes)</value>

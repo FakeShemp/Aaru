@@ -39,7 +39,7 @@ public class Whole : FilesystemTest
 {
     public override string DataFolder => Path.Combine(Consts.TestFilesRoot, "Filesystems", "UNIX filesystem");
 
-    public override IFilesystem Plugin     => new FFSPlugin();
+    public override IFilesystem Plugin     => new UFSPlugin();
     public override bool        Partitions => false;
 
     public override FileSystemTest[] Tests =>

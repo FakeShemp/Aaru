@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : FFS.cs
+// Filename       : UFS.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : BSD Fast File System plugin.
@@ -36,14 +36,14 @@ namespace Aaru.Filesystems;
 /// <inheritdoc />
 /// <summary>Implements detection of BSD Fast File System (FFS, aka UNIX File System)</summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public sealed partial class FFSPlugin : IFilesystem
+public sealed partial class UFSPlugin : IFilesystem
 {
-    const string MODULE_NAME = "FFS plugin";
+    const string MODULE_NAME = "UFS plugin";
 
 #region IFilesystem Members
 
     /// <inheritdoc />
-    public string Name => Localization.FFSPlugin_Name;
+    public string Name => Localization.UFSPlugin_Name;
 
     /// <inheritdoc />
     public Guid Id => new("CC90D342-05DB-48A8-988C-C1FE000034A3");

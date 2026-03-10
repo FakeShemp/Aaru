@@ -2070,8 +2070,8 @@
     <data name="Volume_created_on_kernel_version_0" xml:space="preserve">
     <value>Volume created on kernel version: {0}</value>
   </data>
-    <data name="FFSPlugin_Name" xml:space="preserve">
-    <value>BSD Fast File System (aka UNIX File System, UFS)</value>
+    <data name="UFSPlugin_Name" xml:space="preserve">
+    <value>BSD UNIX File System</value>
   </data>
     <data name="Not_a_UFS_filesystem_I_shouldnt_have_arrived_here" xml:space="preserve">
     <value>Not a UFS filesystem, I shouldn't have arrived here!</value>
