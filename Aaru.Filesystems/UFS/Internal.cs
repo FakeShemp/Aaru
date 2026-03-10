@@ -27,12 +27,21 @@
 // ****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;
+using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public sealed partial class UFSPlugin
 {
+    /// <summary>Represents an opened directory for iteration</summary>
+    sealed class UfsDirNode : IDirNode
+    {
+        public string[] Entries  { get; init; }
+        public int      Position { get; set; }
+        public string   Path     { get; init; }
+    }
+
     /// <summary>Normalized superblock combining fields from all UFS variants</summary>
     sealed class UfsSuperBlock
     {

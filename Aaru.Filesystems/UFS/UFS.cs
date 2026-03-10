@@ -44,12 +44,13 @@ public sealed partial class UFSPlugin : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "UFS plugin";
 
-    bool          _bigEndian;
-    Encoding      _encoding;
-    IMediaImage   _imagePlugin;
-    bool          _mounted;
-    Partition     _partition;
-    UfsSuperBlock _superBlock;
+    bool                     _bigEndian;
+    Encoding                 _encoding;
+    IMediaImage              _imagePlugin;
+    bool                     _mounted;
+    Partition                _partition;
+    List<DirectoryEntryInfo> _rootEntries;
+    UfsSuperBlock            _superBlock;
 
 #region IFilesystem Members
 

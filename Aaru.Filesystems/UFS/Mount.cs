@@ -258,6 +258,11 @@ public sealed partial class UFSPlugin
             if((rootInode.di_mode & 0xF000) != 0x4000) return ErrorNumber.InvalidArgument;
         }
 
+        // Cache root directory entries
+        ErrorNumber rootErr = ParseDirectory(UFS_ROOTINO, out _rootEntries);
+
+        if(rootErr != ErrorNumber.NoError) return rootErr;
+
         _mounted = true;
 
         return ErrorNumber.NoError;
@@ -269,6 +274,7 @@ public sealed partial class UFSPlugin
         _mounted     = false;
         _imagePlugin = null;
         _superBlock  = null;
+        _rootEntries = null;
 
         return ErrorNumber.NoError;
     }
