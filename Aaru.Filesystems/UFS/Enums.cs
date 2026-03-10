@@ -62,4 +62,17 @@ public sealed partial class UFSPlugin
         /// <summary>4.4BSD inode format</summary>
         FS_44INODEFMT = 2
     }
+
+    enum FileType : byte
+    {
+        DT_UNKNOWN = 0,
+        DT_FIFO    = 1,
+        DT_CHR     = 2,
+        DT_DIR     = 4,
+        DT_BLK     = 6,
+        DT_REG     = 8,
+        DT_LNK     = 10,
+        DT_SOCK    = 12,
+        DT_WHT     = 14
+    }
 }

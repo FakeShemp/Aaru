@@ -1696,6 +1696,9 @@ public sealed partial class UFSPlugin
         public int  mirtime;  /* mirror time stamp */
     }
 
+    /// <summary>
+    ///     HPUX superblock
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
     partial struct SuperblockHPUX
@@ -1839,5 +1842,276 @@ public sealed partial class UFSPlugin
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
         public byte[] fs_rotbl;
 /* actually longer */
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct FreeBlockPosition
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXCPG)]
+        public short[] cg_b;
+    }
+
+    /// <summary>4.2BSD format cylinder group</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct CylinderGroup
+    {
+        /// <summary>linked list of cyl groups</summary>
+        public int cg_link;
+        /// <summary>used for incore cyl groups</summary>
+        public int cg_rlink;
+        /// <summary>time last written</summary>
+        public int cg_time;
+        /// <summary>we are the cgx'th cylinder group</summary>
+        public int cg_cgx;
+        /// <summary>number of cyl's this cg</summary>
+        public short cg_ncyl;
+        /// <summary>number of inode blocks this cg</summary>
+        public short cg_niblk;
+        /// <summary>number of data blocks this cg</summary>
+        public int cg_ndblk;
+        /// <summary>cylinder summary information</summary>
+        public CylinderSummary cg_cs;
+        /// <summary>position of last used block</summary>
+        public int cg_rotor;
+        /// <summary>position of last used frag</summary>
+        public int cg_frotor;
+        /// <summary>position of last used inode</summary>
+        public int cg_irotor;
+        /// <summary>counts of available frags</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXFRAG)]
+        public int[] cg_frsum;
+        /// <summary>block totals per cylinder</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXCPG)]
+        public int[] cg_btot;
+        /// <summary>positions of free blocks</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NRPOS)]
+        public FreeBlockPosition[] cg_b;
+        /// <summary>used inode map</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXIPG / 8)]
+        public byte[] cg_iused;
+        /// <summary>magic number</summary>
+        public int cg_magic;
+        /// <summary>free block map (actually longer)</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
+        public byte[] cg_free;
+    }
+
+    /// <summary>New style dynamic format without clusters, used by 386BSD, OSF/1, et al</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct CylinderGroupDynamic
+    {
+        /// <summary>linked list of cyl groups</summary>
+        public int cg_link;
+        /// <summary>magic number</summary>
+        public int cg_magic;
+        /// <summary>time last written</summary>
+        public int cg_time;
+        /// <summary>we are the cgx'th cylinder group</summary>
+        public int cg_cgx;
+        /// <summary>number of cyl's this cg</summary>
+        public short cg_ncyl;
+        /// <summary>number of inode blocks this cg</summary>
+        public short cg_niblk;
+        /// <summary>number of data blocks this cg</summary>
+        public int cg_ndblk;
+        /// <summary>cylinder summary information</summary>
+        public CylinderSummary cg_cs;
+        /// <summary>position of last used block</summary>
+        public int cg_rotor;
+        /// <summary>position of last used frag</summary>
+        public int cg_frotor;
+        /// <summary>position of last used inode</summary>
+        public int cg_irotor;
+        /// <summary>counts of available frags</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXFRAG)]
+        public int[] cg_frsum;
+        /// <summary>(int) block totals per cylinder</summary>
+        public int cg_btotoff;
+        /// <summary>(short) free block positions</summary>
+        public int cg_boff;
+        /// <summary>(char) used inode map</summary>
+        public int cg_iusedoff;
+        /// <summary>(u_char) free block map</summary>
+        public int cg_freeoff;
+        /// <summary>(u_char) next available space</summary>
+        public int cg_nextfreeoff;
+        /// <summary>reserved for future use</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public int[] cg_sparecon;
+        /// <summary>space for cylinder group maps (actually longer)</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
+        public byte[] cg_space;
+    }
+
+    /// <summary>New style dynamic format with clusters used by 44BSD, Rhapsody, et al</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct CylinderGroupCluster
+    {
+        /// <summary>historic cyl groups linked list</summary>
+        public int cg_firstfield;
+        /// <summary>magic number</summary>
+        public int cg_magic;
+        /// <summary>time last written</summary>
+        public int cg_time;
+        /// <summary>we are the cgx'th cylinder group</summary>
+        public int cg_cgx;
+        /// <summary>number of cyl's this cg</summary>
+        public short cg_ncyl;
+        /// <summary>number of inode blocks this cg</summary>
+        public short cg_niblk;
+        /// <summary>number of data blocks this cg</summary>
+        public int cg_ndblk;
+        /// <summary>cylinder summary information</summary>
+        public CylinderSummary cg_cs;
+        /// <summary>position of last used block</summary>
+        public int cg_rotor;
+        /// <summary>position of last used frag</summary>
+        public int cg_frotor;
+        /// <summary>position of last used inode</summary>
+        public int cg_irotor;
+        /// <summary>counts of available frags</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXFRAG)]
+        public int[] cg_frsum;
+        /// <summary>(int32) block totals per cylinder</summary>
+        public int cg_btotoff;
+        /// <summary>(u_int16) free block positions</summary>
+        public int cg_boff;
+        /// <summary>(u_int8) used inode map</summary>
+        public int cg_iusedoff;
+        /// <summary>(u_int8) free block map</summary>
+        public int cg_freeoff;
+        /// <summary>(u_int8) next available space</summary>
+        public int cg_nextfreeoff;
+        /// <summary>(u_int32) counts of avail clusters</summary>
+        public int cg_clustersumoff;
+        /// <summary>(u_int8) free cluster map</summary>
+        public int cg_clusteroff;
+        /// <summary>number of clusters this cg</summary>
+        public int cg_nclusterblks;
+        /// <summary>reserved for future use</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 13)]
+        public int[] cg_sparecon;
+        /// <summary>space for cylinder group maps (actually longer)</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
+        public byte[] cg_space;
+    }
+
+    /// <summary>Inode structure</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct Inode
+    {
+        /// <summary>0x00: IFMT, permissions</summary>
+        public ushort di_mode;
+        /// <summary>0x02: File link count</summary>
+        public short di_nlink;
+        /// <summary>0x04: old user id</summary>
+        public ushort di_old_uid;
+        /// <summary>0x06: old group id</summary>
+        public ushort di_old_gid;
+        /// <summary>0x08: File byte count</summary>
+        public ulong di_size;
+        /// <summary>0x10: Last access time</summary>
+        public int di_atime;
+        /// <summary>0x14: Last access time (nanoseconds)</summary>
+        public int di_atimensec;
+        /// <summary>0x18: Last modified time</summary>
+        public int di_mtime;
+        /// <summary>0x1C: Last modified time (nanoseconds)</summary>
+        public int di_mtimensec;
+        /// <summary>0x20: Last inode change time</summary>
+        public int di_ctime;
+        /// <summary>0x24: Last inode change time (nanoseconds)</summary>
+        public int di_ctimensec;
+        /// <summary>0x28: Direct disk blocks</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NDADDR)]
+        public int[] di_db;
+        /// <summary>0x58: Indirect disk blocks</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NIADDR)]
+        public int[] di_ib;
+        /// <summary>0x64: Status flags (chflags)</summary>
+        public uint di_flags;
+        /// <summary>0x68: Blocks actually held</summary>
+        public uint di_blocks;
+        /// <summary>0x6C: Generation number</summary>
+        public int di_gen;
+        /// <summary>0x70: File owner</summary>
+        public uint di_uid;
+        /// <summary>0x74: File group</summary>
+        public uint di_gid;
+        /// <summary>0x78: Reserved; currently unused</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public int[] di_spare;
+    }
+
+    /// <summary>SunOS/Solaris inode structure</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct InodeSun
+    {
+        /// <summary>0x00: mode and type of file</summary>
+        public ushort ic_smode;
+        /// <summary>0x02: number of links to file</summary>
+        public short ic_nlink;
+        /// <summary>0x04: owner's user id</summary>
+        public ushort ic_suid;
+        /// <summary>0x06: owner's group id</summary>
+        public ushort ic_sgid;
+        /// <summary>0x08: number of bytes in file</summary>
+        public ulong ic_lsize;
+        /// <summary>0x10: time last accessed</summary>
+        public int ic_atime;
+        /// <summary>0x14: access time spare</summary>
+        public int ic_atspare;
+        /// <summary>0x18: time last modified</summary>
+        public int ic_mtime;
+        /// <summary>0x1C: modified time spare</summary>
+        public int ic_mtspare;
+        /// <summary>0x20: last time inode changed</summary>
+        public int ic_ctime;
+        /// <summary>0x24: change time spare</summary>
+        public int ic_ctspare;
+        /// <summary>0x28: disk block addresses</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NDADDR)]
+        public int[] ic_db;
+        /// <summary>0x58: indirect blocks</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = NIADDR)]
+        public int[] ic_ib;
+        /// <summary>0x64: cflags</summary>
+        public int ic_flags;
+        /// <summary>0x68: 512 byte blocks actually held</summary>
+        public int ic_blocks;
+        /// <summary>0x6C: generation number</summary>
+        public int ic_gen;
+        /// <summary>0x70: shadow inode</summary>
+        public int ic_shadow;
+        /// <summary>0x74: long EFT version of uid</summary>
+        public uint ic_uid;
+        /// <summary>0x78: long EFT version of gid</summary>
+        public uint ic_gid;
+        /// <summary>0x7C: extended attr directory ino, 0 = none</summary>
+        public uint ic_oeftflag;
+    }
+
+    /// <summary>UFS directory entry</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct DirectoryEntry
+    {
+        /// <summary>inode number of entry</summary>
+        public uint d_ino;
+        /// <summary>length of this record</summary>
+        public ushort d_reclen;
+        /// <summary>file type</summary>
+        public FileType d_type;
+        /// <summary>length of string in d_name</summary>
+        public byte d_namlen;
+        /// <summary>name with length &lt;= MAXNAMLEN</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXNAMLEN + 1)]
+        public byte[] d_name;
     }
 }

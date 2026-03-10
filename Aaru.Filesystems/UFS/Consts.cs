@@ -141,6 +141,22 @@ public sealed partial class UFSPlugin
     // OSF/1
     const int ALPHA_PAD = 6808;
 
+    const int CG_MAGIC = 0x090255;
+    const int MAXFRAG  = 8;
+    /// <summary>max number inodes/cyl group</summary>
+    const int MAXIPG = 2048;
+
+    /// <summary>direct addresses in inode</summary>
+    const int NDADDR = 12;
+    /// <summary>indirect addresses in inode</summary>
+    const int NIADDR = 3;
+
+    const int MAXNAMLEN = 255;
+
+    /*
+     * File types
+     */
+
     const string FS_TYPE_UFS  = "ufs";
     const string FS_TYPE_UFS2 = "ufs2";
 }
