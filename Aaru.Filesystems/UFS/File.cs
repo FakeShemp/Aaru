@@ -291,4 +291,108 @@ public sealed partial class UFSPlugin
 
         return ErrorNumber.NoError;
     }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber errno = ResolvePath(path, out uint inodeNumber);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(_superBlock.fs_isUfs2)
+        {
+            errno = ReadInode2(inodeNumber, out Inode2 inode);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            // Must be a symlink
+            if((inode.di_mode & 0xF000) != 0xA000) return ErrorNumber.InvalidArgument;
+
+            // Fast symlink: target stored inline in di_db/di_ib area
+            if((long)inode.di_size <= _superBlock.fs_maxsymlinklen && _superBlock.fs_maxsymlinklen > 0)
+            {
+                // di_db (12 * 8 = 96 bytes) + di_ib (3 * 8 = 24 bytes) = 120 bytes
+                var linkData = new byte[inode.di_size];
+                var offset   = 0;
+
+                for(var i = 0; i < NDADDR && offset < linkData.Length; i++)
+                {
+                    byte[] blockBytes = BitConverter.GetBytes(inode.di_db[i]);
+                    int    toCopy     = Math.Min(blockBytes.Length, linkData.Length - offset);
+                    Array.Copy(blockBytes, 0, linkData, offset, toCopy);
+                    offset += toCopy;
+                }
+
+                for(var i = 0; i < NIADDR && offset < linkData.Length; i++)
+                {
+                    byte[] blockBytes = BitConverter.GetBytes(inode.di_ib[i]);
+                    int    toCopy     = Math.Min(blockBytes.Length, linkData.Length - offset);
+                    Array.Copy(blockBytes, 0, linkData, offset, toCopy);
+                    offset += toCopy;
+                }
+
+                dest = _encoding.GetString(linkData).TrimEnd('\0');
+
+                return ErrorNumber.NoError;
+            }
+
+            // Slow symlink: read from data blocks
+            errno = ReadInodeData(inodeNumber, 0, (long)inode.di_size, out byte[] data);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            dest = _encoding.GetString(data).TrimEnd('\0');
+
+            return ErrorNumber.NoError;
+        }
+        else
+        {
+            errno = ReadInode(inodeNumber, out Inode inode);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if((inode.di_mode & 0xF000) != 0xA000) return ErrorNumber.InvalidArgument;
+
+            // Fast symlink: target stored inline in di_db/di_ib area
+            if((long)inode.di_size <= _superBlock.fs_maxsymlinklen && _superBlock.fs_maxsymlinklen > 0)
+            {
+                // di_db (12 * 4 = 48 bytes) + di_ib (3 * 4 = 12 bytes) = 60 bytes
+                var linkData = new byte[inode.di_size];
+                var offset   = 0;
+
+                for(var i = 0; i < NDADDR && offset < linkData.Length; i++)
+                {
+                    byte[] blockBytes = BitConverter.GetBytes(inode.di_db[i]);
+                    int    toCopy     = Math.Min(blockBytes.Length, linkData.Length - offset);
+                    Array.Copy(blockBytes, 0, linkData, offset, toCopy);
+                    offset += toCopy;
+                }
+
+                for(var i = 0; i < NIADDR && offset < linkData.Length; i++)
+                {
+                    byte[] blockBytes = BitConverter.GetBytes(inode.di_ib[i]);
+                    int    toCopy     = Math.Min(blockBytes.Length, linkData.Length - offset);
+                    Array.Copy(blockBytes, 0, linkData, offset, toCopy);
+                    offset += toCopy;
+                }
+
+                dest = _encoding.GetString(linkData).TrimEnd('\0');
+
+                return ErrorNumber.NoError;
+            }
+
+            // Slow symlink: read from data blocks
+            errno = ReadInodeData(inodeNumber, 0, (long)inode.di_size, out byte[] data);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            dest = _encoding.GetString(data).TrimEnd('\0');
+
+            return ErrorNumber.NoError;
+        }
+    }
 }

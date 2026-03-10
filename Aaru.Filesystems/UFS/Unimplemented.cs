@@ -26,7 +26,6 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 
@@ -51,7 +50,4 @@ public sealed partial class UFSPlugin
 
         return ErrorNumber.NotSupported;
     }
-
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
 }
