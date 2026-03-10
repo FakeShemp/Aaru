@@ -2174,4 +2174,20 @@ public sealed partial class UFSPlugin
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXNAMLEN + 1)]
         public byte[] d_name;
     }
+
+    /// <summary>Old-format UFS directory entry (pre-4.4BSD), no d_type field</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct DirectoryEntryOld
+    {
+        /// <summary>inode number of entry</summary>
+        public uint d_ino;
+        /// <summary>length of this record</summary>
+        public ushort d_reclen;
+        /// <summary>length of string in d_name</summary>
+        public ushort d_namlen;
+        /// <summary>name with length &lt;= MAXNAMLEN</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXNAMLEN + 1)]
+        public byte[] d_name;
+    }
 }
