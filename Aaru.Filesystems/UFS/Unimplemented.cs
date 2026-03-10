@@ -28,8 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -39,21 +37,22 @@ namespace Aaru.Filesystems;
 public sealed partial class UFSPlugin
 {
     /// <inheritdoc />
-    public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
-                             Dictionary<string, string> options,     string    @namespace) =>
-        throw new NotImplementedException();
+    public ErrorNumber ListXAttr(string path, out List<string> xattrs)
+    {
+        xattrs = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        return ErrorNumber.NotSupported;
+    }
 
     /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
+    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
-    /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+        return ErrorNumber.NotSupported;
+    }
 
     /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
