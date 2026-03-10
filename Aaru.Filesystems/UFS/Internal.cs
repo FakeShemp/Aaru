@@ -26,6 +26,7 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Aaru.CommonTypes.Interfaces;
 
@@ -40,6 +41,16 @@ public sealed partial class UFSPlugin
         public string[] Entries  { get; init; }
         public int      Position { get; set; }
         public string   Path     { get; init; }
+    }
+
+    /// <summary>Represents an opened file for reading</summary>
+    sealed class UfsFileNode : IFileNode
+    {
+        public uint       InodeNumber { get; init; }
+        public List<long> BlockList   { get; init; }
+        public string     Path        { get; init; }
+        public long       Length      { get; init; }
+        public long       Offset      { get; set; }
     }
 
     /// <summary>Normalized superblock combining fields from all UFS variants</summary>
