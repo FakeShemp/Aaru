@@ -13,7 +13,7 @@
 #
 
 Name:           aaru
-Version:        6.0.0~alpha.18
+Version:        6.0.0~alpha.19
 Release:        1%{?dist}
 Summary:        Disc image management and creation tool
 
@@ -177,23 +177,55 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/icons/hicolor/512x512/apps/aaru.png
 
 %changelog
-* Tue Jan 06 2026 Natalia Portillo <claunia@claunia.com> - 6.0.0~alpha.18-1
-- New upstream alpha release 6.0.0-alpha.18
-- Added HxCStream image format support
-- Added Flux support in AaruFormat
-- Added Floppy_WriteProtection media tag
-- Added RPM and Debian packaging files
-- Added application icon and desktop entry for Linux
-- Added test suite for flux
-- Updated A2R functionality
-- Optimized sector override checks using HashSet for O(1) lookups
-- Reordered progress display columns in media dump command
-- Increased HttpClient timeout to 300 seconds for database updates
-- Fixed progress bar collisions
-- Fixed bug dumping 2nd layer PFI
-- Fixed flux display logic when no captures present
-- Fixed missing comma in Enums.cs
-- Fixed translation typo
-- Enhanced image merge with better hardware processing
+* Wed Mar 11 2026 Natalia Portillo <claunia@claunia.com> - 6.0.0~alpha.19-1
+- New upstream alpha release 6.0.0-alpha.19
+- Added command to generate JSON schema for Aaru metadata files
+- Added LZO compression algorithms
+- Added LZVN compression algorithm with native version
+- Added XZ buffer compression and decompression
+- Added support for reading DVD lead-in and lead-out
+- Added support for OmniDrive DVD reading
+- Added PS5 DI/BCA dumping
+- Added many fully readable filesystems: ADFS, Acer, AO-DOS, AmigaDOS,
+  AtheOS, btrfs, BeFS, Coherent, Cram, DEC Files-11, DEC RT-11, ECMA-67,
+  exFAT, ext/ext2/ext3/ext4, F2FS, HFS, HFS+, HPOFS, HP LIF, HPFS, JFS,
+  Locus, MicroDOS, Minix, NTFS, NILFS2, Nintendo optical, OS-9 RBF, PFS,
+  ProDOS, QNX4, QNX6, Reiser v3/v4, SGI EFS, SmartFileSystem, Squash,
+  System V, UDF, UNIX 7th Edition, UNIX boot (bfs), UFS, Veritas, Xia,
+  XENIX, XFS
+- Added CHD compressed compact disc and CHD v5 image support
+- Added Easy CD Creator (.CIF) disc image support
+- Added PowerISO / gBurner disc image support
+- Added UltraISO disc image support
+- Added WinOnCD disc image support
+- Added RISC OS system area support for ISO9660
+- Added full zisofs support for ISO9660
+- Added zlib and lzfse compressed files support for HFS+
+- Added support for reading all extended attributes in HFS+
+- Added Wii U Disc Key and PS3 related media tags
+- Added AIX minidisk partition traversing and enumeration
+- Added big endian and PDP endianness swapping source generators
+- Changed device reports to try other commands if one fails
+- Changed DVD raw reading to dynamically figure out buffer size
+- Changed dumping to only re-read pregap sectors on track type changes
+- Changed FFS filesystem name to UFS with improved detection
+- Changed GUI to show image path on all tabs and negative sectors in viewer
+- Enhanced Pascal filesystem with marshalable structures and consistency checks
+- Refactored to use source generator based big endian marshaller
+- Changed sidecar to disable default SpamSum and use pathless filenames
+- Fixed CD-Text processing from images in image info command
+- Fixed Spectre.Console exception propagation
+- Fixed divide by zero error
+- Fixed markup escaping in CD-Text logging
+- Fixed sidecar creation for files with brackets or braces
+- Fixed listing files with braces
+- Fixed Blu-ray disc info logging crash with braces or brackets
+- Fixed missing markup end tag
+- Fixed handling of invalid ISO9660 dates
+- Fixed parallel track path in PFI
+- Fixed volume name sanitization replacing '/' and '\' with '_'
+- Fixed barcode casting in GUI
+- Fixed wrongly using marked up path in image metadata editor
 - Built for RHEL 9+, Fedora 38+, openSUSE Leap 15.5+
 - Multi-architecture support (x86_64, aarch64, armv7hl)
+
