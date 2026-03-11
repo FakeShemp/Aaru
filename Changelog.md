@@ -1,3 +1,168 @@
+# [6.0.0-alpha.19] - 2026-03-11
+
+## Added
+
+### - Commands
+
+- Command to generate JSON schema for Aaru metadata files.
+
+### - Compression
+
+- LZO compression algorithms.
+- LZVN compression algorithm.
+- Native version of LZVN compression algorithm.
+- XZ buffer compression and decompression.
+
+### - Dumping
+
+- Support for reading DVD lead-in and lead-out.
+- Support for OmniDrive DVD reading.
+- Dump PS5 DI/BCA.
+
+### - Filesystems
+
+- Acorn Advanced Disc Filing System (ADFS) is now a fully readable filesystem.
+- Acer File System is now a fully readable filesystem.
+- AO-DOS filesystem is now a fully readable filesystem.
+- AmigaDOS filesystem is now a fully readable filesystem.
+- AtheOS is now a fully readable filesystem.
+- B-tree file system (btrfs) is now a fully readable filesystem.
+- BeOS filesystem (BeFS) is now a fully readable filesystem.
+- BeOS (old) filesystem is now a fully readable filesystem.
+- Coherent filesystem is now a fully readable filesystem.
+- Cram filesystem is now a fully readable filesystem.
+- DEC Files-11 (ODS-2/5) is now a fully readable filesystem. Fixes #130
+- DEC RT-11 is now a fully readable filesystem.
+- ECMA-67 is now a fully readable filesystem.
+- exFAT is now a fully readable filesystem. Fixes #686
+- Extended Acer Filesystem is now a fully readable filesystem.
+- ext2, ext3 and ext4 are now fully readable filesystems.
+- F2FS is now a fully readable filesystem.
+- HFS is now a fully readable filesystem. Fixes #391
+- HFS+ is now a fully readable filesystem.
+- High Performance Optical File System (HPOFS) is now a fully readable filesystem.
+- HP Logical Interchange Format (LIF) is now a fully readable filesystem.
+- HPFS is now a fully readable filesystem.
+- IBM Journaling File System (JFS) is now a fully readable filesystem.
+- Linux extended filesystem (ext) is now a fully readable filesystem.
+- Locus is now a fully readable filesystem.
+- MicroDOS is now a fully readable filesystem.
+- Minix is now a fully readable filesystem.
+- Microsoft New Technology File System (NTFS) is now a fully readable filesystem.
+- NILFS2 is now a fully readable filesystem.
+- Nintendo optical filesystem is now a fully readable filesystem.
+- OS-9 Random Block File (RBF) is now a fully readable filesystem.
+- Professional File System (PFS) is now a fully readable filesystem.
+- ProDOS is now a fully readable filesystem.
+- QNX4 is now a fully readable filesystem.
+- QNX6 is now a fully readable filesystem.
+- Reiser v3 file system is now a fully readable filesystem.
+- Reiser v4 is now a fully readable file system.
+- SGI Extent File System (EFS) is now a fully readable file system.
+- SmartFileSystem (SFS) is now a fully readable filesystem.
+- Squash file system is now a fully readable filesystem.
+- System V filesystem is now a fully readable filesystem.
+- UDF is now a fully readable filesystem. Fixes #446
+- UNIX 7th Edition filesystem is now a fully readable filesystem.
+- UNIX boot filesystem (bfs) is now a fully readable filesystem.
+- UNIX file system (UFS) is now a fully readable filesystem.
+- Veritas is now a fully readable filesystem.
+- Xia is now a fully readable filesystem.
+- XENIX filesystem is now a fully readable filesystem.
+- XFS is now a fully readable file system.
+
+### - Formats
+
+- CHD compressed compact disc image support. Fixes #107
+- CHD v5 image support. Fixes #106
+- Easy CD Creator disc image (.CIF) support. Fixes #443
+- PowerISO / gBurner disc image support. Fixes #254
+- UltraISO disc image support. Fixes #255
+- WinOnCD disc image support. Fixes #599
+
+### - ISO9660
+
+- Support for RISC OS system area.
+- Full support for zisofs.
+
+### - HFS+
+
+- Support for zlib and lzfse compressed files.
+- Support for reading all extended attributes.
+
+### - Media tags
+
+- Wii U Disc Key media tag.
+- PS3 related media tags.
+
+### - Partitions
+
+- Implement traversing and enumeration of AIX minidisk partitions. Fixes #7
+
+### - Source generators
+
+- Big endian structure swapping source generator.
+- PDP endianness swapping source generator.
+
+## Changed
+
+### - Device reports
+
+- Rework device reports to try other commands if one fail and log them.
+- Dynamically figure out the buffer size for raw DVD reading.
+
+### - Dumping
+
+- Only re-read pregap sectors that belong to track type changes.
+
+### - Filesystem identification
+
+- Rename FFS to UFS.
+- UFS detection improved with additional superblock variants (A/UX, 386BSD, RISC/os, Sun, OSF/1, HP-UX, Ultrix).
+
+### - GUI
+
+- Make image path visible whatever tab is selected when editing image's metadata.
+- Show negative sectors in sector viewer.
+
+### - Pascal filesystem
+
+- Enhanced structures to be marshalable.
+- Try both endians.
+- Use marshalling.
+- Add option for text decoding.
+- Added filesystem consistency checks.
+- Add machine type detection.
+
+### - Refactoring
+
+- Use new source generator based big endian marshaller across all filesystems, filters, images, and partitions.
+- Remove reflection based SwapStructureMembersEndian.
+
+### - Sidecar
+
+- Disable default calculation of SpamSum on sidecar creation.
+- Ensure sidecar gets always filenames without paths.
+
+## Fixed
+
+- Correct processing of headerless CD-Text coming from images, in image info command. Fixes #662
+- Configure Spectre.Console to propagate exceptions so they are handled by us.
+- Divide by zero error.
+- Escape markup in CD-Text logging to prevent formatting issues.
+- Fix creating sidecar of files with brackets or braces.
+- Fix listing files with braces.
+- Fix logging of Blu-ray disc information to avoid crash when information contains braces or brackets.
+- Fix missing markup end tag.
+- Handle invalid ISO9660 dates.
+- Handle parallel track path in PFI.
+- Sanitize volume names by replacing '/' and '\' with '_'.
+
+### - GUI
+
+- Fix barcode casting.
+- Fix wrongly using marked up path in image metadata editor.
+
 # [6.0.0-alpha.18] - 2026-01-06
 
 ## Added
@@ -2797,6 +2962,8 @@
 - Apple Partition Map (aka APM).
 - Master Boot Record (aka MBR).
 - NeXT disklabels.
+
+[6.0.0-alpha.19]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.19
 
 [6.0.0-alpha.18]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.18
 
