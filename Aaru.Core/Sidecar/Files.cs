@@ -134,9 +134,9 @@ public sealed partial class Sidecar
             files.Add(SidecarFile(filesystem, path + "/" + filename, dirent, entryStat));
         }
 
-        if(files.Count > 0) directory.Files = files.OrderBy(static f => f.Name).ToList();
+        if(files.Count > 0) directory.Files = files.Where(static f => f != null).OrderBy(static f => f.Name).ToList();
 
-        if(directories.Count > 0) directory.Directories = directories.OrderBy(static d => d.Name).ToList();
+        if(directories.Count > 0) directory.Directories = directories.Where(static d => d != null).OrderBy(static d => d.Name).ToList();
 
         return directory;
     }
