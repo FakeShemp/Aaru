@@ -63,6 +63,7 @@ public sealed partial class UDF
         internal byte[]                   FileEntryBuffer;
         internal UdfFileEntryInfo         FileEntryInfo;
         internal LongAllocationDescriptor Icb;
+        internal ushort                   PartitionReferenceNumber;
 
         /// <inheritdoc />
         public string Path { get; init; }

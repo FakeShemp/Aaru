@@ -207,6 +207,10 @@ public sealed partial class UDF
         // UDF 1.02 = 0x0102, UDF 1.50 = 0x0150, UDF 2.00 = 0x0200, UDF 2.01 = 0x0201, UDF 2.50 = 0x0250, UDF 2.60 = 0x0260
         if(lvidiu.minimumReadUDF > UDF_VERSION_260) return ErrorNumber.InvalidArgument;
 
+        // Save instance fields needed for partition reading
+        _imagePlugin = imagePlugin;
+        _sectorSize  = sectorSize;
+
         // Parse partition maps from LVD to handle Type 1, Virtual, Sparable, and Metadata partitions
         ErrorNumber errno = ParsePartitionMaps(lvd, partitionDescriptors);
 
@@ -248,22 +252,21 @@ public sealed partial class UDF
             firstPartition = enumerator.Current;
         }
 
+        // Save partition starting location for offset calculations
+        // This must be set before ReadSectorFromPartition calls below
+        _partitionStartingLocation = firstPartition.partitionStartingLocation;
+
         // The logicalVolumeContentsUse field in the LVD contains a long_ad pointing to the File Set Descriptor
         LongAllocationDescriptor fsdLocation =
             Marshal.ByteArrayToStructureLittleEndian<LongAllocationDescriptor>(lvd.logicalVolumeContentsUse);
 
-        // Get the partition where the FSD resides
-        if(!partitionDescriptors.TryGetValue(fsdLocation.extentLocation.partitionReferenceNumber,
-                                             out PartitionDescriptor fsdPartition))
-            fsdPartition = firstPartition;
+        // Read the File Set Descriptor using partition-aware read (handles metadata partitions)
+        errno = ReadSectorFromPartition(fsdLocation.extentLocation.logicalBlockNumber,
+                                        fsdLocation.extentLocation.partitionReferenceNumber,
+                                        _partitionStartingLocation,
+                                        out buffer);
 
-        // Calculate the absolute sector of the File Set Descriptor
-        ulong fsdAbsoluteSector = TranslateLogicalBlock(fsdLocation.extentLocation.logicalBlockNumber,
-                                                        fsdLocation.extentLocation.partitionReferenceNumber,
-                                                        fsdPartition.partitionStartingLocation);
-
-        if(imagePlugin.ReadSector(fsdAbsoluteSector, false, out buffer, out _) != ErrorNumber.NoError)
-            return ErrorNumber.InvalidArgument;
+        if(errno != ErrorNumber.NoError) return errno;
 
         FileSetDescriptor fsd = Marshal.ByteArrayToStructureLittleEndian<FileSetDescriptor>(buffer);
 
@@ -272,26 +275,13 @@ public sealed partial class UDF
         // The rootDirectoryICB contains the ICB of the root directory
         _rootDirectoryIcb = fsd.rootDirectoryICB;
 
-        // Get the partition where the root directory ICB resides
-        if(!partitionDescriptors.TryGetValue(_rootDirectoryIcb.extentLocation.partitionReferenceNumber,
-                                             out PartitionDescriptor rootPartition))
-        {
-            // If partition not found, try to use the FSD partition as fallback
-            rootPartition = fsdPartition;
-        }
+        // Verify the root directory ICB using partition-aware read (handles metadata partitions)
+        errno = ReadSectorFromPartition(_rootDirectoryIcb.extentLocation.logicalBlockNumber,
+                                        _rootDirectoryIcb.extentLocation.partitionReferenceNumber,
+                                        _partitionStartingLocation,
+                                        out buffer);
 
-        // Save partition starting location for offset calculations
-        _partitionStartingLocation = rootPartition.partitionStartingLocation;
-
-        // Calculate the absolute sector of the root directory ICB
-        ulong rootIcbAbsoluteSector = TranslateLogicalBlock(_rootDirectoryIcb.extentLocation.logicalBlockNumber,
-                                                            _rootDirectoryIcb.extentLocation.partitionReferenceNumber,
-                                                            _partitionStartingLocation);
-
-        // Try to read the root directory ICB
-        // If the sector is invalid, the read will fail and we'll return InvalidArgument
-        if(imagePlugin.ReadSector(rootIcbAbsoluteSector, false, out buffer, out _) != ErrorNumber.NoError)
-            return ErrorNumber.InvalidArgument;
+        if(errno != ErrorNumber.NoError) return errno;
 
         // Check for FileEntry or ExtendedFileEntry (UDF 2.00+)
         var rootTagId = (TagIdentifier)BitConverter.ToUInt16(buffer, 0);
@@ -334,9 +324,6 @@ public sealed partial class UDF
             Bootable              = IsBootable(imagePlugin, partition)
         };
 
-        // Save instance fields for later use
-        _imagePlugin = imagePlugin;
-        _sectorSize  = sectorSize;
 
         // Initialize directory caches
         _rootDirectoryCache = [];
@@ -545,7 +532,7 @@ public sealed partial class UDF
             // Found the VAT file entry, read the VAT data
             var adType = (byte)((ushort)fe.icbTag.flags & 0x07);
 
-            ErrorNumber errno = ReadFileData(fe, buffer, adType, out byte[] vatData);
+            ErrorNumber errno = ReadFileData(fe, buffer, adType, 0, out byte[] vatData);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -674,7 +661,7 @@ public sealed partial class UDF
         uint originalPartitionStart = _partitionStartingLocation;
         _partitionStartingLocation = physicalPartition.partitionStartingLocation;
 
-        errno = ReadFileDataFromInfo(metadataFileInfo, metadataFeBuffer, adType, out _metadataFileData);
+        errno = ReadFileDataFromInfo(metadataFileInfo, metadataFeBuffer, adType, 0, out _metadataFileData);
 
         // Restore original partition start
         _partitionStartingLocation = originalPartitionStart;
@@ -702,9 +689,8 @@ public sealed partial class UDF
 
         // If this is a virtual partition, translate through the VAT
         if(_hasVirtualPartition && partitionNumber == _virtualPartitionNumber && _vat != null)
-        {
-            if(logicalBlock < _vat.Length) physicalBlock = _vat[logicalBlock];
-        }
+            if(logicalBlock < _vat.Length)
+                physicalBlock = _vat[logicalBlock];
 
         // If this is a sparable partition, check the sparing table
         if(_hasSparablePartition && partitionNumber == _sparablePartitionNumber && _sparingTable != null)

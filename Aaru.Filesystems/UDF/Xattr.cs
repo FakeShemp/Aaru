@@ -54,7 +54,7 @@ public sealed partial class UDF
         if(!_mounted) return ErrorNumber.AccessDenied;
 
         // Get file entry buffer and parse it
-        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer, out ushort partitionReferenceNumber);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -104,7 +104,7 @@ public sealed partial class UDF
         if(!_mounted) return ErrorNumber.AccessDenied;
 
         // Get file entry buffer and parse it
-        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer, out ushort partitionReferenceNumber);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -182,9 +182,8 @@ public sealed partial class UDF
                         List<string> os2Xattrs = GetOs2EaNames(feBuffer, eaOffset, iuea);
 
                         foreach(string os2Xattr in os2Xattrs)
-                        {
-                            if(!xattrs.Contains(os2Xattr)) xattrs.Add(os2Xattr);
-                        }
+                            if(!xattrs.Contains(os2Xattr))
+                                xattrs.Add(os2Xattr);
 
                         eaOffset += (int)eaHeader.attributeLength;
 
@@ -218,7 +217,13 @@ public sealed partial class UDF
 
         var adType = (byte)((ushort)streamInfo.IcbTag.flags & 0x07);
 
-        if(ReadFileDataFromInfo(streamInfo, streamBuffer, adType, out byte[] streamData) != ErrorNumber.NoError) return;
+        if(ReadFileDataFromInfo(streamInfo,
+                                streamBuffer,
+                                adType,
+                                stream.Icb.extentLocation.partitionReferenceNumber,
+                                out byte[] streamData) !=
+           ErrorNumber.NoError)
+            return;
 
         // Parse FEA entries
         var offset  = 0;
@@ -353,7 +358,12 @@ public sealed partial class UDF
 
             var adType = (byte)((ushort)streamInfo.IcbTag.flags & 0x07);
 
-            if(ReadFileDataFromInfo(streamInfo, streamBuffer, adType, out buf) == ErrorNumber.NoError)
+            if(ReadFileDataFromInfo(streamInfo,
+                                    streamBuffer,
+                                    adType,
+                                    stream.Icb.extentLocation.partitionReferenceNumber,
+                                    out buf) ==
+               ErrorNumber.NoError)
                 return ErrorNumber.NoError;
         }
 
@@ -377,7 +387,12 @@ public sealed partial class UDF
 
         var adType = (byte)((ushort)streamInfo.IcbTag.flags & 0x07);
 
-        if(ReadFileDataFromInfo(streamInfo, streamBuffer, adType, out byte[] streamData) != ErrorNumber.NoError)
+        if(ReadFileDataFromInfo(streamInfo,
+                                streamBuffer,
+                                adType,
+                                stream.Icb.extentLocation.partitionReferenceNumber,
+                                out byte[] streamData) !=
+           ErrorNumber.NoError)
             return null;
 
         // Parse FEA entries to find the requested EA
@@ -820,13 +835,16 @@ public sealed partial class UDF
     /// <param name="path">Path to the file or directory</param>
     /// <param name="feBuffer">The raw sector buffer if found</param>
     /// <returns>Error number</returns>
-    ErrorNumber GetFileEntryBuffer(string path, out byte[] feBuffer)
+    ErrorNumber GetFileEntryBuffer(string path, out byte[] feBuffer, out ushort partitionReferenceNumber)
     {
-        feBuffer = null;
+        feBuffer                 = null;
+        partitionReferenceNumber = 0;
 
         // Root directory - use partition-aware read
         if(string.IsNullOrWhiteSpace(path) || path == "/")
         {
+            partitionReferenceNumber = _rootDirectoryIcb.extentLocation.partitionReferenceNumber;
+
             return ReadSectorFromPartition(_rootDirectoryIcb.extentLocation.logicalBlockNumber,
                                            _rootDirectoryIcb.extentLocation.partitionReferenceNumber,
                                            _partitionStartingLocation,
@@ -855,6 +873,8 @@ public sealed partial class UDF
 
         if(entry == null) return ErrorNumber.NoSuchFile;
 
+        partitionReferenceNumber = entry.Icb.extentLocation.partitionReferenceNumber;
+
         return ReadSectorFromPartition(entry.Icb.extentLocation.logicalBlockNumber,
                                        entry.Icb.extentLocation.partitionReferenceNumber,
                                        _partitionStartingLocation,
@@ -876,9 +896,8 @@ public sealed partial class UDF
         int compareLength = Math.Min(identifier.Length, pattern.Length);
 
         for(var i = 0; i < compareLength; i++)
-        {
-            if(identifier[i] != pattern[i]) return false;
-        }
+            if(identifier[i] != pattern[i])
+                return false;
 
         return true;
     }

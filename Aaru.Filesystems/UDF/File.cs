@@ -49,7 +49,7 @@ public sealed partial class UDF
         if(!_mounted) return ErrorNumber.AccessDenied;
 
         // Get the file entry buffer for reading data
-        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer, out ushort partitionReferenceNumber);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -63,12 +63,13 @@ public sealed partial class UDF
 
         node = new UdfFileNode
         {
-            Path            = path,
-            Length          = (long)fileEntryInfo.InformationLength,
-            Offset          = 0,
-            FileEntryInfo   = fileEntryInfo,
-            FileEntryBuffer = feBuffer,
-            Icb             = default(LongAllocationDescriptor) // Not needed for reading - we have the entry buffer
+            Path                     = path,
+            Length                   = (long)fileEntryInfo.InformationLength,
+            Offset                   = 0,
+            FileEntryInfo            = fileEntryInfo,
+            FileEntryBuffer          = feBuffer,
+            Icb                      = default(LongAllocationDescriptor),
+            PartitionReferenceNumber = partitionReferenceNumber
         };
 
         return ErrorNumber.NoError;
@@ -114,6 +115,7 @@ public sealed partial class UDF
                                                       myNode.Offset,
                                                       length,
                                                       buffer,
+                                                      myNode.PartitionReferenceNumber,
                                                       out long bytesRead);
 
         if(errno != ErrorNumber.NoError) return errno;
@@ -131,7 +133,7 @@ public sealed partial class UDF
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -206,7 +208,7 @@ public sealed partial class UDF
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer);
+        ErrorNumber errno = GetFileEntryBuffer(path, out byte[] feBuffer, out ushort partitionReferenceNumber);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -220,7 +222,7 @@ public sealed partial class UDF
         // Read the symlink data based on allocation descriptor type
         var adType = (byte)((ushort)fileEntryInfo.IcbTag.flags & 0x07);
 
-        errno = ReadFileDataFromInfo(fileEntryInfo, feBuffer, adType, out byte[] linkData);
+        errno = ReadFileDataFromInfo(fileEntryInfo, feBuffer, adType, partitionReferenceNumber, out byte[] linkData);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -255,7 +257,12 @@ public sealed partial class UDF
 
         var adType = (byte)((ushort)streamInfo.IcbTag.flags & 0x07);
 
-        if(ReadFileDataFromInfo(streamInfo, streamBuffer, adType, out byte[] streamData) != ErrorNumber.NoError)
+        if(ReadFileDataFromInfo(streamInfo,
+                                streamBuffer,
+                                adType,
+                                backupStream.Icb.extentLocation.partitionReferenceNumber,
+                                out byte[] streamData) !=
+           ErrorNumber.NoError)
             return null;
 
         // The backup stream should contain a timestamp structure
@@ -419,12 +426,12 @@ public sealed partial class UDF
         // Root directory
         if(string.IsNullOrWhiteSpace(path) || path == "/")
         {
-            ulong rootSector = TranslateLogicalBlock(_rootDirectoryIcb.extentLocation.logicalBlockNumber,
-                                                     _rootDirectoryIcb.extentLocation.partitionReferenceNumber,
-                                                     _partitionStartingLocation);
+            ErrorNumber rootErr = ReadSectorFromPartition(_rootDirectoryIcb.extentLocation.logicalBlockNumber,
+                                                          _rootDirectoryIcb.extentLocation.partitionReferenceNumber,
+                                                          _partitionStartingLocation,
+                                                          out byte[] buffer);
 
-            if(_imagePlugin.ReadSector(rootSector, false, out byte[] buffer, out _) != ErrorNumber.NoError)
-                return ErrorNumber.InvalidArgument;
+            if(rootErr != ErrorNumber.NoError) return rootErr;
 
             fileEntry = Marshal.ByteArrayToStructureLittleEndian<FileEntry>(buffer);
 
@@ -452,13 +459,13 @@ public sealed partial class UDF
 
         if(entry == null) return ErrorNumber.NoSuchFile;
 
-        // Read the FileEntry
-        ulong fileEntrySector = TranslateLogicalBlock(entry.Icb.extentLocation.logicalBlockNumber,
-                                                      entry.Icb.extentLocation.partitionReferenceNumber,
-                                                      _partitionStartingLocation);
+        // Read the FileEntry using partition-aware read (handles metadata partitions)
+        ErrorNumber feErr = ReadSectorFromPartition(entry.Icb.extentLocation.logicalBlockNumber,
+                                                    entry.Icb.extentLocation.partitionReferenceNumber,
+                                                    _partitionStartingLocation,
+                                                    out byte[] feBuffer);
 
-        if(_imagePlugin.ReadSector(fileEntrySector, false, out byte[] feBuffer, out _) != ErrorNumber.NoError)
-            return ErrorNumber.InvalidArgument;
+        if(feErr != ErrorNumber.NoError) return feErr;
 
         fileEntry = Marshal.ByteArrayToStructureLittleEndian<FileEntry>(feBuffer);
 

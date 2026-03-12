@@ -66,7 +66,11 @@ public sealed partial class UDF
         // The allocation descriptor type is in bits 0-2 of the flags
         var adType = (byte)((ushort)fileEntryInfo.IcbTag.flags & 0x07);
 
-        errno = ReadFileDataFromInfo(fileEntryInfo, feBuffer, adType, out byte[] directoryData);
+        errno = ReadFileDataFromInfo(fileEntryInfo,
+                                     feBuffer,
+                                     adType,
+                                     icb.extentLocation.partitionReferenceNumber,
+                                     out byte[] directoryData);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -142,7 +146,8 @@ public sealed partial class UDF
     /// <param name="adType">Allocation descriptor type (0-3)</param>
     /// <param name="data">The file data</param>
     /// <returns>Error number</returns>
-    ErrorNumber ReadFileData(FileEntry fileEntry, byte[] feBuffer, byte adType, out byte[] data)
+    ErrorNumber ReadFileData(FileEntry  fileEntry, byte[] feBuffer, byte adType, ushort partitionReferenceNumber,
+                             out byte[] data)
     {
         data = null;
 
@@ -156,7 +161,12 @@ public sealed partial class UDF
         switch(adType)
         {
             case 0: // Short Allocation Descriptors
-                return ReadDataFromShortAd(feBuffer, adOffset, adLength, (long)fileEntry.informationLength, out data);
+                return ReadDataFromShortAd(feBuffer,
+                                           adOffset,
+                                           adLength,
+                                           (long)fileEntry.informationLength,
+                                           partitionReferenceNumber,
+                                           out data);
 
             case 1: // Long Allocation Descriptors
                 return ReadDataFromLongAd(feBuffer, adOffset, adLength, (long)fileEntry.informationLength, out data);
@@ -184,7 +194,8 @@ public sealed partial class UDF
     /// <param name="dataLength">Expected file data length</param>
     /// <param name="data">The file data read from the extents</param>
     /// <returns>Error number</returns>
-    ErrorNumber ReadDataFromShortAd(byte[] feBuffer, int adOffset, int adLength, long dataLength, out byte[] data)
+    ErrorNumber ReadDataFromShortAd(byte[] feBuffer,                 int        adOffset, int adLength, long dataLength,
+                                    ushort partitionReferenceNumber, out byte[] data)
     {
         data = null;
 
@@ -208,11 +219,11 @@ public sealed partial class UDF
 
             if(extentLength == 0) break;
 
-            // Short ADs don't have partition reference, use partition 0
+            // Short ADs don't have partition reference, use the partition from the containing ICB
             uint sectorsToRead = (extentLength + _sectorSize - 1) / _sectorSize;
 
             ErrorNumber errno = ReadSectorsFromPartition(sad.extentLocation,
-                                                         0,
+                                                         partitionReferenceNumber,
                                                          _partitionStartingLocation,
                                                          sectorsToRead,
                                                          out byte[] extentData);
@@ -434,7 +445,8 @@ public sealed partial class UDF
     /// <param name="adType">Allocation descriptor type (0-3)</param>
     /// <param name="data">The file data</param>
     /// <returns>Error number</returns>
-    ErrorNumber ReadFileDataFromInfo(UdfFileEntryInfo info, byte[] feBuffer, byte adType, out byte[] data)
+    ErrorNumber ReadFileDataFromInfo(UdfFileEntryInfo info,                     byte[]     feBuffer, byte adType,
+                                     ushort           partitionReferenceNumber, out byte[] data)
     {
         data = null;
 
@@ -451,7 +463,12 @@ public sealed partial class UDF
         switch(adType)
         {
             case 0: // Short Allocation Descriptors
-                return ReadDataFromShortAd(feBuffer, adOffset, adLength, (long)info.InformationLength, out data);
+                return ReadDataFromShortAd(feBuffer,
+                                           adOffset,
+                                           adLength,
+                                           (long)info.InformationLength,
+                                           partitionReferenceNumber,
+                                           out data);
 
             case 1: // Long Allocation Descriptors
                 return ReadDataFromLongAd(feBuffer, adOffset, adLength, (long)info.InformationLength, out data);
@@ -483,7 +500,7 @@ public sealed partial class UDF
     /// <param name="bytesRead">Number of bytes actually read</param>
     /// <returns>Error number</returns>
     ErrorNumber ReadDataFromShortAdRange(byte[] feBuffer, int adOffset, int adLength, long fileOffset, long readLength,
-                                         byte[] buffer,   out long bytesRead)
+                                         byte[] buffer,   ushort partitionReferenceNumber, out long bytesRead)
     {
         bytesRead = 0;
         long currentOffset = 0;
@@ -560,7 +577,7 @@ public sealed partial class UDF
 
                     // Read from the correct starting sector of the extent
                     ErrorNumber errno = ReadSectorsFromPartition((uint)(sad.extentLocation + sectorOffset),
-                                                                 0,
+                                                                 partitionReferenceNumber,
                                                                  _partitionStartingLocation,
                                                                  sectorsToRead,
                                                                  out byte[] extentData);
@@ -693,8 +710,9 @@ public sealed partial class UDF
     ///     Reads a specific byte range from a file based on allocation descriptor type,
     ///     without loading the entire file into memory
     /// </summary>
-    ErrorNumber ReadFileDataFromInfoRange(UdfFileEntryInfo info,       byte[] feBuffer, byte adType, long fileOffset,
-                                          long             readLength, byte[] buffer,   out long bytesRead)
+    ErrorNumber ReadFileDataFromInfoRange(UdfFileEntryInfo info,       byte[] feBuffer, byte   adType, long fileOffset,
+                                          long             readLength, byte[] buffer,   ushort partitionReferenceNumber,
+                                          out long         bytesRead)
     {
         bytesRead = 0;
 
@@ -720,6 +738,7 @@ public sealed partial class UDF
                                                 fileOffset,
                                                 readLength,
                                                 buffer,
+                                                partitionReferenceNumber,
                                                 out bytesRead);
 
             case 1: // Long Allocation Descriptors
@@ -775,7 +794,11 @@ public sealed partial class UDF
         // Read the stream directory data
         var adType = (byte)((ushort)streamDirInfo.IcbTag.flags & 0x07);
 
-        errno = ReadFileDataFromInfo(streamDirInfo, sdBuffer, adType, out byte[] streamDirData);
+        errno = ReadFileDataFromInfo(streamDirInfo,
+                                     sdBuffer,
+                                     adType,
+                                     streamDirIcb.extentLocation.partitionReferenceNumber,
+                                     out byte[] streamDirData);
 
         if(errno != ErrorNumber.NoError) return errno;
 
