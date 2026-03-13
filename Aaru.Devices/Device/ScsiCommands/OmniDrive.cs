@@ -35,6 +35,7 @@
 using System;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Logging;
+using Aaru.Decoders.DVD;
 
 namespace Aaru.Devices;
 
@@ -99,6 +100,8 @@ public partial class Device
         cdb[11] = 0; // control
 
         LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
+        
+        if(!Sector.CheckEdc(buffer, transferLength)) return true;
 
         Error = LastError != 0;
 

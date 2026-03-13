@@ -138,6 +138,28 @@ public sealed class Sector
     }
 
     /// <summary>
+    ///     Check if the EDC of a sector is correct
+    /// </summary>
+    /// <param name="sectorLong">Buffer of the sector</param>
+    /// <returns><c>True</c> if EDC is correct, <c>False</c> if not</returns>
+    public static bool CheckEdc(byte[] sectorLong) => ComputeEdc(0, sectorLong, 2060) == BigEndianBitConverter.ToUInt32(sectorLong, 2060);
+
+    /// <summary>
+    ///     Check if the EDC of sectors is correct
+    /// </summary>
+    /// <param name="sectorLong">Buffer of the sector</param>
+    /// <param name="transferLength">The number of sectors to check</param>
+    /// <returns><c>True</c> if EDC is correct, <c>False</c> if not</returns>
+    public static bool CheckEdc(byte[] sectorLong, uint transferLength)
+    {
+        for(uint i = 0; i < transferLength; i++)
+        {
+            if(!CheckEdc(sectorLong.Skip((int)(i * 2064)).Take(2064).ToArray())) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
     ///     Tests if a seed unscrambles a sector correctly
     /// </summary>
     /// <param name="sector">Buffer of the scrambled sector</param>
@@ -152,7 +174,7 @@ public sealed class Sector
 
         for(var i = 12; i < 2060; i++) tmp[i] ^= LfsrByte();
 
-        return ComputeEdc(0, tmp, 2060) == BigEndianBitConverter.ToUInt32(sector, 2060);
+        return CheckEdc(tmp);
     }
 
     /// <summary>
@@ -208,9 +230,7 @@ public sealed class Sector
 
         for(var i = 0; i < 2048; i++) scrambled[i + 12] = (byte)(sector[i + 12] ^ cipher[i]);
 
-        return ComputeEdc(0, scrambled, 2060) != BigEndianBitConverter.ToUInt32(sector, 2060)
-                   ? ErrorNumber.NotVerifiable
-                   : ErrorNumber.NoError;
+        return !CheckEdc(scrambled) ? ErrorNumber.NotVerifiable : ErrorNumber.NoError;
     }
 
     public ErrorNumber Scramble(byte[] sector, out byte[] scrambled)
