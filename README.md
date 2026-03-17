@@ -112,6 +112,7 @@ Media image formats we can read
 * TeleDisk
 * UltraISO (.ISZ)
 * WinOnCD (.C2D)
+* WUX
 * X68k DIM disk image files (.DIM)
 
 Media image formats we can write to
