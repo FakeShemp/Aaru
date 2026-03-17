@@ -207,6 +207,14 @@ public partial class Convert
             if(errno != ErrorNumber.NoError) return errno;
         }
 
+        // Inject GameCube/Wii-specific media tags before copying normal media tags
+        if(isNgcwConversion)
+        {
+            errno = InjectNgcwMediaTags();
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+
         // Convert media tags from input to output format
         errno = ConvertMediaTags();
 
@@ -219,7 +227,8 @@ public partial class Convert
            _outputImage is IWritableOpticalImage outputOptical &&
            inputOptical.Tracks != null                         &&
            !isPs3Conversion                                    &&
-           !isWiiuConversion)
+           !isWiiuConversion                                   &&
+           !isNgcwConversion)
         {
             errno = ConvertOptical(inputOptical, outputOptical, useLong);
 
@@ -260,6 +269,25 @@ public partial class Convert
             }
 
             errno = ConvertPs3Sectors();
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+        else if(isNgcwConversion)
+        {
+            if(_inputImage is IOpticalMediaImage ngcwInputOptical      &&
+               _outputImage is IWritableOpticalImage ngcwOutputOptical &&
+               ngcwInputOptical.Tracks != null)
+            {
+                if(!ngcwOutputOptical.SetTracks(ngcwInputOptical.Tracks))
+                {
+                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_sending_tracks_list_to_output_image,
+                                                               ngcwOutputOptical.ErrorMessage));
+
+                    return ErrorNumber.WriteError;
+                }
+            }
+
+            errno = ConvertNgcwSectors();
 
             if(errno != ErrorNumber.NoError) return errno;
         }
@@ -339,14 +367,14 @@ public partial class Convert
             }
         }
 
-        if(!isPs3Conversion && !isWiiuConversion && _negativeSectors > 0)
+        if(!isPs3Conversion && !isWiiuConversion && !isNgcwConversion && _negativeSectors > 0)
         {
             errno = ConvertNegativeSectors(useLong);
 
             if(errno != ErrorNumber.NoError) return errno;
         }
 
-        if(!isPs3Conversion && !isWiiuConversion && _overflowSectors > 0)
+        if(!isPs3Conversion && !isWiiuConversion && !isNgcwConversion && _overflowSectors > 0)
         {
             errno = ConvertOverflowSectors(useLong);
 
@@ -396,6 +424,9 @@ public partial class Convert
 
         // After all metadata has been copied, enrich product code and disc number from Wii U disc header
         if(isWiiuConversion) EnrichWiiuMetadata();
+
+        // After all metadata has been copied, enrich title/part number from GameCube/Wii disc header
+        if(isNgcwConversion) EnrichNgcwMetadata();
 
         var closed = false;
 
