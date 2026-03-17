@@ -604,6 +604,21 @@ public sealed partial class ZZZRawImage
         // Check for Wii U disc: .wud extension and exact disc size
         if(_extension == ".wud" && imageFilter.DataForkLength == WIIU_DISC_SIZE) _imageInfo.MediaType = MediaType.WUOD;
 
+        // Check for GameCube / Wii disc: .iso extension, sector size 2048, magic number in disc header
+        if(_extension == ".iso" && _imageInfo is { SectorSize: 2048, MediaType: not MediaType.PS3BD })
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+            var discHeader = new byte[0x20];
+            stream.EnsureRead(discHeader, 0, discHeader.Length);
+
+            var wiiMagic = BigEndianBitConverter.ToUInt32(discHeader, 0x18);
+            var gcMagic  = BigEndianBitConverter.ToUInt32(discHeader, 0x1C);
+
+            if(wiiMagic == NGC_WII_MAGIC)
+                _imageInfo.MediaType                              = MediaType.WOD;
+            else if(gcMagic == NGC_GC_MAGIC) _imageInfo.MediaType = MediaType.GOD;
+        }
+
         switch(_imageInfo.MediaType)
         {
             case MediaType.ACORN_35_DS_DD:

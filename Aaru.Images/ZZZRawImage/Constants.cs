@@ -41,6 +41,9 @@ public sealed partial class ZZZRawImage
     const uint WIIU_PHYSICAL_SECTOR_SIZE = 0x8000;
     const uint WIIU_ENCRYPTED_OFFSET     = 0x18000U;
 
+    const uint NGC_GC_MAGIC  = 0xC2339F3Du;
+    const uint NGC_WII_MAGIC = 0x5D1C9EA3u;
+
     static readonly byte[] _ps3Id  = "PlayStation3\0\0\0\0"u8.ToArray();
     readonly        byte[] _cdSync = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00];
     readonly (MediaTagType tag, string name)[] _readWriteSidecars =
