@@ -17,6 +17,7 @@ public partial class Convert
 {
     const    string                                      MODULE_NAME = "Image Conversion";
     readonly bool                                        _bypassPs3Decryption;
+    readonly bool                                        _bypassWiiDecryption;
     readonly bool                                        _bypassWiiuDecryption;
     readonly string                                      _comments;
     readonly uint                                        _count;
@@ -62,7 +63,8 @@ public partial class Convert
                    int mediaSequence, string mediaSerialNumber, string mediaTitle, bool decrypt, uint count,
                    PluginRegister plugins, bool fixSubchannelPosition, bool fixSubchannel, bool fixSubchannelCrc,
                    bool generateSubchannels, (uint cylinders, uint heads, uint sectors)? geometryValues, Resume resume,
-                   Metadata sidecar, bool bypassPs3Decryption, bool bypassWiiuDecryption, string inputPath = null)
+                   Metadata sidecar, bool bypassPs3Decryption, bool bypassWiiuDecryption, bool bypassWiiDecryption,
+                   string inputPath = null)
     {
         _inputImage            = inputImage;
         _outputImage           = outputImage;
@@ -98,6 +100,7 @@ public partial class Convert
         _sidecar               = sidecar;
         _bypassPs3Decryption   = bypassPs3Decryption;
         _bypassWiiuDecryption  = bypassWiiuDecryption;
+        _bypassWiiDecryption   = bypassWiiDecryption;
         _inputPath             = inputPath;
     }
 
@@ -182,6 +185,11 @@ public partial class Convert
 
         // Determine if Wii U conversion path should be active
         bool isWiiuConversion = _outputImage is AaruFormat && _mediaType == MediaType.WUOD && !_bypassWiiuDecryption;
+
+        // Determine if GameCube/Wii conversion path should be active
+        bool isNgcwConversion = _outputImage is AaruFormat                   &&
+                                _mediaType is MediaType.GOD or MediaType.WOD &&
+                                !(_mediaType == MediaType.WOD && _bypassWiiDecryption);
 
         // Inject PS3-specific media tags before copying normal media tags
         if(isPs3Conversion)

@@ -1905,6 +1905,12 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string Bypass_Wii_decryption_help {
+            get {
+                return ResourceManager.GetString("Bypass_Wii_decryption_help", resourceCulture);
+            }
+        }
+        
         public static string PS3_disc_key_resolved_from_0 {
             get {
                 return ResourceManager.GetString("PS3_disc_key_resolved_from_0", resourceCulture);

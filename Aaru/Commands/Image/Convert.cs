@@ -273,6 +273,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     sidecar,
                                     settings.BypassPs3Decryption,
                                     settings.BypassWiiuDecryption,
+                                    settings.BypassWiiDecryption,
                                     settings.InputPath);
 
         ErrorNumber errno = ErrorNumber.NoError;
@@ -555,6 +556,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--decrypt={0}", settings.Decrypt);
         AaruLogging.Debug(MODULE_NAME, "--bypass-ps3-decryption={0}", settings.BypassPs3Decryption);
         AaruLogging.Debug(MODULE_NAME, "--bypass-wiiu-decryption={0}", settings.BypassWiiuDecryption);
+        AaruLogging.Debug(MODULE_NAME, "--bypass-wii-decryption={0}", settings.BypassWiiDecryption);
         AaruLogging.Debug(MODULE_NAME, "--aaru-metadata={0}", Markup.Escape(settings.AaruMetadata ?? ""));
         AaruLogging.Debug(MODULE_NAME, "--ignore-negative-sectors={0}", settings.IgnoreNegativeSectors);
         AaruLogging.Debug(MODULE_NAME, "--ignore-overflow-sectors={0}", settings.IgnoreOverflowSectors);
@@ -734,6 +736,10 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         [DefaultValue(false)]
         [CommandOption("--bypass-wiiu-decryption")]
         public bool BypassWiiuDecryption { get; init; }
+        [LocalizedDescription(nameof(UI.Bypass_Wii_decryption_help))]
+        [DefaultValue(false)]
+        [CommandOption("--bypass-wii-decryption")]
+        public bool BypassWiiDecryption { get; init; }
         [LocalizedDescription(nameof(UI.Take_metadata_from_existing_Aaru_sidecar))]
         [DefaultValue(null)]
         [CommandOption("-m|--aaru-metadata")]
