@@ -628,6 +628,9 @@
     <data name="Bypass_PS3_decryption_help" xml:space="preserve">
     <value>Omitir el procesamiento de encriptación de disco PS3 durante la conversión.</value>
   </data>
+    <data name="Bypass_WiiU_decryption_help" xml:space="preserve">
+    <value>Omitir el procesamiento de encriptación de disco Wii U durante la conversión.</value>
+  </data>
     <data name="PS3_disc_key_resolved_from_0" xml:space="preserve">
     <value>[slateblue1]Clave de disco PS3 resuelta desde [aqua]{0}[/].[/]</value>
   </data>

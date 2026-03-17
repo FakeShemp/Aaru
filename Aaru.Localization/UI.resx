@@ -961,6 +961,9 @@ In you are unsure, please press N to not continue.</value>
     <data name="Bypass_PS3_decryption_help" xml:space="preserve">
     <value>Skip PS3 disc encryption processing during conversion.</value>
   </data>
+    <data name="Bypass_WiiU_decryption_help" xml:space="preserve">
+    <value>Skip Wii U disc encryption processing during conversion.</value>
+  </data>
     <data name="PS3_disc_key_resolved_from_0" xml:space="preserve">
     <value>[slateblue1]PS3 disc key resolved from [aqua]{0}[/].[/]</value>
   </data>
