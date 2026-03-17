@@ -120,7 +120,7 @@ public partial class Convert
             else
                 sectorsToDo = (uint)(_inputImage.Info.Sectors - doneSectors);
 
-            UpdateProgress?.Invoke(string.Format(UI.PS3_converting_sectors_0_to_1,
+            UpdateProgress?.Invoke(string.Format(UI.Converting_sectors_0_to_1,
                                                  doneSectors,
                                                  doneSectors + sectorsToDo),
                                    (long)doneSectors,
