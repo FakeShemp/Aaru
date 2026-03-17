@@ -30,7 +30,10 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System.IO;
+using System.Linq;
 using Aaru.CommonTypes;
+using Aaru.Helpers;
 
 namespace Aaru.Images;
 
@@ -46,6 +49,17 @@ public sealed partial class ZZZRawImage
 
         if(_imageInfo.SectorSize == 2048)
         {
+            // Check for PS3 Blu-ray: .iso extension, size divisible by 2048, sector 1 contains "PlayStation3" signature
+            if(_extension == ".iso" && _imageInfo.ImageSize % 2048 == 0 && _imageInfo.ImageSize >= 4096)
+            {
+                Stream stream = _rawImageFilter.GetDataForkStream();
+                stream.Seek(2048, SeekOrigin.Begin);
+                var sector1 = new byte[_ps3Id.Length];
+                stream.EnsureRead(sector1, 0, sector1.Length);
+
+                if(sector1.SequenceEqual(_ps3Id)) return MediaType.PS3BD;
+            }
+
             return _imageInfo.Sectors switch
                    {
                        58620544    => MediaType.REV120,
