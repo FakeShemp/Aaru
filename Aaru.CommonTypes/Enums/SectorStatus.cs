@@ -86,5 +86,9 @@ public enum SectorStatus : byte
     /// <summary>
     ///     Content originally encrypted but stored decrypted in image.
     /// </summary>
-    Unencrypted = 0xA
+    Unencrypted = 0xA,
+    /// <summary>
+    ///     Content can be regenerated from metadata (e.g. LFG junk fill).
+    /// </summary>
+    Generable = 0xB
 }
