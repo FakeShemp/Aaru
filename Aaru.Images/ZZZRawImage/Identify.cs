@@ -69,6 +69,8 @@ public sealed partial class ZZZRawImage
                 return imageFilter.DataForkLength % 128 == 0;
             case ".256":
                 return imageFilter.DataForkLength % 256 == 0;
+            case ".wud" when imageFilter.DataForkLength == WIIU_DISC_SIZE:
+                return true;
             case ".toast" when imageFilter.DataForkLength % 2048 == 0:
                 return true;
             case ".toast" when imageFilter.DataForkLength % 2056 == 0:

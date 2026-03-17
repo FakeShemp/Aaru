@@ -149,6 +149,10 @@ public sealed partial class ZZZRawImage
                 _imageInfo.SectorSize = 256;
 
                 break;
+            case ".wud" when imageFilter.DataForkLength == WIIU_DISC_SIZE:
+                _imageInfo.SectorSize = 2048;
+
+                break;
             case ".raw" when imageFilter.DataForkLength % 2064 == 0:
                 _imageInfo.SectorSize = 2048;
                 _rawDvd               = true;
@@ -430,6 +434,23 @@ public sealed partial class ZZZRawImage
             }
         }
 
+        // Check for Wii U disc key sidecar (.key file, 16 bytes)
+        if(_imageInfo.MediaType == MediaType.WUOD)
+        {
+            string keyPath = basename + ".key";
+
+            if(File.Exists(keyPath))
+            {
+                byte[] keyData = File.ReadAllBytes(keyPath);
+
+                if(keyData.Length == 16)
+                {
+                    _mediaTags[MediaTagType.WiiUDiscKey] = keyData;
+                    AaruLogging.Debug(MODULE_NAME, "Found Wii U disc key sidecar");
+                }
+            }
+        }
+
         // If there are INQUIRY and IDENTIFY tags, it's ATAPI
         if(_mediaTags.ContainsKey(MediaTagType.SCSI_INQUIRY))
         {
@@ -579,6 +600,9 @@ public sealed partial class ZZZRawImage
 
             if(sector1.SequenceEqual(_ps3Id)) _imageInfo.MediaType = MediaType.PS3BD;
         }
+
+        // Check for Wii U disc: .wud extension and exact disc size
+        if(_extension == ".wud" && imageFilter.DataForkLength == WIIU_DISC_SIZE) _imageInfo.MediaType = MediaType.WUOD;
 
         switch(_imageInfo.MediaType)
         {
@@ -1171,6 +1195,7 @@ public sealed partial class ZZZRawImage
             case MediaType.XGD3:
             case MediaType.PD650:
             case MediaType.PD650_WORM:
+            case MediaType.WUOD:
                 _imageInfo.MetadataMediaType = MetadataMediaType.OpticalDisc;
 
                 break;

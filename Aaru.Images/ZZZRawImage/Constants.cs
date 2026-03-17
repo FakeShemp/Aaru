@@ -36,6 +36,11 @@ namespace Aaru.Images;
 
 public sealed partial class ZZZRawImage
 {
+    const long WIIU_DISC_SIZE            = 25_025_314_816L;
+    const uint WIIU_TOC_SIGNATURE        = 0xCCA6E67BU;
+    const uint WIIU_PHYSICAL_SECTOR_SIZE = 0x8000;
+    const uint WIIU_ENCRYPTED_OFFSET     = 0x18000U;
+
     static readonly byte[] _ps3Id  = "PlayStation3\0\0\0\0"u8.ToArray();
     readonly        byte[] _cdSync = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00];
     readonly (MediaTagType tag, string name)[] _readWriteSidecars =
