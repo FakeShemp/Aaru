@@ -333,7 +333,26 @@ public sealed partial class NintendoPlugin
                                   _                      => partition.FstEntries[myNode.FstIndex].OffsetOrParent
                               };
 
-        if(_isWii)
+        if(_isWiiU)
+        {
+            // Wii U: read from encrypted partition using cluster offsets
+            ulong  fileOff   = (ulong)partition.FstEntries[myNode.FstIndex].OffsetOrParent << 5;
+            ushort clusterId = partition.WiiuFstEntries?[myNode.FstIndex].ClusterIndex ?? 0;
+
+            ulong clusterOff = partition.WiiuClusterOffsets != null && clusterId < partition.WiiuClusterOffsets.Length
+                                   ? partition.WiiuClusterOffsets[clusterId]
+                                   : 0;
+
+            ulong volumeOff = clusterOff + fileOff + (ulong)myNode.Offset;
+
+            byte[] data =
+                ReadWiiuVolumeDecrypted(partition.WiiuKey, partition.PartitionOffset, volumeOff, (uint)length);
+
+            if(data == null) return ErrorNumber.InOutError;
+
+            Array.Copy(data, 0, buffer, 0, length);
+        }
+        else if(_isWii)
         {
             // Wii: read from encrypted partition data
             byte[] data = ReadWiiPartitionData(partition, (uint)(fileDataOffset + myNode.Offset), (uint)length);

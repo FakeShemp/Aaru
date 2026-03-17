@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -42,6 +43,424 @@ namespace Aaru.Filesystems;
 
 public sealed partial class NintendoPlugin
 {
+    /// <summary>Mount a Wii U disc filesystem using disc key for decryption</summary>
+    ErrorNumber MountWiiU()
+    {
+        // Step 1: Get disc key from WiiUDiscKey media tag
+        ErrorNumber errno = _imagePlugin.ReadMediaTag(MediaTagType.WiiUDiscKey, out _wiiuDiscKey);
+
+        if(errno != ErrorNumber.NoError || _wiiuDiscKey is not { Length: 16 })
+        {
+            AaruLogging.Debug(MODULE_NAME, "No Wii U disc key available");
+
+            return ErrorNumber.NoData;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "Wii U disc key: {0}", BitConverter.ToString(_wiiuDiscKey));
+
+        // Step 2: Read and decrypt TOC at WIIU_ENCRYPTED_OFFSET (physical sector 3)
+        uint  sectorSize     = _imagePlugin.Info.SectorSize;
+        ulong tocStartSector = WIIU_ENCRYPTED_OFFSET     / sectorSize;
+        uint  tocSectorCount = WIIU_PHYSICAL_SECTOR_SIZE / sectorSize;
+
+        errno = _imagePlugin.ReadSectors(tocStartSector, false, tocSectorCount, out byte[] encTocSector, out _);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Cannot read TOC sector: {0}", errno);
+
+            return errno;
+        }
+
+        // Decrypt with disc key, IV = all zeros
+        byte[] decTocSector;
+
+        using(var aes = Aes.Create())
+        {
+            aes.Key     = _wiiuDiscKey;
+            aes.IV      = new byte[16];
+            aes.Mode    = CipherMode.CBC;
+            aes.Padding = PaddingMode.None;
+
+            using ICryptoTransform decryptor = aes.CreateDecryptor();
+            decTocSector = decryptor.TransformFinalBlock(encTocSector, 0, encTocSector.Length);
+        }
+
+        // Step 3: Validate TOC signature
+        var tocSig = BigEndianBitConverter.ToUInt32(decTocSector, 0);
+
+        if(tocSig != WIIU_TOC_SIGNATURE)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "TOC signature mismatch: 0x{0:X8} (expected 0x{1:X8})",
+                              tocSig,
+                              WIIU_TOC_SIGNATURE);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Step 4: Parse partition entries
+        var tocPartCount = BigEndianBitConverter.ToUInt32(decTocSector, 0x1C);
+
+        if(tocPartCount > WIIU_MAX_PARTITIONS) tocPartCount = WIIU_MAX_PARTITIONS;
+
+        AaruLogging.Debug(MODULE_NAME, "Wii U TOC: {0} partition(s)", tocPartCount);
+
+        var wiiuParts = new WiiuTocPartition[tocPartCount];
+
+        for(uint i = 0; i < tocPartCount; i++)
+        {
+            uint entryOff = WIIU_TOC_ENTRIES_OFFSET + i * WIIU_TOC_ENTRY_SIZE;
+
+            // Identifier is the first 25 bytes as a null-terminated string
+            var identBytes = new byte[25];
+            Array.Copy(decTocSector, (int)entryOff, identBytes, 0, 25);
+            wiiuParts[i].Identifier  = StringHandlers.CToString(identBytes, Encoding.ASCII);
+            wiiuParts[i].StartSector = BigEndianBitConverter.ToUInt32(decTocSector, (int)(entryOff + 0x20));
+            wiiuParts[i].Key         = new byte[16];
+            wiiuParts[i].HasTitleKey = false;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "  Partition {0}: \"{1}\", start_sector={2}",
+                              i,
+                              wiiuParts[i].Identifier,
+                              wiiuParts[i].StartSector);
+        }
+
+        // Step 5: Extract title keys from SI/GI partitions
+        WiiuExtractTitleKeys(wiiuParts);
+
+        // Set disc key as fallback for partitions without title key
+        for(var i = 0; i < wiiuParts.Length; i++)
+            if(!wiiuParts[i].HasTitleKey)
+                Array.Copy(_wiiuDiscKey, wiiuParts[i].Key, 16);
+
+        // Step 6: Mount each partition by parsing its FST
+        var partitionList = new List<PartitionInfo>();
+
+        for(var i = 0; i < wiiuParts.Length; i++)
+        {
+            PartitionInfo partInfo = TryMountWiiuPartition(wiiuParts[i]);
+
+            if(partInfo != null) partitionList.Add(partInfo);
+        }
+
+        if(partitionList.Count == 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "No Wii U partitions could be mounted");
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        _partitions     = partitionList.ToArray();
+        _multiPartition = _partitions.Length > 1;
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "Mounted {0} Wii U partition(s), multiPartition = {1}",
+                          _partitions.Length,
+                          _multiPartition);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Read and decrypt data from a Wii U partition at a given offset within the partition</summary>
+    /// <param name="key">AES-128 key for this partition</param>
+    /// <param name="partitionDiscOffset">Absolute disc byte offset of the partition</param>
+    /// <param name="fileOffset">Offset within the partition data</param>
+    /// <param name="size">Number of bytes to read</param>
+    /// <returns>Decrypted data, or null on error</returns>
+    byte[] ReadWiiuVolumeDecrypted(byte[] key, ulong partitionDiscOffset, ulong fileOffset, uint size)
+    {
+        var  result     = new byte[size];
+        uint done       = 0;
+        uint sectorSize = _imagePlugin.Info.SectorSize;
+
+        while(done < size)
+        {
+            ulong cur    = fileOffset + done;
+            ulong secIdx = cur / WIIU_PHYSICAL_SECTOR_SIZE;
+            var   secOff = (uint)(cur % WIIU_PHYSICAL_SECTOR_SIZE);
+
+            ulong discOff       = partitionDiscOffset + secIdx * WIIU_PHYSICAL_SECTOR_SIZE;
+            ulong sectorStart   = discOff                   / sectorSize;
+            uint  sectorsToRead = WIIU_PHYSICAL_SECTOR_SIZE / sectorSize;
+
+            ErrorNumber errno =
+                _imagePlugin.ReadSectors(sectorStart, false, sectorsToRead, out byte[] encSector, out _);
+
+            if(errno != ErrorNumber.NoError) return null;
+
+            byte[] decSector;
+
+            using(var aes = Aes.Create())
+            {
+                aes.Key     = key;
+                aes.IV      = new byte[16];
+                aes.Mode    = CipherMode.CBC;
+                aes.Padding = PaddingMode.None;
+
+                using ICryptoTransform decryptor = aes.CreateDecryptor();
+                decSector = decryptor.TransformFinalBlock(encSector, 0, encSector.Length);
+            }
+
+            uint chunk = WIIU_PHYSICAL_SECTOR_SIZE - secOff;
+
+            if(chunk > size - done) chunk = size - done;
+
+            Array.Copy(decSector, secOff, result, done, chunk);
+            done += chunk;
+        }
+
+        return result;
+    }
+
+    /// <summary>Extract title keys from TITLE.TIK files in SI/GI Wii U partitions</summary>
+    void WiiuExtractTitleKeys(WiiuTocPartition[] parts)
+    {
+        for(var p = 0; p < parts.Length; p++)
+        {
+            // Only scan SI and GI partitions
+            if(!parts[p].Identifier.StartsWith("SI", StringComparison.Ordinal) &&
+               !parts[p].Identifier.StartsWith("GI", StringComparison.Ordinal))
+                continue;
+
+            ulong partDiscOff = WIIU_ENCRYPTED_OFFSET +
+                                (ulong)parts[p].StartSector * WIIU_PHYSICAL_SECTOR_SIZE -
+                                0x10000;
+
+            // Read FST header (first physical sector of partition)
+            byte[] fstHdr = ReadWiiuVolumeDecrypted(_wiiuDiscKey, partDiscOff, 0, WIIU_PHYSICAL_SECTOR_SIZE);
+
+            if(fstHdr == null) continue;
+
+            // Verify "FST\0" magic
+            if(fstHdr[0] != 'F' || fstHdr[1] != 'S' || fstHdr[2] != 'T' || fstHdr[3] != 0) continue;
+
+            var offsetFactor = BigEndianBitConverter.ToUInt32(fstHdr, 4);
+            var clusterCount = BigEndianBitConverter.ToUInt32(fstHdr, 8);
+
+            var clusterOffsets = new ulong[clusterCount];
+
+            for(uint c = 0; c < clusterCount; c++)
+            {
+                var   raw   = BigEndianBitConverter.ToUInt32(fstHdr, (int)(0x20 + c * 0x20));
+                ulong start = (ulong)raw * WIIU_PHYSICAL_SECTOR_SIZE;
+                clusterOffsets[c] = start > WIIU_PHYSICAL_SECTOR_SIZE ? start - WIIU_PHYSICAL_SECTOR_SIZE : 0;
+            }
+
+            ulong entriesOffset = (ulong)offsetFactor * clusterCount + 0x20;
+
+            // Read root entry to get total entries
+            byte[] rootEntryData = ReadWiiuVolumeDecrypted(_wiiuDiscKey, partDiscOff, entriesOffset, 0x10);
+
+            if(rootEntryData == null) continue;
+
+            var totalEntries = BigEndianBitConverter.ToUInt32(rootEntryData, 8);
+
+            if(totalEntries > 100000) continue;
+
+            ulong nameTableOffset = entriesOffset + (ulong)totalEntries * 0x10;
+
+            // Read entries + name table
+            var fstDataSize = (uint)(nameTableOffset - entriesOffset + 0x10000);
+
+            if(fstDataSize > 16 * 1024 * 1024) continue;
+
+            byte[] fstData = ReadWiiuVolumeDecrypted(_wiiuDiscKey, partDiscOff, entriesOffset, fstDataSize);
+
+            if(fstData == null) continue;
+
+            // Scan for TITLE.TIK files
+            for(uint e = 0; e < totalEntries; e++)
+            {
+                var   entOff    = (int)(e * 0x10);
+                byte  type      = fstData[entOff];
+                uint  nameOff   = BigEndianBitConverter.ToUInt32(fstData, entOff) & 0x00FFFFFF;
+                ulong fileOff   = (ulong)BigEndianBitConverter.ToUInt32(fstData, entOff + 4) << 5;
+                var   fileSize  = BigEndianBitConverter.ToUInt32(fstData, entOff + 8);
+                var   clusterId = (ushort)(fstData[entOff + 0x0E] << 8 | fstData[entOff + 0x0F]);
+
+                if(type == 1) continue; // directory
+
+                if(fileSize < 0x200) continue;
+
+                var nameTableBase = (uint)(nameTableOffset - entriesOffset);
+
+                if(nameOff >= fstDataSize - nameTableBase) continue;
+
+                string fname = StringHandlers.CToString(fstData, Encoding.ASCII, false, (int)(nameTableBase + nameOff));
+
+                if(!fname.Equals("title.tik", StringComparison.OrdinalIgnoreCase)) continue;
+
+                if(clusterId >= clusterCount) continue;
+
+                // Read ticket: encrypted title key at TIK+0x1BF, title ID at TIK+0x1DC
+                ulong tikVolumeOff = clusterOffsets[clusterId] + fileOff;
+
+                byte[] tikBuf =
+                    ReadWiiuVolumeDecrypted(_wiiuDiscKey, partDiscOff, tikVolumeOff + 0x1BF, 0x10 + 0x1D + 8);
+
+                if(tikBuf == null) continue;
+
+                var encTitleKey = new byte[16];
+                var titleId     = new byte[8];
+                Array.Copy(tikBuf, 0,    encTitleKey, 0, 16);
+                Array.Copy(tikBuf, 0x1D, titleId,     0, 8);
+
+                // Decrypt title key: AES-128-CBC with common key, IV = title_id + 8 zero bytes
+                var tikIv = new byte[16];
+                Array.Copy(titleId, 0, tikIv, 0, 8);
+
+                byte[] decTitleKey;
+
+                using(var aes = Aes.Create())
+                {
+                    aes.Key     = WIIU_COMMON_KEY;
+                    aes.IV      = tikIv;
+                    aes.Mode    = CipherMode.CBC;
+                    aes.Padding = PaddingMode.None;
+
+                    using ICryptoTransform decryptor = aes.CreateDecryptor();
+                    decTitleKey = decryptor.TransformFinalBlock(encTitleKey, 0, 16);
+                }
+
+                // Build expected GM partition name from title ID
+                string gmName = $"GM{titleId[0]:X2}{titleId[1]:X2}{titleId[2]:X2}{titleId[3]:X2}" +
+                                $"{titleId[4]:X2}{titleId[5]:X2}{titleId[6]:X2}{titleId[7]:X2}";
+
+                // Match to a GM partition
+                for(var g = 0; g < parts.Length; g++)
+                {
+                    if(!parts[g].Identifier.StartsWith("GM", StringComparison.Ordinal)) continue;
+
+                    if(!parts[g].Identifier.StartsWith(gmName, StringComparison.Ordinal)) continue;
+
+                    Array.Copy(decTitleKey, parts[g].Key, 16);
+                    parts[g].HasTitleKey = true;
+
+                    AaruLogging.Debug(MODULE_NAME, "Title key for {0} extracted", gmName);
+
+                    break;
+                }
+            }
+        }
+    }
+
+    /// <summary>Try to mount a Wii U partition by reading and parsing its FST</summary>
+    PartitionInfo TryMountWiiuPartition(WiiuTocPartition tocPart)
+    {
+        ulong partDiscOff = WIIU_ENCRYPTED_OFFSET + (ulong)tocPart.StartSector * WIIU_PHYSICAL_SECTOR_SIZE - 0x10000;
+
+        // Read FST header
+        byte[] fstHdr = ReadWiiuVolumeDecrypted(tocPart.Key, partDiscOff, 0, WIIU_PHYSICAL_SECTOR_SIZE);
+
+        if(fstHdr == null)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Cannot read FST header for partition {0}", tocPart.Identifier);
+
+            return null;
+        }
+
+        // Verify "FST\0" magic
+        if(fstHdr[0] != 'F' || fstHdr[1] != 'S' || fstHdr[2] != 'T' || fstHdr[3] != 0)
+        {
+            AaruLogging.Debug(MODULE_NAME, "No FST magic for partition {0}", tocPart.Identifier);
+
+            return null;
+        }
+
+        var offsetFactor = BigEndianBitConverter.ToUInt32(fstHdr, 4);
+        var clusterCount = BigEndianBitConverter.ToUInt32(fstHdr, 8);
+
+        ulong entriesOffset = (ulong)offsetFactor * clusterCount + 0x20;
+
+        // Read root entry
+        byte[] rootEntryData = ReadWiiuVolumeDecrypted(tocPart.Key, partDiscOff, entriesOffset, 0x10);
+
+        if(rootEntryData == null) return null;
+
+        var totalEntries = BigEndianBitConverter.ToUInt32(rootEntryData, 8);
+
+        if(totalEntries == 0 || totalEntries > 100000) return null;
+
+        ulong nameTableOffset = entriesOffset + (ulong)totalEntries * 0x10;
+
+        // Read all entries + name table
+        var fstDataSize = (uint)(nameTableOffset - entriesOffset + 0x10000);
+
+        if(fstDataSize > 16 * 1024 * 1024) return null;
+
+        byte[] fstData = ReadWiiuVolumeDecrypted(tocPart.Key, partDiscOff, entriesOffset, fstDataSize);
+
+        if(fstData == null) return null;
+
+        // Parse into PartitionInfo using WiiuFstEntry (16 bytes each)
+        var partInfo = new PartitionInfo
+        {
+            Name            = tocPart.Identifier,
+            IsWiiU          = true,
+            WiiuKey         = tocPart.Key,
+            PartitionOffset = partDiscOff,
+            FstEntries      = new FstEntry[totalEntries],
+            FstNames        = new string[totalEntries],
+            WiiuFstEntries  = new WiiuFstEntry[totalEntries]
+        };
+
+        // Build cluster offsets table
+        partInfo.WiiuClusterOffsets = new ulong[clusterCount];
+
+        for(uint c = 0; c < clusterCount; c++)
+        {
+            var   raw   = BigEndianBitConverter.ToUInt32(fstHdr, (int)(0x20 + c * 0x20));
+            ulong start = (ulong)raw * WIIU_PHYSICAL_SECTOR_SIZE;
+            partInfo.WiiuClusterOffsets[c] = start > WIIU_PHYSICAL_SECTOR_SIZE ? start - WIIU_PHYSICAL_SECTOR_SIZE : 0;
+        }
+
+        var nameTableBase = (uint)(nameTableOffset - entriesOffset);
+
+        for(uint i = 0; i < totalEntries; i++)
+        {
+            var off = (int)(i * 0x10);
+
+            // Convert Wii U 16-byte FST entry to the standard 12-byte FstEntry structure
+            var typeAndName    = BigEndianBitConverter.ToUInt32(fstData, off);
+            var offsetOrParent = BigEndianBitConverter.ToUInt32(fstData, off + 4);
+            var sizeOrNext     = BigEndianBitConverter.ToUInt32(fstData, off + 8);
+
+            partInfo.FstEntries[i] = new FstEntry
+            {
+                TypeAndNameOffset = typeAndName,
+                OffsetOrParent    = offsetOrParent,
+                SizeOrNext        = sizeOrNext
+            };
+
+            partInfo.WiiuFstEntries[i] = new WiiuFstEntry
+            {
+                TypeAndNameOffset = typeAndName,
+                OffsetOrParent    = offsetOrParent,
+                SizeOrNext        = sizeOrNext,
+                Flags             = (ushort)(fstData[off + 0x0C] << 8 | fstData[off + 0x0D]),
+                ClusterIndex      = (ushort)(fstData[off + 0x0E] << 8 | fstData[off + 0x0F])
+            };
+
+            uint nameOffset = typeAndName & 0x00FFFFFF;
+
+            partInfo.FstNames[i] = nameOffset < fstDataSize - nameTableBase
+                                       ? StringHandlers.CToString(fstData,
+                                                                  _encoding,
+                                                                  false,
+                                                                  (int)(nameTableBase + nameOffset))
+                                       : "";
+        }
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "Successfully mounted Wii U partition \"{0}\" with {1} FST entries",
+                          tocPart.Identifier,
+                          totalEntries);
+
+        return partInfo;
+    }
+
     /// <summary>Mount a GameCube disc filesystem (no encryption, single partition)</summary>
     ErrorNumber MountGameCube()
     {
@@ -357,9 +776,7 @@ public sealed partial class NintendoPlugin
         if(dolHeader != null)
             partInfo.DolSize = CalculateDolSize(dolHeader);
         else
-        {
             AaruLogging.Debug(MODULE_NAME, "Failed to read DOL header for partition at 0x{0:X8}", partitionOffset);
-        }
 
         AaruLogging.Debug(MODULE_NAME,
                           "Successfully mounted partition at 0x{0:X8}: DOL at 0x{1:X8}, size {2}",
@@ -675,6 +1092,8 @@ public sealed partial class NintendoPlugin
             _isWii = true;
         else if(_discHeader.GcMagic == GC_MAGIC)
             _isWii = false;
+        else if(imagePlugin.Info.MediaType == MediaType.WUOD)
+            _isWiiU = true;
         else
         {
             AaruLogging.Debug(MODULE_NAME, "Neither Wii nor GameCube magic found, returning InvalidArgument");
@@ -707,7 +1126,9 @@ public sealed partial class NintendoPlugin
 
         AaruLogging.Debug(MODULE_NAME, "Disc ID = {0}, Title = \"{1}\"", discId, title);
 
-        if(_isWii)
+        if(_isWiiU)
+            errno = MountWiiU();
+        else if(_isWii)
             errno = MountWii(header);
         else
             errno = MountGameCube();
@@ -724,7 +1145,11 @@ public sealed partial class NintendoPlugin
 
         Metadata = new FileSystem
         {
-            Type         = _isWii ? FS_TYPE_WII : FS_TYPE_NGC,
+            Type = _isWiiU
+                       ? FS_TYPE_WIIU
+                       : _isWii
+                           ? FS_TYPE_WII
+                           : FS_TYPE_NGC,
             VolumeName   = title,
             ClusterSize  = 2048,
             Clusters     = imagePlugin.Info.Sectors * imagePlugin.Info.SectorSize / 2048,
@@ -738,7 +1163,11 @@ public sealed partial class NintendoPlugin
             FilenameLength = 256,
             FreeBlocks     = 0,
             PluginId       = Id,
-            Type           = _isWii ? FS_TYPE_WII : FS_TYPE_NGC
+            Type = _isWiiU
+                       ? FS_TYPE_WIIU
+                       : _isWii
+                           ? FS_TYPE_WII
+                           : FS_TYPE_NGC
         };
 
         _mounted = true;

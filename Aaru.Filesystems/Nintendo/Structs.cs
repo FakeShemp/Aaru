@@ -187,4 +187,48 @@ public sealed partial class NintendoPlugin
     }
 
 #endregion
+
+#region Nested type: WiiuTocPartition
+
+    /// <summary>
+    ///     Parsed Wii U TOC partition entry (in-memory representation).
+    ///     Parsed from decrypted TOC sector at WIIU_TOC_ENTRIES_OFFSET + i * WIIU_TOC_ENTRY_SIZE.
+    /// </summary>
+    struct WiiuTocPartition
+    {
+        /// <summary>Partition identifier string (e.g., "SI", "GI", "GM...")</summary>
+        public string Identifier;
+        /// <summary>Start physical sector (0x8000-byte units, BE u32 at entry + 0x20)</summary>
+        public uint StartSector;
+        /// <summary>Decrypted partition key (disc key or derived title key)</summary>
+        public byte[] Key;
+        /// <summary>Whether a title key was found for this partition</summary>
+        public bool HasTitleKey;
+    }
+
+#endregion
+
+#region Nested type: WiiuFstEntry
+
+    /// <summary>
+    ///     Wii U FST entry (16 bytes each, big-endian).
+    ///     Different from GC/Wii FST entries (which are 12 bytes).
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct WiiuFstEntry
+    {
+        /// <summary>Bits 31-24: Type (0 = file, 1 = directory). Bits 23-0: Name offset</summary>
+        public uint TypeAndNameOffset;
+        /// <summary>For files: data offset (shift left 5). For directories: parent index</summary>
+        public uint OffsetOrParent;
+        /// <summary>For files: file size. For directories: next entry index</summary>
+        public uint SizeOrNext;
+        /// <summary>Flags/permissions word</summary>
+        public ushort Flags;
+        /// <summary>Cluster index for this file's data</summary>
+        public ushort ClusterIndex;
+    }
+
+#endregion
 }

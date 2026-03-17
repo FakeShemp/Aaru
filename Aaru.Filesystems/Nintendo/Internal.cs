@@ -102,6 +102,9 @@ public sealed partial class NintendoPlugin
 
         /// <summary>Parsed FST entry names for this partition</summary>
         internal string[] FstNames;
+
+        /// <summary>True if this is a Wii U partition (different decryption model from Wii)</summary>
+        internal bool IsWiiU;
         /// <summary>Display name for the partition (e.g., "DATA", "UPDATE", "CHANNEL")</summary>
         internal string Name;
 
@@ -116,6 +119,15 @@ public sealed partial class NintendoPlugin
 
         /// <summary>Partition type value (0 = DATA, 1 = UPDATE, 2 = CHANNEL)</summary>
         internal uint Type;
+
+        /// <summary>Wii U cluster byte offsets within partition data (one per cluster)</summary>
+        internal ulong[] WiiuClusterOffsets;
+
+        /// <summary>Wii U FST entries (16 bytes each, storing cluster index in extra fields)</summary>
+        internal WiiuFstEntry[] WiiuFstEntries;
+
+        /// <summary>AES-128 key for Wii U partition decryption (disc key or title key)</summary>
+        internal byte[] WiiuKey;
     }
 
 #endregion

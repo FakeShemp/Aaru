@@ -30,8 +30,9 @@ namespace Aaru.Filesystems;
 
 public sealed partial class NintendoPlugin
 {
-    const string FS_TYPE_NGC = "ngcfs";
-    const string FS_TYPE_WII = "wiifs";
+    const string FS_TYPE_NGC  = "ngcfs";
+    const string FS_TYPE_WII  = "wiifs";
+    const string FS_TYPE_WIIU = "wiiufs";
 
     const uint GC_MAGIC  = 0xC2339F3D;
     const uint WII_MAGIC = 0x5D1C9EA3;
@@ -75,6 +76,24 @@ public sealed partial class NintendoPlugin
     /// <summary>Size of the decrypted data portion of each Wii cluster</summary>
     const int WII_CLUSTER_DATA_SIZE = 0x7C00;
 
+    /// <summary>Wii U TOC signature after decryption with disc key</summary>
+    const uint WIIU_TOC_SIGNATURE = 0xCCA6E67BU;
+
+    /// <summary>Wii U physical sector size (32 KiB)</summary>
+    const uint WIIU_PHYSICAL_SECTOR_SIZE = 0x8000;
+
+    /// <summary>Byte offset where Wii U encrypted region begins (physical sector 3)</summary>
+    const uint WIIU_ENCRYPTED_OFFSET = 0x18000U;
+
+    /// <summary>Offset of TOC partition entries within decrypted TOC sector</summary>
+    const uint WIIU_TOC_ENTRIES_OFFSET = 0x800U;
+
+    /// <summary>Size of each TOC partition entry</summary>
+    const uint WIIU_TOC_ENTRY_SIZE = 0x80U;
+
+    /// <summary>Maximum number of Wii U partitions</summary>
+    const int WIIU_MAX_PARTITIONS = 8;
+
     /// <summary>Wii common key used to decrypt partition title keys</summary>
     static readonly byte[] WII_COMMON_KEY =
     [
@@ -85,5 +104,11 @@ public sealed partial class NintendoPlugin
     static readonly byte[] WII_KOREAN_KEY =
     [
         0x63, 0xB8, 0x2B, 0xB4, 0xF4, 0x61, 0x4E, 0x2E, 0x13, 0xF2, 0xFE, 0xFB, 0xBA, 0x4C, 0x9B, 0x7E
+    ];
+
+    /// <summary>Wii U common key used to decrypt partition title keys</summary>
+    static readonly byte[] WIIU_COMMON_KEY =
+    [
+        0xD7, 0xB0, 0x04, 0x02, 0x65, 0x9B, 0xA2, 0xAB, 0xD2, 0xCB, 0x0D, 0xB2, 0x7F, 0xA2, 0xB6, 0x56
     ];
 }

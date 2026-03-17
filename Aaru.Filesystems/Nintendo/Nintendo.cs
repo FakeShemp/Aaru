@@ -36,7 +36,7 @@ using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
-/// <summary>Implements the filesystem used by Nintendo Gamecube and Wii discs</summary>
+/// <summary>Implements the filesystem used by Nintendo Gamecube, Wii, and Wii U discs</summary>
 public sealed partial class NintendoPlugin : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "Nintendo plugin";
@@ -45,10 +45,12 @@ public sealed partial class NintendoPlugin : IReadOnlyFilesystem
     Encoding        _encoding;
     IMediaImage     _imagePlugin;
     bool            _isWii;
+    bool            _isWiiU;
     bool            _mounted;
     bool            _multiPartition;
     PartitionInfo[] _partitions;
     FileSystemInfo  _statfs;
+    byte[]          _wiiuDiscKey;
 
 #region IReadOnlyFilesystem Members
 

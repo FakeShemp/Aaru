@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System.Text;
+using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -44,6 +45,9 @@ public sealed partial class NintendoPlugin
     public bool Identify(IMediaImage imagePlugin, Partition partition)
     {
         if(partition.Start != 0) return false;
+
+        // Wii U discs are identified by media type
+        if(imagePlugin.Info.MediaType == MediaType.WUOD) return true;
 
         if(imagePlugin.Info.Sectors * imagePlugin.Info.SectorSize < 0x50000) return false;
 
