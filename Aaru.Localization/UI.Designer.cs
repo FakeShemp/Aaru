@@ -2007,6 +2007,18 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string WiiU_product_code_0 {
+            get {
+                return ResourceManager.GetString("WiiU_product_code_0", resourceCulture);
+            }
+        }
+        
+        public static string WiiU_disc_number_0 {
+            get {
+                return ResourceManager.GetString("WiiU_disc_number_0", resourceCulture);
+            }
+        }
+        
         public static string Input_image_path {
             get {
                 return ResourceManager.GetString("Input_image_path", resourceCulture);

@@ -664,6 +664,12 @@
     <data name="WiiU_writing_media_tag_0" xml:space="preserve">
     <value>[slateblue1]Escribiendo etiqueta de medio Wii U: [orange1]{0}[/].[/]</value>
   </data>
+    <data name="WiiU_product_code_0" xml:space="preserve">
+    <value>[slateblue1]Código de producto Wii U: [aqua]{0}[/].[/]</value>
+  </data>
+    <data name="WiiU_disc_number_0" xml:space="preserve">
+    <value>[slateblue1]Número de disco Wii U: [green]{0}[/].[/]</value>
+  </data>
     <data name="PS3_encryption_map_0_regions" xml:space="preserve">
     <value>[slateblue1]Mapa de encriptación PS3: [green]{0}[/] región(es) de texto plano.[/]</value>
   </data>

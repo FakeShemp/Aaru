@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core.Image.WiiU;
 using Aaru.Localization;
@@ -220,5 +221,51 @@ public partial class Convert
         EndProgress?.Invoke();
 
         return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Extracts Wii U product code and disc number from the disc header (logical sector 0)
+    ///     and sets MediaPartNumber and MediaSequence on the output image.
+    /// </summary>
+    void EnrichWiiuMetadata()
+    {
+        if(_aborted) return;
+
+        ErrorNumber errno = _inputImage.ReadSector(0, false, out byte[] header, out _);
+
+        if(errno != ErrorNumber.NoError) return;
+
+        if(header.Length < 0x16) return;
+
+        // Product code: first 10 bytes, trimmed of nulls and spaces
+        var codeLen = 10;
+
+        while(codeLen > 0 && (header[codeLen - 1] == 0 || header[codeLen - 1] == ' ')) codeLen--;
+
+        if(codeLen > 0)
+        {
+            string productCode = Encoding.ASCII.GetString(header, 0, codeLen);
+
+            _outputImage.SetImageInfo(new CommonTypes.Structs.ImageInfo
+            {
+                MediaPartNumber = productCode
+            });
+
+            UpdateStatus?.Invoke(string.Format(UI.WiiU_product_code_0, productCode));
+        }
+
+        // Disc number: byte at offset 0x15 (ASCII digit)
+        if(header[0x15] >= '0' && header[0x15] <= '9')
+        {
+            int discNum = header[0x15] - '0' + 1;
+
+            _outputImage.SetImageInfo(new CommonTypes.Structs.ImageInfo
+            {
+                MediaSequence     = discNum,
+                LastMediaSequence = discNum
+            });
+
+            UpdateStatus?.Invoke(string.Format(UI.WiiU_disc_number_0, discNum));
+        }
     }
 }

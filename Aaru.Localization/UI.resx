@@ -1015,6 +1015,12 @@ In you are unsure, please press N to not continue.</value>
     <data name="WiiU_writing_media_tag_0" xml:space="preserve">
     <value>[slateblue1]Writing Wii U media tag: [orange1]{0}[/].[/]</value>
   </data>
+    <data name="WiiU_product_code_0" xml:space="preserve">
+    <value>[slateblue1]Wii U product code: [aqua]{0}[/].[/]</value>
+  </data>
+    <data name="WiiU_disc_number_0" xml:space="preserve">
+    <value>[slateblue1]Wii U disc number: [green]{0}[/].[/]</value>
+  </data>
     <data name="Input_image_path" xml:space="preserve">
     <value>Input image path</value>
   </data>
