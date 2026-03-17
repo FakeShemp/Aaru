@@ -634,6 +634,36 @@
     <data name="Bypass_Wii_decryption_help" xml:space="preserve">
     <value>Omitir el procesamiento de encriptación de disco Wii durante la conversión.</value>
   </data>
+    <data name="Ngcw_parsing_partition_table" xml:space="preserve">
+    <value>[slateblue1]Analizando tabla de particiones Wii...[/]</value>
+  </data>
+    <data name="Ngcw_cannot_parse_partitions" xml:space="preserve">
+    <value>[red]No se puede analizar la tabla de particiones Wii.[/]</value>
+  </data>
+    <data name="Ngcw_found_0_partitions" xml:space="preserve">
+    <value>[slateblue1]Se encontraron [green]{0}[/] partición(es) Wii.[/]</value>
+  </data>
+    <data name="Ngcw_building_partition_key_map" xml:space="preserve">
+    <value>[slateblue1]Construyendo mapa de claves de partición Wii...[/]</value>
+  </data>
+    <data name="Ngcw_written_partition_key_map" xml:space="preserve">
+    <value>[slateblue1]Etiqueta de medio escrita: Mapa de claves de partición Wii.[/]</value>
+  </data>
+    <data name="Ngcw_stored_junk_map_0_entries_1_bytes" xml:space="preserve">
+        <value>[slateblue1]Mapa de basura almacenado con [teal]{0}[/] entradas ([green]{1}[/] bytes).[/]</value>
+    </data>
+    <data name="Ngcw_converted_0_data_1_junk" xml:space="preserve">
+        <value>[slateblue1]Se convirtieron [green]{0}[/] sectores de datos y [teal]{1}[/] sectores de basura.[/]</value>
+    </data>
+    <data name="Ngcw_title_0" xml:space="preserve">
+    <value>[slateblue1]Título: [aqua]{0}[/].[/]</value>
+  </data>
+    <data name="Ngcw_game_id_0" xml:space="preserve">
+    <value>[slateblue1]ID del juego: [aqua]{0}[/].[/]</value>
+  </data>
+    <data name="Ngcw_disc_number_0" xml:space="preserve">
+    <value>[slateblue1]Número de disco: [green]{0}[/].[/]</value>
+  </data>
     <data name="PS3_disc_key_resolved_from_0" xml:space="preserve">
     <value>[slateblue1]Clave de disco PS3 resuelta desde [aqua]{0}[/].[/]</value>
   </data>

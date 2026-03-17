@@ -1911,6 +1911,66 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string Ngcw_parsing_partition_table {
+            get {
+                return ResourceManager.GetString("Ngcw_parsing_partition_table", resourceCulture);
+            }
+        }
+        
+        public static string Ngcw_cannot_parse_partitions {
+            get {
+                return ResourceManager.GetString("Ngcw_cannot_parse_partitions", resourceCulture);
+            }
+        }
+        
+        public static string Ngcw_found_0_partitions {
+            get {
+                return ResourceManager.GetString("Ngcw_found_0_partitions", resourceCulture);
+            }
+        }
+        
+        public static string Ngcw_building_partition_key_map {
+            get {
+                return ResourceManager.GetString("Ngcw_building_partition_key_map", resourceCulture);
+            }
+        }
+        
+        public static string Ngcw_written_partition_key_map {
+            get {
+                return ResourceManager.GetString("Ngcw_written_partition_key_map", resourceCulture);
+            }
+        }
+        
+        public static string Ngcw_stored_junk_map_0_entries_1_bytes {
+            get {
+                return ResourceManager.GetString("Ngcw_stored_junk_map_0_entries_1_bytes", resourceCulture);
+            }
+        }
+        
+        public static string Ngcw_converted_0_data_1_junk {
+            get {
+                return ResourceManager.GetString("Ngcw_converted_0_data_1_junk", resourceCulture);
+            }
+        }
+        
+        public static string Ngcw_title_0 {
+            get {
+                return ResourceManager.GetString("Ngcw_title_0", resourceCulture);
+            }
+        }
+        
+        public static string Ngcw_game_id_0 {
+            get {
+                return ResourceManager.GetString("Ngcw_game_id_0", resourceCulture);
+            }
+        }
+        
+        public static string Ngcw_disc_number_0 {
+            get {
+                return ResourceManager.GetString("Ngcw_disc_number_0", resourceCulture);
+            }
+        }
+        
         public static string PS3_disc_key_resolved_from_0 {
             get {
                 return ResourceManager.GetString("PS3_disc_key_resolved_from_0", resourceCulture);

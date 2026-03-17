@@ -967,6 +967,36 @@ In you are unsure, please press N to not continue.</value>
     <data name="Bypass_Wii_decryption_help" xml:space="preserve">
     <value>Skip Wii disc encryption processing during conversion.</value>
   </data>
+    <data name="Ngcw_parsing_partition_table" xml:space="preserve">
+    <value>[slateblue1]Parsing Wii partition table...[/]</value>
+  </data>
+    <data name="Ngcw_cannot_parse_partitions" xml:space="preserve">
+    <value>[red]Cannot parse Wii partition table.[/]</value>
+  </data>
+    <data name="Ngcw_found_0_partitions" xml:space="preserve">
+    <value>[slateblue1]Found [green]{0}[/] Wii partition(s).[/]</value>
+  </data>
+    <data name="Ngcw_building_partition_key_map" xml:space="preserve">
+    <value>[slateblue1]Building Wii partition key map...[/]</value>
+  </data>
+    <data name="Ngcw_written_partition_key_map" xml:space="preserve">
+    <value>[slateblue1]Written media tag: Wii Partition Key Map.[/]</value>
+  </data>
+    <data name="Ngcw_stored_junk_map_0_entries_1_bytes" xml:space="preserve">
+        <value>[slateblue1]Stored junk map with [teal]{0}[/] entries ([green]{1}[/] bytes).[/]</value>
+    </data>
+    <data name="Ngcw_converted_0_data_1_junk" xml:space="preserve">
+        <value>[slateblue1]Converted [green]{0}[/] data sectors and [teal]{1}[/] junk sectors.[/]</value>
+    </data>
+    <data name="Ngcw_title_0" xml:space="preserve">
+    <value>[slateblue1]Title: [aqua]{0}[/].[/]</value>
+  </data>
+    <data name="Ngcw_game_id_0" xml:space="preserve">
+    <value>[slateblue1]Game ID: [aqua]{0}[/].[/]</value>
+  </data>
+    <data name="Ngcw_disc_number_0" xml:space="preserve">
+    <value>[slateblue1]Disc number: [green]{0}[/].[/]</value>
+  </data>
     <data name="PS3_disc_key_resolved_from_0" xml:space="preserve">
     <value>[slateblue1]PS3 disc key resolved from [aqua]{0}[/].[/]</value>
   </data>
