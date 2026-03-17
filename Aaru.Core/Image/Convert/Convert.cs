@@ -180,10 +180,21 @@ public partial class Convert
                                _mediaType is MediaType.PS3BD or MediaType.PS3DVD &&
                                !_bypassPs3Decryption;
 
+        // Determine if Wii U conversion path should be active
+        bool isWiiuConversion = _outputImage is AaruFormat && _mediaType == MediaType.WUOD && !_bypassWiiuDecryption;
+
         // Inject PS3-specific media tags before copying normal media tags
         if(isPs3Conversion)
         {
             errno = InjectPs3MediaTags();
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+
+        // Inject Wii U-specific media tags before copying normal media tags
+        if(isWiiuConversion)
+        {
+            errno = InjectWiiuMediaTags();
 
             if(errno != ErrorNumber.NoError) return errno;
         }
@@ -199,9 +210,29 @@ public partial class Convert
         if(_inputImage is IOpticalMediaImage inputOptical      &&
            _outputImage is IWritableOpticalImage outputOptical &&
            inputOptical.Tracks != null                         &&
-           !isPs3Conversion)
+           !isPs3Conversion                                    &&
+           !isWiiuConversion)
         {
             errno = ConvertOptical(inputOptical, outputOptical, useLong);
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+        else if(isWiiuConversion)
+        {
+            if(_inputImage is IOpticalMediaImage wiiuInputOptical      &&
+               _outputImage is IWritableOpticalImage wiiuOutputOptical &&
+               wiiuInputOptical.Tracks != null)
+            {
+                if(!wiiuOutputOptical.SetTracks(wiiuInputOptical.Tracks))
+                {
+                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_sending_tracks_list_to_output_image,
+                                                               wiiuOutputOptical.ErrorMessage));
+
+                    return ErrorNumber.WriteError;
+                }
+            }
+
+            errno = ConvertWiiuSectors();
 
             if(errno != ErrorNumber.NoError) return errno;
         }
@@ -300,14 +331,14 @@ public partial class Convert
             }
         }
 
-        if(!isPs3Conversion && _negativeSectors > 0)
+        if(!isPs3Conversion && !isWiiuConversion && _negativeSectors > 0)
         {
             errno = ConvertNegativeSectors(useLong);
 
             if(errno != ErrorNumber.NoError) return errno;
         }
 
-        if(!isPs3Conversion && _overflowSectors > 0)
+        if(!isPs3Conversion && !isWiiuConversion && _overflowSectors > 0)
         {
             errno = ConvertOverflowSectors(useLong);
 
@@ -354,6 +385,9 @@ public partial class Convert
 
         // After all metadata has been copied, enrich title/part number from PS3 sources if still missing
         if(isPs3Conversion) EnrichPs3TitleAndPartNumber();
+
+        // After all metadata has been copied, enrich product code and disc number from Wii U disc header
+        if(isWiiuConversion) EnrichWiiuMetadata();
 
         var closed = false;
 
