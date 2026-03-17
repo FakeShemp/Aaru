@@ -285,9 +285,19 @@ public partial class Convert
 
             if(errno != ErrorNumber.NoError || bytesRead == 0) return;
 
-            // Parse SFO — will be implemented in Step 6 (SfoParser)
-            // For now, we prepare the infrastructure and will call SfoParser here
-            // SfoParser.Parse will be called here once it exists
+            if(!SfoParser.Parse(sfoData, out SfoFile sfo)) return;
+
+            bool needTitle      = string.IsNullOrEmpty(_outputImage.Info.MediaTitle);
+            bool needPartNumber = string.IsNullOrEmpty(_outputImage.Info.MediaPartNumber);
+
+            string sfoTitle = needTitle ? SfoParser.GetString(sfo,      "TITLE") : null;
+            string sfoId    = needPartNumber ? SfoParser.GetString(sfo, "TITLE_ID") : null;
+
+            if(!string.IsNullOrEmpty(sfoTitle) || !string.IsNullOrEmpty(sfoId))
+            {
+                ApplyPs3TitleOverrides(sfoTitle, sfoId);
+                UpdateStatus?.Invoke(UI.PS3_title_from_sfo);
+            }
         }
         catch
         {
