@@ -1899,6 +1899,60 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string PS3_disc_key_resolved_from_0 {
+            get {
+                return ResourceManager.GetString("PS3_disc_key_resolved_from_0", resourceCulture);
+            }
+        }
+        
+        public static string PS3_no_disc_key_found {
+            get {
+                return ResourceManager.GetString("PS3_no_disc_key_found", resourceCulture);
+            }
+        }
+        
+        public static string PS3_encryption_map_0_regions {
+            get {
+                return ResourceManager.GetString("PS3_encryption_map_0_regions", resourceCulture);
+            }
+        }
+        
+        public static string PS3_writing_media_tag_0 {
+            get {
+                return ResourceManager.GetString("PS3_writing_media_tag_0", resourceCulture);
+            }
+        }
+        
+        public static string PS3_converting_sectors_0_to_1 {
+            get {
+                return ResourceManager.GetString("PS3_converting_sectors_0_to_1", resourceCulture);
+            }
+        }
+        
+        public static string PS3_title_from_ird {
+            get {
+                return ResourceManager.GetString("PS3_title_from_ird", resourceCulture);
+            }
+        }
+        
+        public static string PS3_title_from_sfo {
+            get {
+                return ResourceManager.GetString("PS3_title_from_sfo", resourceCulture);
+            }
+        }
+        
+        public static string PS3_conversion_requires_AaruFormat {
+            get {
+                return ResourceManager.GetString("PS3_conversion_requires_AaruFormat", resourceCulture);
+            }
+        }
+        
+        public static string PS3_error_reading_sector_0 {
+            get {
+                return ResourceManager.GetString("PS3_error_reading_sector_0", resourceCulture);
+            }
+        }
+        
         public static string Input_image_path {
             get {
                 return ResourceManager.GetString("Input_image_path", resourceCulture);

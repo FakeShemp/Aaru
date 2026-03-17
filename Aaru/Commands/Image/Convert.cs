@@ -271,7 +271,8 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     geometryValues,
                                     resume,
                                     sidecar,
-                                    settings.BypassPs3Decryption);
+                                    settings.BypassPs3Decryption,
+                                    settings.InputPath);
 
         ErrorNumber errno = ErrorNumber.NoError;
 

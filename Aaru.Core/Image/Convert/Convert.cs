@@ -5,6 +5,7 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Metadata;
+using Aaru.Images;
 using Aaru.Localization;
 using MediaType = Aaru.CommonTypes.MediaType;
 using TapeFile = Aaru.CommonTypes.Structs.TapeFile;
@@ -31,6 +32,7 @@ public partial class Convert
     readonly bool                                        _generateSubchannels;
     readonly (uint cylinders, uint heads, uint sectors)? _geometryValues;
     readonly IMediaImage                                 _inputImage;
+    readonly string                                      _inputPath;
     readonly int                                         _lastMediaSequence;
     readonly string                                      _mediaBarcode;
     readonly string                                      _mediaManufacturer;
@@ -59,7 +61,7 @@ public partial class Convert
                    int mediaSequence, string mediaSerialNumber, string mediaTitle, bool decrypt, uint count,
                    PluginRegister plugins, bool fixSubchannelPosition, bool fixSubchannel, bool fixSubchannelCrc,
                    bool generateSubchannels, (uint cylinders, uint heads, uint sectors)? geometryValues, Resume resume,
-                   Metadata sidecar, bool bypassPs3Decryption)
+                   Metadata sidecar, bool bypassPs3Decryption, string inputPath = null)
     {
         _inputImage            = inputImage;
         _outputImage           = outputImage;
@@ -94,6 +96,7 @@ public partial class Convert
         _resume                = resume;
         _sidecar               = sidecar;
         _bypassPs3Decryption   = bypassPs3Decryption;
+        _inputPath             = inputPath;
     }
 
     public ErrorNumber Start()
@@ -170,6 +173,19 @@ public partial class Convert
         Metadata           metadata     = _inputImage.AaruMetadata;
         List<DumpHardware> dumpHardware = _inputImage.DumpHardware;
 
+        // Determine if PS3 conversion path should be active
+        bool isPs3Conversion = _outputImage is AaruFormat                        &&
+                               _mediaType is MediaType.PS3BD or MediaType.PS3DVD &&
+                               !_bypassPs3Decryption;
+
+        // Inject PS3-specific media tags before copying normal media tags
+        if(isPs3Conversion)
+        {
+            errno = InjectPs3MediaTags();
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+
         // Convert media tags from input to output format
         errno = ConvertMediaTags();
 
@@ -180,9 +196,29 @@ public partial class Convert
         // Perform the actual data conversion from input to output image
         if(_inputImage is IOpticalMediaImage inputOptical      &&
            _outputImage is IWritableOpticalImage outputOptical &&
-           inputOptical.Tracks != null)
+           inputOptical.Tracks != null                         &&
+           !isPs3Conversion)
         {
             errno = ConvertOptical(inputOptical, outputOptical, useLong);
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+        else if(isPs3Conversion)
+        {
+            if(_inputImage is IOpticalMediaImage ps3InputOptical      &&
+               _outputImage is IWritableOpticalImage ps3OutputOptical &&
+               ps3InputOptical.Tracks != null)
+            {
+                if(!ps3OutputOptical.SetTracks(ps3InputOptical.Tracks))
+                {
+                    StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_sending_tracks_list_to_output_image,
+                                                               ps3OutputOptical.ErrorMessage));
+
+                    return ErrorNumber.WriteError;
+                }
+            }
+
+            errno = ConvertPs3Sectors();
 
             if(errno != ErrorNumber.NoError) return errno;
         }
@@ -262,14 +298,14 @@ public partial class Convert
             }
         }
 
-        if(_negativeSectors > 0)
+        if(!isPs3Conversion && _negativeSectors > 0)
         {
             errno = ConvertNegativeSectors(useLong);
 
             if(errno != ErrorNumber.NoError) return errno;
         }
 
-        if(_overflowSectors > 0)
+        if(!isPs3Conversion && _overflowSectors > 0)
         {
             errno = ConvertOverflowSectors(useLong);
 
@@ -313,6 +349,9 @@ public partial class Convert
 
             return ErrorNumber.Canceled;
         }
+
+        // After all metadata has been copied, enrich title/part number from PS3 sources if still missing
+        if(isPs3Conversion) EnrichPs3TitleAndPartNumber();
 
         var closed = false;
 
