@@ -1,3 +1,4 @@
+using System;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core.Image.WiiU;
 using Aaru.Localization;
@@ -75,6 +76,146 @@ public partial class Convert
         PulseProgress?.Invoke(string.Format(UI.WiiU_writing_media_tag_0, MediaTagType.WiiUPartitionKeyMap.Humanize()));
 
         _outputImage.WriteMediaTag(keyMapData, MediaTagType.WiiUPartitionKeyMap);
+
+        EndProgress?.Invoke();
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>
+    ///     Converts Wii U sectors from input to output, decrypting encrypted physical sectors
+    ///     and writing 16 logical sectors per physical sector with appropriate SectorStatus.
+    ///     Plaintext sectors get <see cref="SectorStatus.Dumped" />, decrypted sectors get
+    ///     <see cref="SectorStatus.Unencrypted" />.
+    ///     Does not copy sector tags, negative sectors, or overflow sectors.
+    /// </summary>
+    ErrorNumber ConvertWiiuSectors()
+    {
+        if(_aborted) return ErrorNumber.NoError;
+
+        InitProgress?.Invoke();
+
+        ulong totalLogicalSectors  = _inputImage.Info.Sectors;
+        ulong totalPhysicalSectors = totalLogicalSectors / WiiuCrypto.LOGICAL_PER_PHYSICAL;
+
+        for(ulong phys = 0; phys < totalPhysicalSectors; phys++)
+        {
+            if(_aborted) break;
+
+            ulong baseLogical = phys * WiiuCrypto.LOGICAL_PER_PHYSICAL;
+
+            UpdateProgress?.Invoke(string.Format(UI.Converting_sectors_0_to_1,
+                                                 baseLogical,
+                                                 baseLogical + WiiuCrypto.LOGICAL_PER_PHYSICAL),
+                                   (long)baseLogical,
+                                   (long)totalLogicalSectors);
+
+            // Read 16 logical sectors (one physical sector) from source
+            var physSectorBuf = new byte[WiiuCrypto.SECTOR_SIZE];
+
+            for(uint s = 0; s < WiiuCrypto.LOGICAL_PER_PHYSICAL; s++)
+            {
+                ErrorNumber errno = _inputImage.ReadSector(baseLogical + s, false, out byte[] logicalSector, out _);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    // Zero-fill on error
+                    Array.Clear(physSectorBuf,
+                                (int)(s * WiiuCrypto.LOGICAL_SECTOR_SIZE),
+                                WiiuCrypto.LOGICAL_SECTOR_SIZE);
+
+                    continue;
+                }
+
+                Array.Copy(logicalSector,
+                           0,
+                           physSectorBuf,
+                           (int)(s * WiiuCrypto.LOGICAL_SECTOR_SIZE),
+                           WiiuCrypto.LOGICAL_SECTOR_SIZE);
+            }
+
+            // Determine if this physical sector is plaintext or encrypted
+            var          isPlaintext = false;
+            SectorStatus writeStatus;
+
+            if(phys < WiiuCrypto.HEADER_PHYSICAL_SECTORS)
+                isPlaintext = true;
+            else
+            {
+                // Partition start sectors are plaintext
+                for(var pi = 0; pi < _wiiuPartitions.Length; pi++)
+                {
+                    if(phys == _wiiuPartitions[pi].StartSector)
+                    {
+                        isPlaintext = true;
+
+                        break;
+                    }
+                }
+            }
+
+            if(isPlaintext)
+                writeStatus = SectorStatus.Dumped;
+            else
+            {
+                // Find which partition region this sector belongs to and decrypt
+                byte[] partKey = null;
+
+                for(var pi = 0; pi < _wiiuRegions.Length; pi++)
+                {
+                    if(phys > _wiiuRegions[pi].StartSector && phys < _wiiuRegions[pi].EndSector)
+                    {
+                        partKey = _wiiuRegions[pi].Key;
+
+                        break;
+                    }
+                }
+
+                if(partKey != null)
+                {
+                    physSectorBuf = WiiuCrypto.DecryptSector(partKey, physSectorBuf);
+                    writeStatus   = SectorStatus.Unencrypted;
+                }
+                else
+                {
+                    // Outside any known partition — store as plaintext
+                    writeStatus = SectorStatus.Dumped;
+                }
+            }
+
+            // Write 16 logical sectors with uniform status
+            for(uint s = 0; s < WiiuCrypto.LOGICAL_PER_PHYSICAL; s++)
+            {
+                ulong logical    = baseLogical + s;
+                var   sectorData = new byte[WiiuCrypto.LOGICAL_SECTOR_SIZE];
+
+                Array.Copy(physSectorBuf,
+                           (int)(s * WiiuCrypto.LOGICAL_SECTOR_SIZE),
+                           sectorData,
+                           0,
+                           WiiuCrypto.LOGICAL_SECTOR_SIZE);
+
+                bool ok = _outputImage.WriteSector(sectorData, logical, false, writeStatus);
+
+                if(!ok)
+                {
+                    if(_force)
+                    {
+                        ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_continuing,
+                                                           _outputImage.ErrorMessage,
+                                                           logical));
+                    }
+                    else
+                    {
+                        StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_not_continuing,
+                                                                   _outputImage.ErrorMessage,
+                                                                   logical));
+
+                        return ErrorNumber.WriteError;
+                    }
+                }
+            }
+        }
 
         EndProgress?.Invoke();
 
