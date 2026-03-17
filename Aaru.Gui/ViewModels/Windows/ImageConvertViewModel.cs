@@ -351,6 +351,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                                  _aaruMetadata,
                                  false,
                                  false,
+                                 false,
                                  SourceText);
 
         // Prepare UI
