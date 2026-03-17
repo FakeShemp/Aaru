@@ -49,6 +49,9 @@ static class Lfg
     /// <summary>Number of uint32 words needed to seed the LFG.</summary>
     public const int SEED_SIZE = 17;
 
+    /// <summary>Minimum number of bytes needed for seed extraction (K * 4 = 2084).</summary>
+    public const int MIN_SEED_DATA_BYTES = K * sizeof(uint);
+
     /// <summary>Total bytes in the LFG buffer (K * 4).</summary>
     const int BUFFER_BYTES = K * sizeof(uint);
 
