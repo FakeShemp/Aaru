@@ -619,6 +619,30 @@ public sealed partial class ZZZRawImage
             else if(gcMagic == NGC_GC_MAGIC) _imageInfo.MediaType = MediaType.GOD;
         }
 
+        // Check for bare .bca sidecar (64 bytes) for GameCube/Wii discs
+        if(_imageInfo.MediaType is MediaType.GOD or MediaType.WOD && !_mediaTags.ContainsKey(MediaTagType.DVD_BCA))
+        {
+            // Try basename + ".bca"
+            string bcaPath = basename + ".bca";
+
+            if(!File.Exists(bcaPath))
+            {
+                // Try input path + ".bca" (appended to full filename)
+                bcaPath = imageFilter.Filename + ".bca";
+            }
+
+            if(File.Exists(bcaPath))
+            {
+                byte[] bcaData = File.ReadAllBytes(bcaPath);
+
+                if(bcaData.Length == 64)
+                {
+                    _mediaTags[MediaTagType.DVD_BCA] = bcaData;
+                    AaruLogging.Debug(MODULE_NAME, "Found BCA sidecar");
+                }
+            }
+        }
+
         switch(_imageInfo.MediaType)
         {
             case MediaType.ACORN_35_DS_DD:
