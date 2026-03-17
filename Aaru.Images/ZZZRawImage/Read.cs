@@ -570,6 +570,16 @@ public sealed partial class ZZZRawImage
             }
         }
 
+        // Check for PS3 Blu-ray: .iso extension, size divisible by 2048, sector 1 contains "PlayStation3" signature
+        if(_extension == ".iso" && _imageInfo.ImageSize % 2048 == 0 && _imageInfo.ImageSize >= 4096)
+        {
+            stream.Seek(2048, SeekOrigin.Begin);
+            var sector1 = new byte[_ps3Id.Length];
+            stream.EnsureRead(sector1, 0, sector1.Length);
+
+            if(sector1.SequenceEqual(_ps3Id)) _imageInfo.MediaType = MediaType.PS3BD;
+        }
+
         switch(_imageInfo.MediaType)
         {
             case MediaType.ACORN_35_DS_DD:
