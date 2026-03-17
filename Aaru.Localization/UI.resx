@@ -988,6 +988,33 @@ In you are unsure, please press N to not continue.</value>
     <data name="PS3_error_reading_sector_0" xml:space="preserve">
     <value>[red]Error reading sector [green]0[/] for PS3 encryption map.[/]</value>
   </data>
+    <data name="WiiU_no_disc_key_found" xml:space="preserve">
+    <value>[red]Wii U conversion requires a disc key. Provide a .key sidecar file.[/]</value>
+  </data>
+    <data name="WiiU_disc_key_loaded" xml:space="preserve">
+    <value>[slateblue1]Wii U disc key loaded.[/]</value>
+  </data>
+    <data name="WiiU_parsing_partition_table" xml:space="preserve">
+    <value>[slateblue1]Parsing Wii U partition table...[/]</value>
+  </data>
+    <data name="WiiU_cannot_parse_toc" xml:space="preserve">
+    <value>[red]Cannot parse Wii U TOC. Check that the disc key is correct.[/]</value>
+  </data>
+    <data name="WiiU_found_0_partitions" xml:space="preserve">
+    <value>[slateblue1]Found [green]{0}[/] Wii U partition(s).[/]</value>
+  </data>
+    <data name="WiiU_extracting_title_keys" xml:space="preserve">
+    <value>[slateblue1]Extracting Wii U title keys...[/]</value>
+  </data>
+    <data name="WiiU_extracted_0_title_keys" xml:space="preserve">
+    <value>[slateblue1]Extracted [green]{0}[/] Wii U title key(s).[/]</value>
+  </data>
+    <data name="WiiU_building_partition_key_map" xml:space="preserve">
+    <value>[slateblue1]Building Wii U partition key map...[/]</value>
+  </data>
+    <data name="WiiU_writing_media_tag_0" xml:space="preserve">
+    <value>[slateblue1]Writing Wii U media tag: [orange1]{0}[/].[/]</value>
+  </data>
     <data name="Input_image_path" xml:space="preserve">
     <value>Input image path</value>
   </data>

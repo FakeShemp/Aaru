@@ -637,6 +637,33 @@
     <data name="PS3_no_disc_key_found" xml:space="preserve">
     <value>[red]La conversión PS3 requiere una clave de disco. Proporcione un archivo sidecar .disc_key, .data1 o .ird.[/]</value>
   </data>
+    <data name="WiiU_no_disc_key_found" xml:space="preserve">
+    <value>[red]La conversión Wii U requiere una clave de disco. Proporcione un archivo sidecar .key.[/]</value>
+  </data>
+    <data name="WiiU_disc_key_loaded" xml:space="preserve">
+    <value>[slateblue1]Clave de disco Wii U cargada.[/]</value>
+  </data>
+    <data name="WiiU_parsing_partition_table" xml:space="preserve">
+    <value>[slateblue1]Analizando tabla de particiones Wii U...[/]</value>
+  </data>
+    <data name="WiiU_cannot_parse_toc" xml:space="preserve">
+    <value>[red]No se puede analizar el TOC de Wii U. Verifique que la clave de disco sea correcta.[/]</value>
+  </data>
+    <data name="WiiU_found_0_partitions" xml:space="preserve">
+    <value>[slateblue1]Se encontraron [green]{0}[/] partición(es) Wii U.[/]</value>
+  </data>
+    <data name="WiiU_extracting_title_keys" xml:space="preserve">
+    <value>[slateblue1]Extrayendo claves de título Wii U...[/]</value>
+  </data>
+    <data name="WiiU_extracted_0_title_keys" xml:space="preserve">
+    <value>[slateblue1]Se extrajeron [green]{0}[/] clave(s) de título Wii U.[/]</value>
+  </data>
+    <data name="WiiU_building_partition_key_map" xml:space="preserve">
+    <value>[slateblue1]Construyendo mapa de claves de partición Wii U...[/]</value>
+  </data>
+    <data name="WiiU_writing_media_tag_0" xml:space="preserve">
+    <value>[slateblue1]Escribiendo etiqueta de medio Wii U: [orange1]{0}[/].[/]</value>
+  </data>
     <data name="PS3_encryption_map_0_regions" xml:space="preserve">
     <value>[slateblue1]Mapa de encriptación PS3: [green]{0}[/] región(es) de texto plano.[/]</value>
   </data>

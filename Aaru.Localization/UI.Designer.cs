@@ -1953,6 +1953,60 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string WiiU_no_disc_key_found {
+            get {
+                return ResourceManager.GetString("WiiU_no_disc_key_found", resourceCulture);
+            }
+        }
+        
+        public static string WiiU_disc_key_loaded {
+            get {
+                return ResourceManager.GetString("WiiU_disc_key_loaded", resourceCulture);
+            }
+        }
+        
+        public static string WiiU_parsing_partition_table {
+            get {
+                return ResourceManager.GetString("WiiU_parsing_partition_table", resourceCulture);
+            }
+        }
+        
+        public static string WiiU_cannot_parse_toc {
+            get {
+                return ResourceManager.GetString("WiiU_cannot_parse_toc", resourceCulture);
+            }
+        }
+        
+        public static string WiiU_found_0_partitions {
+            get {
+                return ResourceManager.GetString("WiiU_found_0_partitions", resourceCulture);
+            }
+        }
+        
+        public static string WiiU_extracting_title_keys {
+            get {
+                return ResourceManager.GetString("WiiU_extracting_title_keys", resourceCulture);
+            }
+        }
+        
+        public static string WiiU_extracted_0_title_keys {
+            get {
+                return ResourceManager.GetString("WiiU_extracted_0_title_keys", resourceCulture);
+            }
+        }
+        
+        public static string WiiU_building_partition_key_map {
+            get {
+                return ResourceManager.GetString("WiiU_building_partition_key_map", resourceCulture);
+            }
+        }
+        
+        public static string WiiU_writing_media_tag_0 {
+            get {
+                return ResourceManager.GetString("WiiU_writing_media_tag_0", resourceCulture);
+            }
+        }
+        
         public static string Input_image_path {
             get {
                 return ResourceManager.GetString("Input_image_path", resourceCulture);
