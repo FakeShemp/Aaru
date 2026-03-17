@@ -15,6 +15,7 @@ namespace Aaru.Core.Image;
 public partial class Convert
 {
     const    string                                      MODULE_NAME = "Image Conversion";
+    readonly bool                                        _bypassPs3Decryption;
     readonly string                                      _comments;
     readonly uint                                        _count;
     readonly string                                      _creator;
@@ -58,7 +59,7 @@ public partial class Convert
                    int mediaSequence, string mediaSerialNumber, string mediaTitle, bool decrypt, uint count,
                    PluginRegister plugins, bool fixSubchannelPosition, bool fixSubchannel, bool fixSubchannelCrc,
                    bool generateSubchannels, (uint cylinders, uint heads, uint sectors)? geometryValues, Resume resume,
-                   Metadata sidecar)
+                   Metadata sidecar, bool bypassPs3Decryption)
     {
         _inputImage            = inputImage;
         _outputImage           = outputImage;
@@ -92,6 +93,7 @@ public partial class Convert
         _geometryValues        = geometryValues;
         _resume                = resume;
         _sidecar               = sidecar;
+        _bypassPs3Decryption   = bypassPs3Decryption;
     }
 
     public ErrorNumber Start()

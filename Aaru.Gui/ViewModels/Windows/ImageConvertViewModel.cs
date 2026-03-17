@@ -348,7 +348,8 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                                  false,
                                  null,
                                  _resume,
-                                 _aaruMetadata);
+                                 _aaruMetadata,
+                                 false);
 
         // Prepare UI
         await Dispatcher.UIThread.InvokeAsync(() =>

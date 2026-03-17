@@ -625,6 +625,9 @@
     <data name="Decrypt_sectors_help" xml:space="preserve">
     <value>Intentar desencriptar los sectores encriptados.</value>
   </data>
+    <data name="Bypass_PS3_decryption_help" xml:space="preserve">
+    <value>Omitir el procesamiento de encriptación de disco PS3 durante la conversión.</value>
+  </data>
     <data name="Default" xml:space="preserve">
         <value>[bold][aqua]Por defecto[/][/]</value>
     </data>

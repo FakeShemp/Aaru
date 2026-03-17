@@ -958,6 +958,9 @@ In you are unsure, please press N to not continue.</value>
     <data name="Decrypt_sectors_help" xml:space="preserve">
     <value>Try to decrypt encrypted sectors.</value>
   </data>
+    <data name="Bypass_PS3_decryption_help" xml:space="preserve">
+    <value>Skip PS3 disc encryption processing during conversion.</value>
+  </data>
     <data name="Input_image_path" xml:space="preserve">
     <value>Input image path</value>
   </data>

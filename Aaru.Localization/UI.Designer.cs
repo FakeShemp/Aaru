@@ -1893,6 +1893,12 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string Bypass_PS3_decryption_help {
+            get {
+                return ResourceManager.GetString("Bypass_PS3_decryption_help", resourceCulture);
+            }
+        }
+        
         public static string Input_image_path {
             get {
                 return ResourceManager.GetString("Input_image_path", resourceCulture);
