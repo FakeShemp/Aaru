@@ -408,7 +408,16 @@ public enum MediaTagType
     PS3_PIC = 80,
     /// <summary>PS3 encryption region map (serialized from sector 0)</summary>
     [Description("PS3 encryption region map")]
-    PS3_EncryptionMap = 81
+    PS3_EncryptionMap = 81,
+    ///<summary>Nintendo Wii U partition-to-key mapping with regions</summary>
+    [Description("Nintendo Wii U partition-to-key mapping with regions")]
+    WiiUPartitionKeyMap = 82,
+    ///<summary>Nintendo Wii partition-to-key mapping with regions</summary>
+    [Description("Nintendo Wii partition-to-key mapping with regions")]
+    WiiPartitionKeyMap = 83,
+    ///<summary>Nintendo GameCube/Wii junk region map with LFG seeds</summary>
+    [Description("Nintendo GameCube/Wii junk region map with LFG seeds")]
+    NgcwJunkMap = 84
 }
 
 /// <summary>Enumeration of media types defined in metadata</summary>
