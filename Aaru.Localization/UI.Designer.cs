@@ -1923,12 +1923,6 @@ namespace Aaru.Localization {
             }
         }
         
-        public static string PS3_converting_sectors_0_to_1 {
-            get {
-                return ResourceManager.GetString("PS3_converting_sectors_0_to_1", resourceCulture);
-            }
-        }
-        
         public static string PS3_title_from_ird {
             get {
                 return ResourceManager.GetString("PS3_title_from_ird", resourceCulture);

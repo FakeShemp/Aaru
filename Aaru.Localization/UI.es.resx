@@ -629,31 +629,28 @@
     <value>Omitir el procesamiento de encriptación de disco PS3 durante la conversión.</value>
   </data>
     <data name="PS3_disc_key_resolved_from_0" xml:space="preserve">
-    <value>Clave de disco PS3 resuelta desde {0}.</value>
+    <value>[slateblue1]Clave de disco PS3 resuelta desde [aqua]{0}[/].[/]</value>
   </data>
     <data name="PS3_no_disc_key_found" xml:space="preserve">
-    <value>La conversión PS3 requiere una clave de disco. Proporcione un archivo sidecar .disc_key, .data1 o .ird.</value>
+    <value>[red]La conversión PS3 requiere una clave de disco. Proporcione un archivo sidecar .disc_key, .data1 o .ird.[/]</value>
   </data>
     <data name="PS3_encryption_map_0_regions" xml:space="preserve">
-    <value>Mapa de encriptación PS3: {0} región(es) de texto plano.</value>
+    <value>[slateblue1]Mapa de encriptación PS3: [green]{0}[/] región(es) de texto plano.[/]</value>
   </data>
     <data name="PS3_writing_media_tag_0" xml:space="preserve">
-    <value>Escribiendo etiqueta de medio PS3: {0}.</value>
-  </data>
-    <data name="PS3_converting_sectors_0_to_1" xml:space="preserve">
-    <value>PS3 convirtiendo sectores {0} a {1}.</value>
+    <value>[slateblue1]Escribiendo etiqueta de medio PS3: [orange1]{0}[/].[/]</value>
   </data>
     <data name="PS3_title_from_ird" xml:space="preserve">
-    <value>Título/número de parte PS3 enriquecido desde el sidecar IRD.</value>
+    <value>[slateblue1]Título/número de parte PS3 enriquecido desde el sidecar [purple]IRD[/].[/]</value>
   </data>
     <data name="PS3_title_from_sfo" xml:space="preserve">
-    <value>Título/número de parte PS3 enriquecido desde PARAM.SFO.</value>
+    <value>[slateblue1]Título/número de parte PS3 enriquecido desde [purple]PARAM.SFO[/].[/]</value>
   </data>
     <data name="PS3_conversion_requires_AaruFormat" xml:space="preserve">
-    <value>La ruta de conversión PS3 solo es compatible cuando el formato de salida es AaruFormat.</value>
+    <value>[red]La ruta de conversión PS3 solo es compatible cuando el formato de salida es [purple]AaruFormat[/].[/]</value>
   </data>
     <data name="PS3_error_reading_sector_0" xml:space="preserve">
-    <value>Error al leer el sector 0 para el mapa de encriptación PS3.</value>
+    <value>[red]Error al leer el sector [green]0[/] para el mapa de encriptación PS3.[/]</value>
   </data>
     <data name="Default" xml:space="preserve">
         <value>[bold][aqua]Por defecto[/][/]</value>

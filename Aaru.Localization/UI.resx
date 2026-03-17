@@ -962,31 +962,28 @@ In you are unsure, please press N to not continue.</value>
     <value>Skip PS3 disc encryption processing during conversion.</value>
   </data>
     <data name="PS3_disc_key_resolved_from_0" xml:space="preserve">
-    <value>PS3 disc key resolved from {0}.</value>
+    <value>[slateblue1]PS3 disc key resolved from [aqua]{0}[/].[/]</value>
   </data>
     <data name="PS3_no_disc_key_found" xml:space="preserve">
-    <value>PS3 conversion requires a disc key. Provide a .disc_key, .data1, or .ird sidecar file.</value>
+    <value>[red]PS3 conversion requires a disc key. Provide a .disc_key, .data1, or .ird sidecar file.[/]</value>
   </data>
     <data name="PS3_encryption_map_0_regions" xml:space="preserve">
-    <value>PS3 encryption map: {0} plaintext region(s).</value>
+    <value>[slateblue1]PS3 encryption map: [green]{0}[/] plaintext region(s).[/]</value>
   </data>
     <data name="PS3_writing_media_tag_0" xml:space="preserve">
-    <value>Writing PS3 media tag: {0}.</value>
-  </data>
-    <data name="PS3_converting_sectors_0_to_1" xml:space="preserve">
-    <value>PS3 converting sectors {0} to {1}.</value>
+    <value>[slateblue1]Writing PS3 media tag: [orange1]{0}[/].[/]</value>
   </data>
     <data name="PS3_title_from_ird" xml:space="preserve">
-    <value>PS3 title/part number enriched from IRD sidecar.</value>
+    <value>[slateblue1]PS3 title/part number enriched from [purple]IRD[/] sidecar.[/]</value>
   </data>
     <data name="PS3_title_from_sfo" xml:space="preserve">
-    <value>PS3 title/part number enriched from PARAM.SFO.</value>
+    <value>[slateblue1]PS3 title/part number enriched from [purple]PARAM.SFO[/].[/]</value>
   </data>
     <data name="PS3_conversion_requires_AaruFormat" xml:space="preserve">
-    <value>PS3 conversion path is only supported when the output format is AaruFormat.</value>
+    <value>[red]PS3 conversion path is only supported when the output format is [purple]AaruFormat[/].[/]</value>
   </data>
     <data name="PS3_error_reading_sector_0" xml:space="preserve">
-    <value>Error reading sector 0 for PS3 encryption map.</value>
+    <value>[red]Error reading sector [green]0[/] for PS3 encryption map.[/]</value>
   </data>
     <data name="Input_image_path" xml:space="preserve">
     <value>Input image path</value>
