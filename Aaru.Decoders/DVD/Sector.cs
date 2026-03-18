@@ -43,6 +43,54 @@ namespace Aaru.Decoders.DVD;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 public sealed class Sector
 {
+    /// <summary>Offset of main user data in a standard ECMA-267 DVD sector (bytes 12-2059).</summary>
+    const int DvdMainDataOffset = 12;
+
+    public const int Form1DataSize = 2048;
+    const int Ecma267TableSize = 16 * Form1DataSize; // 32768
+
+    static readonly byte[] _ecma267Table = BuildEcma267Table();
+
+    static byte[] BuildEcma267Table()
+    {
+        byte[] table = new byte[Ecma267TableSize];
+        ushort shiftRegister = 0x0001;
+
+        for(int t = 0; t < Ecma267TableSize; t++)
+        {
+            table[t] = (byte)shiftRegister;
+
+            for(int b = 0; b < 8; b++)
+            {
+                int lsb = (shiftRegister >> 14 & 1) ^ (shiftRegister >> 10 & 1);
+                shiftRegister = (ushort)((shiftRegister << 1 | (ushort)lsb) & 0x7FFF);
+            }
+        }
+
+        return table;
+    }
+
+    /// <summary>Gets the Physical Sector Number (PSN) from the sector header (bytes 1-3, big-endian).</summary>
+    public static int GetPsn(byte[] sector)
+    {
+        if(sector == null || sector.Length < 4) return 0;
+
+        return (sector[1] << 16) | (sector[2] << 8) | sector[3];
+    }
+
+    public static void ApplyTableWithWrap(byte[] sector, int dataStart, int tableOffset)
+    {
+        for(int i = 0; i < Form1DataSize; i++)
+        {
+            int index = tableOffset + i;
+
+            if(index >= Ecma267TableSize)
+                index -= Ecma267TableSize - 1;
+
+            sector[dataStart + i] ^= _ecma267Table[index];
+        }
+    }
+
     static readonly ushort[] _ecma267InitialValues =
     [
         0x0001, 0x5500, 0x0002, 0x2A00, 0x0004, 0x5400, 0x0008, 0x2800, 0x0010, 0x5000, 0x0020, 0x2001, 0x0040,
@@ -233,12 +281,28 @@ public sealed class Sector
         return !CheckEdc(scrambled) ? ErrorNumber.NotVerifiable : ErrorNumber.NoError;
     }
 
+    /// <summary>
+    ///     Descrambles a DVD sector. Uses PSN from header (bytes 1-3) to select XOR table.
+    /// </summary>
+    /// <param name="sector">Scrambled 2064-byte sector</param>
+    /// <param name="scrambled">Descrambled sector output</param>
     public ErrorNumber Scramble(byte[] sector, out byte[] scrambled)
     {
         scrambled = new byte[sector.Length];
 
         if(sector is not { Length: 2064 }) return ErrorNumber.NotSupported;
 
+        int psn = GetPsn(sector);
+
+        // Standard DVD: try PSN-based descramble first
+        int offset = (psn >> 4 & 0xF) * Form1DataSize;
+        Array.Copy(sector, 0, scrambled, 0, sector.Length);
+        ApplyTableWithWrap(scrambled, DvdMainDataOffset, offset);
+
+        if(CheckEdc(scrambled))
+            return ErrorNumber.NoError;
+
+        // Fallback: seed search for non-standard
         byte[]? cipher = GetSeed(sector);
 
         return cipher == null ? ErrorNumber.UnrecognizedFormat : UnscrambleSector(sector, cipher, out scrambled);
