@@ -1,4 +1,4 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
@@ -791,6 +791,7 @@ partial class Dump
         {
             UpdateStatus?.Invoke(Localization.Core.Title_keys_dumping_is_enabled_This_will_be_very_slow);
             _resume.MissingTitleKeys ??= [..Enumerable.Range(0, (int)blocks).Select(static n => (ulong)n)];
+            InitializeMissingTitleKeysCache();
         }
 
         if(_dev.ScsiType == PeripheralDeviceTypes.OpticalDevice)
@@ -920,7 +921,9 @@ partial class Dump
         if(_resume.BadBlocks.Count > 0 && !_aborted && _retryPasses > 0)
             RetrySbcData(scsiReader, currentTry, extents, ref totalDuration, blankExtents, mediaTag ?? null);
 
-        if(_resume.MissingTitleKeys?.Count > 0        &&
+        SyncMissingTitleKeysToResume();
+
+        if(MissingTitleKeyCount() > 0                 &&
            !_aborted                                  &&
            _retryPasses > 0                           &&
            Settings.Settings.Current.EnableDecryption &&

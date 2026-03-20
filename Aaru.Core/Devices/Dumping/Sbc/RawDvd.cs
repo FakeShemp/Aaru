@@ -220,14 +220,14 @@ partial class Dump
                     {
                         outputFormat.WriteSectorTag(new byte[5], i + j, false, SectorTagType.DvdTitleKeyDecrypted);
 
-                        _resume.MissingTitleKeys?.Remove(i + j);
+                        MarkTitleKeyDumped(i + j);
 
                         continue;
                     }
 
                     CSS.DecryptTitleKey(discKey, key, out tmpBuf);
                     outputFormat.WriteSectorTag(tmpBuf, i + j, false, SectorTagType.DvdTitleKeyDecrypted);
-                    _resume.MissingTitleKeys?.Remove(i    + j);
+                    MarkTitleKeyDumped(i + j);
 
                     if(_storeEncrypted) continue;
 

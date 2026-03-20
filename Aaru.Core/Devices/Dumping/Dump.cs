@@ -114,6 +114,8 @@ public partial class Dump
     Database.Models.Device                     _dbDev; // Device database entry
     bool                                       _dumpFirstTrackPregap;
     bool                                       _fixOffset;
+    HashSet<ulong>                             _missingTitleKeysLookup;
+    bool                                       _missingTitleKeysDirty;
     uint                                       _maximumReadable; // Maximum number of sectors drive can read at once
     IMediaGraph                                _mediaGraph;
     Resume                                     _resume;
@@ -294,6 +296,7 @@ public partial class Dump
         if(_resume == null || !_doResume) return;
 
         _resume.LastWriteDate = DateTime.UtcNow;
+        SyncMissingTitleKeysToResume();
         _resume.BadBlocks.Sort();
 
         if(_createGraph && _mediaGraph is not null)

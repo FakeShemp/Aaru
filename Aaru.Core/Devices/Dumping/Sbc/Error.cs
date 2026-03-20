@@ -316,13 +316,13 @@ partial class Dump
                     {
                         outputFormat.WriteSectorTag(new byte[5], badSector, false, SectorTagType.DvdTitleKeyDecrypted);
 
-                        _resume.MissingTitleKeys?.Remove(badSector);
+                        MarkTitleKeyDumped(badSector);
                     }
                     else
                     {
                         CSS.DecryptTitleKey(discKey, key, out byte[] tmpBuf);
                         outputFormat.WriteSectorTag(tmpBuf, badSector, false, SectorTagType.DvdTitleKeyDecrypted);
-                        _resume.MissingTitleKeys?.Remove(badSector);
+                        MarkTitleKeyDumped(badSector);
 
                         cmi[0] = buffer[6];
                     }
@@ -406,7 +406,7 @@ partial class Dump
         InitProgress?.Invoke();
 
     repeatRetry:
-        ulong[] tmpArray = _resume.MissingTitleKeys.ToArray();
+        ulong[] tmpArray = MissingTitleKeysSnapshot(forward);
 
         foreach(ulong missingKey in tmpArray)
         {
@@ -450,7 +450,7 @@ partial class Dump
 
                 outputFormat.WriteSectorTag(new byte[5], missingKey, false, SectorTagType.DvdTitleKeyDecrypted);
 
-                _resume.MissingTitleKeys.Remove(missingKey);
+                MarkTitleKeyDumped(missingKey);
 
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_title_key_0_in_pass_1,
                                                    missingKey,
@@ -459,7 +459,7 @@ partial class Dump
             else
             {
                 outputFormat.WriteSectorTag(titleKey.Value.Key, missingKey, false, SectorTagType.DvdSectorTitleKey);
-                _resume.MissingTitleKeys.Remove(missingKey);
+                MarkTitleKeyDumped(missingKey);
 
                 if(discKey != null)
                 {
@@ -473,13 +473,10 @@ partial class Dump
             }
         }
 
-        if(pass < _retryPasses && !_aborted && _resume.MissingTitleKeys.Count > 0)
+        if(pass < _retryPasses && !_aborted && MissingTitleKeyCount() > 0)
         {
             pass++;
             forward = !forward;
-            _resume.MissingTitleKeys.Sort();
-
-            if(!forward) _resume.MissingTitleKeys.Reverse();
 
             goto repeatRetry;
         }

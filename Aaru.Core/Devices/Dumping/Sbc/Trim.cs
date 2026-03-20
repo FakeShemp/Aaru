@@ -109,13 +109,13 @@ partial class Dump
                 {
                     outputFormat.WriteSectorTag(new byte[5], badSector, false, SectorTagType.DvdTitleKeyDecrypted);
 
-                    _resume.MissingTitleKeys?.Remove(badSector);
+                    MarkTitleKeyDumped(badSector);
                 }
                 else
                 {
                     CSS.DecryptTitleKey(discKey, key, out byte[] tmpBuf);
                     outputFormat.WriteSectorTag(tmpBuf, badSector, false, SectorTagType.DvdTitleKeyDecrypted);
-                    _resume.MissingTitleKeys?.Remove(badSector);
+                    MarkTitleKeyDumped(badSector);
 
                     cmi[0] = buffer[6];
                 }
