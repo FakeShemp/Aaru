@@ -108,8 +108,9 @@ partial class Dump
             return true;
         }
 
-        if(_omniDriveNintendoSoftwareDescramble)
-            DescrambleNintendoLongBuffer(longBuffer, startSector, sectors);
+        if(_omniDriveNintendoSoftwareDescramble &&
+           !DescrambleNintendoLongBuffer(longBuffer, startSector, sectors))
+            return false;
 
         if(_ngcwMediaType == MediaType.GOD)
             return TransformGameCubeLongSectors(longBuffer, startSector, sectors, statuses);
@@ -453,9 +454,9 @@ partial class Dump
             return false;
         }
 
-        _ = _nintendoSectorDecoder.Scramble(raw, 0, out byte[] descrambled);
+        ErrorNumber errno = _nintendoSectorDecoder.Scramble(raw, 0, out byte[] descrambled);
 
-        if(descrambled == null)
+        if(errno != ErrorNumber.NoError || descrambled == null)
         {
             StoppingErrorMessage?.Invoke(Localization.Core.Unable_to_read_medium);
 
@@ -470,24 +471,33 @@ partial class Dump
         return true;
     }
 
-    void DescrambleNintendoLongBuffer(byte[] longBuffer, ulong startSector, uint sectors)
+    bool DescrambleNintendoLongBuffer(byte[] longBuffer, ulong startSector, uint sectors)
     {
-        if(!_omniDriveNintendoSoftwareDescramble) return;
+        if(!_omniDriveNintendoSoftwareDescramble) return true;
 
         for(uint i = 0; i < sectors; i++)
-            DescrambleNintendo2064At(longBuffer, (int)(i * NGCW_LONG_SECTOR_SIZE), startSector + i);
+        {
+            if(!DescrambleNintendo2064At(longBuffer, (int)(i * NGCW_LONG_SECTOR_SIZE), startSector + i))
+                return false;
+        }
+
+        return true;
     }
 
-    void DescrambleNintendo2064At(byte[] buffer, int offset, ulong lba)
+    bool DescrambleNintendo2064At(byte[] buffer, int offset, ulong lba)
     {
         byte[] one = new byte[NGCW_LONG_SECTOR_SIZE];
         Array.Copy(buffer, offset, one, 0, NGCW_LONG_SECTOR_SIZE);
         byte key = lba < NGCW_SECTORS_PER_GROUP ? (byte)0 : (_nintendoDerivedDiscKey ?? (byte)0);
 
-        var error = _nintendoSectorDecoder.Scramble(one, key, out byte[] decoded);
+        ErrorNumber error = _nintendoSectorDecoder.Scramble(one, key, out byte[] decoded);
 
         if(error != ErrorNumber.NoError)
-            return;
+        {
+            Array.Clear(buffer, offset, NGCW_LONG_SECTOR_SIZE);
+
+            return false;
+        }
 
         if(decoded != null) Array.Copy(decoded, 0, buffer, offset, NGCW_LONG_SECTOR_SIZE);
 
@@ -497,6 +507,8 @@ partial class Dump
             Array.Copy(decoded, 6, cprMai8, 0, 8);
             _nintendoDerivedDiscKey = Sector.DeriveNintendoKey(cprMai8);
         }
+
+        return true;
     }
 
     List<WiiPartition> ParseWiiPartitionsFromDevice(Reader scsiReader)
@@ -574,7 +586,10 @@ partial class Dump
                 return null;
 
             if(_omniDriveNintendoSoftwareDescramble && rawSector.Length >= NGCW_LONG_SECTOR_SIZE)
-                DescrambleNintendo2064At(rawSector, 0, sector);
+            {
+                if(!DescrambleNintendo2064At(rawSector, 0, sector))
+                    return null;
+            }
 
             Array.Copy(rawSector, NGCW_PAYLOAD_OFFSET + sectorOff, result, read, chunk);
             read += chunk;
@@ -592,7 +607,10 @@ partial class Dump
         if(_omniDriveNintendoSoftwareDescramble && rawBuffer.Length >= count * NGCW_LONG_SECTOR_SIZE)
         {
             for(uint i = 0; i < count; i++)
-                DescrambleNintendo2064At(rawBuffer, (int)(i * NGCW_LONG_SECTOR_SIZE), startSector + i);
+            {
+                if(!DescrambleNintendo2064At(rawBuffer, (int)(i * NGCW_LONG_SECTOR_SIZE), startSector + i))
+                    return null;
+            }
         }
 
         byte[] payload = new byte[count * NGCW_SECTOR_SIZE];
