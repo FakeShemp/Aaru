@@ -35,6 +35,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
@@ -337,6 +338,30 @@ partial class Dump
             }
         }
 
+        bool ngcwMode = dskType is MediaType.GOD or MediaType.WOD;
+
+        if(ngcwMode)
+        {
+            if(!scsiReader.OmniDriveReadRaw)
+            {
+                StoppingErrorMessage?.Invoke(Localization.Core.Dumping_Nintendo_GameCube_or_Wii_discs_is_not_yet_implemented);
+
+                return;
+            }
+
+            if(outputFormat.Format != "Aaru")
+            {
+                StoppingErrorMessage?.Invoke(string.Format(Localization.Core.Output_format_does_not_support_0,
+                                                           MediaTagType.NgcwJunkMap));
+
+                return;
+            }
+
+            if(blocksToRead > 16) blocksToRead = 16;
+        }
+
+        scsiReader.OmniDriveNintendoMode = ngcwMode;
+
         ret = true;
 
         foreach(MediaTagType tag in mediaTags.Keys.Where(tag => !outputFormat.SupportedMediaTags.Contains(tag)))
@@ -406,7 +431,9 @@ partial class Dump
                    ((dskType >= MediaType.DVDROM && dskType <= MediaType.DVDDownload)
                    || dskType == MediaType.PS2DVD
                    || dskType == MediaType.PS3DVD
-                   || dskType == MediaType.Nuon))
+                   || dskType == MediaType.Nuon
+                   || dskType == MediaType.GOD
+                   || dskType == MediaType.WOD))
                     nominalNegativeSectors = Math.Min(nominalNegativeSectors, DvdLeadinSectors);
 
                 mediaTags.TryGetValue(MediaTagType.BD_DI, out byte[] di);
@@ -783,6 +810,9 @@ partial class Dump
 
         var newTrim = false;
 
+        if(ngcwMode && !InitializeNgcwContext(dskType, scsiReader, outputFormat))
+            return;
+
         if(mediaTags.TryGetValue(MediaTagType.DVD_CMI, out byte[] cmi) &&
            Settings.Settings.Current.EnableDecryption                  &&
            _titleKeys                                                  &&
@@ -937,6 +967,8 @@ partial class Dump
             RetryTitleKeys(dvdDecrypt, mediaTag, ref totalDuration);
 
 #endregion Error handling
+
+        if(ngcwMode) FinalizeNgcwContext(outputFormat);
 
         if(opticalDisc)
         {

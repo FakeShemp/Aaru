@@ -1,4 +1,4 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
@@ -348,10 +348,7 @@ partial class Dump
 
                     if(nintendoPfi is { DiskCategory: DiskCategory.Nintendo, PartVersion: 15 })
                     {
-                        StoppingErrorMessage?.Invoke(Localization.Core
-                                                                 .Dumping_Nintendo_GameCube_or_Wii_discs_is_not_yet_implemented);
-
-                        return;
+                        dskType = nintendoPfi.Value.DiscSize == DVDSize.Eighty ? MediaType.GOD : MediaType.WOD;
                     }
                 }
 

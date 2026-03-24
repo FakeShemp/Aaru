@@ -41,8 +41,11 @@ namespace Aaru.Decoders.Nintendo;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 public sealed class Sector
 {
-    /// <summary>Offset of main user data in a Nintendo (GameCube/Wii) DVD sector (bytes 6-2053).</summary>
-    public const int NintendoMainDataOffset = 6;
+    /// <summary>
+    ///     ECMA-267 <c>main_data</c> offset in OmniDrive 2064-byte Nintendo sectors: DVD XOR applies to 2048 bytes from
+    ///     here (same as standard DVD). Bytes 6-11 (<c>cpr_mai</c>) are not scrambled on media.
+    /// </summary>
+    public const int NintendoMainDataOffset = 12;
 
     /// <summary>
     ///     Derives the Nintendo descramble key from the first 8 bytes of the cpr_mai region (LBA 0 payload).

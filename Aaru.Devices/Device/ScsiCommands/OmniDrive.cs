@@ -41,6 +41,45 @@ namespace Aaru.Devices;
 
 public partial class Device
 {
+    enum OmniDriveDiscType
+    {
+        CD = 0,
+        DVD = 1,
+        BD = 2
+    }
+
+    /// <summary>
+    ///     Encodes byte 1 of the OmniDrive READ CDB to match redumper's <c>CDB12_ReadOmniDrive</c>
+    ///     (<c>scsi/mmc.ixx</c>): <c>disc_type</c> :2 (LSB), <c>raw_addressing</c> :1, <c>fua</c> :1, <c>descramble</c> :1, reserved :3.
+    /// </summary>
+    /// <param name="discType">0 = CD, 1 = DVD, 2 = BD (redumper <c>OmniDrive_DiscType</c>).</param>
+    static byte EncodeOmniDriveReadCdb1(OmniDriveDiscType discType, bool rawAddressing, bool fua, bool descramble)
+    {
+        int d = (byte)discType & 3;
+        int r = rawAddressing ? 1 : 0;
+        int f = fua ? 1 : 0;
+        int s = descramble ? 1 : 0;
+
+        return (byte)(d | (r << 2) | (f << 3) | (s << 4));
+    }
+
+    static void FillOmniDriveReadDvdCdb(Span<byte> cdb, uint lba, uint transferLength, byte cdbByte1)
+    {
+        cdb.Clear();
+        cdb[0]  = (byte)ScsiCommands.ReadOmniDrive;
+        cdb[1]  = cdbByte1;
+        cdb[2]  = (byte)((lba >> 24) & 0xFF);
+        cdb[3]  = (byte)((lba >> 16) & 0xFF);
+        cdb[4]  = (byte)((lba >> 8)  & 0xFF);
+        cdb[5]  = (byte)(lba & 0xFF);
+        cdb[6]  = (byte)((transferLength >> 24) & 0xFF);
+        cdb[7]  = (byte)((transferLength >> 16) & 0xFF);
+        cdb[8]  = (byte)((transferLength >> 8)  & 0xFF);
+        cdb[9]  = (byte)(transferLength & 0xFF);
+        cdb[10] = 0; // subchannels=NONE, c2=0
+        cdb[11] = 0; // control
+    }
+
     /// <summary>
     ///     Checks if the drive has OmniDrive firmware by inspecting INQUIRY Reserved5 (bytes 74+) for "OmniDrive",
     ///     matching redumper's is_omnidrive_firmware behaviour.
@@ -77,27 +116,19 @@ public partial class Device
     /// <param name="transferLength">Number of 2064-byte sectors to read.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
+    /// <param name="fua">Set to <c>true</c> if the command should use FUA.</param>
+    /// <param name="descramble">Set to <c>true</c> if the data should be descrambled by the device.</param>
     public bool OmniDriveReadRawDvd(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba, uint transferLength,
-                                   uint timeout, out double duration)
+                                   uint timeout, out double duration, bool fua = false, bool descramble = true)
     {
         senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
-        cdb.Clear();
-
         buffer = new byte[2064 * transferLength];
 
-        cdb[0]  = (byte)ScsiCommands.ReadOmniDrive;
-        cdb[1]  = 0x11; // disc_type=1 (DVD), raw_addressing=0 (LBA), fua=0, descramble=1
-        cdb[2]  = (byte)((lba >> 24) & 0xFF);
-        cdb[3]  = (byte)((lba >> 16) & 0xFF);
-        cdb[4]  = (byte)((lba >> 8)  & 0xFF);
-        cdb[5]  = (byte)(lba & 0xFF);
-        cdb[6]  = (byte)((transferLength >> 24) & 0xFF);
-        cdb[7]  = (byte)((transferLength >> 16) & 0xFF);
-        cdb[8]  = (byte)((transferLength >> 8)  & 0xFF);
-        cdb[9]  = (byte)(transferLength & 0xFF);
-        cdb[10] = 0; // subchannels=NONE, c2=0
-        cdb[11] = 0; // control
+        FillOmniDriveReadDvdCdb(cdb,
+                                lba,
+                                transferLength,
+                                EncodeOmniDriveReadCdb1(OmniDriveDiscType.DVD, false, fua, descramble));
 
         LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
         
@@ -106,6 +137,34 @@ public partial class Device
         Error = LastError != 0;
 
         AaruLogging.Debug(SCSI_MODULE_NAME, "OmniDrive READ RAW DVD took {0} ms", duration);
+
+        return sense;
+    }
+
+    /// <summary>
+    ///     Reads raw Nintendo GameCube/Wii DVD sectors (2064 bytes) on OmniDrive. Default matches redumper raw DVD
+    ///     (<c>descramble</c> off); use software descramble via Aaru.Decoders.Nintendo.Sector when needed.
+    /// </summary>
+    /// <param name="descramble">Drive-side DVD descramble (redumper raw DVD uses <c>false</c>).</param>
+    /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
+    public bool OmniDriveReadNintendoDvd(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba, uint transferLength,
+                                        uint timeout, out double duration, bool descramble = false)
+    {
+        senseBuffer = SenseBuffer;
+        Span<byte> cdb = CdbBuffer[..12];
+        buffer = new byte[2064 * transferLength];
+
+        FillOmniDriveReadDvdCdb(cdb,
+                                lba,
+                                transferLength,
+                                EncodeOmniDriveReadCdb1(OmniDriveDiscType.DVD, false, false, descramble));
+
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
+
+        // Scrambled Nintendo sectors do not pass standard DVD EDC until software-descrambled.
+        Error = LastError != 0;
+
+        AaruLogging.Debug(SCSI_MODULE_NAME, "OmniDrive READ NINTENDO DVD took {0} ms", duration);
 
         return sense;
     }

@@ -664,6 +664,12 @@
     <data name="Ngcw_disc_number_0" xml:space="preserve">
     <value>[slateblue1]Número de disco: [green]{0}[/].[/]</value>
   </data>
+    <data name="Ngcw_nintendo_software_descramble" xml:space="preserve">
+    <value>[slateblue1]Descifrado por software de Nintendo activado (OmniDrive en bruto, descramble=0).[/]</value>
+  </data>
+    <data name="Ngcw_nintendo_derived_key_0" xml:space="preserve">
+    <value>[slateblue1]Clave de disco Nintendo derivada: [green]{0}[/].[/]</value>
+  </data>
     <data name="PS3_disc_key_resolved_from_0" xml:space="preserve">
     <value>[slateblue1]Clave de disco PS3 resuelta desde [aqua]{0}[/].[/]</value>
   </data>

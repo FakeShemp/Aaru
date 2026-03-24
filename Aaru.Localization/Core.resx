@@ -1395,6 +1395,18 @@
     <data name="Dumping_Nintendo_GameCube_or_Wii_discs_is_not_yet_implemented" xml:space="preserve">
         <value>[red]Dumping Nintendo GameCube or Wii discs is not yet implemented.[/]</value>
     </data>
+    <data name="Nintendo_OmniDrive_dump_requires_Aaru_format" xml:space="preserve">
+        <value>[red]Dumping Nintendo GameCube or Wii discs with OmniDrive requires Aaru output format.[/]</value>
+    </data>
+    <data name="Ngcw_dump_parsing_partition_table" xml:space="preserve">
+        <value>[slateblue1]Parsing Wii partition table...[/]</value>
+    </data>
+    <data name="Ngcw_dump_wrote_partition_key_map" xml:space="preserve">
+        <value>[slateblue1]Stored Wii partition key map.[/]</value>
+    </data>
+    <data name="Ngcw_dump_wrote_junk_map_0_entries" xml:space="preserve">
+        <value>[slateblue1]Stored Nintendo junk map with [lime]{0}[/] entries.[/]</value>
+    </data>
     <data name="Reading_Disc_Manufacturing_Information" xml:space="preserve">
         <value>[slateblue1]Reading [italic]Disc Manufacturing Information[/][/]</value>
     </data>
