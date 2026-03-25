@@ -28,1145 +28,525 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Marshal = System.Runtime.InteropServices.Marshal;
 
 namespace Aaru.Filesystems;
 
 public sealed partial class AppleHFS
 {
-    /// <summary>Caches the root directory from the catalog B-Tree</summary>
-    ErrorNumber CacheRootDirectory()
+    /// <summary>
+    ///     Macintosh case-insensitive character ordering table.
+    /// </summary>
+    static readonly byte[] _caseOrder =
+    [
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11,
+        0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x22, 0x23, 0x28,
+        0x29, 0x2A, 0x2B, 0x2C, 0x2F, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C,
+        0x3D, 0x3E, 0x3F, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x57, 0x59, 0x5D, 0x5F, 0x66, 0x68,
+        0x6A, 0x6C, 0x72, 0x74, 0x76, 0x78, 0x7A, 0x7E, 0x8C, 0x8E, 0x90, 0x92, 0x95, 0x97, 0x9E, 0xA0, 0xA2, 0xA4,
+        0xA7, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0x4E, 0x48, 0x57, 0x59, 0x5D, 0x5F, 0x66, 0x68, 0x6A, 0x6C, 0x72, 0x74,
+        0x76, 0x78, 0x7A, 0x7E, 0x8C, 0x8E, 0x90, 0x92, 0x95, 0x97, 0x9E, 0xA0, 0xA2, 0xA4, 0xA7, 0xAF, 0xB0, 0xB1,
+        0xB2, 0xB3, 0x4A, 0x4C, 0x5A, 0x60, 0x7B, 0x7F, 0x98, 0x4F, 0x49, 0x51, 0x4A, 0x4B, 0x4C, 0x5A, 0x60, 0x63,
+        0x64, 0x65, 0x6E, 0x6F, 0x70, 0x71, 0x7B, 0x84, 0x85, 0x86, 0x7F, 0x80, 0x9A, 0x9B, 0x9C, 0x98, 0xB4, 0xB5,
+        0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0x94, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF, 0xC0, 0x4D, 0x81, 0xC1, 0xC2, 0xC3, 0xC4,
+        0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0x55, 0x8A, 0xCC, 0x4D, 0x81, 0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2,
+        0xD3, 0x26, 0x27, 0xD4, 0x20, 0x49, 0x4B, 0x80, 0x82, 0x82, 0xD5, 0xD6, 0x24, 0x25, 0x2D, 0x2E, 0xD7, 0xD8,
+        0xA6, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF, 0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9,
+        0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB,
+        0xFC, 0xFD, 0xFE, 0xFF
+    ];
+
+#region B-tree search state
+
+    /// <summary>B-tree search state</summary>
+    struct CatalogFindData
     {
-        // Use the catalog B-tree header that was already validated in Mount.cs
-        BTHdrRed bthdr = _catalogBTreeHeader;
+        /// <summary>Raw data of the current node</summary>
+        public byte[] NodeData;
+        /// <summary>Number of the current node</summary>
+        public uint NodeNumber;
+        /// <summary>Index of the current record within the node</summary>
+        public int Record;
+        /// <summary>Byte offset of the key within the node</summary>
+        public int KeyOffset;
+        /// <summary>Length of the key in bytes</summary>
+        public int KeyLength;
+        /// <summary>Byte offset of the data entry (after key) within the node</summary>
+        public int EntryOffset;
+        /// <summary>Length of the data entry in bytes</summary>
+        public int EntryLength;
+        /// <summary>Whether an exact match was found</summary>
+        public bool ExactMatch;
+    }
 
-        AaruLogging.Debug(MODULE_NAME,
-                          $"Catalog B-Tree: depth={bthdr.bthDepth}, rootNode={bthdr.bthRoot}, nodeSize={bthdr.bthNodeSize}");
+#endregion
 
-        AaruLogging.Debug(MODULE_NAME,
-                          $"B-Tree header details: numRecs={bthdr.bthNRecs}, firstLeaf={bthdr.bthFNode}, lastLeaf={bthdr.bthLNode}, totalNodes={bthdr.bthNNodes}");
+#region Node I/O
 
-        ErrorNumber errno;
+    /// <summary>Read a catalog B-tree node by number, handling extents overflow</summary>
+    ErrorNumber ReadCatalogNode(uint nodeNumber, out byte[] nodeData)
+    {
+        nodeData = null;
 
-        // **BRUTE FORCE APPROACH**: Scan all leaf nodes from firstLeaf to lastLeaf looking for CNID=2
-        // macOS appears to do this rather than strict B-tree pointer following
-        // Skip if leaf range is invalid (firstLeaf > lastLeaf means empty or unusual structure)
-        if(bthdr.bthFNode <= bthdr.bthLNode)
+        int   nodeSize       = _catalogBTreeHeader.bthNodeSize;
+        ulong nodeByteOffset = (ulong)nodeNumber * (uint)nodeSize;
+
+        // First try the 3 extents from the MDB
+        if(_mdb.drCTExtRec.xdr == null) return ErrorNumber.InvalidArgument;
+
+        ErrorNumber result = ReadNodeFromExtents(_mdb.drCTExtRec.xdr, nodeByteOffset, nodeSize, out nodeData);
+
+        if(result == ErrorNumber.NoError) return ErrorNumber.NoError;
+
+        // Node not in the first 3 extents — search the extents overflow B-tree
+        // for additional catalog file extents (CNID = kCatalogFileCnid = 4)
+        if(_extentsBTreeHeader.bthDepth == 0) return ErrorNumber.InvalidArgument;
+
+        // Count blocks in the first 3 extents to know the starting FABN for overflow
+        ushort firstBlocks = _mdb.drCTExtRec.xdr.TakeWhile(static ext => ext.xdrNumABlks != 0)
+                                 .Aggregate<ExtDescriptor, ushort>(0,
+                                                                   static (current, ext) =>
+                                                                       (ushort)(current + ext.xdrNumABlks));
+
+        // Build the complete extent list for the catalog file
+        ErrorNumber errno = SearchExtentsOverflowBTree(kCatalogFileCnid,
+                                                       ForkType.Data,
+                                                       firstBlocks,
+                                                       out List<ExtDescriptor> overflowExtents);
+
+        if(errno != ErrorNumber.NoError) return ErrorNumber.InvalidArgument;
+
+        // Adjust byte offset: subtract the bytes covered by the first 3 extents
+        ulong firstExtentsBytes = (ulong)firstBlocks * _mdb.drAlBlkSiz;
+
+        if(nodeByteOffset < firstExtentsBytes) return ErrorNumber.InvalidArgument;
+
+        ulong adjustedOffset = nodeByteOffset - firstExtentsBytes;
+
+        return ReadNodeFromExtents(overflowExtents, adjustedOffset, nodeSize, out nodeData);
+    }
+
+    /// <summary>Read a node from a list of extent descriptors at a given byte offset within them</summary>
+    ErrorNumber ReadNodeFromExtents(IReadOnlyList<ExtDescriptor> extents, ulong byteOffsetInExtents, int nodeSize,
+                                    out byte[]                   nodeData)
+    {
+        nodeData = null;
+
+        ulong extentFileOffset = 0;
+
+        foreach(ExtDescriptor ext in extents)
         {
-            AaruLogging.Debug(MODULE_NAME,
-                              $"Scanning leaf nodes from {bthdr.bthFNode} to {bthdr.bthLNode} for CNID={kRootCnid} (root)");
+            if(ext.xdrNumABlks == 0) break;
 
-            for(uint leafNode = bthdr.bthFNode; leafNode <= bthdr.bthLNode; leafNode++)
+            ulong extentSizeBytes = (ulong)ext.xdrNumABlks * _mdb.drAlBlkSiz;
+
+            if(byteOffsetInExtents >= extentFileOffset + extentSizeBytes)
             {
-                ErrorNumber scanErr = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] leafData);
+                extentFileOffset += extentSizeBytes;
 
-                if(scanErr != ErrorNumber.NoError) continue;
-
-                NodeDescriptor leafDesc =
-                    Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafData,
-                                                                          0,
-                                                                          System.Runtime.InteropServices.Marshal
-                                                                             .SizeOf(typeof(NodeDescriptor)));
-
-                if(leafDesc.ndType != NodeType.ndLeafNode) continue;
-
-                // Search this leaf for CNID=2
-                ErrorNumber foundErr = FindRootInLeaf(leafData, bthdr.bthNodeSize, out CdrDirRec rootRec);
-
-                if(foundErr == ErrorNumber.NoError)
-                {
-                    _rootDirectory = rootRec;
-
-                    AaruLogging.Debug(MODULE_NAME,
-                                      $"Found root directory (CNID={kRootCnid}) in leaf node {leafNode}: {rootRec.dirVal} entries");
-
-                    return ErrorNumber.NoError;
-                }
+                continue;
             }
+
+            // Found the extent containing this node
+            ulong offsetInExtent  = byteOffsetInExtents                   - extentFileOffset;
+            ulong blockByteOffset = (ulong)ext.xdrStABN * _mdb.drAlBlkSiz + offsetInExtent;
+            ulong hfsSector512    = _mdb.drAlBlSt                         + blockByteOffset / 512;
+
+            HfsOffsetToDeviceSector(hfsSector512, out ulong deviceSector, out uint byteOffset);
+
+            uint sectorsToRead = ((uint)nodeSize + byteOffset + _sectorSize - 1) / _sectorSize;
+
+            ErrorNumber errno =
+                _imagePlugin.ReadSectors(deviceSector, false, sectorsToRead, out byte[] sectorData, out _);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if(sectorData.Length < (int)byteOffset + nodeSize) return ErrorNumber.InvalidArgument;
+
+            nodeData = new byte[nodeSize];
+            Array.Copy(sectorData, (int)byteOffset, nodeData, 0, nodeSize);
+
+            return ErrorNumber.NoError;
         }
-        else
+
+        return ErrorNumber.InvalidArgument;
+    }
+
+#endregion
+
+#region B-tree primitives
+
+    /// <summary>Compare two HFS strings using Macintosh lexical ordering</summary>
+    static int HfsStrCmp(byte[] s1, int off1, int len1, byte[] s2, int off2, int len2)
+    {
+        if(len1 < 0) len1 = 0;
+        if(len2 < 0) len2 = 0;
+
+        int len = Math.Min(len1, len2);
+
+        for(var i = 0; i < len; i++)
         {
-            // Leaf range is invalid - do brute-force scan of ALL nodes
-            AaruLogging.Debug(MODULE_NAME,
-                              $"Leaf node range invalid (firstLeaf={bthdr.bthFNode} > lastLeaf={bthdr.bthLNode}), scanning ALL nodes for root");
+            int diff = _caseOrder[s1[off1 + i]] - _caseOrder[s2[off2 + i]];
 
-            uint maxNodes = bthdr.bthNNodes > 0 ? bthdr.bthNNodes : 2000;
-
-            for(uint nodeNum = 0; nodeNum < maxNodes; nodeNum++)
-            {
-                ErrorNumber scanErr = ReadNode(nodeNum, bthdr.bthNodeSize, out byte[] nodeData);
-
-                if(scanErr != ErrorNumber.NoError) continue;
-
-                NodeDescriptor nodeDesc =
-                    Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData,
-                                                                          0,
-                                                                          System.Runtime.InteropServices.Marshal
-                                                                             .SizeOf(typeof(NodeDescriptor)));
-
-                if(nodeDesc.ndType != NodeType.ndLeafNode) continue;
-
-                // Search this leaf for CNID=2
-                ErrorNumber foundErr = FindRootInLeaf(nodeData, bthdr.bthNodeSize, out CdrDirRec rootRec);
-
-                if(foundErr == ErrorNumber.NoError)
-                {
-                    _rootDirectory = rootRec;
-
-                    AaruLogging.Debug(MODULE_NAME,
-                                      $"Found root directory (CNID={kRootCnid}) via brute-force in node {nodeNum}: {rootRec.dirVal} entries");
-
-                    return ErrorNumber.NoError;
-                }
-            }
-
-            AaruLogging.Debug(MODULE_NAME, $"Brute-force scan of {maxNodes} nodes did not find root directory");
+            if(diff != 0) return diff;
         }
 
-        AaruLogging.Debug(MODULE_NAME,
-                          "Root directory (CNID=2) not found in any leaf node. Falling back to standard tree traversal.");
+        return len1 - len2;
+    }
 
-        // The root directory has:
-        //   CNID = kRootCnid (2)
-        //   parentID = kRootParentCnid (1)
-        // We search for records with parentID=kRootParentCnid to navigate the B-Tree,
-        // then find the specific record with CNID=kRootCnid in the leaf node.
-        uint targetParentID = kRootParentCnid;
-        uint currentNode    = bthdr.bthRoot;
+    /// <summary>Compare two catalog B-tree keys: first by ParID, then by name</summary>
+    static int CatKeyCmp(byte[] key1, int off1, byte[] key2, int off2)
+    {
+        // ParID is at offset +2 (after keyLen and reserved), 4 bytes big-endian
+        var parId1 = BigEndianBitConverter.ToUInt32(key1, off1 + 2);
+        var parId2 = BigEndianBitConverter.ToUInt32(key2, off2 + 2);
 
-        // Traverse through all levels until we reach a leaf node
-        for(var level = 0; level < bthdr.bthDepth; level++)
+        if(parId1 != parId2) return parId1 < parId2 ? -1 : 1;
+
+        // Name: nameLen at offset +6, name bytes at offset +7
+        byte nameLen1 = key1[off1 + 6];
+        byte nameLen2 = key2[off2 + 6];
+
+        return HfsStrCmp(key1, off1 + 7, nameLen1, key2, off2 + 7, nameLen2);
+    }
+
+    /// <summary>Build a catalog search key from a parent ID and optional name</summary>
+    static byte[] CatBuildKey(uint parentId, byte[] name, byte nameLen)
+    {
+        // Key layout: [keyLen(1)] [reserved(1)] [ParID(4,BE)] [nameLen(1)] [name(0-31)]
+        // Allocate max key size for safe comparison against index node keys
+        var key        = new byte[38]; // max_key_len (37) + 1
+        var keyDataLen = (byte)(6 + nameLen);
+        key[0] = keyDataLen;
+        key[1] = 0; // reserved
+        key[2] = (byte)(parentId >> 24);
+        key[3] = (byte)(parentId >> 16);
+        key[4] = (byte)(parentId >> 8);
+        key[5] = (byte)parentId;
+        key[6] = nameLen;
+
+        if(nameLen > 0 && name != null) Array.Copy(name, 0, key, 7, Math.Min(nameLen, (byte)31));
+
+        return key;
+    }
+
+    /// <summary>Get the offset and length of a record within a B-tree node</summary>
+    static bool BRecLenOff(byte[] nodeData, int nodeSize, int rec, out int off, out int len)
+    {
+        // Offset table is at end of node, growing backwards.
+        // Record N's offset is at nodeSize - (N+1)*2.
+        // We read 4 bytes at nodeSize - (rec+2)*2 to get offsets for rec+1 and rec.
+        int dataOff = nodeSize - (rec + 2) * 2;
+
+        if(dataOff < 0 || dataOff + 4 > nodeData.Length)
         {
-            errno = ReadNode(currentNode, bthdr.bthNodeSize, out byte[] nodeData);
+            off = 0;
+            len = 0;
 
-            if(errno != ErrorNumber.NoError)
+            return false;
+        }
+
+        int nextOff = BigEndianBitConverter.ToUInt16(nodeData, dataOff);
+        int recOff  = BigEndianBitConverter.ToUInt16(nodeData, dataOff + 2);
+
+        off = recOff;
+        len = nextOff - recOff;
+
+        return len >= 0 && off >= 14 && off < nodeSize;
+    }
+
+    /// <summary>Get the total key length for a record (including the keyLen byte and padding)</summary>
+    int BRecKeyLen(byte[] nodeData, int nodeSize, int rec, NodeType nodeType)
+    {
+        if(nodeType != NodeType.ndIndxNode && nodeType != NodeType.ndLeafNode) return 0;
+
+        // HFS (no BIGKEYS, no VARIDXKEYS): index nodes use fixed max_key_len + 1
+        if(nodeType == NodeType.ndIndxNode) return _catalogBTreeHeader.bthKeyLen + 1;
+
+        // Leaf node: variable key length = (keyLenByte | 1) + 1
+        int recOffPos = nodeSize - (rec + 1) * 2;
+
+        if(recOffPos < 0 || recOffPos + 2 > nodeData.Length) return 0;
+
+        int recOff = BigEndianBitConverter.ToUInt16(nodeData, recOffPos);
+
+        if(recOff == 0 || recOff >= nodeSize) return 0;
+
+        byte keyByte = nodeData[recOff];
+        int  keyLen  = (keyByte | 1) + 1;
+
+        return keyLen > _catalogBTreeHeader.bthKeyLen + 1 ? 0 : keyLen;
+    }
+
+#endregion
+
+#region B-tree search
+
+    /// <summary>Binary search within a single B-tree node for the best matching record</summary>
+    /// <remarks>
+    ///     On success, <paramref name="fd" /> points to the largest record whose key is &lt;= the search key.
+    /// </remarks>
+    ErrorNumber BRecFind(byte[] nodeData, int nodeSize, NodeType nodeType, byte[] searchKey, ref CatalogFindData fd)
+    {
+        int ndDescSize = Marshal.SizeOf(typeof(NodeDescriptor));
+
+        NodeDescriptor desc = Helpers.Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData, 0, ndDescSize);
+
+        var b   = 0;
+        int e   = desc.ndNRecs - 1;
+        int off = 0, len = 0, keyLen = 0;
+        var rec = 0;
+
+        fd.ExactMatch = false;
+
+        // Binary search: find the record whose key best matches (not greater than) the search key
+        while(b <= e)
+        {
+            rec = (e + b) / 2;
+
+            if(!BRecLenOff(nodeData, nodeSize, rec, out off, out len)) return ErrorNumber.InvalidArgument;
+
+            keyLen = BRecKeyLen(nodeData, nodeSize, rec, nodeType);
+
+            if(keyLen == 0) return ErrorNumber.InvalidArgument;
+
+            int cmpVal = CatKeyCmp(nodeData, off, searchKey, 0);
+
+            if(cmpVal == 0)
             {
-                AaruLogging.Debug(MODULE_NAME, $"Failed to read node {currentNode} at level {level}");
+                e             = rec;
+                fd.ExactMatch = true;
 
-                return errno;
+                break;
             }
 
-            // Parse node descriptor
-            NodeDescriptor nodeDesc =
-                Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData,
-                                                                      0,
-                                                                      System.Runtime.InteropServices.Marshal
-                                                                            .SizeOf(typeof(NodeDescriptor)));
+            if(cmpVal < 0)
+                b = rec + 1;
+            else
+                e = rec - 1;
+        }
 
-            AaruLogging.Debug(MODULE_NAME,
-                              $"Level {level}: Node {currentNode}, type={nodeDesc.ndType} ({(nodeDesc.ndType == NodeType.ndLeafNode ? "LEAF" : nodeDesc.ndType == NodeType.ndIndxNode ? "INDEX" : "UNKNOWN")}), nRecs={nodeDesc.ndNRecs}, fLink={nodeDesc.ndFLink}, bLink={nodeDesc.ndBLink}");
+        // If the final position differs from e and e is valid, re-read offsets for record e
+        if(!fd.ExactMatch && rec != e && e >= 0)
+        {
+            if(!BRecLenOff(nodeData, nodeSize, e, out off, out len)) return ErrorNumber.InvalidArgument;
 
-            // Validate node type - must be leaf (-1) or index (0)
-            if(nodeDesc.ndType != NodeType.ndLeafNode && nodeDesc.ndType != NodeType.ndIndxNode)
+            keyLen = BRecKeyLen(nodeData, nodeSize, e, nodeType);
+
+            if(keyLen == 0) return ErrorNumber.InvalidArgument;
+        }
+
+        fd.Record      = e;
+        fd.KeyOffset   = off;
+        fd.KeyLength   = keyLen;
+        fd.EntryOffset = off + keyLen;
+        fd.EntryLength = len - keyLen;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Search the catalog B-tree from root to leaf for a given key</summary>
+    /// <remarks>
+    ///     Returns <see cref="ErrorNumber.NoError" /> on exact match,
+    ///     <see cref="ErrorNumber.NoSuchFile" /> when the key is not found (fd still populated).
+    /// </remarks>
+    ErrorNumber BTreeFind(byte[] searchKey, ref CatalogFindData fd)
+    {
+        uint nidx = _catalogBTreeHeader.bthRoot;
+
+        if(nidx == 0) return ErrorNumber.NoSuchFile;
+
+        int nodeSize   = _catalogBTreeHeader.bthNodeSize;
+        int height     = _catalogBTreeHeader.bthDepth;
+        int ndDescSize = Marshal.SizeOf(typeof(NodeDescriptor));
+
+        for(;;)
+        {
+            ErrorNumber errno = ReadCatalogNode(nidx, out byte[] nodeData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            NodeDescriptor desc =
+                Helpers.Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData, 0, ndDescSize);
+
+            // Validate node height
+            if(desc.ndNHeight != height)
             {
                 AaruLogging.Debug(MODULE_NAME,
-                                  $"Invalid node type {nodeDesc.ndType} in node {currentNode}, stopping traversal");
+                                  "B*Tree inconsistency: expected height {0}, got {1} at node {2}",
+                                  height,
+                                  (int)desc.ndNHeight,
+                                  nidx);
 
                 return ErrorNumber.InvalidArgument;
             }
 
-            // If this is a leaf node, we've reached the end
-            if(nodeDesc.ndType == NodeType.ndLeafNode)
+            // Decrement height and validate node type
+            height--;
+            NodeType expectedType = height > 0 ? NodeType.ndIndxNode : NodeType.ndLeafNode;
+
+            if(desc.ndType != expectedType)
             {
                 AaruLogging.Debug(MODULE_NAME,
-                                  $"Reached leaf node at level {level} (expected depth={bthdr.bthDepth}). This may indicate a malformed B-tree.");
+                                  "B*Tree inconsistency: expected type {0}, got {1} at node {2}",
+                                  expectedType,
+                                  desc.ndType,
+                                  nidx);
 
-                errno = FindRootInLeaf(nodeData, bthdr.bthNodeSize, out CdrDirRec rootRec);
-
-                if(errno == ErrorNumber.NoError)
-                {
-                    _rootDirectory = rootRec;
-
-                    AaruLogging.Debug(MODULE_NAME,
-                                      $"Root directory found: CNID={rootRec.dirDirID}, {rootRec.dirVal} entries");
-
-                    return ErrorNumber.NoError;
-                }
-
-                // Root directory not found in this leaf node, try traversing linked leaves
-                AaruLogging.Debug(MODULE_NAME,
-                                  $"Root directory not found in leaf node {currentNode}, traversing sibling nodes");
-
-                // Try forward link first
-                if(nodeDesc.ndFLink != 0)
-                {
-                    uint      nextNode    = nodeDesc.ndFLink;
-                    var       attempts    = 0;
-                    const int maxAttempts = 100; // Prevent infinite loops
-
-                    while(nextNode != 0 && attempts < maxAttempts)
-                    {
-                        attempts++;
-                        ErrorNumber readErr = ReadNode(nextNode, bthdr.bthNodeSize, out byte[] nextNodeData);
-
-                        if(readErr != ErrorNumber.NoError)
-                        {
-                            AaruLogging.Debug(MODULE_NAME, $"Failed to read sibling node {nextNode}");
-
-                            break;
-                        }
-
-                        NodeDescriptor nextDesc =
-                            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nextNodeData,
-                                0,
-                                System.Runtime.InteropServices.Marshal.SizeOf(typeof(NodeDescriptor)));
-
-                        // Stop if we hit an invalid node
-                        if(nextDesc.ndType != NodeType.ndLeafNode)
-                        {
-                            AaruLogging.Debug(MODULE_NAME,
-                                              $"Sibling node {nextNode} is not a leaf node (type={nextDesc.ndType})");
-
-                            break;
-                        }
-
-                        // Try to find root in this sibling
-                        ErrorNumber siblingErr =
-                            FindRootInLeaf(nextNodeData, bthdr.bthNodeSize, out CdrDirRec siblingRoot);
-
-                        if(siblingErr == ErrorNumber.NoError)
-                        {
-                            _rootDirectory = siblingRoot;
-
-                            AaruLogging.Debug(MODULE_NAME,
-                                              $"Root directory found in sibling node {nextNode}: CNID={siblingRoot.dirDirID}, {siblingRoot.dirVal} entries");
-
-                            return ErrorNumber.NoError;
-                        }
-
-                        nextNode = nextDesc.ndFLink;
-                    }
-                }
-
-                // Try backward link as fallback
-                if(nodeDesc.ndBLink != 0)
-                {
-                    uint      prevNode    = nodeDesc.ndBLink;
-                    var       attempts    = 0;
-                    const int maxAttempts = 100;
-
-                    while(prevNode != 0 && attempts < maxAttempts)
-                    {
-                        attempts++;
-                        ErrorNumber readErr = ReadNode(prevNode, bthdr.bthNodeSize, out byte[] prevNodeData);
-
-                        if(readErr != ErrorNumber.NoError)
-                        {
-                            AaruLogging.Debug(MODULE_NAME, $"Failed to read backward node {prevNode}");
-
-                            break;
-                        }
-
-                        NodeDescriptor prevDesc =
-                            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(prevNodeData,
-                                0,
-                                System.Runtime.InteropServices.Marshal.SizeOf(typeof(NodeDescriptor)));
-
-                        // Stop if we hit an invalid node
-                        if(prevDesc.ndType != NodeType.ndLeafNode)
-                        {
-                            AaruLogging.Debug(MODULE_NAME,
-                                              $"Backward node {prevNode} is not a leaf node (type={prevDesc.ndType})");
-
-                            break;
-                        }
-
-                        // Try to find root in this backward node
-                        ErrorNumber backErr = FindRootInLeaf(prevNodeData, bthdr.bthNodeSize, out CdrDirRec backRoot);
-
-                        if(backErr == ErrorNumber.NoError)
-                        {
-                            _rootDirectory = backRoot;
-
-                            AaruLogging.Debug(MODULE_NAME,
-                                              $"Root directory found in backward node {prevNode}: CNID={backRoot.dirDirID}, {backRoot.dirVal} entries");
-
-                            return ErrorNumber.NoError;
-                        }
-
-                        prevNode = prevDesc.ndBLink;
-                    }
-                }
-
-                // No more leaf nodes to check
-                AaruLogging.Debug(MODULE_NAME, "No root directory found in any accessible leaf node");
-
-                return errno;
+                return ErrorNumber.InvalidArgument;
             }
 
-            // This is an index node - find the pointer for records with parentID=kRootParentCnid
-            errno = FindIndexPointer(nodeData, bthdr.bthNodeSize, targetParentID, out currentNode);
+            // Binary search within this node
+            errno = BRecFind(nodeData, nodeSize, desc.ndType, searchKey, ref fd);
 
-            if(errno != ErrorNumber.NoError)
-            {
-                AaruLogging.Debug(MODULE_NAME, "Failed to find index pointer");
+            if(errno != ErrorNumber.NoError) return errno;
 
-                return errno;
-            }
+            fd.NodeData   = nodeData;
+            fd.NodeNumber = nidx;
+
+            // At leaf level — done
+            if(height == 0) return fd.ExactMatch ? ErrorNumber.NoError : ErrorNumber.NoSuchFile;
+
+            // Index node: must have a valid record to follow
+            if(fd.Record < 0) return ErrorNumber.InvalidArgument;
+
+            // Read child node pointer (4 bytes big-endian at EntryOffset)
+            if(fd.EntryOffset + 4 > nodeData.Length) return ErrorNumber.InvalidArgument;
+
+            nidx = BigEndianBitConverter.ToUInt32(nodeData, fd.EntryOffset);
         }
-
-        AaruLogging.Debug(MODULE_NAME, "Failed to find root directory after traversing all levels");
-
-        return ErrorNumber.InvalidArgument;
     }
 
-    /// <summary>Reads the catalog header node (node 0)</summary>
-    ErrorNumber ReadCatalogHeader(out BTHdrRed bthdr)
+    /// <summary>Move forward by <paramref name="cnt" /> records in the leaf node chain</summary>
+    ErrorNumber BRecGoto(ref CatalogFindData fd, int cnt)
     {
-        bthdr = default(BTHdrRed);
+        int nodeSize   = _catalogBTreeHeader.bthNodeSize;
+        int ndDescSize = Marshal.SizeOf(typeof(NodeDescriptor));
 
-        // Read node 0 (header node)
-        ErrorNumber errno = ReadNode(0, 512, out byte[] headerNode);
+        NodeDescriptor desc = Helpers.Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(fd.NodeData, 0, ndDescSize);
 
-        if(errno != ErrorNumber.NoError) return errno;
+        while(cnt >= desc.ndNRecs - fd.Record)
+        {
+            cnt       -= desc.ndNRecs - fd.Record;
+            fd.Record =  0;
 
-        // Parse B-Tree header record (starts at offset 14, after node descriptor)
-        int btHdrSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BTHdrRed));
+            uint nextIdx = desc.ndFLink;
 
-        if(headerNode.Length < 14 + btHdrSize) return ErrorNumber.InvalidArgument;
+            if(nextIdx == 0) return ErrorNumber.NoSuchFile;
 
-        bthdr = Marshal.ByteArrayToStructureBigEndian<BTHdrRed>(headerNode, 14, btHdrSize);
+            ErrorNumber errno = ReadCatalogNode(nextIdx, out byte[] nodeData);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            fd.NodeData   = nodeData;
+            fd.NodeNumber = nextIdx;
+
+            desc = Helpers.Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData, 0, ndDescSize);
+        }
+
+        fd.Record += cnt;
+
+        // Update offsets for the new record position
+        if(!BRecLenOff(fd.NodeData, nodeSize, fd.Record, out int off, out int len)) return ErrorNumber.InvalidArgument;
+
+        int keyLen = BRecKeyLen(fd.NodeData, nodeSize, fd.Record, desc.ndType);
+
+        if(keyLen == 0) return ErrorNumber.InvalidArgument;
+
+        fd.KeyOffset   = off;
+        fd.KeyLength   = keyLen;
+        fd.EntryOffset = off + keyLen;
+        fd.EntryLength = len - keyLen;
 
         return ErrorNumber.NoError;
     }
 
-    /// <summary>Reads a node from the catalog file</summary>
-    ErrorNumber ReadNode(uint nodeNumber, ushort nodeSize, out byte[] nodeData)
+#endregion
+
+#region Catalog operations
+
+    /// <summary>
+    ///     Find a catalog entry by its CNID by first finding its thread record,
+    ///     then following the thread to the actual record.
+    /// </summary>
+    ErrorNumber CatFindBrec(uint cnid, ref CatalogFindData fd)
     {
-        nodeData = null;
+        // Step 1: Build thread key (cnid, empty name) and find the thread record
+        byte[] searchKey = CatBuildKey(cnid, null, 0);
 
-        // Catalog file extent is in MDB
-        ExtDescriptor catalogExtent = _mdb.drCTExtRec.xdr[0];
-
-        if(catalogExtent.xdrNumABlks == 0) return ErrorNumber.InvalidArgument;
-
-        // All HFS offsets are in 512-byte sectors:
-        // - drAlBlSt: Start of allocation blocks (from partition start, in 512-byte sectors)
-        // - xdrStABN: Start allocation block number
-        // - drAlBlkSiz: Allocation block size in bytes
-        ulong allocBlockSectorSize = _mdb.drAlBlkSiz / 512;
-
-        // Calculate HFS offset for this node (in 512-byte sectors)
-        // Node offset from start of catalog file (in bytes)
-        ulong nodeByteOffset = nodeNumber * 512UL;
-
-        // Catalog file starts at this offset from partition (in 512-byte sectors)
-        ulong catalogSectorOffset512 = _mdb.drAlBlSt + catalogExtent.xdrStABN * allocBlockSectorSize;
-
-        // Total offset for this node
-        ulong nodeOffsetSector512 = catalogSectorOffset512 + nodeByteOffset / 512;
-
-        // Convert to device sector address
-        HfsOffsetToDeviceSector(nodeOffsetSector512, out ulong deviceSector, out uint byteOffset);
-
-        AaruLogging.Debug(MODULE_NAME, $"ReadNode: num={nodeNumber}, deviceSector={deviceSector}, offset={byteOffset}");
-
-        // Read sectors containing the node
-        ErrorNumber errno = _imagePlugin.ReadSectors(deviceSector, false, 2, out byte[] sectorData, out _);
+        ErrorNumber errno = BTreeFind(searchKey, ref fd);
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        // Extract node data from the appropriate offset
-        if(sectorData.Length < (int)byteOffset + 512) return ErrorNumber.InvalidArgument;
+        // Step 2: Read the thread record to get the parent ID and name
+        int entryOff = fd.EntryOffset;
 
-        nodeData = new byte[512];
-        Array.Copy(sectorData, (int)byteOffset, nodeData, 0, 512);
+        if(entryOff + 15 > fd.NodeData.Length) return ErrorNumber.InvalidArgument;
 
-        return ErrorNumber.NoError;
+        byte recordType = fd.NodeData[entryOff];
+
+        if(recordType != kCatalogRecordTypeDirectoryThread && recordType != kCatalogRecordTypeFileThread)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Bad thread record type {0} for CNID {1}", recordType, cnid);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Thread record layout:
+        //   [0]    type (1 byte)
+        //   [1]    reserved (1 byte)
+        //   [2..9] thdResrv (8 bytes)
+        //  [10..13] thdParID (4 bytes BE)
+        //  [14]    thdCName length (1 byte)
+        //  [15..]  thdCName data (up to 31 bytes)
+        var  thdParId   = BigEndianBitConverter.ToUInt32(fd.NodeData, entryOff + 10);
+        byte thdNameLen = fd.NodeData[entryOff                                 + 14];
+
+        if(thdNameLen > 31)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Bad catalog name length {0}", thdNameLen);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        var thdName = new byte[thdNameLen];
+
+        if(thdNameLen > 0) Array.Copy(fd.NodeData, entryOff + 15, thdName, 0, thdNameLen);
+
+        // Step 3: Build key with parent ID and name from thread, search again
+        searchKey = CatBuildKey(thdParId, thdName, thdNameLen);
+
+        return BTreeFind(searchKey, ref fd);
     }
 
-    ErrorNumber FindIndexPointer(byte[] indexNode, ushort nodeSize, uint targetParentID, out uint childNode)
+    /// <summary>Parse a catalog record (directory or file) from raw node data</summary>
+    static CatalogEntry ParseCatalogRecord(byte[] nodeData, int entryOffset, string name, uint parentId)
     {
-        childNode = 0;
+        if(entryOffset >= nodeData.Length) return null;
 
-        // Index node structure per Inside Macintosh:
-        // - Node descriptor (14 bytes) at offset 0
-        // - Records follow at offset 14
-        // - Offset table at end (2 bytes per record, growing backwards)
-        //
-        // The offset table contains offsets to the START of each record.
-        // Each record is: key + child pointer (4 bytes)
-        // The first record's offset points to its key (and implicitly to the child pointer after it)
+        byte recordType = nodeData[entryOffset];
 
-        NodeDescriptor nodeDesc =
-            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(indexNode,
-                                                                  0,
-                                                                  System.Runtime.InteropServices.Marshal
-                                                                        .SizeOf(typeof(NodeDescriptor)));
-
-        if(nodeDesc.ndType != NodeType.ndIndxNode) return ErrorNumber.InvalidArgument;
-
-        if(nodeDesc.ndNRecs == 0) return ErrorNumber.InvalidArgument;
-
-        uint lastPointer = 0;
-
-        // Search through index records
-        for(ushort i = 0; i < nodeDesc.ndNRecs; i++)
+        switch(recordType)
         {
-            // Offset table is at end of node, growing backwards
-            // Entry 0 is at (nodeSize - 2), entry 1 is at (nodeSize - 4), etc.
-            var offsetTablePos = (ushort)(nodeSize - 2 - i * 2);
-
-            if(offsetTablePos < 14 || offsetTablePos >= nodeSize) return ErrorNumber.InvalidArgument;
-
-            // Debug: show the bytes at this position
-            byte b0 = indexNode[offsetTablePos];
-            byte b1 = indexNode[offsetTablePos + 1];
-
-            AaruLogging.Debug(MODULE_NAME,
-                              $"Index record {i}: offsetTablePos={offsetTablePos}, bytes=[{b0:X2} {b1:X2}]");
-
-            // Read offset table entry as big-endian
-            var recordOffset = BigEndianBitConverter.ToUInt16(indexNode, offsetTablePos);
-
-            AaruLogging.Debug(MODULE_NAME, $"Index record {i}: recordOffset={recordOffset} (0x{recordOffset:X4})");
-
-            if(recordOffset < 14 || recordOffset >= nodeSize) return ErrorNumber.InvalidArgument;
-
-            // Parse key at record offset
-            byte keyLen      = indexNode[recordOffset];
-            var  keyParentID = BigEndianBitConverter.ToUInt32(indexNode, recordOffset + 2);
-
-            AaruLogging.Debug(MODULE_NAME, $"Index record {i}: keyLen={keyLen}, parentID={keyParentID}");
-
-            // Key size: keyLen + 1 (for keyLen byte) padded to word boundary
-            var keySize = (ushort)(keyLen + 1 + 1 & ~1);
-
-            // Child pointer follows the key - read as big-endian
-            int pointerOffset = recordOffset + keySize;
-
-            if(pointerOffset + 4 > nodeSize) return ErrorNumber.InvalidArgument;
-
-            var childPointer = BigEndianBitConverter.ToUInt32(indexNode, pointerOffset);
-
-            AaruLogging.Debug(MODULE_NAME, $"  child pointer at {pointerOffset}: {childPointer}");
-
-            // For B-tree searches, we need the pointer to child nodes that might contain
-            // records with parentID = targetParentID. This is the child pointer of the
-            // largest key that is <= targetParentID.
-            if(keyParentID <= targetParentID)
+            case kCatalogRecordTypeDirectory:
             {
-                // This key might contain our target or keys before it
-                lastPointer = childPointer;
-            }
+                int size = Marshal.SizeOf(typeof(CdrDirRec));
 
-            if(keyParentID > targetParentID && lastPointer != 0)
-            {
-                // We've found a key larger than target, so use the previous pointer
-                childNode = lastPointer;
-                AaruLogging.Debug(MODULE_NAME, $"Found pointer for parentID={targetParentID}: {childNode}");
-
-                return ErrorNumber.NoError;
-            }
-        }
-
-        // If no larger key found, use the last pointer (which handles records >= targetParentID)
-        if(lastPointer != 0)
-        {
-            childNode = lastPointer;
-            AaruLogging.Debug(MODULE_NAME, $"Using last pointer for parentID={targetParentID}: {childNode}");
-
-            return ErrorNumber.NoError;
-        }
-
-        return ErrorNumber.InvalidArgument;
-    }
-
-    /// <summary>Searches a leaf node for the root directory records</summary>
-    ErrorNumber FindRootInLeaf(byte[] leafNode, ushort nodeSize, out CdrDirRec rootRec)
-    {
-        rootRec = default(CdrDirRec);
-
-        NodeDescriptor nodeDesc =
-            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafNode,
-                                                                  0,
-                                                                  System.Runtime.InteropServices.Marshal
-                                                                        .SizeOf(typeof(NodeDescriptor)));
-
-        if(nodeDesc.ndType != NodeType.ndLeafNode) return ErrorNumber.InvalidArgument;
-
-        AaruLogging.Debug(MODULE_NAME, $"Searching leaf node with {nodeDesc.ndNRecs} records");
-
-        // Search for the root directory record:
-        //   parentID = kRootParentCnid (1)
-        //   CNID = kRootCnid (2)
-        //
-        // The root directory should have:
-        // - Thread record (type 3) with parentID=kRootParentCnid, empty name
-        // - Directory record (type 1) with parentID=kRootParentCnid, empty name, CNID=kRootCnid
-        //
-        // OR just a single directory record with CNID=kRootCnid
-
-        // First pass: look for thread record + directory record pair with empty names
-        for(ushort i = 0; i < nodeDesc.ndNRecs; i++)
-        {
-            // Offset table at end of node, growing backwards
-            var offsetPos = (ushort)(nodeSize - 2 - i * 2);
-
-            if(offsetPos < 14 || offsetPos >= nodeSize) continue;
-
-            // Read offset table as big-endian
-            var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPos);
-
-            if(recordOffset < 14 || recordOffset >= nodeSize) continue;
-
-            // Parse the key
-            byte keyLen      = leafNode[recordOffset];
-            var  keyParentID = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 2);
-            byte nameLen     = leafNode[recordOffset                                 + 6];
-
-            // Calculate key size for reading CNID from data
-            var keySize    = (ushort)(keyLen + 1 + 1 & ~1);
-            int dataOffset = recordOffset + keySize;
-
-            if(dataOffset + 2 > leafNode.Length) continue;
-
-            byte recordType = leafNode[dataOffset];
-
-            // For directory or thread records, parse CNID
-            uint recordCNID = 0;
-
-            if(recordType == kCatalogRecordTypeDirectory && dataOffset + 6 + 4 <= leafNode.Length)
-            {
-                // Directory record (type 1): CdrDirRec structure
-                // Offset 0: CatDataRec (type + reserved) = 2 bytes
-                // Offset 2: dirFlags = 2 bytes
-                // Offset 4: dirVal = 2 bytes
-                // Offset 6: dirDirID = 4 bytes (this is the CNID)
-                recordCNID = BigEndianBitConverter.ToUInt32(leafNode, dataOffset + 6);
-            }
-            else if(recordType == kCatalogRecordTypeDirectoryThread && dataOffset + 6 + 4 <= leafNode.Length)
-            {
-                // Thread record (type 3): CdrThdRec structure
-                // Offset 0: CatDataRec (type + reserved) = 2 bytes
-                // Offset 2: thdResrv[0] = 4 bytes
-                // Offset 6: thdParID = 4 bytes (for thread records, this is the parent ID, not CNID)
-                // Thread records don't have a CNID field, so we skip them
-                recordCNID = 0;
-            }
-
-            AaruLogging.Debug(MODULE_NAME,
-                              $"Record {i}: keyLen={keyLen}, parentID={keyParentID}, nameLen={nameLen}, recordType={recordType}, CNID={recordCNID}, dataOffset={dataOffset}");
-
-            // Only look at parentID=kRootParentCnid (1)
-            if(keyParentID != kRootParentCnid) continue;
-
-            // Check if this is a directory record (type 1) with CNID=kRootCnid
-            if(recordType == kCatalogRecordTypeDirectory && recordCNID == kRootCnid)
-            {
-                // Parse the directory record
-                int cdrDirRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrDirRec));
-
-                if(dataOffset + cdrDirRecSize > leafNode.Length)
-                {
-                    AaruLogging.Debug(MODULE_NAME,
-                                      $"Record {i}: dataOffset {dataOffset} + {cdrDirRecSize} > leafNode.Length {leafNode.Length}");
-                }
-                else
-                {
-                    AaruLogging.Debug(MODULE_NAME, $"Record {i}: Found root directory record with CNID={recordCNID}");
-
-                    rootRec = Marshal.ByteArrayToStructureBigEndian<CdrDirRec>(leafNode, dataOffset, cdrDirRecSize);
-
-                    AaruLogging.Debug(MODULE_NAME,
-                                      $"Record {i}: Parsed dirDirID={rootRec.dirDirID}, dirVal={rootRec.dirVal}");
-
-                    return ErrorNumber.NoError;
-                }
-            }
-
-            // Look for thread record (type 3) first (with empty name)
-            if(nameLen != 0) continue;
-
-            if(recordType == kCatalogRecordTypeDirectoryThread)
-            {
-                // Found the thread record. The next record should be the directory record
-                if(i + 1 >= nodeDesc.ndNRecs) continue;
-
-                var nextOffsetPos = (ushort)(nodeSize - 2 - (i + 1) * 2);
-
-                if(nextOffsetPos < 14 || nextOffsetPos >= nodeSize) continue;
-
-                var nextRecordOffset = BigEndianBitConverter.ToUInt16(leafNode, nextOffsetPos);
-
-                if(nextRecordOffset < 14 || nextRecordOffset >= nodeSize) continue;
-
-                // Check the next record's key
-                byte nextKeyLen      = leafNode[nextRecordOffset];
-                var  nextKeyParentID = BigEndianBitConverter.ToUInt32(leafNode, nextRecordOffset + 2);
-                byte nextNameLen     = leafNode[nextRecordOffset                                 + 6];
-
-                // Verify next record has matching parentID and empty name
-                if(nextKeyParentID != kRootParentCnid || nextNameLen != 0) continue;
-
-                // Calculate key size for next record
-                var nextKeySize    = (ushort)(nextKeyLen + 1 + 1 & ~1);
-                int nextDataOffset = nextRecordOffset + nextKeySize;
-
-                if(nextDataOffset + 2 > leafNode.Length) continue;
-
-                byte nextRecordType = leafNode[nextDataOffset];
-
-                AaruLogging.Debug(MODULE_NAME,
-                                  $"Record {i + 1}: keyLen={nextKeyLen}, parentID={nextKeyParentID}, nameLen={nextNameLen}, recordType={nextRecordType}");
-
-                // Check if it's a directory record (type 1)
-                if(nextRecordType != kCatalogRecordTypeDirectory) continue;
-
-                // Parse the directory record
-                int cdrDirRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrDirRec));
-
-                if(nextDataOffset + cdrDirRecSize > leafNode.Length)
-                {
-                    AaruLogging.Debug(MODULE_NAME,
-                                      $"Record {i + 1}: dataOffset {nextDataOffset} + {cdrDirRecSize} > leafNode.Length {leafNode.Length}");
-
-                    continue;
-                }
-
-                AaruLogging.Debug(MODULE_NAME,
-                                  $"Record {i + 1}: Parsing CdrDirRec at offset {nextDataOffset}, size {cdrDirRecSize}");
-
-                rootRec = Marshal.ByteArrayToStructureBigEndian<CdrDirRec>(leafNode, nextDataOffset, cdrDirRecSize);
-
-                AaruLogging.Debug(MODULE_NAME,
-                                  $"Record {i + 1}: Parsed dirDirID={rootRec.dirDirID}, dirVal={rootRec.dirVal}");
-
-                // Verify this is the root directory (CNID should be kRootCnid = 2)
-                if(rootRec.dirDirID != kRootCnid)
-                {
-                    AaruLogging.Debug(MODULE_NAME,
-                                      $"Record {i + 1}: Found directory record with CNID={rootRec.dirDirID}, but expected kRootCnid={kRootCnid}");
-
-                    continue;
-                }
-
-                AaruLogging.Debug(MODULE_NAME, $"Found root directory record: CNID={rootRec.dirDirID}");
-
-                return ErrorNumber.NoError;
-            }
-
-            // If we find a directory record (type 1) with parentID=kRootParentCnid and empty name directly,
-            // parse it to check if CNID=2
-            if(recordType == kCatalogRecordTypeDirectory)
-            {
-                // Parse the directory record
-                int cdrDirRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrDirRec));
-
-                if(dataOffset + cdrDirRecSize > leafNode.Length)
-                {
-                    AaruLogging.Debug(MODULE_NAME,
-                                      $"Record {i}: dataOffset {dataOffset} + {cdrDirRecSize} > leafNode.Length {leafNode.Length}");
-
-                    continue;
-                }
-
-                AaruLogging.Debug(MODULE_NAME,
-                                  $"Record {i}: Parsing CdrDirRec at offset {dataOffset}, size {cdrDirRecSize}");
-
-                rootRec = Marshal.ByteArrayToStructureBigEndian<CdrDirRec>(leafNode, dataOffset, cdrDirRecSize);
-
-                AaruLogging.Debug(MODULE_NAME,
-                                  $"Record {i}: Parsed dirDirID={rootRec.dirDirID}, dirVal={rootRec.dirVal}");
-
-                AaruLogging.Debug(MODULE_NAME, $"Record {i}: Found directory record with CNID={rootRec.dirDirID}");
-
-                // Verify this is the root directory (CNID should be kRootCnid = 2)
-                if(rootRec.dirDirID != kRootCnid)
-                {
-                    AaruLogging.Debug(MODULE_NAME,
-                                      $"Record {i}: CNID {rootRec.dirDirID} != expected kRootCnid {kRootCnid}, continuing");
-
-                    continue;
-                }
-
-                AaruLogging.Debug(MODULE_NAME,
-                                  $"Found root directory record (without thread): CNID={rootRec.dirDirID}");
-
-                return ErrorNumber.NoError;
-            }
-        }
-
-        // Second pass: look for ANY directory record (type 1) with CNID=kRootCnid, regardless of other constraints
-        AaruLogging.Debug(MODULE_NAME, "Second pass: searching for ANY directory record with CNID=kRootCnid");
-
-        for(ushort i = 0; i < nodeDesc.ndNRecs; i++)
-        {
-            var offsetPos = (ushort)(nodeSize - 2 - i * 2);
-
-            if(offsetPos < 14 || offsetPos >= nodeSize) continue;
-
-            var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPos);
-
-            if(recordOffset < 14 || recordOffset >= nodeSize) continue;
-
-            // Parse the key
-            byte keyLen      = leafNode[recordOffset];
-            var  keyParentID = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 2);
-
-            // Calculate key size
-            var keySize    = (ushort)(keyLen + 1 + 1 & ~1);
-            int dataOffset = recordOffset + keySize;
-
-            if(dataOffset + 2 > leafNode.Length) continue;
-
-            byte recordType = leafNode[dataOffset];
-
-            // Only look at directory records (type 1)
-            if(recordType != kCatalogRecordTypeDirectory) continue;
-
-            // Parse the directory record
-            int cdrDirRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrDirRec));
-
-            if(dataOffset + cdrDirRecSize > leafNode.Length) continue;
-
-            rootRec = Marshal.ByteArrayToStructureBigEndian<CdrDirRec>(leafNode, dataOffset, cdrDirRecSize);
-
-            AaruLogging.Debug(MODULE_NAME,
-                              $"Record {i} (second pass): keyParentID={keyParentID}, parsed dirDirID={rootRec.dirDirID}, nameLen={leafNode[recordOffset + 6]}, type={recordType}, dataOffset={dataOffset}");
-
-            // Check if this is the root directory (CNID should be kRootCnid = 2)
-            if(rootRec.dirDirID == kRootCnid)
-            {
-                AaruLogging.Debug(MODULE_NAME, $"Found root directory record (second pass): CNID={rootRec.dirDirID}");
-
-                return ErrorNumber.NoError;
-            }
-        }
-
-        // Third pass: As final fallback, use any directory record with parentID=1 (root parent)
-        // Some non-standard volumes might not follow the CNID=2 convention
-        AaruLogging.Debug(MODULE_NAME, "Third pass: using any directory record with parentID=1 as fallback root");
-
-        for(ushort i = 0; i < nodeDesc.ndNRecs; i++)
-        {
-            var offsetPos = (ushort)(nodeSize - 2 - i * 2);
-
-            if(offsetPos < 14 || offsetPos >= nodeSize) continue;
-
-            var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPos);
-
-            if(recordOffset < 14 || recordOffset >= nodeSize) continue;
-
-            // Parse the key
-            byte keyLen      = leafNode[recordOffset];
-            var  keyParentID = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 2);
-            byte nameLen     = leafNode[recordOffset                                 + 6];
-
-            // Skip named entries - we want the thread/root entries with empty names
-            if(nameLen != 0) continue;
-
-            // Calculate key size
-            var keySize    = (ushort)(keyLen + 1 + 1 & ~1);
-            int dataOffset = recordOffset + keySize;
-
-            if(dataOffset + 2 > leafNode.Length) continue;
-
-            byte recordType = leafNode[dataOffset];
-
-            // Only look at directory records (type 1)
-            if(recordType != kCatalogRecordTypeDirectory) continue;
-
-            // Only records with parentID=1 (root parent)
-            if(keyParentID != kRootParentCnid) continue;
-
-            // Parse the directory record
-            int cdrDirRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrDirRec));
-
-            if(dataOffset + cdrDirRecSize > leafNode.Length) continue;
-
-            rootRec = Marshal.ByteArrayToStructureBigEndian<CdrDirRec>(leafNode, dataOffset, cdrDirRecSize);
-
-            AaruLogging.Debug(MODULE_NAME,
-                              $"Record {i} (third pass/fallback): Found directory with parentID=1, CNID={rootRec.dirDirID}");
-
-            // Only accept CNID=2 as the real root
-            if(rootRec.dirDirID == kRootCnid) return ErrorNumber.NoError;
-        }
-
-        return ErrorNumber.InvalidArgument;
-    }
-
-    /// <summary>Caches all entries from the root directory by traversing the B-Tree efficiently</summary>
-    ErrorNumber CacheRootDirectoryEntries()
-    {
-        // Initialize the cache dictionary
-        _rootDirectoryCache = [];
-
-        // Get the root directory CNID from the cached root directory record
-        uint   targetParentID = _rootDirectory.dirDirID;
-        ushort expectedCount  = _rootDirectory.dirVal;
-
-        AaruLogging.Debug(MODULE_NAME,
-                          $"Caching root directory entries: CNID={targetParentID}, expectedCount={expectedCount}");
-
-        AaruLogging.Debug(MODULE_NAME,
-                          $"Root directory details: dirDirID={_rootDirectory.dirDirID}, dirVal={_rootDirectory.dirVal}");
-
-        // Use the catalog B-tree header that was already validated and recovered in Mount.cs
-        BTHdrRed bthdr = _catalogBTreeHeader;
-
-        AaruLogging.Debug(MODULE_NAME,
-                          $"Using cached B-tree header: firstLeaf={bthdr.bthFNode}, lastLeaf={bthdr.bthLNode}");
-
-        ErrorNumber errno;
-
-        // **BRUTE FORCE APPROACH**: Since we found the root by scanning leaf nodes,
-        // scan through all leaf nodes looking for entries with parentID = targetParentID (which is 2 for root)
-        // Skip if leaf range is invalid
-        if(bthdr.bthFNode <= bthdr.bthLNode)
-        {
-            ushort entriesFound = 0;
-
-            AaruLogging.Debug(MODULE_NAME,
-                              $"CacheRootDirectoryEntries brute-force: Scanning leaf nodes {bthdr.bthFNode} to {bthdr.bthLNode}");
-
-            for(uint leafNode = bthdr.bthFNode; leafNode <= bthdr.bthLNode; leafNode++)
-            {
-                errno = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] leafData);
-
-                if(errno != ErrorNumber.NoError) continue;
-
-                NodeDescriptor leafDesc =
-                    Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafData,
-                                                                          0,
-                                                                          System.Runtime.InteropServices.Marshal
-                                                                             .SizeOf(typeof(NodeDescriptor)));
-
-                if(leafDesc.ndType != NodeType.ndLeafNode) continue;
-
-                AaruLogging.Debug(MODULE_NAME, $"Processing leaf node {leafNode}, {leafDesc.ndNRecs} records");
-
-                // Extract all entries with parentID = targetParentID from this leaf node
-                errno = ExtractDirectoryEntriesFromLeaf(leafData, bthdr.bthNodeSize, targetParentID, ref entriesFound);
-
-                if(errno != ErrorNumber.NoError)
-                {
-                    AaruLogging.Debug(MODULE_NAME, $"Error extracting entries from leaf node {leafNode}");
-
-                    continue;
-                }
-
-                AaruLogging.Debug(MODULE_NAME,
-                                  $"After leaf {leafNode}, entriesFound={entriesFound}, expectedCount={expectedCount}");
-
-                // Check if we've found all entries
-                if(entriesFound >= expectedCount)
-                {
-                    AaruLogging.Debug(MODULE_NAME, $"Found all expected entries: {entriesFound}/{expectedCount}");
-
-                    break;
-                }
-            }
-
-            AaruLogging.Debug(MODULE_NAME,
-                              $"Root directory caching complete: {entriesFound} entries found, cache has {_rootDirectoryCache.Count} items");
-
-            return ErrorNumber.NoError;
-        }
-
-        // Leaf range is invalid, fall back to brute-force scan of ALL nodes
-        AaruLogging.Debug(MODULE_NAME,
-                          $"Leaf node range invalid (firstLeaf={bthdr.bthFNode} > lastLeaf={bthdr.bthLNode}), using brute-force scan of all nodes");
-
-        // Brute-force scan ALL nodes looking for leaf nodes with our targetParentID
-        {
-            ushort entriesFound = 0;
-            uint   maxNodes     = bthdr.bthNNodes > 0 ? bthdr.bthNNodes : 2000;
-
-            AaruLogging.Debug(MODULE_NAME,
-                              $"CacheRootDirectoryEntries brute-force: bthNNodes={bthdr.bthNNodes}, maxNodes={maxNodes}, scanning for parentID={targetParentID}");
-
-            uint leafNodesScanned = 0;
-
-            for(uint nodeNum = 0; nodeNum < maxNodes; nodeNum++)
-            {
-                errno = ReadNode(nodeNum, bthdr.bthNodeSize, out byte[] nodeData);
-
-                if(errno != ErrorNumber.NoError) continue;
-
-                NodeDescriptor nodeDesc =
-                    Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData,
-                                                                          0,
-                                                                          System.Runtime.InteropServices.Marshal
-                                                                             .SizeOf(typeof(NodeDescriptor)));
-
-                if(nodeDesc.ndType != NodeType.ndLeafNode) continue;
-
-                leafNodesScanned++;
-                ushort beforeCount = entriesFound;
-
-                // Extract all entries with parentID = targetParentID from this leaf node
-                errno = ExtractDirectoryEntriesFromLeaf(nodeData, bthdr.bthNodeSize, targetParentID, ref entriesFound);
-
-                if(entriesFound > beforeCount)
-                {
-                    AaruLogging.Debug(MODULE_NAME,
-                                      $"Node {nodeNum}: Found {entriesFound - beforeCount} matching entries (total now: {entriesFound})");
-                }
-
-                if(errno != ErrorNumber.NoError) continue;
-
-                // Check if we've found all entries
-                if(entriesFound >= expectedCount)
-                {
-                    AaruLogging.Debug(MODULE_NAME, $"Found all expected entries: {entriesFound}/{expectedCount}");
-
-                    break;
-                }
-            }
-
-            AaruLogging.Debug(MODULE_NAME,
-                              $"Root directory caching complete: scanned {leafNodesScanned} leaf nodes, {entriesFound} entries found, cache has {_rootDirectoryCache.Count} items");
-
-            if(entriesFound > 0 || _rootDirectoryCache.Count > 0) return ErrorNumber.NoError;
-        }
-
-        // If brute-force failed, try standard B-tree traversal as last resort
-        AaruLogging.Debug(MODULE_NAME, "Brute-force scan found no entries, trying standard B-tree traversal");
-
-        // Navigate B-Tree to find entries with parentID = targetParentID
-        uint currentNode = bthdr.bthRoot;
-
-        // Traverse from root to leaf
-        for(var level = 0; level < bthdr.bthDepth; level++)
-        {
-            errno = ReadNode(currentNode, bthdr.bthNodeSize, out byte[] nodeData);
-
-            if(errno != ErrorNumber.NoError) return errno;
-
-            NodeDescriptor nodeDesc =
-                Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData,
-                                                                      0,
-                                                                      System.Runtime.InteropServices.Marshal
-                                                                            .SizeOf(typeof(NodeDescriptor)));
-
-            // Reached a leaf node
-            if(nodeDesc.ndType == NodeType.ndLeafNode)
-            {
-                // Extract all entries with parentID = targetParentID from this leaf and following siblings
-                // First, backtrack to find the FIRST leaf node that contains targetParentID entries
-                uint   leafNode     = currentNode;
-                ushort entriesFound = 0;
-
-                // Traverse backward to find the start of targetParentID entries
-                while(nodeDesc.ndBLink != 0)
-                {
-                    errno = ReadNode(nodeDesc.ndBLink, bthdr.bthNodeSize, out byte[] backData);
-
-                    if(errno != ErrorNumber.NoError) break;
-
-                    NodeDescriptor backDesc =
-                        Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(backData,
-                                                                              0,
-                                                                              System.Runtime.InteropServices.Marshal
-                                                                                 .SizeOf(typeof(NodeDescriptor)));
-
-                    // Check if previous leaf contains entries with parentID <= targetParentID
-                    if(!LeafHasTargetOrEarlier(backData, bthdr.bthNodeSize, targetParentID))
-                    {
-                        // Previous leaf doesn't have our target, so current leaf is the start
-                        break;
-                    }
-
-                    // Previous leaf has our target or earlier, so go back
-                    leafNode = nodeDesc.ndBLink;
-                    nodeDesc = backDesc;
-                }
-
-                // Now traverse forward and extract all entries
-                while(leafNode != 0)
-                {
-                    errno = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] leafData);
-
-                    if(errno != ErrorNumber.NoError) return errno;
-
-                    NodeDescriptor leafDesc =
-                        Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafData,
-                                                                              0,
-                                                                              System.Runtime.InteropServices.Marshal
-                                                                                 .SizeOf(typeof(NodeDescriptor)));
-
-                    // Extract entries from this leaf
-                    errno = ExtractDirectoryEntriesFromLeaf(leafData,
-                                                            bthdr.bthNodeSize,
-                                                            targetParentID,
-                                                            ref entriesFound);
-
-                    if(errno != ErrorNumber.NoError) return errno;
-
-                    // Check if we've found all entries
-                    if(entriesFound >= expectedCount)
-                    {
-                        AaruLogging.Debug(MODULE_NAME, $"Found all expected entries: {entriesFound}/{expectedCount}");
-
-                        break;
-                    }
-
-                    // Move to next leaf node
-                    if(leafDesc.ndFLink == 0) break;
-
-                    leafNode = leafDesc.ndFLink;
-                    errno    = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] nextLeafData);
-
-                    if(errno != ErrorNumber.NoError) break;
-
-                    if(!LeafHasTargetParentID(nextLeafData, bthdr.bthNodeSize, targetParentID)) break;
-                }
-
-                AaruLogging.Debug(MODULE_NAME, $"Root directory caching complete: {entriesFound} entries found");
-
-                return ErrorNumber.NoError;
-            }
-
-            // Index node - find the child pointer for targetParentID
-            errno = FindIndexPointer(nodeData, bthdr.bthNodeSize, targetParentID, out currentNode);
-
-            if(errno != ErrorNumber.NoError) return errno;
-        }
-
-        return ErrorNumber.InvalidArgument;
-    }
-
-    /// <summary>Checks if a leaf node contains any entries with a specific parentID</summary>
-    bool LeafHasTargetParentID(byte[] leafNode, ushort nodeSize, uint targetParentID)
-    {
-        NodeDescriptor nodeDesc =
-            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafNode,
-                                                                  0,
-                                                                  System.Runtime.InteropServices.Marshal
-                                                                        .SizeOf(typeof(NodeDescriptor)));
-
-        if(nodeDesc.ndType != NodeType.ndLeafNode) return false;
-
-        // Quick scan for targetParentID
-        for(ushort i = 0; i < nodeDesc.ndNRecs; i++)
-        {
-            var offsetPos = (ushort)(nodeSize - 2 - i * 2);
-
-            if(offsetPos < 14 || offsetPos >= nodeSize) continue;
-
-            var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPos);
-
-            if(recordOffset < 14 || recordOffset >= nodeSize) continue;
-
-            var keyParentID = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 2);
-
-            if(keyParentID == targetParentID) return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>Checks if a leaf node contains entries with parentID less than or equal to target</summary>
-    bool LeafHasTargetOrEarlier(byte[] leafNode, ushort nodeSize, uint targetParentID)
-    {
-        NodeDescriptor nodeDesc =
-            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafNode,
-                                                                  0,
-                                                                  System.Runtime.InteropServices.Marshal
-                                                                        .SizeOf(typeof(NodeDescriptor)));
-
-        if(nodeDesc.ndType != NodeType.ndLeafNode) return false;
-
-        if(nodeDesc.ndNRecs == 0) return false;
-
-        // Check first record (smallest parentID in this node)
-        var offsetPos = (ushort)(nodeSize - 2);
-
-        if(offsetPos < 14 || offsetPos >= nodeSize) return false;
-
-        var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPos);
-
-        if(recordOffset < 14 || recordOffset >= nodeSize) return false;
-
-        var minParentID = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 2);
-
-        return minParentID <= targetParentID;
-    }
-
-    /// <summary>Checks if a leaf node contains any entries with a specific parentID</summary>
-    bool LeafContainsTargetParentID(byte[] leafNode, ushort nodeSize, uint targetParentID) =>
-        LeafHasTargetParentID(leafNode, nodeSize, targetParentID);
-
-
-    /// <summary>Extracts all directory and file entries from a leaf node matching a given parent ID</summary>
-    ErrorNumber ExtractDirectoryEntriesFromLeaf(byte[]     leafNode, ushort nodeSize, uint targetParentID,
-                                                ref ushort entriesFound)
-    {
-        NodeDescriptor nodeDesc =
-            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafNode,
-                                                                  0,
-                                                                  System.Runtime.InteropServices.Marshal
-                                                                        .SizeOf(typeof(NodeDescriptor)));
-
-        if(nodeDesc.ndType != NodeType.ndLeafNode) return ErrorNumber.InvalidArgument;
-
-
-        // Scan ALL records in this leaf node
-        for(ushort i = 0; i < nodeDesc.ndNRecs; i++)
-        {
-            // Offset table at end of node, growing backwards
-            var offsetPos = (ushort)(nodeSize - 2 - i * 2);
-
-            if(offsetPos < 14 || offsetPos >= nodeSize) continue;
-
-            // Read offset table as big-endian
-            var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPos);
-
-            if(recordOffset < 14 || recordOffset >= nodeSize) continue;
-
-            // Parse the key: keyLen | reserved | parentID | name | ...
-            byte keyLen      = leafNode[recordOffset];
-            var  keyParentID = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 2);
-            byte nameLen     = leafNode[recordOffset                                 + 6];
-
-            AaruLogging.Debug(MODULE_NAME,
-                              $"Record {i}: keyParentID={keyParentID}, targetParentID={targetParentID}, nameLen={nameLen}");
-
-            // Only process records with parentID = targetParentID
-            if(keyParentID != targetParentID) continue;
-
-            AaruLogging.Debug(MODULE_NAME, $"Record {i}: MATCH! Processing record with matching parentID");
-
-
-            // Calculate key size for reading data
-            var keySize    = (ushort)(keyLen + 1 + 1 & ~1);
-            int dataOffset = recordOffset + keySize;
-
-            if(dataOffset + 2 > leafNode.Length) continue;
-
-            byte recordType = leafNode[dataOffset];
-
-            // Extract the name from the key using proper encoding handling
-            string entryName = ExtractCatalogName(leafNode, recordOffset + 7, nameLen);
-
-            AaruLogging.Debug(MODULE_NAME,
-                              $"Processing entry: name='{entryName}', type={recordType}, dataOffset={dataOffset}");
-
-            // Process directory records (type 1)
-            if(recordType == kCatalogRecordTypeDirectory)
-            {
-                int cdrDirRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrDirRec));
-
-                if(dataOffset + cdrDirRecSize > leafNode.Length)
-                {
-                    AaruLogging.Debug(MODULE_NAME, $"Insufficient data for directory record at offset {dataOffset}");
-
-                    continue;
-                }
+                if(entryOffset + size > nodeData.Length) return null;
 
                 CdrDirRec dirRec =
-                    Marshal.ByteArrayToStructureBigEndian<CdrDirRec>(leafNode, dataOffset, cdrDirRecSize);
+                    Helpers.Marshal.ByteArrayToStructureBigEndian<CdrDirRec>(nodeData, entryOffset, size);
 
-                var entry = new DirectoryEntry
+                return new DirectoryEntry
                 {
-                    Name               = entryName,
+                    Name               = name,
                     CNID               = dirRec.dirDirID,
-                    ParentID           = keyParentID,
-                    Type               = 1,
+                    ParentID           = parentId,
+                    Type               = kCatalogRecordTypeDirectory,
                     Valence            = dirRec.dirVal,
                     CreationDate       = dirRec.dirCrDat,
                     ModificationDate   = dirRec.dirMdDat,
@@ -1174,38 +554,22 @@ public sealed partial class AppleHFS
                     FinderInfo         = dirRec.dirUsrInfo,
                     ExtendedFinderInfo = dirRec.dirFndrInfo
                 };
-
-                if(!string.IsNullOrEmpty(entryName))
-                {
-                    _rootDirectoryCache[entryName] = entry;
-                    entriesFound++;
-                    AaruLogging.Debug(MODULE_NAME, $"Cached directory entry: {entryName} (CNID={dirRec.dirDirID})");
-                }
-
-                continue;
             }
-
-            // Process file records (type 2)
-            if(recordType == kCatalogRecordTypeFile)
+            case kCatalogRecordTypeFile:
             {
-                int cdrFilRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrFilRec));
+                int size = Marshal.SizeOf(typeof(CdrFilRec));
 
-                if(dataOffset + cdrFilRecSize > leafNode.Length)
-                {
-                    AaruLogging.Debug(MODULE_NAME, $"Insufficient data for file record at offset {dataOffset}");
-
-                    continue;
-                }
+                if(entryOffset + size > nodeData.Length) return null;
 
                 CdrFilRec filRec =
-                    Marshal.ByteArrayToStructureBigEndian<CdrFilRec>(leafNode, dataOffset, cdrFilRecSize);
+                    Helpers.Marshal.ByteArrayToStructureBigEndian<CdrFilRec>(nodeData, entryOffset, size);
 
-                var entry = new FileEntry
+                return new FileEntry
                 {
-                    Name                     = entryName,
+                    Name                     = name,
                     CNID                     = filRec.filFlNum,
-                    ParentID                 = keyParentID,
-                    Type                     = 2,
+                    ParentID                 = parentId,
+                    Type                     = kCatalogRecordTypeFile,
                     FinderInfo               = filRec.filUsrWds,
                     ExtendedFinderInfo       = filRec.filFndrInfo,
                     DataForkLogicalSize      = filRec.filLgLen,
@@ -1220,358 +584,173 @@ public sealed partial class AppleHFS
                     ModificationDate         = filRec.filMdDat,
                     BackupDate               = filRec.filBkDat
                 };
-
-                if(!string.IsNullOrEmpty(entryName))
-                {
-                    _rootDirectoryCache[entryName] = entry;
-                    entriesFound++;
-                    AaruLogging.Debug(MODULE_NAME, $"Cached file entry: {entryName} (CNID={filRec.filFlNum})");
-                }
-
-                continue;
             }
-
-            // Skip thread records (type 3 and 4) as they don't represent actual directory entries
-            if(recordType == kCatalogRecordTypeDirectoryThread || recordType == kCatalogRecordTypeFileThread)
-            {
-                AaruLogging.Debug(MODULE_NAME, $"Skipping thread record (type {recordType})");
-
-                continue;
-            }
-
-            AaruLogging.Debug(MODULE_NAME, $"Unknown record type {recordType} at offset {dataOffset}");
+            default:
+                return null;
         }
+    }
+
+    /// <summary>Extracts a catalog name from raw byte data using the configured encoding</summary>
+    string ExtractCatalogName(byte[] data, int offset, byte length)
+    {
+        if(length == 0 || length > 31 || offset < 0 || offset + length > data.Length) return "";
+
+        var nameBytes = new byte[length];
+        Array.Copy(data, offset, nameBytes, 0, length);
+
+        return StringHandlers.CToString(nameBytes, _encoding);
+    }
+
+#endregion
+
+#region Directory caching
+
+    /// <summary>Caches the root directory record from the catalog B-Tree</summary>
+    ErrorNumber CacheRootDirectory()
+    {
+        CatalogFindData fd = default;
+
+        ErrorNumber errno = CatFindBrec(kRootCnid, ref fd);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Failed to find root directory via B-tree: {0}", errno);
+
+            return errno;
+        }
+
+        // Parse the directory record
+        int cdrDirRecSize = Marshal.SizeOf(typeof(CdrDirRec));
+
+        if(fd.EntryOffset + cdrDirRecSize > fd.NodeData.Length) return ErrorNumber.InvalidArgument;
+
+        byte recordType = fd.NodeData[fd.EntryOffset];
+
+        if(recordType != kCatalogRecordTypeDirectory)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Root catalog record is not a directory (type={0})", recordType);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        _rootDirectory =
+            Helpers.Marshal.ByteArrayToStructureBigEndian<CdrDirRec>(fd.NodeData, fd.EntryOffset, cdrDirRecSize);
+
+        if(_rootDirectory.dirDirID != kRootCnid)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "Root directory CNID mismatch: expected {0}, got {1}",
+                              kRootCnid,
+                              _rootDirectory.dirDirID);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "Root directory cached: CNID={0}, valence={1}",
+                          _rootDirectory.dirDirID,
+                          _rootDirectory.dirVal);
 
         return ErrorNumber.NoError;
     }
 
-    /// <summary>Extracts a catalog name from a byte array with proper encoding handling</summary>
-    /// <param name="data">Source byte array</param>
-    /// <param name="offset">Offset to name in the array</param>
-    /// <param name="length">Length of the name in bytes</param>
-    /// <returns>Decoded name string, or empty string if length is 0</returns>
-    string ExtractCatalogName(byte[] data, int offset, byte length)
+    /// <summary>Caches all entries from the root directory</summary>
+    ErrorNumber CacheRootDirectoryEntries()
     {
-        // HFS catalog names are not Pascal strings - they are just length-delimited
-        // Valid names have length from 1 to 31 bytes
-        if(length == 0 || length > 31 || offset < 0 || offset + length > data.Length) return "";
+        _rootDirectoryCache = [];
 
-        // Extract the name bytes and decode using the configured encoding
-        var nameBytes = new byte[length];
-        Array.Copy(data, offset, nameBytes, 0, length);
-
-        // Use StringHandlers.CToString for proper null-terminated string handling
-        return StringHandlers.CToString(nameBytes, _encoding);
+        return CacheDirectoryEntries(kRootCnid, _rootDirectoryCache);
     }
 
     /// <summary>
     ///     Caches directory entries for a given CNID if not already cached.
-    ///     Reuses existing root directory cache if CNID is kRootCnid.
+    ///     Returns immediately if CNID is kRootCnid (already cached separately).
     /// </summary>
-    /// <param name="cnid">Catalog Node ID of the directory to cache</param>
-    /// <returns>Error status</returns>
     ErrorNumber CacheDirectoryIfNeeded(uint cnid)
     {
-        // Initialize directory cache dictionary if needed
-        _directoryCaches ??= new Dictionary<uint, Dictionary<string, CatalogEntry>>();
+        _directoryCaches ??= [];
 
-        // Root directory is already cached in _rootDirectoryCache
         if(cnid == kRootCnid) return ErrorNumber.NoError;
 
-        // Check if already cached
-        if(_directoryCaches.ContainsKey(cnid)) return ErrorNumber.NoError;
-
-        // Cache this directory
-        return CacheDirectory(cnid);
+        return _directoryCaches.ContainsKey(cnid) ? ErrorNumber.NoError : CacheDirectory(cnid);
     }
 
-    /// <summary>
-    ///     Caches all entries for a directory by its CNID.
-    ///     Searches the catalog B-Tree for all records with the given parentID.
-    /// </summary>
-    /// <param name="cnid">Catalog Node ID (used as parentID for records) of the directory to cache</param>
-    /// <returns>Error status</returns>
+    /// <summary>Caches all entries for a directory by its CNID</summary>
     ErrorNumber CacheDirectory(uint cnid)
     {
-        _directoryCaches ??= new Dictionary<uint, Dictionary<string, CatalogEntry>>();
+        _directoryCaches ??= [];
 
-        // Use the catalog B-tree header that was already validated and recovered in Mount.cs
-        BTHdrRed bthdr = _catalogBTreeHeader;
+        Dictionary<string, CatalogEntry> entries = [];
 
-        var directoryEntries = new Dictionary<string, CatalogEntry>();
+        ErrorNumber errno = CacheDirectoryEntries(cnid, entries);
 
-        ErrorNumber errno;
+        if(errno != ErrorNumber.NoError) return errno;
 
-        // This is robust against malformed B-tree structures like the one in this image
-        // Skip if leaf range is invalid
-        if(bthdr.bthFNode <= bthdr.bthLNode)
-        {
-            uint targetParentID = cnid;
-
-            for(uint leafNode = bthdr.bthFNode; leafNode <= bthdr.bthLNode; leafNode++)
-            {
-                errno = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] leafData);
-
-                if(errno != ErrorNumber.NoError) continue;
-
-                NodeDescriptor leafDesc =
-                    Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafData,
-                                                                          0,
-                                                                          System.Runtime.InteropServices.Marshal
-                                                                             .SizeOf(typeof(NodeDescriptor)));
-
-                if(leafDesc.ndType != NodeType.ndLeafNode) continue;
-
-                // Extract entries from this leaf
-                errno = ExtractDirectoryEntriesFromLeafForCnid(leafData,
-                                                               bthdr.bthNodeSize,
-                                                               targetParentID,
-                                                               directoryEntries);
-
-                if(errno != ErrorNumber.NoError) continue;
-            }
-
-            // Cache the directory
-            _directoryCaches[cnid] = directoryEntries;
-
-            return ErrorNumber.NoError;
-        }
-
-        // Leaf range is invalid, fall back to standard B-tree traversal
-        AaruLogging.Debug(MODULE_NAME,
-                          $"Leaf node range invalid (firstLeaf={bthdr.bthFNode} > lastLeaf={bthdr.bthLNode}), using standard B-tree traversal");
-
-        // Navigate B-Tree to find entries with parentID = cnid
-        uint currentNode     = bthdr.bthRoot;
-        uint targetParentID2 = cnid;
-
-        // Traverse from root to leaf
-        for(var level = 0; level < bthdr.bthDepth; level++)
-        {
-            errno = ReadNode(currentNode, bthdr.bthNodeSize, out byte[] nodeData);
-
-            if(errno != ErrorNumber.NoError) return errno;
-
-            NodeDescriptor nodeDesc =
-                Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData,
-                                                                      0,
-                                                                      System.Runtime.InteropServices.Marshal
-                                                                            .SizeOf(typeof(NodeDescriptor)));
-
-            // Reached a leaf node
-            if(nodeDesc.ndType == NodeType.ndLeafNode)
-            {
-                // Extract all entries with parentID = cnid from this leaf and following siblings
-                // First, traverse backward to find the first leaf with targetParentID entries
-                uint leafNode  = currentNode;
-                var  leafCount = 0;
-
-                AaruLogging.Debug(MODULE_NAME,
-                                  $"CacheDirectory B-tree fallback: Starting leaf traversal for CNID={cnid}, first leaf={currentNode}");
-
-                // Traverse backward to find first leaf with targetParentID
-                while(nodeDesc.ndBLink != 0)
-                {
-                    errno = ReadNode(nodeDesc.ndBLink, bthdr.bthNodeSize, out byte[] backData);
-
-                    if(errno != ErrorNumber.NoError) break;
-
-                    NodeDescriptor backDesc =
-                        Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(backData,
-                                                                              0,
-                                                                              System.Runtime.InteropServices.Marshal
-                                                                                 .SizeOf(typeof(NodeDescriptor)));
-
-                    if(!LeafHasTargetOrEarlier(backData, bthdr.bthNodeSize, targetParentID2)) break;
-
-                    leafNode = nodeDesc.ndBLink;
-                    nodeDesc = backDesc;
-                }
-
-                AaruLogging.Debug(MODULE_NAME, $"  Backward traversal found first leaf at {leafNode}");
-
-                // Now traverse forward from the first leaf, extracting all entries for this CNID
-                while(leafNode != 0)
-                {
-                    errno = ReadNode(leafNode, bthdr.bthNodeSize, out byte[] leafData);
-
-                    if(errno != ErrorNumber.NoError) return errno;
-
-                    NodeDescriptor leafDesc =
-                        Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafData,
-                                                                              0,
-                                                                              System.Runtime.InteropServices.Marshal
-                                                                                 .SizeOf(typeof(NodeDescriptor)));
-
-                    AaruLogging.Debug(MODULE_NAME, $"  Checking leaf {leafNode}, next={leafDesc.ndFLink}");
-
-                    // Extract entries from this leaf
-                    errno = ExtractDirectoryEntriesFromLeafForCnid(leafData,
-                                                                   bthdr.bthNodeSize,
-                                                                   targetParentID2,
-                                                                   directoryEntries);
-
-                    if(errno != ErrorNumber.NoError) return errno;
-
-                    leafCount++;
-
-                    // Continue to next sibling leaf
-                    if(leafDesc.ndFLink == 0)
-                    {
-                        AaruLogging.Debug(MODULE_NAME, "  No next leaf, stopping");
-
-                        break;
-                    }
-
-                    leafNode = leafDesc.ndFLink;
-                }
-
-                AaruLogging.Debug(MODULE_NAME,
-                                  $"CacheDirectory traversed {leafCount} leaves, found {directoryEntries.Count} total entries");
-
-                // Cache the directory
-                _directoryCaches[cnid] = directoryEntries;
-
-                return ErrorNumber.NoError;
-            }
-
-            // Index node - find the child pointer for targetParentID
-            errno = FindIndexPointer(nodeData, bthdr.bthNodeSize, targetParentID2, out currentNode);
-
-            if(errno != ErrorNumber.NoError) return errno;
-        }
-
-        return ErrorNumber.InvalidArgument;
-    }
-
-    /// <summary>
-    ///     Extracts directory entries from a leaf node for a specific CNID.
-    ///     Similar to ExtractDirectoryEntriesFromLeaf but extracts to a provided dictionary.
-    /// </summary>
-    ErrorNumber ExtractDirectoryEntriesFromLeafForCnid(byte[] leafNode, ushort nodeSize, uint targetParentID,
-                                                       Dictionary<string, CatalogEntry> entries)
-    {
-        NodeDescriptor nodeDesc =
-            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(leafNode,
-                                                                  0,
-                                                                  System.Runtime.InteropServices.Marshal
-                                                                        .SizeOf(typeof(NodeDescriptor)));
-
-        if(nodeDesc.ndType != NodeType.ndLeafNode) return ErrorNumber.InvalidArgument;
-
-        var entriesInThisLeaf = 0;
-
-        // Iterate through records in this leaf node
-        for(ushort i = 0; i < nodeDesc.ndNRecs; i++)
-        {
-            var offsetPos = (ushort)(nodeSize - 2 - i * 2);
-
-            if(offsetPos < 14 || offsetPos >= nodeSize) continue;
-
-            var recordOffset = BigEndianBitConverter.ToUInt16(leafNode, offsetPos);
-
-            if(recordOffset < 14 || recordOffset >= nodeSize) continue;
-
-            // Parse the key
-            byte keyLen      = leafNode[recordOffset];
-            var  keyParentID = BigEndianBitConverter.ToUInt32(leafNode, recordOffset + 2);
-
-            // Stop if we've passed the target parentID
-            if(keyParentID > targetParentID) break;
-
-            // Skip if not our target parentID
-            if(keyParentID != targetParentID) continue;
-
-            // Extract the name
-            byte   nameLen = leafNode[recordOffset                     + 6];
-            string name    = ExtractCatalogName(leafNode, recordOffset + 7, nameLen);
-
-            if(string.IsNullOrEmpty(name)) continue;
-
-            entriesInThisLeaf++;
-
-            // Key size (padded to word boundary)
-            var keySize    = (ushort)(keyLen + 1 + 1 & ~1);
-            int dataOffset = recordOffset + keySize;
-
-            if(dataOffset >= leafNode.Length) continue;
-
-            byte recordType = leafNode[dataOffset];
-
-            CatalogEntry entry = null;
-
-            // Parse based on record type
-            if(recordType == kCatalogRecordTypeDirectory)
-            {
-                int cdrDirRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrDirRec));
-
-                if(dataOffset + cdrDirRecSize <= leafNode.Length)
-                {
-                    CdrDirRec dirRec =
-                        Marshal.ByteArrayToStructureBigEndian<CdrDirRec>(leafNode, dataOffset, cdrDirRecSize);
-
-                    entry = new DirectoryEntry
-                    {
-                        Name               = name,
-                        CNID               = dirRec.dirDirID,
-                        ParentID           = keyParentID,
-                        Type               = kCatalogRecordTypeDirectory,
-                        Valence            = dirRec.dirVal,
-                        CreationDate       = dirRec.dirCrDat,
-                        ModificationDate   = dirRec.dirMdDat,
-                        BackupDate         = dirRec.dirBkDat,
-                        FinderInfo         = dirRec.dirUsrInfo,
-                        ExtendedFinderInfo = dirRec.dirFndrInfo
-                    };
-                }
-            }
-            else if(recordType == kCatalogRecordTypeFile)
-            {
-                int cdrFilRecSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CdrFilRec));
-
-                if(dataOffset + cdrFilRecSize <= leafNode.Length)
-                {
-                    CdrFilRec filRec =
-                        Marshal.ByteArrayToStructureBigEndian<CdrFilRec>(leafNode, dataOffset, cdrFilRecSize);
-
-                    entry = new FileEntry
-                    {
-                        Name                     = name,
-                        CNID                     = filRec.filFlNum,
-                        ParentID                 = keyParentID,
-                        Type                     = kCatalogRecordTypeFile,
-                        FinderInfo               = filRec.filUsrWds,
-                        ExtendedFinderInfo       = filRec.filFndrInfo,
-                        DataForkLogicalSize      = filRec.filLgLen,
-                        DataForkPhysicalSize     = filRec.filPyLen,
-                        DataForkStartBlock       = filRec.filStBlk,
-                        DataForkExtents          = filRec.filExtRec,
-                        ResourceForkLogicalSize  = filRec.filRLgLen,
-                        ResourceForkPhysicalSize = filRec.filRPyLen,
-                        ResourceForkStartBlock   = filRec.filRStBlk,
-                        ResourceForkExtents      = filRec.filRExtRec,
-                        CreationDate             = filRec.filCrDat,
-                        ModificationDate         = filRec.filMdDat,
-                        BackupDate               = filRec.filBkDat
-                    };
-                }
-            }
-
-            if(entry != null) entries[name] = entry;
-        }
-
-        AaruLogging.Debug(MODULE_NAME,
-                          $"Extracted {entriesInThisLeaf} entries with parentID={targetParentID} from this leaf");
+        _directoryCaches[cnid] = entries;
 
         return ErrorNumber.NoError;
     }
 
     /// <summary>
-    ///     Gets cached directory entries for a given CNID.
-    ///     Returns the root directory cache if CNID is kRootCnid.
+    ///     Populates a dictionary with all entries (files and directories) whose parent is the given CNID.
     /// </summary>
-    /// <param name="cnid">Catalog Node ID of the directory</param>
-    /// <returns>Dictionary of entries keyed by filename, or null if not cached</returns>
+    ErrorNumber CacheDirectoryEntries(uint cnid, Dictionary<string, CatalogEntry> entries)
+    {
+        // Search for the thread record (cnid, empty name)
+        byte[]          searchKey = CatBuildKey(cnid, null, 0);
+        CatalogFindData fd        = default;
+
+        ErrorNumber errno = BTreeFind(searchKey, ref fd);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Thread record not found for CNID {0}: {1}", cnid, errno);
+
+            return errno;
+        }
+
+        // Advance past the thread record to the first child entry
+        errno = BRecGoto(ref fd, 1);
+
+        if(errno != ErrorNumber.NoError)
+        {
+            // No children (empty directory) or end of tree
+            return errno == ErrorNumber.NoSuchFile ? ErrorNumber.NoError : errno;
+        }
+
+        // Read entries while the key's ParID matches our directory
+        for(;;)
+        {
+            // Check that the current key's ParID still matches
+            if(fd.KeyOffset + 7 > fd.NodeData.Length) break;
+
+            var keyParId = BigEndianBitConverter.ToUInt32(fd.NodeData, fd.KeyOffset + 2);
+
+            if(keyParId != cnid) break;
+
+            // Extract name from key
+            byte   nameLen = fd.NodeData[fd.KeyOffset                     + 6];
+            string name    = ExtractCatalogName(fd.NodeData, fd.KeyOffset + 7, nameLen);
+
+            if(!string.IsNullOrEmpty(name))
+            {
+                CatalogEntry entry = ParseCatalogRecord(fd.NodeData, fd.EntryOffset, name, keyParId);
+
+                if(entry != null) entries[name] = entry;
+            }
+
+            // Advance to next record
+            errno = BRecGoto(ref fd, 1);
+
+            if(errno != ErrorNumber.NoError) break;
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "Cached {0} entries for CNID {1}", entries.Count, cnid);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Gets cached directory entries for a given CNID</summary>
     Dictionary<string, CatalogEntry> GetDirectoryEntries(uint cnid)
     {
         if(cnid == kRootCnid) return _rootDirectoryCache;
@@ -1582,4 +761,6 @@ public sealed partial class AppleHFS
 
         return entries;
     }
+
+#endregion
 }

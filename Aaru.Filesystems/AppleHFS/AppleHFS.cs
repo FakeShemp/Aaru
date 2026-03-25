@@ -49,6 +49,9 @@ public sealed partial class AppleHFS : IReadOnlyFilesystem
     /// <summary>Module name for debugging</summary>
     const string MODULE_NAME = "HFS plugin";
 
+    /// <summary>Catalog B-Tree header information</summary>
+    BTHdrRed _catalogBTreeHeader;
+
     /// <summary>Cached directory entries by CNID, each entry keyed by filename</summary>
     Dictionary<uint, Dictionary<string, CatalogEntry>> _directoryCaches;
 
@@ -57,9 +60,6 @@ public sealed partial class AppleHFS : IReadOnlyFilesystem
 
     /// <summary>Extents B-Tree header information</summary>
     BTHdrRed _extentsBTreeHeader;
-
-    /// <summary>Catalog B-Tree header information</summary>
-    BTHdrRed _catalogBTreeHeader;
 
     /// <summary>Cached filesystem information</summary>
     FileSystemInfo _fileSystemInfo;
@@ -84,6 +84,12 @@ public sealed partial class AppleHFS : IReadOnlyFilesystem
 
     /// <summary>Sector size for I/O operations</summary>
     uint _sectorSize;
+
+    /// <summary>
+    ///     Byte offset from the partition start to HFS volume sector 0.
+    ///     Non-zero on CD images where the HFS volume may not align to device sector boundaries.
+    /// </summary>
+    long _volumeOffset;
     /// <inheritdoc />
     public FileSystem Metadata { get; private set; }
 

@@ -123,15 +123,14 @@ public sealed partial class AppleHFS
     private static ExtDataRec EnsureValidExtDataRec(ExtDataRec extents)
     {
         // If the xdr array is null, create a new one with all zeros
-        if(extents.xdr == null)
-        {
-            extents.xdr = new ExtDescriptor[3];
+        if(extents.xdr != null) return extents;
 
-            for(var i = 0; i < 3; i++)
-            {
-                extents.xdr[i].xdrStABN    = 0;
-                extents.xdr[i].xdrNumABlks = 0;
-            }
+        extents.xdr = new ExtDescriptor[3];
+
+        for(var i = 0; i < 3; i++)
+        {
+            extents.xdr[i].xdrStABN    = 0;
+            extents.xdr[i].xdrNumABlks = 0;
         }
 
         return extents;
@@ -169,12 +168,9 @@ public sealed partial class AppleHFS
     {
         bthdr = default(BTHdrRed);
 
-
-        // The extents B-Tree is stored in the extents file, which is identified by CNID 3
-        // The first 3 extents of the extents file itself are in the MDB
-        // Read node 0 (the header node) using the extent information from MDB
-
-        ErrorNumber errno = ReadNode(0, _mdb.drXTExtRec, _mdb.drXTFlSize, out byte[] nodeData);
+        // Read node 0 (header node) using the extent information from MDB
+        // ReadNode uses a fixed 512-byte read, which is enough for the header
+        ErrorNumber errno = ReadNode(0, _mdb.drXTExtRec, out byte[] nodeData);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -183,90 +179,103 @@ public sealed partial class AppleHFS
             return errno;
         }
 
-        // Skip the node descriptor and get to the B-Tree header record
-        // Node descriptor is 14 bytes, then 2 bytes for record offset, then B-Tree header
-        int headerOffset = 14 + 2;
+        int nodeDescSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(NodeDescriptor));
 
-        if(nodeData.Length < headerOffset + Marshal.SizeOf<BTHdrRed>()) return ErrorNumber.InvalidArgument;
+        // Verify this is a header node
+        NodeDescriptor nodeDesc = Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData, 0, nodeDescSize);
 
-        bthdr = Marshal.ByteArrayToStructureBigEndian<BTHdrRed>(nodeData, headerOffset, Marshal.SizeOf<BTHdrRed>());
+        if(nodeDesc.ndType != NodeType.ndHdrNode)
+        {
+            // On volumes with no overflow extents, the extents B-tree may be
+            // allocated but zeroed out (no header node written). Treat as empty tree.
+            AaruLogging.Debug(MODULE_NAME,
+                              $"ReadExtentsHeader: node type={nodeDesc.ndType}, treating as empty extents tree");
 
-        return ErrorNumber.NoError;
+            // Return a zeroed header — caller will see depth=0 and know tree is empty
+            return ErrorNumber.NoError;
+        }
+
+        // B-Tree header record starts immediately after the node descriptor (14 bytes)
+
+        if(nodeData.Length < nodeDescSize + Marshal.SizeOf<BTHdrRed>()) return ErrorNumber.InvalidArgument;
+
+        bthdr = Marshal.ByteArrayToStructureBigEndian<BTHdrRed>(nodeData, nodeDescSize, Marshal.SizeOf<BTHdrRed>());
+
+        // Validate
+        if(bthdr.bthNodeSize > 0 && (bthdr.bthNodeSize & bthdr.bthNodeSize - 1) != 0)
+            return ErrorNumber.InvalidArgument;
+
+        // Extents max key length must be 7
+        if(bthdr.bthKeyLen is 0 or 7) return ErrorNumber.NoError;
+
+        AaruLogging.Debug(MODULE_NAME, $"ReadExtentsHeader: invalid extents max_key_len {bthdr.bthKeyLen}");
+
+        return ErrorNumber.InvalidArgument;
     }
 
     /// <summary>Reads a node using extents from an extent descriptor record</summary>
-    ErrorNumber ReadNode(uint nodeNumber, ExtDataRec extents, uint totalSize, out byte[] nodeData)
+    ErrorNumber ReadNode(uint nodeNumber, ExtDataRec extents, out byte[] nodeData)
     {
         nodeData = null;
 
         // Ensure the extents struct is properly initialized
         extents = EnsureValidExtDataRec(extents);
 
-        // Calculate which extent contains this node
-        uint nodeSize     = 512; // Default HFS node size
-        uint nodeSizeBlks = nodeSize / _mdb.drAlBlkSiz;
+        const uint nodeSize = 512; // Default HFS node size
 
-        if(nodeSizeBlks == 0) nodeSizeBlks = 1;
+        // Calculate the byte offset of this node within the file
+        ulong nodeByteOffset = (ulong)nodeNumber * nodeSize;
 
-        uint nodeBlockOffset = nodeNumber * nodeSizeBlks;
-        uint blockCount      = 0;
-        uint foundBlock      = 0;
-        var  foundExtent     = false;
+        // Walk through extents to find the one containing this byte offset
+        ulong extentFileOffset = 0;
 
-        // Search through the 3 extents for the one containing this node
         for(var i = 0; i < 3; i++)
         {
             if(extents.xdr[i].xdrNumABlks == 0) break;
 
-            uint extentStart  = extents.xdr[i].xdrStABN;
-            uint extentLength = extents.xdr[i].xdrNumABlks;
+            ulong extentSizeBytes = (ulong)extents.xdr[i].xdrNumABlks * _mdb.drAlBlkSiz;
 
-            if(nodeBlockOffset >= blockCount && nodeBlockOffset < blockCount + extentLength)
+            if(nodeByteOffset >= extentFileOffset + extentSizeBytes)
             {
-                // Found the extent containing this node
-                uint offsetInExtent = nodeBlockOffset - blockCount;
-                foundBlock  = extentStart + offsetInExtent;
-                foundExtent = true;
+                extentFileOffset += extentSizeBytes;
 
-                break;
+                continue;
             }
 
-            blockCount += extentLength;
+            // Found the extent containing this node
+            ulong offsetInExtent  = nodeByteOffset                                   - extentFileOffset;
+            ulong blockByteOffset = (ulong)extents.xdr[i].xdrStABN * _mdb.drAlBlkSiz + offsetInExtent;
+            ulong hfsSector512    = _mdb.drAlBlSt                                    + blockByteOffset / 512;
+
+            HfsOffsetToDeviceSector(hfsSector512, out ulong deviceSector, out uint byteOffset);
+
+            AaruLogging.Debug(MODULE_NAME,
+                              $"ReadNode: node={nodeNumber}, extent=({extents.xdr[i].xdrStABN},{extents.xdr[i].xdrNumABlks}), " +
+                              $"hfsSector512={hfsSector512}, deviceSector={deviceSector}, byteOffset={byteOffset}");
+
+            uint sectorsNeeded = (nodeSize + byteOffset + _sectorSize - 1) / _sectorSize;
+
+            ErrorNumber errno =
+                _imagePlugin.ReadSectors(deviceSector, false, sectorsNeeded, out byte[] sectorData, out _);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if(sectorData == null || sectorData.Length < (int)byteOffset + nodeSize) return ErrorNumber.InvalidArgument;
+
+            nodeData = new byte[nodeSize];
+            Array.Copy(sectorData, (int)byteOffset, nodeData, 0, nodeSize);
+
+            return ErrorNumber.NoError;
         }
 
-        if(!foundExtent) return ErrorNumber.InvalidArgument;
-
-        // Read the node from disk
-        // HFS allocation blocks are at offsets expressed in 512-byte sectors
-        ulong extentOffsetSector512 = (ulong)foundBlock * _mdb.drAlBlkSiz / 512;
-
-        // Convert to device sector address
-        HfsOffsetToDeviceSector(extentOffsetSector512, out ulong deviceSector, out uint byteOffset);
-        uint sectorCount = (nodeSizeBlks * _mdb.drAlBlkSiz + byteOffset + _sectorSize - 1) / _sectorSize;
-
-        ErrorNumber errno = _imagePlugin.ReadSectors(deviceSector, false, sectorCount, out byte[] sectorData, out _);
-
-        if(errno != ErrorNumber.NoError)
-        {
-            AaruLogging.Debug(MODULE_NAME, $"Failed to read node {nodeNumber}");
-
-            return errno;
-        }
-
-        // Extract node data from the appropriate offset
-        if(sectorData == null || sectorData.Length < (int)byteOffset + nodeSize) return ErrorNumber.InvalidArgument;
-
-        nodeData = new byte[nodeSize];
-        Array.Copy(sectorData, (int)byteOffset, nodeData, 0, nodeSize);
-
-        return ErrorNumber.NoError;
+        return ErrorNumber.InvalidArgument;
     }
 
     /// <summary>Gets all extents for a file by searching the extents B-Tree</summary>
     ErrorNumber GetFileExtents(uint                    fileId, ForkType forkType, ExtDataRec firstExtents,
                                out List<ExtDescriptor> allExtents)
     {
-        allExtents = new List<ExtDescriptor>();
+        allExtents = [];
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
@@ -297,23 +306,25 @@ public sealed partial class AppleHFS
             }
         }
 
-        // If all three initial extents are full (or we have 3), we might have overflow extents
-        // Check if we need to search the extents B-Tree
-        bool hasThreeExtents = firstExtents.xdr                != null &&
-                               firstExtents.xdr.Length         >= 3    &&
-                               firstExtents.xdr[2].xdrNumABlks != 0;
+        // If all three initial extents are full, we might have overflow extents
+        bool hasThreeExtents = firstExtents.xdr?.Length >= 3 && firstExtents.xdr[2].xdrNumABlks != 0;
 
-        if(hasThreeExtents)
+        if(hasThreeExtents && _extentsBTreeHeader.bthDepth > 0)
         {
-            // Need to search the extents B-Tree for overflow extents
-            ErrorNumber errno = SearchExtentsOverflowBTree(fileId, forkType, out List<ExtDescriptor> overflowExtents);
+            // Calculate the starting FABN for overflow: sum of first 3 extents' block counts
+            ushort firstBlocks = 0;
+
+            for(var i = 0; i < 3; i++) firstBlocks += firstExtents.xdr[i].xdrNumABlks;
+
+            ErrorNumber errno =
+                SearchExtentsOverflowBTree(fileId, forkType, firstBlocks, out List<ExtDescriptor> overflowExtents);
 
             if(errno != ErrorNumber.NoError)
             {
                 // If no overflow extents found, it's ok - file just has 3 extents
                 if(errno != ErrorNumber.NoSuchFile) return errno;
             }
-            else if(overflowExtents != null && overflowExtents.Count > 0)
+            else if(overflowExtents is { Count: > 0 })
             {
                 // Combine initial and overflow extents
                 allExtents.AddRange(overflowExtents);
@@ -334,225 +345,291 @@ public sealed partial class AppleHFS
     }
 
     /// <summary>Searches the extents overflow B-Tree for extent records of a specific file</summary>
-    ErrorNumber SearchExtentsOverflowBTree(uint fileId, ForkType forkType, out List<ExtDescriptor> extents)
+    ErrorNumber SearchExtentsOverflowBTree(uint                    fileId, ForkType forkType, ushort startFabn,
+                                           out List<ExtDescriptor> extents)
     {
-        extents = new List<ExtDescriptor>();
+        extents = [];
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        if(_extentsBTreeHeader.bthRoot == 0) return ErrorNumber.NoSuchFile;
+        if(_extentsBTreeHeader.bthRoot == 0 || _extentsBTreeHeader.bthDepth == 0) return ErrorNumber.NoSuchFile;
 
-        // Validate that MDB and its extents are properly initialized
-        if(_mdb.drXTExtRec.xdr == null || _mdb.drXTExtRec.xdr[0].xdrNumABlks == 0) return ErrorNumber.NoSuchFile;
+        ushort searchFabn = startFabn;
 
-        // Start from the root node
-        uint currentNode = _extentsBTreeHeader.bthRoot;
-
-        // Traverse the B-Tree to find leaf nodes containing extent records for this file
-        for(var level = 0; level < _extentsBTreeHeader.bthDepth; level++)
+        for(;;)
         {
-            ErrorNumber errno = ReadNode(currentNode, _mdb.drXTExtRec, _mdb.drXTFlSize, out byte[] nodeData);
+            byte[]          searchKey = ExtBuildKey(fileId, searchFabn, (byte)forkType);
+            ExtentsFindData fd        = default;
+
+            ErrorNumber errno = ExtBTreeFind(searchKey, ref fd);
+
+            if(errno != ErrorNumber.NoError) break;
+
+            // Verify the found record matches our file and fork
+            if(fd.EntryOffset + 12 > fd.NodeData.Length) break;
+
+            // Read the key from the found record to verify match
+            var  foundFileId = BigEndianBitConverter.ToUInt32(fd.NodeData, fd.KeyOffset + 2);
+            byte foundFork   = fd.NodeData[fd.KeyOffset                                 + 1];
+
+            if(foundFileId != fileId || foundFork != (byte)forkType) break;
+
+            // Extract the 3 extents from the data record
+            int dataOff = fd.EntryOffset;
+
+            for(var j = 0; j < 3; j++)
+            {
+                if(dataOff + j * 4 + 4 > fd.NodeData.Length) break;
+
+                var startBlock = BigEndianBitConverter.ToUInt16(fd.NodeData, dataOff + j * 4);
+                var numBlocks  = BigEndianBitConverter.ToUInt16(fd.NodeData, dataOff + j * 4 + 2);
+
+                if(numBlocks == 0) break;
+
+                extents.Add(new ExtDescriptor
+                {
+                    xdrStABN    = startBlock,
+                    xdrNumABlks = numBlocks
+                });
+
+                searchFabn += numBlocks;
+            }
+
+            // If the record had fewer than 3 extents, no more overflow
+            if(extents.Count == 0 || extents[^1].xdrNumABlks == 0) break;
+
+            // Search for next overflow record at updated FABN
+        }
+
+        return extents.Count == 0 ? ErrorNumber.NoSuchFile : ErrorNumber.NoError;
+    }
+
+#region Extents B-tree primitives
+
+    /// <summary>Build an extents B-tree search key</summary>
+    static byte[] ExtBuildKey(uint fileId, ushort fabn, byte forkType)
+    {
+        // Key layout: [keyLen(1)] [forkType(1)] [fileNum(4,BE)] [FABN(2,BE)]
+        var key = new byte[8];
+        key[0] = 7; // keyLen = 7 bytes after this field
+        key[1] = forkType;
+        key[2] = (byte)(fileId >> 24);
+        key[3] = (byte)(fileId >> 16);
+        key[4] = (byte)(fileId >> 8);
+        key[5] = (byte)fileId;
+        key[6] = (byte)(fabn >> 8);
+        key[7] = (byte)fabn;
+
+        return key;
+    }
+
+    /// <summary>Compare two extents B-tree keys</summary>
+    static int ExtKeyCmp(byte[] key1, int off1, byte[] key2, int off2)
+    {
+        // FNum at offset +2, 4 bytes BE
+        var fnum1 = BigEndianBitConverter.ToUInt32(key1, off1 + 2);
+        var fnum2 = BigEndianBitConverter.ToUInt32(key2, off2 + 2);
+
+        if(fnum1 != fnum2) return fnum1 < fnum2 ? -1 : 1;
+
+        // FkType at offset +1
+        byte fk1 = key1[off1 + 1];
+        byte fk2 = key2[off2 + 1];
+
+        if(fk1 != fk2) return fk1 < fk2 ? -1 : 1;
+
+        // FABN at offset +6, 2 bytes BE
+        var fabn1 = BigEndianBitConverter.ToUInt16(key1, off1 + 6);
+        var fabn2 = BigEndianBitConverter.ToUInt16(key2, off2 + 6);
+
+        if(fabn1 == fabn2) return 0;
+
+        return fabn1 < fabn2 ? -1 : 1;
+    }
+
+    /// <summary>Search state for extents B-tree</summary>
+    struct ExtentsFindData
+    {
+        public byte[] NodeData;
+        public int    Record;
+        public int    KeyOffset;
+        public int    KeyLength;
+        public int    EntryOffset;
+        public int    EntryLength;
+        public bool   ExactMatch;
+    }
+
+    /// <summary>Read an extents B-tree node by number</summary>
+    ErrorNumber ReadExtentsNode(uint nodeNumber, out byte[] nodeData)
+    {
+        nodeData = null;
+
+        int   nodeSize       = _extentsBTreeHeader.bthNodeSize;
+        ulong nodeByteOffset = (ulong)nodeNumber * (uint)nodeSize;
+
+        if(_mdb.drXTExtRec.xdr == null) return ErrorNumber.InvalidArgument;
+
+        ulong extentFileOffset = 0;
+
+        foreach(ExtDescriptor ext in _mdb.drXTExtRec.xdr)
+        {
+            if(ext.xdrNumABlks == 0) break;
+
+            ulong extentSizeBytes = (ulong)ext.xdrNumABlks * _mdb.drAlBlkSiz;
+
+            if(nodeByteOffset >= extentFileOffset + extentSizeBytes)
+            {
+                extentFileOffset += extentSizeBytes;
+
+                continue;
+            }
+
+            ulong offsetInExtent  = nodeByteOffset                        - extentFileOffset;
+            ulong blockByteOffset = (ulong)ext.xdrStABN * _mdb.drAlBlkSiz + offsetInExtent;
+            ulong hfsSector512    = _mdb.drAlBlSt                         + blockByteOffset / 512;
+
+            HfsOffsetToDeviceSector(hfsSector512, out ulong deviceSector, out uint byteOffset);
+
+            uint sectorsToRead = ((uint)nodeSize + byteOffset + _sectorSize - 1) / _sectorSize;
+
+            ErrorNumber errno =
+                _imagePlugin.ReadSectors(deviceSector, false, sectorsToRead, out byte[] sectorData, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            if(nodeData == null || nodeData.Length < Marshal.SizeOf<NodeDescriptor>())
-                return ErrorNumber.InvalidArgument;
+            if(sectorData.Length < (int)byteOffset + nodeSize) return ErrorNumber.InvalidArgument;
 
-            // Parse node descriptor
-            NodeDescriptor nodeDesc =
-                Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData, 0, Marshal.SizeOf<NodeDescriptor>());
+            nodeData = new byte[nodeSize];
+            Array.Copy(sectorData, (int)byteOffset, nodeData, 0, nodeSize);
 
-            // If leaf node, extract extent records
-            if(nodeDesc.ndType == NodeType.ndLeafNode)
+            return ErrorNumber.NoError;
+        }
+
+        return ErrorNumber.InvalidArgument;
+    }
+
+    /// <summary>Get key length for an extents B-tree record</summary>
+    int ExtBRecKeyLen(byte[] nodeData, int nodeSize, int rec, NodeType nodeType)
+    {
+        if(nodeType != NodeType.ndIndxNode && nodeType != NodeType.ndLeafNode) return 0;
+
+        // HFS extents: index nodes use fixed max_key_len + 1
+        if(nodeType == NodeType.ndIndxNode) return _extentsBTreeHeader.bthKeyLen + 1;
+
+        // Leaf node: variable key length = (keyLenByte | 1) + 1
+        int recOffPos = nodeSize - (rec + 1) * 2;
+
+        if(recOffPos < 0 || recOffPos + 2 > nodeData.Length) return 0;
+
+        int recOff = BigEndianBitConverter.ToUInt16(nodeData, recOffPos);
+
+        if(recOff == 0 || recOff >= nodeSize) return 0;
+
+        byte keyByte = nodeData[recOff];
+        int  keyLen  = (keyByte | 1) + 1;
+
+        return keyLen > _extentsBTreeHeader.bthKeyLen + 1 ? 0 : keyLen;
+    }
+
+    /// <summary>Binary search within a single extents B-tree node</summary>
+    ErrorNumber ExtBRecFind(byte[] nodeData, int nodeSize, NodeType nodeType, byte[] searchKey, ref ExtentsFindData fd)
+    {
+        int ndDescSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(NodeDescriptor));
+
+        NodeDescriptor desc = Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData, 0, ndDescSize);
+
+        var b   = 0;
+        int e   = desc.ndNRecs - 1;
+        int off = 0, len = 0, keyLen = 0;
+        var rec = 0;
+
+        fd.ExactMatch = false;
+
+        while(b <= e)
+        {
+            rec = (e + b) / 2;
+
+            if(!BRecLenOff(nodeData, nodeSize, rec, out off, out len)) return ErrorNumber.InvalidArgument;
+
+            keyLen = ExtBRecKeyLen(nodeData, nodeSize, rec, nodeType);
+
+            if(keyLen == 0) return ErrorNumber.InvalidArgument;
+
+            int cmpVal = ExtKeyCmp(nodeData, off, searchKey, 0);
+
+            if(cmpVal == 0)
             {
-                errno = ExtractExtentRecordsFromLeaf(nodeData,
-                                                     _mdb.drXTExtRec.xdr[0].xdrNumABlks * _mdb.drAlBlkSiz / 2,
-                                                     fileId,
-                                                     forkType,
-                                                     out List<ExtDescriptor> records);
+                e             = rec;
+                fd.ExactMatch = true;
 
-                if(errno != ErrorNumber.NoError)
-                {
-                    // If no records found, return NoSuchFile
-                    if(extents.Count == 0) return ErrorNumber.NoSuchFile;
-                }
-
-                if(records != null) extents.AddRange(records);
-
-                // Continue searching through linked leaf nodes
-                if(nodeDesc.ndFLink != 0)
-                {
-                    currentNode = nodeDesc.ndFLink;
-
-                    continue;
-                }
-
-                // No more leaf nodes
                 break;
             }
 
-            // Index node - find the next node to traverse
-            errno = FindNextNodeInExtentsTree(nodeData, fileId, out currentNode);
+            if(cmpVal < 0)
+                b = rec + 1;
+            else
+                e = rec - 1;
+        }
+
+        if(!fd.ExactMatch && rec != e && e >= 0)
+        {
+            if(!BRecLenOff(nodeData, nodeSize, e, out off, out len)) return ErrorNumber.InvalidArgument;
+
+            keyLen = ExtBRecKeyLen(nodeData, nodeSize, e, nodeType);
+
+            if(keyLen == 0) return ErrorNumber.InvalidArgument;
+        }
+
+        fd.Record      = e;
+        fd.KeyOffset   = off;
+        fd.KeyLength   = keyLen;
+        fd.EntryOffset = off + keyLen;
+        fd.EntryLength = len - keyLen;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Search the extents B-tree from root to leaf</summary>
+    ErrorNumber ExtBTreeFind(byte[] searchKey, ref ExtentsFindData fd)
+    {
+        uint nidx = _extentsBTreeHeader.bthRoot;
+
+        if(nidx == 0) return ErrorNumber.NoSuchFile;
+
+        int nodeSize   = _extentsBTreeHeader.bthNodeSize;
+        int height     = _extentsBTreeHeader.bthDepth;
+        int ndDescSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(NodeDescriptor));
+
+        for(;;)
+        {
+            ErrorNumber errno = ReadExtentsNode(nidx, out byte[] nodeData);
 
             if(errno != ErrorNumber.NoError) return errno;
+
+            NodeDescriptor desc = Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData, 0, ndDescSize);
+
+            if(desc.ndNHeight != height) return ErrorNumber.InvalidArgument;
+
+            height--;
+            NodeType expectedType = height > 0 ? NodeType.ndIndxNode : NodeType.ndLeafNode;
+
+            if(desc.ndType != expectedType) return ErrorNumber.InvalidArgument;
+
+            errno = ExtBRecFind(nodeData, nodeSize, desc.ndType, searchKey, ref fd);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            fd.NodeData = nodeData;
+
+            if(height == 0) return fd.ExactMatch ? ErrorNumber.NoError : ErrorNumber.NoSuchFile;
+
+            if(fd.Record < 0) return ErrorNumber.InvalidArgument;
+
+            if(fd.EntryOffset + 4 > nodeData.Length) return ErrorNumber.InvalidArgument;
+
+            nidx = BigEndianBitConverter.ToUInt32(nodeData, fd.EntryOffset);
         }
-
-        if(extents.Count == 0) return ErrorNumber.NoSuchFile;
-
-        return ErrorNumber.NoError;
     }
 
-    /// <summary>Finds the next node to traverse in the extents B-Tree</summary>
-    ErrorNumber FindNextNodeInExtentsTree(byte[] nodeData, uint targetFileId, out uint nextNode)
-    {
-        nextNode = 0;
-
-        // Parse node descriptor
-        NodeDescriptor nodeDesc =
-            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData, 0, Marshal.SizeOf<NodeDescriptor>());
-
-        if(nodeDesc.ndType != NodeType.ndIndxNode) return ErrorNumber.InvalidArgument;
-
-        // Index nodes contain keys and child pointers
-        // For extents, keys are: keyLen(1) + forkType(1) + fileNumber(4) + startBlock(2) = 8 bytes key
-        // Each record is: key + pointer(4)
-
-        // Get record offsets
-        var dataStart   = 14;            // Node descriptor size
-        int recordStart = dataStart + 2; // Skip free space offset
-
-        // Find the first record with fileID >= targetFileId
-        for(ushort i = 0; i < nodeDesc.ndNRecs; i++)
-        {
-            // Each record in index nodes has a variable-length key followed by a 4-byte pointer
-            // Record offsets are stored at the end of the node
-
-            int offsetTableStart = nodeData.Length - (nodeDesc.ndNRecs - i) * 2;
-            var recordOffset     = BigEndianBitConverter.ToUInt16(nodeData, offsetTableStart);
-
-            if(recordOffset + 7 > nodeData.Length) return ErrorNumber.InvalidArgument;
-
-            // Parse extent key
-            // keyLen(1) + forkType(1) + fileNumber(4) + startBlock(2)
-            byte keyLen = nodeData[recordOffset];
-
-            if(keyLen < 7) return ErrorNumber.InvalidArgument;
-
-            var keyFileId = BigEndianBitConverter.ToUInt32(nodeData, recordOffset + 2);
-
-            if(keyFileId >= targetFileId)
-            {
-                // Get the child pointer (4 bytes after the key)
-                nextNode = BigEndianBitConverter.ToUInt32(nodeData, recordOffset + 1 + keyLen);
-
-                return ErrorNumber.NoError;
-            }
-        }
-
-        // If no record found, use the last pointer
-        int lastOffsetTableStart = nodeData.Length - 2;
-        var lastRecordOffset     = BigEndianBitConverter.ToUInt16(nodeData, lastOffsetTableStart);
-
-        if(lastRecordOffset + 7 > nodeData.Length) return ErrorNumber.InvalidArgument;
-
-        byte lastKeyLen = nodeData[lastRecordOffset];
-
-        nextNode = BigEndianBitConverter.ToUInt32(nodeData, lastRecordOffset + 1 + lastKeyLen);
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <summary>Extracts extent records from a leaf node</summary>
-    ErrorNumber ExtractExtentRecordsFromLeaf(byte[] nodeData, uint nodeSize, uint targetFileId, ForkType targetForkType,
-                                             out List<ExtDescriptor> records)
-    {
-        records = new List<ExtDescriptor>();
-
-        // Parse node descriptor
-        NodeDescriptor nodeDesc =
-            Marshal.ByteArrayToStructureBigEndian<NodeDescriptor>(nodeData, 0, Marshal.SizeOf<NodeDescriptor>());
-
-        if(nodeDesc.ndType != NodeType.ndLeafNode) return ErrorNumber.InvalidArgument;
-
-        // Leaf nodes contain keys followed by extent data records
-        // Key format: keyLen(1) + forkType(1) + fileNumber(4) + startBlock(2) = 8 bytes
-        // Data: ExtDataRec = 6 extents * 4 bytes each = 24 bytes
-
-        var dataStart = 14; // Node descriptor size
-
-        for(ushort i = 0; i < nodeDesc.ndNRecs; i++)
-        {
-            // Get record offset from offset table at end of node
-            int offsetTableStart = nodeData.Length - (nodeDesc.ndNRecs - i) * 2;
-            var recordOffset     = BigEndianBitConverter.ToUInt16(nodeData, offsetTableStart);
-
-            if(recordOffset + 8 > nodeData.Length) return ErrorNumber.InvalidArgument;
-
-            // Parse extent key
-            byte keyLen = nodeData[recordOffset];
-
-            if(keyLen < 7) return ErrorNumber.InvalidArgument;
-
-            var forkType = (ForkType)nodeData[recordOffset + 1];
-            var fileId   = BigEndianBitConverter.ToUInt32(nodeData, recordOffset + 2);
-
-            // Only extract records for matching file ID and fork type
-            if(fileId == targetFileId && forkType == targetForkType)
-            {
-                // Extract the ExtDataRec (3 extents of 4 bytes each = 12 bytes)
-                int dataOffset = recordOffset + 1 + keyLen;
-
-                for(var j = 0; j < 3; j++)
-                {
-                    var startBlock = BigEndianBitConverter.ToUInt16(nodeData, dataOffset + j * 4);
-                    var numBlocks  = BigEndianBitConverter.ToUInt16(nodeData, dataOffset + j * 4 + 2);
-
-                    if(numBlocks == 0) break;
-
-                    records.Add(new ExtDescriptor
-                    {
-                        xdrStABN    = startBlock,
-                        xdrNumABlks = numBlocks
-                    });
-                }
-            }
-        }
-
-        if(records.Count == 0) return ErrorNumber.NoSuchFile;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <summary>Calculates the byte offset for a file block considering all extents</summary>
-    ErrorNumber GetFileBlockOffset(uint      fileId, ForkType forkType, ExtDataRec firstExtents, uint blockInFile,
-                                   out ulong byteOffset)
-    {
-        byteOffset = 0;
-
-        // Get all extents for the file
-        ErrorNumber errno = GetFileExtents(fileId, forkType, firstExtents, out List<ExtDescriptor> allExtents);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
-        uint currentBlock = 0;
-
-        foreach(ExtDescriptor ext in allExtents)
-        {
-            if(blockInFile < currentBlock + ext.xdrNumABlks)
-            {
-                // Found the extent containing the target block
-                uint offsetInExtent  = blockInFile  - currentBlock;
-                uint allocationBlock = ext.xdrStABN + offsetInExtent;
-
-                byteOffset = (ulong)allocationBlock * _mdb.drAlBlkSiz;
-
-                return ErrorNumber.NoError;
-            }
-
-            currentBlock += ext.xdrNumABlks;
-        }
-
-        // Block is beyond file size
-        return ErrorNumber.InvalidArgument;
-    }
+#endregion
 }
