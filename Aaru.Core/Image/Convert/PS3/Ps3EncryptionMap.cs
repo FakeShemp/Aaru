@@ -15,7 +15,7 @@ struct Ps3PlaintextRegion
 /// <summary>PS3 encryption map: plaintext region parsing, serialization, and lookup.</summary>
 static class Ps3EncryptionMap
 {
-    const int MAX_PLAINTEXT_REGIONS = 32;
+    const int MAX_PLAINTEXT_REGIONS = 64;
 
     /// <summary>
     ///     Parses the encryption map from PS3 disc sector 0 (big-endian on disc).
