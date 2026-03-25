@@ -477,27 +477,21 @@ public sealed partial class AppleHFSPlus
     }
 
     /// <summary>
-    ///     Generic attribute record union. Can represent any type of attribute record
-    ///     (inline data, fork data, or overflow extents).
+    ///     Generic attribute record that can represent any type of attribute record
+    ///     (inline data, fork data, or overflow extents). Check <see cref="recordType" /> to
+    ///     determine which field contains valid data.
     /// </summary>
-    [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    [SwapEndian]
-    partial struct HFSPlusAttrRecord
+    struct HFSPlusAttrRecord
     {
-        /// <summary>Record type (at offset 0).</summary>
-        [FieldOffset(0)]
+        /// <summary>Record type.</summary>
         public uint recordType;
         /// <summary>Inline data record (obsolete, use attrData instead).</summary>
-        [FieldOffset(0)]
         public HFSPlusAttrInlineData inlineData;
         /// <summary>Inline data record.</summary>
-        [FieldOffset(0)]
         public HFSPlusAttrData attrData;
         /// <summary>Fork data record for extent-based attributes.</summary>
-        [FieldOffset(0)]
         public HFSPlusAttrForkData forkData;
         /// <summary>Overflow extents record.</summary>
-        [FieldOffset(0)]
         public HFSPlusAttrExtents overflowExtents;
     }
 
