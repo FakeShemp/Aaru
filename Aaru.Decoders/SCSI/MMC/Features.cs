@@ -3680,7 +3680,7 @@ public static class Features
 
         foreach(byte link in ftr.LinkSizes)
         {
-            sb.AppendFormat($"\t[slateblue1]{Localization.Current_media_has_a_0_bytes_link_available}",
+            sb.AppendFormat($"\t[slateblue1]{Localization.Current_media_has_a_0_bytes_link_available}[/]",
                             $"[lime]{link}[/]")
               .AppendLine();
         }
