@@ -69,6 +69,7 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--options={0}",  Markup.Escape(settings.Options   ?? ""));
         AaruLogging.Debug(MODULE_NAME, "--output={0}",   Markup.Escape(settings.OutputDir ?? ""));
         AaruLogging.Debug(MODULE_NAME, "--verbose={0}",  settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--volume={0}",   settings.Volume?.ToString() ?? "all");
         AaruLogging.Debug(MODULE_NAME, "--xattrs={0}",   settings.Xattrs);
 
         IFilter inputFilter = null;
@@ -227,6 +228,8 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
 
             AaruLogging.WriteLine(UI._0_partitions_found, partitions.Count);
 
+            var volumeCounter = 0;
+
             for(var i = 0; i < partitions.Count; i++)
             {
                 AaruLogging.WriteLine();
@@ -274,15 +277,19 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
 
                             if(error == ErrorNumber.NoError)
                             {
-                                string volumeName = string.IsNullOrEmpty(fs.Metadata.VolumeName)
-                                                        ? "NO NAME"
-                                                        : fs.Metadata.VolumeName;
+                                if(!settings.Volume.HasValue || settings.Volume.Value == volumeCounter)
+                                {
+                                    string volumeName = string.IsNullOrEmpty(fs.Metadata.VolumeName)
+                                                            ? "NO NAME"
+                                                            : fs.Metadata.VolumeName;
 
-                                volumeName = volumeName.Replace('/', '_').Replace('\\', '_');
+                                    volumeName = volumeName.Replace('/', '_').Replace('\\', '_');
 
-                                ExtractFilesInDir("/", fs, volumeName, settings.OutputDir, settings.Xattrs);
+                                    ExtractFilesInDir("/", fs, volumeName, settings.OutputDir, settings.Xattrs);
+                                }
 
                                 Statistics.AddFilesystem(fs.Metadata.Type);
+                                volumeCounter++;
                             }
                             else
                                 AaruLogging.Error(UI.Unable_to_mount_volume_error_0, error.ToString());
@@ -309,21 +316,30 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
 
                         if(error == ErrorNumber.NoError)
                         {
-                            string volumeName = string.IsNullOrEmpty(fs.Metadata.VolumeName)
-                                                    ? "NO NAME"
-                                                    : fs.Metadata.VolumeName;
+                            if(!settings.Volume.HasValue || settings.Volume.Value == volumeCounter)
+                            {
+                                string volumeName = string.IsNullOrEmpty(fs.Metadata.VolumeName)
+                                                        ? "NO NAME"
+                                                        : fs.Metadata.VolumeName;
 
-                            volumeName = volumeName.Replace('/', '_').Replace('\\', '_');
+                                volumeName = volumeName.Replace('/', '_').Replace('\\', '_');
 
-                            ExtractFilesInDir("/", fs, volumeName, settings.OutputDir, settings.Xattrs);
+                                ExtractFilesInDir("/", fs, volumeName, settings.OutputDir, settings.Xattrs);
+                            }
 
                             Statistics.AddFilesystem(fs.Metadata.Type);
+                            volumeCounter++;
                         }
                         else
                             AaruLogging.Error(UI.Unable_to_mount_volume_error_0, error.ToString());
                     }
                 }
             }
+
+            if(settings.Volume.HasValue && settings.Volume.Value >= volumeCounter)
+                AaruLogging.Error(UI.Volume_number_0_not_found_only_1_volumes_found,
+                                  settings.Volume.Value,
+                                  volumeCounter);
         }
         catch(Exception ex)
         {
@@ -677,6 +693,10 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
         [LocalizedDescription(nameof(UI.Extract_extended_attributes_if_present))]
         [DefaultValue(false)]
         public bool Xattrs { get; init; }
+        [CommandOption("--volume")]
+        [LocalizedDescription(nameof(UI.Extract_only_from_specified_volume_number))]
+        [DefaultValue(null)]
+        public int? Volume { get; init; }
         [CommandOption("-n|--namespace")]
         [LocalizedDescription(nameof(UI.Namespace_to_use_for_filenames))]
         [DefaultValue(null)]

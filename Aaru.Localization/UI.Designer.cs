@@ -741,6 +741,18 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string Extract_only_from_specified_volume_number {
+            get {
+                return ResourceManager.GetString("Extract_only_from_specified_volume_number", resourceCulture);
+            }
+        }
+        
+        public static string Volume_number_0_not_found_only_1_volumes_found {
+            get {
+                return ResourceManager.GetString("Volume_number_0_not_found_only_1_volumes_found", resourceCulture);
+            }
+        }
+        
         public static string Namespace_to_use_for_filenames {
             get {
                 return ResourceManager.GetString("Namespace_to_use_for_filenames", resourceCulture);
