@@ -82,4 +82,7 @@ public sealed partial class AppleHFSPlus
 
     /// <summary>Extended attribute name for compression metadata</summary>
     const string DECMPFS_XATTR_NAME = "com.apple.decmpfs";
+
+    /// <summary>Name of the hidden HFS+ Private Data directory used for hard links</summary>
+    const string HFS_PLUS_PRIVATE_DATA_DIR = "\0\0\0\0HFS+ Private Data";
 }

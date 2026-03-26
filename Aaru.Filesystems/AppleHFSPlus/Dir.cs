@@ -61,6 +61,7 @@ public sealed partial class AppleHFSPlus
             if(_rootDirectoryCache == null) return ErrorNumber.InvalidArgument;
 
             var contents = _rootDirectoryCache.Keys.ToList();
+            contents.Remove(HFS_PLUS_PRIVATE_DATA_DIR);
             contents.Sort();
 
             // Convert internal representation (slashes) to Mac OS display format (colons)
