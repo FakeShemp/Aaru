@@ -116,20 +116,21 @@ public sealed partial class ISO9660
     ErrorNumber ReadWithExtents(long offset,     long size, List<(uint extent, uint size)> extents, bool interleaved,
                                 byte fileNumber, out byte[] buffer)
     {
-        var  ms             = new MemoryStream();
-        long currentFilePos = offset;
+        var  ms          = new MemoryStream();
+        long extentStart = 0;
 
         for(var i = 0; i < extents.Count; i++)
         {
-            if(offset - currentFilePos >= extents[i].size)
+            if(extentStart + extents[i].size <= offset)
             {
-                currentFilePos += extents[i].size;
+                extentStart += extents[i].size;
 
                 continue;
             }
 
-            var  currentExtentSector = (uint)(offset / 2048);
-            long leftExtentSize      = extents[i].size - currentFilePos;
+            long offsetInExtent      = offset > extentStart ? offset - extentStart : 0;
+            var  currentExtentSector = (uint)(offsetInExtent / 2048);
+            long leftExtentSize      = extents[i].size - currentExtentSector * 2048;
 
             while(leftExtentSize > 0)
             {
@@ -149,31 +150,35 @@ public sealed partial class ISO9660
                 {
                     currentExtentSector++;
                     leftExtentSize -= 2048;
-                    currentFilePos += 2048;
 
                     continue;
                 }
 
-                if(offset - currentFilePos > sector.Length)
+                long sectorStart = (long)currentExtentSector * 2048;
+
+                if(offsetInExtent > sectorStart + sector.Length)
                 {
                     currentExtentSector++;
                     leftExtentSize -= sector.Length;
-                    currentFilePos += sector.Length;
 
                     continue;
                 }
 
-                if(offset - currentFilePos > 0)
-                    ms.Write(sector, (int)(offset - currentFilePos), (int)(sector.Length - (offset - currentFilePos)));
+                if(offsetInExtent > sectorStart)
+                {
+                    var skip = (int)(offsetInExtent - sectorStart);
+                    ms.Write(sector, skip, sector.Length - skip);
+                }
                 else
                     ms.Write(sector, 0, sector.Length);
 
                 currentExtentSector++;
                 leftExtentSize -= sector.Length;
-                currentFilePos += sector.Length;
 
                 if(ms.Length >= size) break;
             }
+
+            extentStart += extents[i].size;
 
             if(ms.Length >= size) break;
         }
@@ -309,7 +314,8 @@ public sealed partial class ISO9660
                 return err;
             }
 
-            Array.Copy(buf, 0, buffer, 0, read);
+            Array.Copy(buf, 0, buffer, 0, Math.Min(buf.Length, (int)read));
+            read = Math.Min(buf.Length, read);
 
             node.Offset += read;
 
