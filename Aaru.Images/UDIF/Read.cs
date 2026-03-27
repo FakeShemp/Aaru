@@ -420,6 +420,7 @@ public sealed partial class Udif
             }
         }
 
+        _chunkStartSectors     = _chunks.Keys.ToHashSet();
         _sectorCache           = new Dictionary<ulong, byte[]>();
         _chunkCache            = new Dictionary<ulong, byte[]>();
         _currentChunkCacheSize = 0;
@@ -459,11 +460,13 @@ public sealed partial class Udif
         var   chunkFound       = false;
         ulong chunkStartSector = 0;
 
-        foreach(KeyValuePair<ulong, BlockChunk> kvp in _chunks.Where(kvp => sectorAddress >= kvp.Key))
+        ulong chunkAddress = _chunkStartSectors.Last(chunkAd => sectorAddress >= chunkAd);
+
+        if(_chunks.TryGetValue(chunkAddress, out var value))
         {
-            readChunk        = kvp.Value;
+            readChunk        = value;
             chunkFound       = true;
-            chunkStartSector = kvp.Key;
+            chunkStartSector = chunkAddress;
         }
 
         long relOff = ((long)sectorAddress - (long)chunkStartSector) * SECTOR_SIZE;
