@@ -42,14 +42,22 @@ namespace Aaru.Decoders.Nintendo;
 public sealed class Sector
 {
     /// <summary>
-    ///     ECMA-267 <c>main_data</c> offset in OmniDrive 2064-byte Nintendo sectors: DVD XOR applies to 2048 bytes from
-    ///     here (same as standard DVD). Bytes 6-11 (<c>cpr_mai</c>) are not scrambled on media.
+    ///     Start of the 2048-byte DVD XOR (scramble) region in a 2064-byte Nintendo sector — same as ECMA-267
+    ///     <c>main_data</c> for a standard DVD sector. Nintendo still applies the table to these 2048 bytes.
     /// </summary>
-    public const int NintendoMainDataOffset = 12;
+    public const int NintendoScrambledDataOffset = 12;
 
     /// <summary>
-    ///     Derives the Nintendo descramble key from the first 8 bytes of the cpr_mai region (LBA 0 payload).
-    ///     Used when software-descrambling Nintendo sectors.
+    ///     Start of the 2048-byte logical <c>main_data</c> exposed to the game / filesystem in Nintendo GameCube/Wii DVD
+    ///     sectors. Unlike ECMA-267 (where <c>main_data</c> begins at byte 12), Nintendo uses byte 6; CPR_MAI and related
+    ///     fields follow a different layout than on a standard DVD-ROM. The DVD XOR layer still scrambles 2048 bytes
+    ///     starting at <see cref="NintendoScrambledDataOffset" />; bytes 6–11 are not part of that scrambled block.
+    /// </summary>
+    public const int NintendoMainDataOffset = 6;
+
+    /// <summary>
+    ///     Derives the Nintendo descramble key from the first 8 bytes at <see cref="NintendoMainDataOffset" /> in the
+    ///     LBA 0 sector after descramble (same 8 bytes used for key derivation in the drive/firmware path).
     /// </summary>
     public static byte DeriveNintendoKey(byte[] cprMaiFirst8)
     {
@@ -76,7 +84,7 @@ public sealed class Sector
         if(sector is not { Length: 2064 }) return ErrorNumber.NotSupported;
 
         int psn = DVD.Sector.GetPsn(sector);
-        int mainDataStart = NintendoMainDataOffset;
+        int mainDataStart = NintendoScrambledDataOffset;
 
         int tableOffset = (int)((nintendoKey ^ (psn >> 4 & 0xF)) * DVD.Sector.Form1DataSize +
                                 7 * DVD.Sector.Form1DataSize + DVD.Sector.Form1DataSize / 2);

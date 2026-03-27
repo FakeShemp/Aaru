@@ -157,6 +157,49 @@ public sealed class Sector
         return ret;
     }
 
+    static readonly byte[] DvdGfExp = CreateDvdGfExpTable();
+    static readonly int[] DvdGfLog = CreateDvdGfLogTable(DvdGfExp);
+
+    static byte[] CreateDvdGfExpTable()
+    {
+        const ushort primitive = 0x11D;
+        byte[] exp = new byte[512];
+        exp[0] = 1;
+
+        for(int i = 1; i < 255; i++)
+        {
+            ushort x = (ushort)(exp[i - 1] << 1);
+
+            if((x & 0x100) != 0) x ^= primitive;
+
+            exp[i] = (byte)x;
+        }
+
+        for(int i = 255; i < 512; i++) exp[i] = exp[i - 255];
+
+        return exp;
+    }
+
+    static int[] CreateDvdGfLogTable(byte[] exp)
+    {
+        int[] log = new int[256];
+
+        for(int i = 0; i < 256; i++) log[i] = -1;
+
+        for(int i = 0; i < 255; i++) log[exp[i]] = i;
+
+        log[0] = -1;
+
+        return log;
+    }
+
+    static byte DvdGfMul(byte a, byte b)
+    {
+        if(a == 0 || b == 0) return 0;
+
+        return DvdGfExp[DvdGfLog[a] + DvdGfLog[b]];
+    }
+
     /// <summary>
     ///     Store seed and its cipher in cache
     /// </summary>
@@ -205,6 +248,57 @@ public sealed class Sector
             if(!CheckEdc(sectorLong.Skip((int)(i * 2064)).Take(2064).ToArray())) return false;
         }
         return true;
+    }
+
+    /// <summary>
+    ///     Computes the 16-bit ID Error Detection (IED) for bytes 0-3 of a DVD ROM sector (ID + 3-byte PSN),
+    ///     per the ECMA-267 RS remainder step used in <c>gpsxre::dvd::DataFrame::ID::valid()</c> (redumper).
+    /// </summary>
+    /// <param name="sectorLong">Buffer of the sector (must be at least 4 bytes; first 4 bytes are the ID field).</param>
+    /// <returns>The IED value in the same byte order as stored at sector bytes 4-5 (little-endian uint16 layout).</returns>
+    public static ushort ComputeIed(byte[] sectorLong)
+    {
+        if(sectorLong == null || sectorLong.Length < 4) return 0;
+
+        // G(x) = x^2 + g1*x + g2, with g1 = alpha^0 + alpha^1, g2 = alpha^0 * alpha^1 in GF(2^8)
+        byte g1 = (byte)(1 ^ DvdGfExp[1]);
+        byte g2 = DvdGfExp[1];
+
+        Span<byte> poly = stackalloc byte[6];
+        poly[0] = sectorLong[0];
+        poly[1] = sectorLong[1];
+        poly[2] = sectorLong[2];
+        poly[3] = sectorLong[3];
+        poly[4] = 0;
+        poly[5] = 0;
+
+        for(int i = 0; i < 4; i++)
+        {
+            byte coef = poly[i];
+
+            if(coef == 0) continue;
+
+            poly[i] = 0;
+            poly[i + 1] ^= DvdGfMul(coef, g1);
+            poly[i + 2] ^= DvdGfMul(coef, g2);
+        }
+
+        return (ushort)(poly[4] | poly[5] << 8);
+    }
+
+    /// <summary>
+    ///     Check if the IED of a sector is correct (bytes 0-3 vs bytes 4-5, same layout as redumper <c>DataFrame::ID</c>).
+    /// </summary>
+    /// <param name="sectorLong">Buffer of the sector</param>
+    /// <returns><c>True</c> if IED is correct, <c>False</c> if not</returns>
+    public static bool CheckIed(byte[] sectorLong)
+    {
+        if(sectorLong == null || sectorLong.Length < 6) return false;
+
+        ushort computed = ComputeIed(sectorLong);
+        ushort stored = (ushort)(sectorLong[4] | sectorLong[5] << 8);
+
+        return computed == stored;
     }
 
     /// <summary>

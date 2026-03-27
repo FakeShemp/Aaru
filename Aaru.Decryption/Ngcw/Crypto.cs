@@ -5,7 +5,7 @@
 // Filename       : Crypto.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
-// Component      : Image conversion.
+// Component      : Aaru.Decryption.Ngcw (GPL-3.0-or-later).
 //
 // --[ Description ] ----------------------------------------------------------
 //
@@ -34,10 +34,10 @@
 using System;
 using System.Security.Cryptography;
 
-namespace Aaru.Core.Image.Ngcw;
+namespace Aaru.Decryption.Ngcw;
 
 /// <summary>Wii disc encryption helpers.</summary>
-static class Crypto
+public static class Crypto
 {
     /// <summary>Wii physical group size (32 KiB).</summary>
     public const int GROUP_SIZE = 0x8000;

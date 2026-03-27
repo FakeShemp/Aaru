@@ -287,7 +287,7 @@ public partial class Convert
                 }
             }
 
-            errno = ConvertNgcwSectors();
+            errno = ConvertNgcwSectors(useLong);
 
             if(errno != ErrorNumber.NoError) return errno;
         }
@@ -367,6 +367,7 @@ public partial class Convert
             }
         }
 
+        // TODO: Enable for Ngcw
         if(!isPs3Conversion && !isWiiuConversion && !isNgcwConversion && _negativeSectors > 0)
         {
             errno = ConvertNegativeSectors(useLong);
@@ -374,6 +375,7 @@ public partial class Convert
             if(errno != ErrorNumber.NoError) return errno;
         }
 
+        // TODO: Enable for Ngcw
         if(!isPs3Conversion && !isWiiuConversion && !isNgcwConversion && _overflowSectors > 0)
         {
             errno = ConvertOverflowSectors(useLong);

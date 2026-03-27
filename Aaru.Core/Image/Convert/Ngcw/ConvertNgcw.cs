@@ -37,7 +37,9 @@ using System.Collections.Generic;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
-using Aaru.Core.Image.Ngcw;
+using Aaru.Decoders.Nintendo;
+using Aaru.Decryption.Ngcw;
+using NgcwPartitions = Aaru.Decryption.Ngcw.Partitions;
 using Aaru.Helpers;
 using Aaru.Localization;
 
@@ -68,7 +70,7 @@ public partial class Convert
         // Parse Wii partition table
         PulseProgress?.Invoke(UI.Ngcw_parsing_partition_table);
 
-        _ngcwPartitions = Ngcw.Partitions.ParseWiiPartitions(_inputImage);
+        _ngcwPartitions = NgcwPartitions.ParseWiiPartitions(_inputImage);
 
         if(_ngcwPartitions == null)
         {
@@ -83,10 +85,10 @@ public partial class Convert
         // Build partition region map
         PulseProgress?.Invoke(UI.Ngcw_building_partition_key_map);
 
-        _ngcwRegions = Ngcw.Partitions.BuildRegionMap(_ngcwPartitions);
+        _ngcwRegions = NgcwPartitions.BuildRegionMap(_ngcwPartitions);
 
         // Serialize and write partition key map
-        byte[] keyMapData = Ngcw.Partitions.SerializeKeyMap(_ngcwRegions);
+        byte[] keyMapData = NgcwPartitions.SerializeKeyMap(_ngcwRegions);
 
         _outputImage.WriteMediaTag(keyMapData, MediaTagType.WiiPartitionKeyMap);
 
@@ -104,7 +106,7 @@ public partial class Convert
     ///     writes with Unencrypted status; plaintext areas use Dumped/Generable.
     ///     Does not copy sector tags, negative sectors, or overflow sectors.
     /// </summary>
-    ErrorNumber ConvertNgcwSectors()
+    ErrorNumber ConvertNgcwSectors(bool useLong)
     {
         if(_aborted) return ErrorNumber.NoError;
 
@@ -119,7 +121,8 @@ public partial class Convert
 
         if(_mediaType == MediaType.GOD)
         {
-            ErrorNumber errno =
+            ErrorNumber errno = useLong ?
+                ConvertGameCubeSectorsLong(discSize, totalLogicalSectors, jc, ref dataSectors, ref junkSectors) :
                 ConvertGameCubeSectors(discSize, totalLogicalSectors, jc, ref dataSectors, ref junkSectors);
 
             if(errno != ErrorNumber.NoError)
@@ -131,7 +134,9 @@ public partial class Convert
         }
         else
         {
-            ErrorNumber errno = ConvertWiiSectors(discSize, totalLogicalSectors, jc, ref dataSectors, ref junkSectors);
+            ErrorNumber errno = useLong ?
+                ConvertWiiSectorsLong(discSize, totalLogicalSectors, jc, ref dataSectors, ref junkSectors) :
+                ConvertWiiSectors(discSize, totalLogicalSectors, jc, ref dataSectors, ref junkSectors);
 
             if(errno != ErrorNumber.NoError)
             {
@@ -294,7 +299,7 @@ public partial class Convert
                                    (long)totalLogicalSectors);
 
             // Check if inside a partition's data area
-            int inPart = Ngcw.Partitions.FindPartitionAtOffset(_ngcwPartitions, offset);
+            int inPart = NgcwPartitions.FindPartitionAtOffset(_ngcwPartitions, offset);
 
             if(inPart >= 0)
             {
@@ -747,4 +752,137 @@ public partial class Convert
 
         return result;
     }
+
+    /// GameCube sector conversion pipeline for long sectors.
+    ErrorNumber ConvertGameCubeSectorsLong(ulong discSize, ulong totalLogicalSectors, JunkCollector jc,
+                                             ref ulong dataSectors, ref ulong junkSectors)
+    {
+        const int blockSize       = Crypto.GROUP_SIZE; // 0x8000 logical (16 × 2048 user bytes)
+        const int sectorsPerBlock = Crypto.LOGICAL_PER_GROUP;
+        const int userSize        = Crypto.SECTOR_SIZE;
+
+        // Junk / FST offsets are in logical (user) byte space. User 2048-byte slices match ReadSector (Nintendo main_data at Sector.NintendoMainDataOffset).
+        ErrorNumber probeErr = _inputImage.ReadSectorLong(0, false, out byte[] longProbe, out _);
+
+        if(probeErr != ErrorNumber.NoError || longProbe == null ||
+           longProbe.Length < Sector.NintendoMainDataOffset + userSize)
+            return ErrorNumber.InOutError;
+
+        int longSectorSize = longProbe.Length;
+
+        // Read disc header to get FST info (logical user bytes via ReadSector)
+        byte[] header = ReadNgcwSectors(0, 2); // first 0x1000 bytes (need 0x42C)
+
+        if(header == null || header.Length < 0x42C) return ErrorNumber.InOutError;
+
+        // Read extended header for FST pointers (at 0x424)
+        byte[] extHeader = ReadNgcwSectors(0, (0x440 + userSize - 1) / userSize);
+
+        var   fstOffset = BigEndianBitConverter.ToUInt32(extHeader, 0x424);
+        var   fstSize   = BigEndianBitConverter.ToUInt32(extHeader, 0x428);
+        ulong sysEnd    = fstOffset + fstSize;
+
+        // Build FST data map
+        DataRegion[] dataMap = null;
+
+        if(fstSize > 0 && fstSize < 64 * 1024 * 1024)
+        {
+            byte[] fst = ReadNgcwBytes(fstOffset, (int)fstSize);
+
+            if(fst != null) dataMap = DataMap.BuildFromFst(fst, 0, 0);
+        }
+
+        // User-only buffer for LFG / data-region junk detection (same as ConvertGameCubeSectors)
+        var userBlockBuf   = new byte[blockSize];
+        var longSectorBufs = new byte[sectorsPerBlock][];
+        var sectorStatuses = new SectorStatus[sectorsPerBlock];
+
+        for(ulong blockOff = 0; blockOff < discSize; blockOff += blockSize)
+        {
+            if(_aborted) break;
+
+            int blockBytes = blockSize;
+
+            if(blockOff + (ulong)blockBytes > discSize) blockBytes = (int)(discSize - blockOff);
+
+            ulong baseSector = blockOff / userSize;
+
+            UpdateProgress?.Invoke(string.Format(UI.Converting_sectors_0_to_1,
+                                                 baseSector,
+                                                 baseSector + sectorsPerBlock),
+                                   (long)baseSector,
+                                   (long)totalLogicalSectors);
+
+            // Read long sectors; pack user main data into userBlockBuf; keep full long buffers for output
+            for(var s = 0; s < sectorsPerBlock && s * userSize < blockBytes; s++)
+            {
+                ErrorNumber errno =
+                    _inputImage.ReadSectorLong(baseSector + (ulong)s, false, out byte[] sectorData, out _);
+
+                byte[] stored = new byte[longSectorSize];
+                longSectorBufs[s] = stored;
+
+                if(errno != ErrorNumber.NoError || sectorData == null)
+                {
+                    Array.Clear(userBlockBuf, s * userSize, userSize);
+
+                    continue;
+                }
+
+                int copyLong = sectorData.Length < longSectorSize ? sectorData.Length : longSectorSize;
+                Array.Copy(sectorData, 0, stored, 0, copyLong);
+
+                if(sectorData.Length >= Sector.NintendoMainDataOffset + userSize)
+                    Array.Copy(sectorData, Sector.NintendoMainDataOffset, userBlockBuf, s * userSize, userSize);
+                else
+                    Array.Clear(userBlockBuf, s * userSize, userSize);
+            }
+
+            Junk.DetectJunkInBlock(userBlockBuf,
+                                   blockBytes,
+                                   blockOff,
+                                   dataMap,
+                                   sysEnd,
+                                   0xFFFF,
+                                   jc,
+                                   ref dataSectors,
+                                   ref junkSectors,
+                                   sectorStatuses);
+
+            int numSectors = blockBytes / userSize;
+
+            for(var si = 0; si < numSectors; si++)
+            {
+                ulong sector = baseSector + (ulong)si;
+                bool  ok     = _outputImage.WriteSectorLong(longSectorBufs[si], sector, false, sectorStatuses[si]);
+
+                if(!ok)
+                {
+                    if(_force)
+                    {
+                        ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_continuing,
+                                                           _outputImage.ErrorMessage,
+                                                           sector));
+                    }
+                    else
+                    {
+                        StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_not_continuing,
+                                                                   _outputImage.ErrorMessage,
+                                                                   sector));
+
+                        return ErrorNumber.WriteError;
+                    }
+                }
+            }
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// Wii sector conversion pipeline for long sectors.
+    ErrorNumber ConvertWiiSectorsLong(ulong discSize, ulong totalLogicalSectors, JunkCollector jc, ref ulong dataSectors, ref ulong junkSectors){
+        // TODO: Implement
+        return ErrorNumber.NoError;
+    }
+
 }

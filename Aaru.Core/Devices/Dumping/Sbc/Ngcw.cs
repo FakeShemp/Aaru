@@ -35,11 +35,11 @@ using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Core.Image.Ngcw;
+using Aaru.Decryption.Ngcw;
 using Aaru.Decoders.Nintendo;
 using Aaru.Helpers;
 using Aaru.Localization;
-using NgcwPartitions = Aaru.Core.Image.Ngcw.Partitions;
+using NgcwPartitions = Aaru.Decryption.Ngcw.Partitions;
 
 namespace Aaru.Core.Devices.Dumping;
 

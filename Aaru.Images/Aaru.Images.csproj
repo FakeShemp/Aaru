@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
@@ -50,6 +50,7 @@
     <ProjectReference Include="..\Aaru.Helpers\Aaru.Helpers.csproj"/>
     <ProjectReference Include="..\Aaru.Logging\Aaru.Logging.csproj"/>
     <ProjectReference Include="..\Aaru.Decoders\Aaru.Decoders.csproj"/>
+    <ProjectReference Include="..\Aaru.Decryption\Aaru.Decryption.csproj"/>
     <ProjectReference Include="..\Aaru.Filters\Aaru.Filters.csproj"/>
     <ProjectReference Include="..\Aaru.Settings\Aaru.Settings.csproj"/>
   </ItemGroup>

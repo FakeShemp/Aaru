@@ -8,7 +8,7 @@
     <Title>Aaru.Decryption</Title>
     <Description>Decryption algorithms used by the Aaru Data Preservation Suite.</Description>
     <PackageProjectUrl>https://github.com/aaru-dps/</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseExpression>(MIT AND GPL-3.0-only)</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/aaru-dps/Aaru.Decryption</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NeutralLanguage>en-US</NeutralLanguage>
@@ -32,9 +32,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Aaru.CommonTypes\Aaru.CommonTypes.csproj"/>
     <ProjectReference Include="..\Aaru.Decoders\Aaru.Decoders.csproj"/>
     <ProjectReference Include="..\Aaru.Devices\Aaru.Devices.csproj"/>
-    <ProjectReference Include="..\Aaru.Images\Aaru.Images.csproj"/>
+    <ProjectReference Include="..\Aaru.Helpers\Aaru.Helpers.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

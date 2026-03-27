@@ -5,7 +5,7 @@
 // Filename       : Partitions.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
-// Component      : Image conversion.
+// Component      : Aaru.Decryption.Ngcw (GPL-3.0-or-later).
 //
 // --[ Description ] ----------------------------------------------------------
 //
@@ -36,10 +36,10 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 
-namespace Aaru.Core.Image.Ngcw;
+namespace Aaru.Decryption.Ngcw;
 
 /// <summary>In-memory representation of a Wii partition.</summary>
-struct WiiPartition
+public struct WiiPartition
 {
     /// <summary>Partition offset on disc.</summary>
     public ulong Offset;
@@ -58,7 +58,7 @@ struct WiiPartition
 }
 
 /// <summary>Wii partition region for the partition key map.</summary>
-struct WiiPartitionRegion
+public struct WiiPartitionRegion
 {
     /// <summary>First physical sector (0x8000-byte units).</summary>
     public uint StartSector;
@@ -73,7 +73,7 @@ struct WiiPartitionRegion
 /// <summary>
 ///     Wii partition table parsing and key map serialization.
 /// </summary>
-static class Partitions
+public static class Partitions
 {
     /// <summary>
     ///     Parse the Wii partition table from a source image, extracting all partitions

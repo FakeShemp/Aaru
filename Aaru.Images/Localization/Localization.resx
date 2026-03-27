@@ -2980,4 +2980,10 @@
     <data name="WinOnCD_disc_image" xml:space="preserve">
         <value>WinOnCD disc image</value>
     </data>
+    <data name="Redumper_Name" xml:space="preserve">
+        <value>Redumper raw DVD dump</value>
+    </data>
+    <data name="Redumper_disc_image" xml:space="preserve">
+        <value>Redumper raw DVD disc image</value>
+    </data>
 </root>
