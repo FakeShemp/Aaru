@@ -89,8 +89,12 @@ public sealed class Spiral : IMediaGraph
     static readonly DiscParameters _gdRecordableParameters =
         new(120, 15, 33, 46, 50, 116, 45, 46, 550000, new SKColor(0xBD, 0xA0, 0x00));
     readonly SKCanvas      _canvas;
+    readonly float         _dataMaxRadius;
+    readonly float         _dataMinRadius;
     readonly bool          _gdrom;
     readonly List<SKPoint> _leadInPoints;
+    readonly float         _lowDensityMaxRadius;
+    readonly float         _lowDensityMinRadius;
     readonly long          _maxSector;
     readonly List<SKPoint> _points;
     readonly List<SKPoint> _pointsLowDensity;
@@ -180,8 +184,12 @@ public sealed class Spiral : IMediaGraph
                                StrokeWidth = 4
                            });
 
-        // Some trigonometry thing I do not understand fully but it controls the space between the spiral turns
-        const float a = 1f;
+        // Controls distance between spiral turns. Smaller values = tighter spiral with more revolutions,
+        // which makes ring-shaped error patterns (e.g. ring protections) visible as rings.
+        // At 0.53 with 1px stroke, drawn track pitch ~3.3px with ~2.3px gap between lines,
+        // giving ~82 revolutions for a CD on a 1000px image. A typical ring protection
+        // (~3072 consecutive bad sectors) spans ~0.70 drawn revolutions = a visible ring.
+        const float a = 0.53f;
 
         // Draw the Lead-In
         _leadInPoints = GetSpiralPoints(center,
@@ -201,7 +209,7 @@ public sealed class Spiral : IMediaGraph
                          {
                              Style       = SKPaintStyle.Stroke,
                              Color       = SKColors.LightGray,
-                             StrokeWidth = 2
+                             StrokeWidth = 1
                          });
 
         // If there's a recordable information area, get its points
@@ -218,11 +226,21 @@ public sealed class Spiral : IMediaGraph
             float lowDensityEndDiameter    = smallerDimension * 29 * 2 / parameters.DiscDiameter;
             float highDensityStartDiameter = smallerDimension * 30 * 2 / parameters.DiscDiameter;
 
-            _pointsLowDensity = GetSpiralPoints(center, leadInEndDiameter / 2, lowDensityEndDiameter / 2, a * 1.5f);
-            _points = GetSpiralPoints(center, highDensityStartDiameter / 2, informationAreaEndDiameter / 2, a);
+            _lowDensityMinRadius = leadInEndDiameter          / 2;
+            _lowDensityMaxRadius = lowDensityEndDiameter      / 2;
+            _dataMinRadius       = highDensityStartDiameter   / 2;
+            _dataMaxRadius       = informationAreaEndDiameter / 2;
+
+            _pointsLowDensity = GetSpiralPoints(center, _lowDensityMinRadius, _lowDensityMaxRadius, a * 1.5f);
+            _points           = GetSpiralPoints(center, _dataMinRadius,       _dataMaxRadius,       a);
         }
         else
-            _points = GetSpiralPoints(center, leadInEndDiameter / 2, informationAreaEndDiameter / 2, a);
+        {
+            _dataMinRadius = leadInEndDiameter          / 2;
+            _dataMaxRadius = informationAreaEndDiameter / 2;
+
+            _points = GetSpiralPoints(center, _dataMinRadius, _dataMaxRadius, a);
+        }
 
         path = new SKPath();
 
@@ -237,38 +255,17 @@ public sealed class Spiral : IMediaGraph
                              {
                                  Style       = SKPaintStyle.Stroke,
                                  Color       = SKColors.Gray,
-                                 StrokeWidth = 2
+                                 StrokeWidth = 1
                              });
         }
 
         path.MoveTo(_points[0]);
 
-        long pointsPerSector;
-        long sectorsPerPoint;
-
-        if(_gdrom)
-        {
-            pointsPerSector = _points.Count / (_maxSector - 45000);
-            sectorsPerPoint = (_maxSector                 - 45000) / _points.Count;
-
-            if((_maxSector - 45000) % _points.Count > 0) sectorsPerPoint++;
-        }
-        else
-        {
-            pointsPerSector = _points.Count / _maxSector;
-            sectorsPerPoint = _maxSector    / _points.Count;
-
-            if(_maxSector % _points.Count > 0) sectorsPerPoint++;
-        }
-
-        long lastPoint;
-
         if(_gdrom) lastSector1 -= 45000;
 
-        if(pointsPerSector > 0)
-            lastPoint = lastSector1 * pointsPerSector;
-        else
-            lastPoint = lastSector1 / sectorsPerPoint;
+        long effectiveMax = _gdrom ? _maxSector - 45000 : _maxSector;
+
+        long lastPoint = ClvSectorToPoint(lastSector1, effectiveMax, _points.Count, _dataMinRadius, _dataMaxRadius) + 1;
 
         for(var index = 0; index < lastPoint; index++)
         {
@@ -281,7 +278,7 @@ public sealed class Spiral : IMediaGraph
                          {
                              Style       = SKPaintStyle.Stroke,
                              Color       = SKColors.Gray,
-                             StrokeWidth = 2
+                             StrokeWidth = 1
                          });
     }
 
@@ -310,15 +307,15 @@ public sealed class Spiral : IMediaGraph
             MediaType.CDRW        => _cdRewritableParameters,
             MediaType.CDMRW       => _cdRewritableParameters,
             MediaType.SACD        => _dvdParameters,
-            MediaType.DVDROM      => smallDisc ? _dvdParameters : _dvdParameters80,
-            MediaType.DVDR        => smallDisc ? _dvdRParameters : _dvdRParameters80,
-            MediaType.DVDRW       => smallDisc ? _dvdRwParameters : _dvdRwParameters80,
-            MediaType.DVDPR       => smallDisc ? _dvdPlusRParameters : _dvdPlusRParameters80,
-            MediaType.DVDPRW      => smallDisc ? _dvdPlusRwParameters : _dvdPlusRwParameters80,
-            MediaType.DVDPRWDL    => smallDisc ? _dvdPlusRwParameters : _dvdPlusRwParameters80,
-            MediaType.DVDRDL      => smallDisc ? _dvdRParameters : _dvdRParameters80,
-            MediaType.DVDPRDL     => smallDisc ? _dvdPlusRParameters : _dvdPlusRParameters80,
-            MediaType.DVDRWDL     => smallDisc ? _dvdRwParameters : _dvdRwParameters80,
+            MediaType.DVDROM      => smallDisc ? _dvdParameters80 : _dvdParameters,
+            MediaType.DVDR        => smallDisc ? _dvdRParameters80 : _dvdRParameters,
+            MediaType.DVDRW       => smallDisc ? _dvdRwParameters80 : _dvdRwParameters,
+            MediaType.DVDPR       => smallDisc ? _dvdPlusRParameters80 : _dvdPlusRParameters,
+            MediaType.DVDPRW      => smallDisc ? _dvdPlusRwParameters80 : _dvdPlusRwParameters,
+            MediaType.DVDPRWDL    => smallDisc ? _dvdPlusRwParameters80 : _dvdPlusRwParameters,
+            MediaType.DVDRDL      => smallDisc ? _dvdRParameters80 : _dvdRParameters,
+            MediaType.DVDPRDL     => smallDisc ? _dvdPlusRParameters80 : _dvdPlusRParameters,
+            MediaType.DVDRWDL     => smallDisc ? _dvdRwParameters80 : _dvdRwParameters,
             MediaType.PS1CD       => _ps1CdParameters,
             MediaType.PS2CD       => _ps2CdParameters,
             MediaType.PS2DVD      => _dvdParameters,
@@ -383,78 +380,57 @@ public sealed class Spiral : IMediaGraph
     /// <param name="color">Color to paint the segment</param>
     void PaintSector(ulong sector, SKColor color)
     {
-        long          pointsPerSector;
-        long          sectorsPerPoint;
-        List<SKPoint> points = _gdrom && sector <= 45000 ? _pointsLowDensity : _points;
+        List<SKPoint> points;
+        float         minRadius, maxRadius;
+        long          effectiveMaxSector;
+        double        effectiveSector;
 
-        if(_gdrom)
+        if(_gdrom && sector <= 45000)
         {
-            if(sector <= 45000)
-            {
-                pointsPerSector = points.Count / 45000;
-                sectorsPerPoint = 45000        / points.Count;
-
-                if(45000 % points.Count > 0) sectorsPerPoint++;
-            }
-            else
-            {
-                sector          -= 45000;
-                pointsPerSector =  points.Count / (_maxSector - 45000);
-                sectorsPerPoint =  (_maxSector                - 45000) / points.Count;
-
-                if((_maxSector - 45000) % points.Count > 0) sectorsPerPoint++;
-            }
+            points             = _pointsLowDensity;
+            minRadius          = _lowDensityMinRadius;
+            maxRadius          = _lowDensityMaxRadius;
+            effectiveMaxSector = 45000;
+            effectiveSector    = sector;
+        }
+        else if(_gdrom)
+        {
+            points             = _points;
+            minRadius          = _dataMinRadius;
+            maxRadius          = _dataMaxRadius;
+            effectiveMaxSector = _maxSector - 45000;
+            effectiveSector    = sector     - 45000;
         }
         else
         {
-            pointsPerSector = points.Count / _maxSector;
-            sectorsPerPoint = _maxSector   / points.Count;
-
-            if(_maxSector % points.Count > 0) sectorsPerPoint++;
+            points             = _points;
+            minRadius          = _dataMinRadius;
+            maxRadius          = _dataMaxRadius;
+            effectiveMaxSector = _maxSector;
+            effectiveSector    = sector;
         }
+
+        long firstPoint = ClvSectorToPoint(effectiveSector, effectiveMaxSector, points.Count, minRadius, maxRadius);
+
+        long lastPoint = ClvSectorToPoint(effectiveSector + 1, effectiveMaxSector, points.Count, minRadius, maxRadius);
+
+        if(firstPoint >= points.Count - 1) return;
+
+        // Ensure we draw at least one visible line segment (from firstPoint to firstPoint+1)
+        long endPoint = Math.Clamp(Math.Max(lastPoint, firstPoint + 1), firstPoint + 1, points.Count - 1);
 
         var paint = new SKPaint
         {
             Style       = SKPaintStyle.Stroke,
             Color       = color,
-            StrokeWidth = 2
+            StrokeWidth = 1
         };
 
         var path = new SKPath();
 
-        if(pointsPerSector > 0)
-        {
-            long firstPoint = (long)sector * pointsPerSector;
-            long lastPoint  = Math.Min(firstPoint + pointsPerSector, points.Count);
+        path.MoveTo(points[(int)firstPoint]);
 
-            if(firstPoint >= points.Count) return;
-
-            path.MoveTo(points[(int)firstPoint]);
-
-            for(var i = (int)firstPoint; i < lastPoint; i++) path.LineTo(points[i]);
-
-            _canvas.DrawPath(path, paint);
-
-            return;
-        }
-
-        long point = (long)sector / sectorsPerPoint;
-
-        if(point == 0)
-        {
-            path.MoveTo(points[0]);
-            path.LineTo(points[1]);
-        }
-        else if(point >= points.Count - 1)
-        {
-            path.MoveTo(points[^2]);
-            path.LineTo(points[^1]);
-        }
-        else
-        {
-            path.MoveTo(points[(int)point]);
-            path.LineTo(points[(int)point + 1]);
-        }
+        for(long i = firstPoint + 1; i <= endPoint; i++) path.LineTo(points[(int)i]);
 
         _canvas.DrawPath(path, paint);
     }
@@ -477,7 +453,7 @@ public sealed class Spiral : IMediaGraph
         {
             Style       = SKPaintStyle.Stroke,
             Color       = color,
-            StrokeWidth = 2
+            StrokeWidth = 1
         };
 
         var path = new SKPath();
@@ -530,6 +506,29 @@ public sealed class Spiral : IMediaGraph
     {
         const int cdLeadInSize = 2750; // Approximate CD lead-in sectors (46-50mm at 1.6µm pitch, ~75 sectors/sec)
         PaintLeadInSector((ulong)(sector * -1), color, cdLeadInSize);
+    }
+
+    /// <summary>Maps a sector number to its spiral point index using CLV (Constant Linear Velocity) mapping</summary>
+    /// <remarks>
+    ///     On CLV optical discs, the relationship between sector number and radius is quadratic:
+    ///     r² = r_min² + (sector/maxSector) × (r_max² - r_min²). This correctly positions sectors
+    ///     at their physical radial location on the drawn spiral.
+    /// </remarks>
+    /// <param name="sector">Sector number to map</param>
+    /// <param name="maxSector">Maximum sector number</param>
+    /// <param name="numPoints">Total number of points in the spiral</param>
+    /// <param name="minRadius">Minimum radius of the spiral (in pixels)</param>
+    /// <param name="maxRadius">Maximum radius of the spiral (in pixels)</param>
+    /// <returns>Point index corresponding to the sector</returns>
+    static long ClvSectorToPoint(double sector, long maxSector, int numPoints, float minRadius, float maxRadius)
+    {
+        double fraction    = sector            / maxSector;
+        double rSquaredMin = (double)minRadius * minRadius;
+        double rSquaredMax = (double)maxRadius * maxRadius;
+        double rTarget     = Math.Sqrt(rSquaredMin + fraction * (rSquaredMax - rSquaredMin));
+        double pointFrac   = (rTarget - minRadius) / (maxRadius - minRadius);
+
+        return Math.Clamp((long)(pointFrac * numPoints), 0, numPoints - 1);
     }
 
     /// <summary>Gets all the points that are needed to draw a spiral with the specified parameters</summary>
@@ -677,7 +676,7 @@ public sealed class Spiral : IMediaGraph
                          {
                              Style       = SKPaintStyle.Stroke,
                              Color       = SKColors.Green,
-                             StrokeWidth = 2
+                             StrokeWidth = 1
                          });
     }
 
