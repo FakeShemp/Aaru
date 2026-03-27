@@ -531,7 +531,10 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
             AnsiConsole.Progress()
                        .AutoClear(true)
                        .HideCompleted(true)
-                       .Columns(new ProgressBarColumn(), new PercentageColumn(), new TaskDescriptionColumn())
+                       .Columns(new ProgressBarColumn(),
+                                new RemainingTimeColumn(),
+                                new PercentageColumn(),
+                                new TaskDescriptionColumn())
                        .Start(ctx =>
                         {
                             dumper.UpdateStatus += static text => { AaruLogging.WriteLine(text); };
