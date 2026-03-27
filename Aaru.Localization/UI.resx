@@ -5626,4 +5626,7 @@ Do you want to continue?</value>
     <data name="Generates_the_JSON_schema_for_Aaru_metadata_files" xml:space="preserve">
         <value>Generates the JSON schema for Aaru metadata files</value>
     </data>
+    <data name="Image_Write_Metadata_Command_Description" xml:space="preserve">
+        <value>Writes metadata to an AaruFormat image.</value>
+    </data>
 </root>

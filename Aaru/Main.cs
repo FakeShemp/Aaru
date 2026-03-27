@@ -404,6 +404,9 @@ class MainClass
 
                                                   image.AddCommand<MergeCommand>("merge")
                                                        .WithDescription(UI.Image_Merge_Command_Description);
+
+                                                  image.AddCommand<WriteMetadataCommand>("write-metadata")
+                                                       .WithDescription(UI.Image_Write_Metadata_Command_Description);
                                               })
                       .WithAlias("i")
                       .WithAlias("img");

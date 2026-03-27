@@ -11093,5 +11093,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Generates_the_JSON_schema_for_Aaru_metadata_files", resourceCulture);
             }
         }
+        
+        public static string Image_Write_Metadata_Command_Description {
+            get {
+                return ResourceManager.GetString("Image_Write_Metadata_Command_Description", resourceCulture);
+            }
+        }
     }
 }

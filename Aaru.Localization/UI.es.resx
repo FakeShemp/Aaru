@@ -5542,4 +5542,7 @@ Probadores:
     <data name="Generates_the_JSON_schema_for_Aaru_metadata_files" xml:space="preserve">
         <value>Genera el esquema JSON para los ficheros de metadatos Aaru</value>
     </data>
+    <data name="Image_Write_Metadata_Command_Description" xml:space="preserve">
+        <value>Escribe los metadatados a una imagen AaruFormat.</value>
+    </data>
 </root>
