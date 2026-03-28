@@ -367,16 +367,14 @@ public partial class Convert
             }
         }
 
-        // TODO: Enable for Ngcw
-        if(!isPs3Conversion && !isWiiuConversion && !isNgcwConversion && _negativeSectors > 0)
+        if(!isPs3Conversion && !isWiiuConversion && _negativeSectors > 0)
         {
             errno = ConvertNegativeSectors(useLong);
 
             if(errno != ErrorNumber.NoError) return errno;
         }
 
-        // TODO: Enable for Ngcw
-        if(!isPs3Conversion && !isWiiuConversion && !isNgcwConversion && _overflowSectors > 0)
+        if(!isPs3Conversion && !isWiiuConversion && _overflowSectors > 0)
         {
             errno = ConvertOverflowSectors(useLong);
 
