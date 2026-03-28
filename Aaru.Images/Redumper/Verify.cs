@@ -49,22 +49,13 @@ public sealed partial class Redumper
 
         if(MapState(_stateData[frameIndex]) != SectorStatus.Dumped) return null;
 
-        byte[] dvdSector = ReadAndFlattenFrame(frameIndex);
+        ErrorNumber errno = ReadSectorLong(sectorAddress, false, out byte[] dvdSector, out _);
 
-        if(dvdSector is null) return null;
-
-        if(IsNintendoMediaType(_imageInfo.MediaType))
-        {
-            byte[] work = (byte[])dvdSector.Clone();
-
-            if(!DescrambleNintendo2064InPlace(work, (int)sectorAddress)) return null;
-
-            dvdSector = work;
-        }
+        if(errno != ErrorNumber.NoError || dvdSector is null) return null;
 
         if(!Sector.CheckIed(dvdSector)) return false;
 
-        return Sector.CheckEdc(dvdSector);
+        return Sector.CheckEdc(dvdSector, 1);
     }
 
     /// <inheritdoc />
