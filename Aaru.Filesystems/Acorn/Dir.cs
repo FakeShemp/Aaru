@@ -441,6 +441,14 @@ public sealed partial class AcornADFS
         // Parse big directory header
         BigDirectoryHeader header = Marshal.ByteArrayToStructureLittleEndian<BigDirectoryHeader>(dirData);
 
+        AaruLogging.Debug(MODULE_NAME,
+                          "ParseBigDir: dirSize={0}, entries={1}, nameLen={2}, nameSize={3}, parent=0x{4:X8}",
+                          header.bigDirSize,
+                          header.bigDirEntries,
+                          header.bigDirNameLen,
+                          header.bigDirNameSize,
+                          header.bigDirParent);
+
         // Validate header magic
         if(header.bigDirStartName != BIG_DIR_START_NAME) return ErrorNumber.InvalidArgument;
 
@@ -467,8 +475,8 @@ public sealed partial class AcornADFS
 
         uint numEntries = header.bigDirEntries;
 
-        // Calculate entries offset: header (28 bytes) + directory name (aligned to 4 bytes)
-        uint entriesOff = 28 + (header.bigDirNameLen + 3 & ~3u);
+        // Calculate entries offset: header (28 bytes) + directory name + \r terminator (aligned to 4 bytes)
+        uint entriesOff = 28 + (header.bigDirNameLen + 1 + 3 & ~3u);
 
         const int bigEntrySize = 28;
 
@@ -490,17 +498,36 @@ public sealed partial class AcornADFS
             BigDirectoryEntry entry = Marshal.ByteArrayToStructureLittleEndian<BigDirectoryEntry>(entryBytes);
 
             // Get filename from name heap
-            uint nameOff = header.bigDirSize - 8 - header.bigDirNameSize + entry.bigDirObNamePtr;
+            // Linux kernel: offset = adfs_fplus_offset(h, h->bigdirentries) + bde.bigdirobnameptr
+            // i.e., name heap starts right after all entries
+            uint nameOff = nameHeapStart + entry.bigDirObNamePtr;
             uint nameLen = entry.bigDirObNameLen;
 
-            if(nameOff + nameLen > dirData.Length || nameLen == 0) continue;
+            if(nameOff + nameLen > dirData.Length || nameLen == 0)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "ParseBigDir: entry {0} name out of range (off={1}, len={2}), skipping",
+                                  i,
+                                  nameOff,
+                                  nameLen);
+
+                continue;
+            }
 
             var nameBytes = new byte[nameLen];
             Array.Copy(dirData, nameOff, nameBytes, 0, nameLen);
 
-            string filename = _encoding.GetString(nameBytes).TrimEnd('\0');
+            string filename = _encoding.GetString(nameBytes).TrimEnd('\0', '\r');
 
             if(string.IsNullOrEmpty(filename)) continue;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "ParseBigDir: entry {0}: \"{1}\" len={2} attr=0x{3:X8} indAddr=0x{4:X8}",
+                              i,
+                              filename,
+                              entry.bigDirLen,
+                              entry.bigDirAttr,
+                              entry.bigDirIndAddr);
 
             var entryInfo = new DirectoryEntryInfo
             {
