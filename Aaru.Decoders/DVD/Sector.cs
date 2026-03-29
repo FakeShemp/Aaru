@@ -302,6 +302,21 @@ public sealed class Sector
     }
 
     /// <summary>
+    ///     Check if the IED of sectors is correct
+    /// </summary>
+    /// <param name="sectorLong">Buffer of the sector</param>
+    /// <param name="transferLength">The number of sectors to check</param>
+    /// <returns><c>True</c> if IED is correct, <c>False</c> if not</returns>
+    public static bool CheckIed(byte[] sectorLong, uint transferLength)
+    {
+        for(uint i = 0; i < transferLength; i++)
+        {
+            if(!CheckIed(sectorLong.Skip((int)(i * 2064)).Take(2064).ToArray())) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
     ///     Tests if a seed unscrambles a sector correctly
     /// </summary>
     /// <param name="sector">Buffer of the scrambled sector</param>

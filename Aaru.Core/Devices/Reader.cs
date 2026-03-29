@@ -79,6 +79,12 @@ sealed partial class Reader
     internal bool   CanReadRaw        { get; private set; }
     /// <summary>When true with OmniDrive raw reads, use descramble=0 and software Nintendo descrambling (GameCube/Wii).</summary>
     internal bool OmniDriveNintendoMode { get; set; }
+
+    /// <summary>
+    ///     Disc-wide Nintendo XOR key (0–15) from LBA 0 CPR_MAI, set after the dump pipeline reads LBA 0. Used for
+    ///     OmniDrive Nintendo reads at LBAs ≥ 16; null until derived.
+    /// </summary>
+    internal byte? NintendoDerivedDiscKey { get; set; }
     internal bool   CanSeek           => _ataSeek    || _seek6 || _seek10;
     internal bool   CanSeekLba        => _ataSeekLba || _seek6 || _seek10;
 

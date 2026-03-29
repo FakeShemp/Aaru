@@ -58,21 +58,17 @@ partial class Dump
     ulong[]             _ngcwPartSysEnd;
     DataRegion[]        _ngcwGcDataMap;
     ulong               _ngcwGcSysEnd;
-
-    bool                _omniDriveNintendoSoftwareDescramble;
     byte?               _nintendoDerivedDiscKey;
-    readonly Aaru.Decoders.Nintendo.Sector _nintendoSectorDecoder = new Aaru.Decoders.Nintendo.Sector();
 
     bool InitializeNgcwContext(MediaType dskType, Reader scsiReader, IWritableImage outputFormat)
     {
         _ngcwEnabled     = dskType is MediaType.GOD or MediaType.WOD;
         _ngcwMediaType   = dskType;
         _ngcwJunkCollector = new JunkCollector();
-        _omniDriveNintendoSoftwareDescramble = scsiReader.OmniDriveNintendoMode;
 
         if(!_ngcwEnabled) return true;
 
-        if(_omniDriveNintendoSoftwareDescramble)
+        if(scsiReader.OmniDriveNintendoMode)
         {
             UpdateStatus?.Invoke(UI.Ngcw_nintendo_software_descramble);
 
@@ -107,10 +103,6 @@ partial class Dump
 
             return true;
         }
-
-        if(_omniDriveNintendoSoftwareDescramble &&
-           !DescrambleNintendoLongBuffer(longBuffer, startSector, sectors))
-            return false;
 
         if(_ngcwMediaType == MediaType.GOD)
             return TransformGameCubeLongSectors(longBuffer, startSector, sectors, statuses);
@@ -153,6 +145,15 @@ partial class Dump
             StoppingErrorMessage?.Invoke(Localization.Core.Unable_to_read_medium);
 
             return false;
+        }
+
+        UpdateStatus?.Invoke(string.Format(UI.Ngcw_found_0_partitions, _ngcwPartitions.Count));
+
+        if(_bypassWiiDecryption)
+        {
+            UpdateStatus?.Invoke(UI.Ngcw_wii_dump_bypass_decryption);
+
+            return true;
         }
 
         WiiPartitionRegion[] regions = NgcwPartitions.BuildRegionMap(_ngcwPartitions);
@@ -252,6 +253,13 @@ partial class Dump
     {
         ulong discOffset = startSector * NGCW_SECTOR_SIZE;
         int   partIndex  = NgcwPartitions.FindPartitionAtOffset(_ngcwPartitions, discOffset);
+
+        if(_bypassWiiDecryption && partIndex >= 0)
+        {
+            for(int i = 0; i < sectors; i++) statuses[i] = SectorStatus.Encrypted;
+
+            return true;
+        }
 
         if(partIndex < 0)
         {
@@ -443,7 +451,9 @@ partial class Dump
 
     bool EnsureNintendoDerivedKeyFromLba0(Reader scsiReader)
     {
-        if(!_omniDriveNintendoSoftwareDescramble || _nintendoDerivedDiscKey.HasValue) return true;
+        if(_nintendoDerivedDiscKey.HasValue) return true;
+
+        if(!scsiReader.OmniDriveNintendoMode) return true;
 
         bool sense = scsiReader.ReadBlock(out byte[] raw, 0, out _, out _, out _);
 
@@ -454,59 +464,11 @@ partial class Dump
             return false;
         }
 
-        ErrorNumber errno = _nintendoSectorDecoder.Scramble(raw, 0, out byte[] descrambled);
-
-        if(errno != ErrorNumber.NoError || descrambled == null)
-        {
-            StoppingErrorMessage?.Invoke(Localization.Core.Unable_to_read_medium);
-
-            return false;
-        }
-
-        byte[] cprMai8 = new byte[8];
-        Array.Copy(descrambled, 6, cprMai8, 0, 8);
-        _nintendoDerivedDiscKey = Sector.DeriveNintendoKey(cprMai8);
+        byte[] keyMaterial = new byte[8];
+        Array.Copy(raw, Sector.NintendoMainDataOffset, keyMaterial, 0, 8);
+        _nintendoDerivedDiscKey = Sector.DeriveNintendoKey(keyMaterial);
+        scsiReader.NintendoDerivedDiscKey = _nintendoDerivedDiscKey;
         UpdateStatus?.Invoke(string.Format(UI.Ngcw_nintendo_derived_key_0, _nintendoDerivedDiscKey.Value));
-
-        return true;
-    }
-
-    bool DescrambleNintendoLongBuffer(byte[] longBuffer, ulong startSector, uint sectors)
-    {
-        if(!_omniDriveNintendoSoftwareDescramble) return true;
-
-        for(uint i = 0; i < sectors; i++)
-        {
-            if(!DescrambleNintendo2064At(longBuffer, (int)(i * NGCW_LONG_SECTOR_SIZE), startSector + i))
-                return false;
-        }
-
-        return true;
-    }
-
-    bool DescrambleNintendo2064At(byte[] buffer, int offset, ulong lba)
-    {
-        byte[] one = new byte[NGCW_LONG_SECTOR_SIZE];
-        Array.Copy(buffer, offset, one, 0, NGCW_LONG_SECTOR_SIZE);
-        byte key = lba < NGCW_SECTORS_PER_GROUP ? (byte)0 : (_nintendoDerivedDiscKey ?? (byte)0);
-
-        ErrorNumber error = _nintendoSectorDecoder.Scramble(one, key, out byte[] decoded);
-
-        if(error != ErrorNumber.NoError)
-        {
-            Array.Clear(buffer, offset, NGCW_LONG_SECTOR_SIZE);
-
-            return false;
-        }
-
-        if(decoded != null) Array.Copy(decoded, 0, buffer, offset, NGCW_LONG_SECTOR_SIZE);
-
-        if(lba == 0 && decoded != null)
-        {
-            byte[] cprMai8 = new byte[8];
-            Array.Copy(decoded, 6, cprMai8, 0, 8);
-            _nintendoDerivedDiscKey = Sector.DeriveNintendoKey(cprMai8);
-        }
 
         return true;
     }
@@ -585,12 +547,6 @@ partial class Dump
             if(sense || _dev.Error || rawSector == null || rawSector.Length < NGCW_PAYLOAD_OFFSET + NGCW_SECTOR_SIZE)
                 return null;
 
-            if(_omniDriveNintendoSoftwareDescramble && rawSector.Length >= NGCW_LONG_SECTOR_SIZE)
-            {
-                if(!DescrambleNintendo2064At(rawSector, 0, sector))
-                    return null;
-            }
-
             Array.Copy(rawSector, NGCW_PAYLOAD_OFFSET + sectorOff, result, read, chunk);
             read += chunk;
         }
@@ -603,15 +559,6 @@ partial class Dump
         bool sense = scsiReader.ReadBlocks(out byte[] rawBuffer, startSector, count, out _, out _, out _);
 
         if(sense || _dev.Error || rawBuffer == null) return null;
-
-        if(_omniDriveNintendoSoftwareDescramble && rawBuffer.Length >= count * NGCW_LONG_SECTOR_SIZE)
-        {
-            for(uint i = 0; i < count; i++)
-            {
-                if(!DescrambleNintendo2064At(rawBuffer, (int)(i * NGCW_LONG_SECTOR_SIZE), startSector + i))
-                    return null;
-            }
-        }
 
         byte[] payload = new byte[count * NGCW_SECTOR_SIZE];
 

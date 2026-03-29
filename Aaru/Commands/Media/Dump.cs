@@ -116,6 +116,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--max-blocks={0}",              maxBlocks);
         AaruLogging.Debug(MODULE_NAME, "--use-buffered-reads={0}",      settings.UseBufferedReads);
         AaruLogging.Debug(MODULE_NAME, "--store-encrypted={0}",         settings.StoreEncrypted);
+        AaruLogging.Debug(MODULE_NAME, "--bypass-wii-decryption={0}",   settings.BypassWiiDecryption);
         AaruLogging.Debug(MODULE_NAME, "--title-keys={0}",              settings.TitleKeys);
         AaruLogging.Debug(MODULE_NAME, "--ignore-cdr-runouts={0}",      settings.IgnoreCdrRunOuts);
         AaruLogging.Debug(MODULE_NAME, "--create-graph={0}",            settings.CreateGraph);
@@ -526,7 +527,8 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   settings.CreateGraph,
                                   (uint)settings.Dimensions,
                                   settings.Paranoia,
-                                  settings.CureParanoia);
+                                  settings.CureParanoia,
+                                  settings.BypassWiiDecryption);
 
             AnsiConsole.Progress()
                        .AutoClear(true)
@@ -757,6 +759,10 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [CommandOption("--store-encrypted")]
         [DefaultValue(true)]
         public bool StoreEncrypted { get; init; }
+        [LocalizedDescription(nameof(UI.Bypass_Wii_decryption_help))]
+        [CommandOption("--bypass-wii-decryption")]
+        [DefaultValue(false)]
+        public bool BypassWiiDecryption { get; init; }
         [LocalizedDescription(nameof(UI.Try_to_read_the_title_keys_from_CSS_DVDs))]
         [CommandOption("--title-keys")]
         [DefaultValue(true)]

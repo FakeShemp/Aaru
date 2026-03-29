@@ -1995,6 +1995,12 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string Ngcw_wii_dump_bypass_decryption {
+            get {
+                return ResourceManager.GetString("Ngcw_wii_dump_bypass_decryption", resourceCulture);
+            }
+        }
+        
         public static string PS3_disc_key_resolved_from_0 {
             get {
                 return ResourceManager.GetString("PS3_disc_key_resolved_from_0", resourceCulture);

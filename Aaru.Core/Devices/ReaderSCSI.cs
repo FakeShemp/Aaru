@@ -591,8 +591,8 @@ sealed partial class Reader
                 // Try OmniDrive on drives with OmniDrive firmware (standard descramble=1 and Nintendo descramble=0)
                 if(_dev.IsOmniDriveFirmware())
                 {
-                    bool omniStandardOk = !_dev.OmniDriveReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _);
-                    bool omniNintendoOk = !_dev.OmniDriveReadNintendoDvd(out _, out senseBuf, 0, 1, _timeout, out _);
+                    bool omniStandardOk = !_dev.OmniDriveReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _, true, true);
+                    bool omniNintendoOk = !_dev.OmniDriveReadNintendoDvd(out _, out senseBuf, 0, 1, _timeout, out _, true, true);
                     OmniDriveReadRaw    = omniStandardOk || omniNintendoOk;
                 }
 
@@ -856,7 +856,10 @@ sealed partial class Reader
                                                           lba,
                                                           count,
                                                           _timeout,
-                                                          out duration);
+                                                          out duration,
+                                                          false,
+                                                          true,
+                                                          NintendoDerivedDiscKey);
                 else
                     sense = _dev.OmniDriveReadRawDvd(out buffer,
                                                      out senseBuf,

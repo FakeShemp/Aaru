@@ -33,14 +33,17 @@
 // ****************************************************************************/
 
 using System;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Logging;
 using Aaru.Decoders.DVD;
+using NintendoSector = Aaru.Decoders.Nintendo.Sector;
 
 namespace Aaru.Devices;
 
 public partial class Device
 {
+    readonly NintendoSector _nintendoSectorDecoder = new NintendoSector();
     enum OmniDriveDiscType
     {
         CD = 0,
@@ -66,16 +69,16 @@ public partial class Device
     static void FillOmniDriveReadDvdCdb(Span<byte> cdb, uint lba, uint transferLength, byte cdbByte1)
     {
         cdb.Clear();
-        cdb[0]  = (byte)ScsiCommands.ReadOmniDrive;
-        cdb[1]  = cdbByte1;
-        cdb[2]  = (byte)((lba >> 24) & 0xFF);
-        cdb[3]  = (byte)((lba >> 16) & 0xFF);
-        cdb[4]  = (byte)((lba >> 8)  & 0xFF);
-        cdb[5]  = (byte)(lba & 0xFF);
-        cdb[6]  = (byte)((transferLength >> 24) & 0xFF);
-        cdb[7]  = (byte)((transferLength >> 16) & 0xFF);
-        cdb[8]  = (byte)((transferLength >> 8)  & 0xFF);
-        cdb[9]  = (byte)(transferLength & 0xFF);
+        cdb[0] = (byte)ScsiCommands.ReadOmniDrive;
+        cdb[1] = cdbByte1;
+        cdb[2] = (byte)((lba >> 24) & 0xFF);
+        cdb[3] = (byte)((lba >> 16) & 0xFF);
+        cdb[4] = (byte)((lba >> 8) & 0xFF);
+        cdb[5] = (byte)(lba & 0xFF);
+        cdb[6] = (byte)((transferLength >> 24) & 0xFF);
+        cdb[7] = (byte)((transferLength >> 16) & 0xFF);
+        cdb[8] = (byte)((transferLength >> 8) & 0xFF);
+        cdb[9] = (byte)(transferLength & 0xFF);
         cdb[10] = 0; // subchannels=NONE, c2=0
         cdb[11] = 0; // control
     }
@@ -89,20 +92,20 @@ public partial class Device
     {
         bool sense = ScsiInquiry(out byte[] buffer, out _, Timeout, out _);
 
-        if(sense || buffer == null) return false;
+        if (sense || buffer == null) return false;
 
         Inquiry? inquiry = Inquiry.Decode(buffer);
 
-        if(!inquiry.HasValue || inquiry.Value.Reserved5 == null || inquiry.Value.Reserved5.Length < 11)
+        if (!inquiry.HasValue || inquiry.Value.Reserved5 == null || inquiry.Value.Reserved5.Length < 11)
             return false;
 
         byte[] reserved5 = inquiry.Value.Reserved5;
         byte[] omnidrive = [0x4F, 0x6D, 0x6E, 0x69, 0x44, 0x72, 0x69, 0x76, 0x65]; // "OmniDrive"
 
-        if(reserved5.Length < omnidrive.Length) return false;
+        if (reserved5.Length < omnidrive.Length) return false;
 
-        for(int i = 0; i < omnidrive.Length; i++)
-            if(reserved5[i] != omnidrive[i])
+        for (int i = 0; i < omnidrive.Length; i++)
+            if (reserved5[i] != omnidrive[i])
                 return false;
 
         return true;
@@ -131,8 +134,11 @@ public partial class Device
                                 EncodeOmniDriveReadCdb1(OmniDriveDiscType.DVD, false, fua, descramble));
 
         LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
-        
-        if(!Sector.CheckEdc(buffer, transferLength)) return true;
+
+        if (!Sector.CheckIed(buffer, transferLength)) return true;
+
+        if(descramble) 
+            if (!Sector.CheckEdc(buffer, transferLength)) return true;
 
         Error = LastError != 0;
 
@@ -142,13 +148,16 @@ public partial class Device
     }
 
     /// <summary>
-    ///     Reads raw Nintendo GameCube/Wii DVD sectors (2064 bytes) on OmniDrive. Default matches redumper raw DVD
-    ///     (<c>descramble</c> off); use software descramble via Aaru.Decoders.Nintendo.Sector when needed.
+    ///     Reads Nintendo GameCube/Wii DVD sectors (2064 bytes) on OmniDrive. The drive returns DVD-layer data with
+    ///     drive-side DVD descramble off; this method applies per-sector Nintendo XOR descramble and returns the result.
+    ///     LBAs 0–15 use key 0; LBAs ≥ 16 use <paramref name="derivedDiscKey" /> (from LBA 0 CPR_MAI), or 0 if not yet
+    ///     derived.
     /// </summary>
-    /// <param name="descramble">Drive-side DVD descramble (redumper raw DVD uses <c>false</c>).</param>
+    /// <param name="derivedDiscKey">Disc key from LBA 0 (0–15); <c>null</c> until the host has read and derived it.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
     public bool OmniDriveReadNintendoDvd(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba, uint transferLength,
-                                        uint timeout, out double duration, bool descramble = false)
+                                        uint timeout, out double duration, bool fua = false, bool descramble = true, 
+                                        byte? derivedDiscKey = null)
     {
         senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
@@ -157,11 +166,55 @@ public partial class Device
         FillOmniDriveReadDvdCdb(cdb,
                                 lba,
                                 transferLength,
-                                EncodeOmniDriveReadCdb1(OmniDriveDiscType.DVD, false, false, descramble));
+                                EncodeOmniDriveReadCdb1(OmniDriveDiscType.DVD, false, fua, false));
 
         LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
-        // Scrambled Nintendo sectors do not pass standard DVD EDC until software-descrambled.
+        if(!Sector.CheckIed(buffer, transferLength)) return true;
+
+        if(descramble) {
+            const int sectorBytes = 2064;
+            byte[]    outBuf      = new byte[sectorBytes * transferLength];
+
+            if(lba < 16 && lba + transferLength > 16) {
+                for(uint i = 0; i < transferLength; i++)
+                {
+                    var slice = new byte[sectorBytes];
+                    Array.Copy(buffer, i * sectorBytes, slice, 0, sectorBytes);
+                    uint absLba = lba + i;
+                    byte key    = absLba < 16 ? (byte)0 : (derivedDiscKey ?? (byte)0);
+
+                    ErrorNumber errno = _nintendoSectorDecoder.Scramble(slice, key, out byte[] descrambled);
+
+                    if(errno != ErrorNumber.NoError || descrambled == null)
+                    {
+                        LastError = (int)errno;
+                        Error     = true;
+
+                        return true;
+                    }
+
+                    Array.Copy(descrambled, 0, outBuf, i * sectorBytes, sectorBytes);
+                }
+            } else {
+                ErrorNumber errno = _nintendoSectorDecoder.Scramble(
+                    buffer,
+                    transferLength,
+                    lba < 16 || lba > 0xffffff ? (byte)0 : (derivedDiscKey ?? (byte)0),
+                    out outBuf);
+
+                if(errno != ErrorNumber.NoError || outBuf == null)
+                {
+                    LastError = (int)errno;
+                    Error     = true;
+
+                    return true;
+                }
+            }
+
+            buffer = outBuf;
+        }
+
         Error = LastError != 0;
 
         AaruLogging.Debug(SCSI_MODULE_NAME, "OmniDrive READ NINTENDO DVD took {0} ms", duration);

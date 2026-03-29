@@ -104,6 +104,7 @@ public partial class Dump
     readonly        Stopwatch                  _speedStopwatch;
     readonly        bool                       _stopOnError;
     readonly        bool                       _storeEncrypted;
+    readonly        bool                       _bypassWiiDecryption;
     readonly        DumpSubchannel             _subchannel;
     readonly        bool                       _titleKeys;
     readonly        bool                       _trim;
@@ -171,6 +172,7 @@ public partial class Dump
     /// <param name="dimensions">Dimensions of graph in pixels for a square</param>
     /// <param name="paranoia">Check sectors integrity before writing to image</param>
     /// <param name="cureParanoia">Try to fix sectors integrity</param>
+    /// <param name="bypassWiiDecryption">When dumping Wii (WOD), skip partition AES decryption and store encrypted data</param>
     public Dump(bool doResume, Device dev, string devicePath, IBaseWritableImage outputPlugin, ushort retryPasses,
                 bool force, bool dumpRaw, bool persistent, bool stopOnError, Resume resume, Encoding encoding,
                 string outputPrefix, string outputPath, Dictionary<string, string> formatOptions, Metadata preSidecar,
@@ -179,7 +181,7 @@ public partial class Dump
                 bool fixSubchannel, bool fixSubchannelCrc, bool skipCdireadyHole, ErrorLog errorLog,
                 bool generateSubchannels, uint maximumReadable, bool useBufferedReads, bool storeEncrypted,
                 bool titleKeys, uint ignoreCdrRunOuts, bool createGraph, uint dimensions, bool paranoia,
-                bool cureParanoia)
+                bool cureParanoia, bool bypassWiiDecryption)
     {
         _doResume              = doResume;
         _dev                   = dev;
@@ -223,6 +225,7 @@ public partial class Dump
         _dimensions            = dimensions;
         _paranoia              = paranoia;
         _cureParanoia          = cureParanoia;
+        _bypassWiiDecryption   = bypassWiiDecryption;
         _dumpStopwatch         = new Stopwatch();
         _sidecarStopwatch      = new Stopwatch();
         _speedStopwatch        = new Stopwatch();
