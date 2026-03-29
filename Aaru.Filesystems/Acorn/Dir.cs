@@ -84,6 +84,10 @@ public sealed partial class AcornADFS
         {
             string component = pathComponents[p];
 
+            // ADFS uses '.' as path separator, so '.' in the user path must be converted to '/'
+            // for internal name matching (on-disk names use '/' where '.' would appear)
+            component = component.Replace('.', '/');
+
             // Find the component in current directory
             if(!currentEntries.TryGetValue(component, out DirectoryEntryInfo entry)) return ErrorNumber.NoSuchFile;
 
@@ -145,6 +149,10 @@ public sealed partial class AcornADFS
 
         // Get current filename and advance position
         filename = acornNode.EntryNames[acornNode.Position++];
+
+        // In ADFS, the dot (.) is the path separator, not the forward slash (/)
+        // Convert forward slashes in filenames to dots for proper RISC OS representation
+        filename = filename.Replace('/', '.');
 
         return ErrorNumber.NoError;
     }

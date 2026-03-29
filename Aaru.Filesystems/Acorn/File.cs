@@ -636,6 +636,10 @@ public sealed partial class AcornADFS
         {
             string component = pathComponents[p];
 
+            // ADFS uses '.' as path separator, so '.' in the user path must be converted to '/'
+            // for internal name matching (on-disk names use '/' where '.' would appear)
+            component = component.Replace('.', '/');
+
             // Find the component in current directory
             if(!currentEntries.TryGetValue(component, out DirectoryEntryInfo foundEntry)) return ErrorNumber.NoSuchFile;
 
