@@ -477,7 +477,8 @@ public sealed partial class AcornADFS
 
         AaruLogging.Debug(MODULE_NAME, "drSb.disc_type = {0}",      drSb.disc_type);
         AaruLogging.Debug(MODULE_NAME, "drSb.disc_size_high = {0}", drSb.disc_size_high);
-        AaruLogging.Debug(MODULE_NAME, "drSb.flags = {0}",          drSb.flags);
+        AaruLogging.Debug(MODULE_NAME, "drSb.log2sharesize = {0}",  drSb.log2sharesize);
+        AaruLogging.Debug(MODULE_NAME, "drSb.big_flag = {0}",       drSb.big_flag);
         AaruLogging.Debug(MODULE_NAME, "drSb.nzones_high = {0}",    drSb.nzones_high);
         AaruLogging.Debug(MODULE_NAME, "drSb.format_version = {0}", drSb.format_version);
         AaruLogging.Debug(MODULE_NAME, "drSb.root_size = {0}",      drSb.root_size);
@@ -494,9 +495,7 @@ public sealed partial class AcornADFS
         bytes *= 0x100000000;
         bytes += drSb.disc_size;
 
-        ulong zones = drSb.nzones_high;
-        zones *= 0x100000000;
-        zones += drSb.nzones;
+        ulong zones = drSb.nzones | (uint)drSb.nzones_high << 8;
 
         if(bytes > imagePlugin.Info.Sectors * imagePlugin.Info.SectorSize) return;
 
@@ -511,7 +510,7 @@ public sealed partial class AcornADFS
 
         if(drSb.format_version > 0)
             newFormat = "ADFS-G";
-        else if((drSb.flags & 0x01) != 0) // big_flag
+        else if((drSb.big_flag & 0x01) != 0)
             newFormat = "ADFS-F+";
         else if(drSb.idlen > 15)
             newFormat = "ADFS-F";
@@ -534,7 +533,7 @@ public sealed partial class AcornADFS
 
         //sbInformation.AppendFormat("Root is {0} bytes long", drSb.root_size).AppendLine();
         sbInformation.AppendFormat(Localization.Volume_has_0_bytes_in_1_zones, bytes, zones).AppendLine();
-        sbInformation.AppendFormat(Localization.Volume_flags_0_X4,             drSb.flags).AppendLine();
+        sbInformation.AppendFormat(Localization.Volume_flags_0_X4,             drSb.log2sharesize).AppendLine();
 
         if(drSb.disc_id > 0)
         {

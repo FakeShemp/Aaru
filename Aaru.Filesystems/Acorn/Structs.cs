@@ -103,8 +103,10 @@ public sealed partial class AcornADFS
         public readonly byte[] disc_name;
         public readonly uint disc_type;
         public readonly uint disc_size_high;
-        public readonly byte flags;
+        public readonly byte log2sharesize;
+        public readonly byte big_flag;
         public readonly byte nzones_high;
+        public readonly byte reserved43;
         public readonly uint format_version;
         public readonly uint root_size;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]

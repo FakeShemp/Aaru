@@ -393,7 +393,7 @@ public sealed partial class AcornADFS
             _maxNameLen        = FPLUS_NAME_LEN;
             _rootDirectorySize = drSb.root_size;
         }
-        else if((drSb.flags & 0x01) != 0)
+        else if((drSb.big_flag & 0x01) != 0)
         {
             // ADFS-F+: big directories for discs > 512MB
             _isBigDirectory    = true;

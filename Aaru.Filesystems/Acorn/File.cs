@@ -346,7 +346,7 @@ public sealed partial class AcornADFS
         // The offset is in units of (1 << log2sharesize) sectors
         if(fragOffset > 0)
         {
-            int shareSize = _discRecord.flags & 0x0F; // log2sharesize is in lower 4 bits of flags
+            int shareSize = _discRecord.log2sharesize & 0x0F;
             sectorOffset += fragOffset - 1 << shareSize;
 
             AaruLogging.Debug(MODULE_NAME,
