@@ -31,6 +31,7 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aaru.CommonTypes.AaruMetadata;
@@ -38,6 +39,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Logging;
+using Sentry;
 using Spectre.Console;
 using Directory = Aaru.CommonTypes.AaruMetadata.Directory;
 using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
@@ -70,12 +72,26 @@ public sealed partial class Sidecar
 
             if(stat.Attributes.HasFlag(FileAttributes.Directory))
             {
-                directories.Add(SidecarDirectory(filesystem, "", dirent, stat));
+                try
+                {
+                    directories.Add(SidecarDirectory(filesystem, "", dirent, stat));
+                }
+                catch(Exception ex)
+                {
+                    SentrySdk.CaptureException(ex);
+                }
 
                 continue;
             }
 
-            files.Add(SidecarFile(filesystem, "", dirent, stat));
+            try
+            {
+                files.Add(SidecarFile(filesystem, "", dirent, stat));
+            }
+            catch(Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+            }
         }
 
         filesystem.CloseDir(node);
@@ -126,17 +142,32 @@ public sealed partial class Sidecar
 
             if(entryStat.Attributes.HasFlag(FileAttributes.Directory))
             {
-                directories.Add(SidecarDirectory(filesystem, path + "/" + filename, dirent, entryStat));
+                try
+                {
+                    directories.Add(SidecarDirectory(filesystem, path + "/" + filename, dirent, entryStat));
+                }
+                catch(Exception ex)
+                {
+                    SentrySdk.CaptureException(ex);
+                }
 
                 continue;
             }
 
-            files.Add(SidecarFile(filesystem, path + "/" + filename, dirent, entryStat));
+            try
+            {
+                files.Add(SidecarFile(filesystem, path + "/" + filename, dirent, entryStat));
+            }
+            catch(Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+            }
         }
 
         if(files.Count > 0) directory.Files = files.Where(static f => f != null).OrderBy(static f => f.Name).ToList();
 
-        if(directories.Count > 0) directory.Directories = directories.Where(static d => d != null).OrderBy(static d => d.Name).ToList();
+        if(directories.Count > 0)
+            directory.Directories = directories.Where(static d => d != null).OrderBy(static d => d.Name).ToList();
 
         return directory;
     }
