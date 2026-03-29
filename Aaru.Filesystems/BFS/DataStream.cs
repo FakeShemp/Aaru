@@ -139,7 +139,7 @@ public sealed partial class BeFS
                 // Convert to byte address (multiply by block_size), then add partition offset in bytes
                 long blockByteAddr       = blockStart             * _superblock.block_size;
                 long partitionByteOffset = (long)_partition.Start * sectorSize;
-                long absoluteByteAddr    = blockByteAddr + partitionByteOffset;
+                long absoluteByteAddr    = blockByteAddr + partitionByteOffset + _volumeOffset;
                 long startingSector      = absoluteByteAddr / sectorSize;
                 var  offsetInFirstSector = (int)(absoluteByteAddr % sectorSize + offsetInBlock);
 

@@ -122,15 +122,18 @@ public sealed partial class BeFS
 
     /// <summary>Reads and validates the filesystem superblock</summary>
     /// <remarks>
-    ///     The superblock can be located at different offsets depending on whether a boot sector is present.
-    ///     This method searches the standard locations and validates the magic numbers and key fields.
-    ///     It also detects the byte order (endianness) of the filesystem.
+    ///     The superblock can be located at different offsets depending on whether a boot sector is present
+    ///     or whether the filesystem is misaligned on optical media (CD images with 2048-byte sectors but
+    ///     512-byte partition table entries). This method searches the standard locations, detects
+    ///     misalignment, validates the magic numbers and key fields, and detects byte order (endianness).
     /// </remarks>
     /// <returns>Error code indicating success or failure</returns>
     private ErrorNumber ReadSuperblock()
     {
         AaruLogging.Debug(MODULE_NAME, "Reading superblock...");
-        AaruLogging.Debug(MODULE_NAME, "Sector size: {0} bytes", _imagePlugin.Info.SectorSize);
+
+        uint sectorSize = _imagePlugin.Info.SectorSize;
+        AaruLogging.Debug(MODULE_NAME, "Sector size: {0} bytes", sectorSize);
 
         ErrorNumber errno = _imagePlugin.ReadSector(0 + _partition.Start, false, out byte[] sbSector, out _);
 
@@ -141,67 +144,80 @@ public sealed partial class BeFS
             return errno;
         }
 
+        _volumeOffset = 0;
+
         var magic = BigEndianBitConverter.ToUInt32(sbSector, 0x20);
         AaruLogging.Debug(MODULE_NAME, "Magic at offset 0x20: 0x{0:X8}", magic);
 
         if(magic is BEFS_MAGIC1 or BEFS_CIGAM1)
         {
             _littleEndian = magic == BEFS_CIGAM1;
-            AaruLogging.Debug(MODULE_NAME, "Superblock found at sector 0, offset 0x20");
+            AaruLogging.Debug(MODULE_NAME, "Superblock found at sector 0, offset 0x20 (no misalignment)");
         }
         else if(sbSector.Length >= 0x400)
         {
-            magic = BigEndianBitConverter.ToUInt32(sbSector, 0x220);
-            AaruLogging.Debug(MODULE_NAME, "Magic at offset 0x220: 0x{0:X8}", magic);
+            // On optical media with 2048-byte sectors, the partition may be misaligned by
+            // 0x200, 0x400, or 0x600 bytes (0.25, 0.5, or 0.75 sectors). The superblock
+            // magic (at +0x20 within the superblock) would then appear at offsets
+            // 0x220, 0x420, or 0x620 within the first sector.
+            uint candidateOffset = 0;
 
-            if(magic is BEFS_MAGIC1 or BEFS_CIGAM1)
+            uint[] offsets = [0x220, 0x420, 0x620];
+
+            foreach(uint off in offsets)
             {
-                _littleEndian = magic == BEFS_CIGAM1;
+                if(sbSector.Length <= (int)off + 4) continue;
 
-                // The superblock is at offset 0x220 - 0x20 = 0x200 in the boot sector
-                // (0x220 is where magic1 field is, which is at offset 0x20 in the superblock structure)
-                const int SUPERBLOCK_OFFSET_IN_BOOT_SECTOR = 0x200;
+                magic = BigEndianBitConverter.ToUInt32(sbSector, (int)off);
+                AaruLogging.Debug(MODULE_NAME, "Magic at offset 0x{0:X3}: 0x{1:X8}", off, magic);
 
-                errno = _imagePlugin.ReadSector(1 + _partition.Start, false, out byte[] nextSector, out _);
+                if(magic is not BEFS_MAGIC1 and not BEFS_CIGAM1) continue;
+
+                candidateOffset = off - 0x20; // Superblock struct starts 0x20 before magic
+                _littleEndian   = magic == BEFS_CIGAM1;
+
+                break;
+            }
+
+            if(candidateOffset > 0)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Superblock found at sector 0, offset 0x{0:X3}. Superblock starts at offset 0x{1:X3}",
+                                  candidateOffset + 0x20,
+                                  candidateOffset);
+
+                // Read enough sectors to cover the superblock starting at candidateOffset
+                var sectorsNeeded = (candidateOffset + sectorSize + sectorSize - 1) / sectorSize;
+
+                errno = _imagePlugin.ReadSectors(_partition.Start, false, sectorsNeeded, out byte[] rawData, out _);
 
                 if(errno != ErrorNumber.NoError)
                 {
-                    AaruLogging.Debug(MODULE_NAME, "Error reading sector 1 for superblock: {0}", errno);
+                    AaruLogging.Debug(MODULE_NAME, "Error reading sectors for superblock: {0}", errno);
 
                     return errno;
                 }
 
-                // Extract the superblock starting from offset 0x200 in sector 0 and continuing into sector 1
-                int remainingInFirstSector = sbSector.Length        - SUPERBLOCK_OFFSET_IN_BOOT_SECTOR;
-                int totalNeeded            = remainingInFirstSector + nextSector.Length;
-                var combinedSbSector       = new byte[totalNeeded];
+                // Extract superblock data starting from candidateOffset
+                int available      = rawData.Length - (int)candidateOffset;
+                var combinedBuffer = new byte[available];
+                Array.Copy(rawData, candidateOffset, combinedBuffer, 0, available);
+                sbSector = combinedBuffer;
 
-                // Copy from offset 0x200 in sector 0 to position 0 in combined buffer
-                Array.Copy(sbSector, SUPERBLOCK_OFFSET_IN_BOOT_SECTOR, combinedSbSector, 0, remainingInFirstSector);
-
-                // Copy all of sector 1 after that
-                Array.Copy(nextSector, 0, combinedSbSector, remainingInFirstSector, nextSector.Length);
-
-                sbSector = combinedSbSector;
-
-                AaruLogging.Debug(MODULE_NAME,
-                                  "Superblock found at sector 0, offset 0x220 (boot sector present). Superblock starts at offset 0x200. Extracted {0} + {1} = {2} bytes",
-                                  remainingInFirstSector,
-                                  nextSector.Length,
-                                  totalNeeded);
-
-                // Debug: Show what we extracted
                 AaruLogging.Debug(MODULE_NAME,
                                   "Combined buffer first 64 bytes: {0}",
-                                  BitConverter.ToString(combinedSbSector, 0, Math.Min(64, combinedSbSector.Length)));
+                                  BitConverter.ToString(combinedBuffer, 0, Math.Min(64, combinedBuffer.Length)));
 
                 AaruLogging.Debug(MODULE_NAME,
                                   "Magic at buffer offset 0x20: 0x{0:X8}",
-                                  BigEndianBitConverter.ToUInt32(combinedSbSector, 0x20));
+                                  BigEndianBitConverter.ToUInt32(combinedBuffer, 0x20));
+
+                // Tentatively set volume offset; will be confirmed by root inode probe
+                _volumeOffset = candidateOffset;
             }
             else
             {
-                AaruLogging.Debug(MODULE_NAME, "Superblock not found at offsets 0x20 or 0x220, trying sector 1");
+                AaruLogging.Debug(MODULE_NAME, "Superblock not found in sector 0, trying sector 1");
                 errno = _imagePlugin.ReadSector(1 + _partition.Start, false, out sbSector, out _);
 
                 if(errno != ErrorNumber.NoError)
@@ -283,6 +299,65 @@ public sealed partial class BeFS
 
         AaruLogging.Debug(MODULE_NAME, "Superblock validation successful!");
 
+        // If we detected a candidate volume offset, verify it by probing the root inode
+        if(_volumeOffset > 0)
+        {
+            AaruLogging.Debug(MODULE_NAME,
+                              "Verifying candidate volume offset 0x{0:X3} by probing root i-node...",
+                              _volumeOffset);
+
+            // Calculate where the root inode should be WITH the volume offset
+            long rootBlock = ((long)_superblock.root_dir.allocation_group << _superblock.ag_shift) +
+                             _superblock.root_dir.start;
+
+            long rootByteInFS       = rootBlock              * _superblock.block_size;
+            long partitionByteStart = (long)_partition.Start * sectorSize;
+            long absoluteByte       = rootByteInFS + partitionByteStart + _volumeOffset;
+            long probeSector        = absoluteByte / sectorSize;
+            var  probeOffset        = (int)(absoluteByte % sectorSize);
+
+            var probeSectorsNeeded = (uint)((probeOffset + _superblock.inode_size + sectorSize - 1) / sectorSize);
+
+            errno = _imagePlugin.ReadSectors((ulong)probeSector,
+                                             false,
+                                             probeSectorsNeeded,
+                                             out byte[] probeData,
+                                             out _);
+
+            if(errno == ErrorNumber.NoError && probeData.Length >= probeOffset + 4)
+            {
+                int probeMagic = _littleEndian
+                                     ? BitConverter.ToInt32(probeData, probeOffset)
+                                     : BigEndianBitConverter.ToInt32(probeData, probeOffset);
+
+                if(probeMagic == INODE_MAGIC)
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "Root i-node magic confirmed at volume offset 0x{0:X3}. This is a misaligned partition, not a boot sector.",
+                                      _volumeOffset);
+                }
+                else
+                {
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "Root i-node magic NOT found with volume offset 0x{0:X3} (got 0x{1:X8}). Treating offset as boot sector, resetting volume offset to 0.",
+                                      _volumeOffset,
+                                      probeMagic);
+
+                    _volumeOffset = 0;
+                }
+            }
+            else
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Could not probe root i-node at volume offset 0x{0:X3}. Resetting to 0.",
+                                  _volumeOffset);
+
+                _volumeOffset = 0;
+            }
+        }
+
+        AaruLogging.Debug(MODULE_NAME, "Volume offset: 0x{0:X3}", _volumeOffset);
+
         return ErrorNumber.NoError;
     }
 
@@ -338,10 +413,10 @@ public sealed partial class BeFS
                           _superblock.block_size,
                           byteAddressInFS);
 
-        // Calculate absolute byte address (filesystem bytes + partition offset)
+        // Calculate absolute byte address (filesystem bytes + partition offset + volume offset)
         uint sectorSize          = _imagePlugin.Info.SectorSize;
         long partitionByteOffset = (long)_partition.Start * sectorSize;
-        long absoluteByteAddress = byteAddressInFS + partitionByteOffset;
+        long absoluteByteAddress = byteAddressInFS + partitionByteOffset + _volumeOffset;
 
         long sectorAddress  = absoluteByteAddress / sectorSize;
         var  offsetInSector = (int)(absoluteByteAddress % sectorSize);

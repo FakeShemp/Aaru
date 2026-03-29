@@ -54,6 +54,14 @@ public sealed partial class BeFS : IReadOnlyFilesystem
     /// <summary>Indicates if the filesystem uses little-endian byte order</summary>
     private bool _littleEndian;
 
+    /// <summary>
+    ///     Byte offset from the partition start to the actual BeFS volume start.
+    ///     On optical media (2048-byte sectors), the APM partition table uses 512-byte entries,
+    ///     so the partition start may not align to device sector boundaries. This offset
+    ///     (0, 0x200, 0x400, or 0x600) compensates for that misalignment.
+    /// </summary>
+    private uint _volumeOffset;
+
     /// <summary>The filesystem superblock containing metadata about the volume</summary>
     private SuperBlock _superblock;
 

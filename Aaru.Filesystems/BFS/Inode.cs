@@ -57,10 +57,11 @@ public sealed partial class BeFS
         uint sectorSize          = _imagePlugin.Info.SectorSize;
         long partitionByteOffset = (long)_partition.Start * sectorSize;
 
-        long absoluteByteAddress = byteAddressInFS + partitionByteOffset;
+        long absoluteByteAddress = byteAddressInFS + partitionByteOffset + _volumeOffset;
         long sectorAddress       = absoluteByteAddress / sectorSize;
+        var  offsetInSector      = (int)(absoluteByteAddress % sectorSize);
 
-        var sectorsToRead = (uint)((_superblock.inode_size + sectorSize - 1) / sectorSize);
+        var sectorsToRead = (uint)((offsetInSector + _superblock.inode_size + sectorSize - 1) / sectorSize);
 
         AaruLogging.Debug(MODULE_NAME,
                           "ReadInode: AG={0}, start={1}, blockAddress={2}, byte_addr_fs=0x{3:X8}, part_offset=0x{4:X8}, absolute_byte=0x{5:X8}, sector={6}, sectors_to_read={7}",
@@ -85,6 +86,14 @@ public sealed partial class BeFS
             AaruLogging.Debug(MODULE_NAME, "Error reading i-node: {0}", errno);
 
             return errno;
+        }
+
+        // Extract from correct offset if volume is misaligned within sector
+        if(offsetInSector > 0 && inodeData.Length > offsetInSector)
+        {
+            var aligned = new byte[inodeData.Length - offsetInSector];
+            Array.Copy(inodeData, offsetInSector, aligned, 0, aligned.Length);
+            inodeData = aligned;
         }
 
         // Marshal the i-node
