@@ -535,6 +535,13 @@ public sealed partial class NTFS
     /// <returns>Error number indicating success or failure.</returns>
     ErrorNumber ReadNonResidentData(List<(long offset, long length)> dataRuns, long dataSize, ref byte[] buf)
     {
+        if(dataSize > int.MaxValue)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Non-resident data size {0} exceeds maximum array size", dataSize);
+
+            return ErrorNumber.OutOfRange;
+        }
+
         buf = new byte[dataSize];
 
         long bytesRead = 0;
