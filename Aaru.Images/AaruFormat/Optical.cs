@@ -116,15 +116,28 @@ public sealed partial class AaruFormat
 
             // CD-family media (CD, CD-R, CD-RW, etc.) have a standard 150-sector pregap before the first track; DVDs and
             // other optical formats do not
-            bool isCdFamily = (_imageInfo.MediaType >= MediaType.CD && _imageInfo.MediaType < MediaType.DVDROM)
-            || _imageInfo.MediaType == MediaType.PS1CD || _imageInfo.MediaType == MediaType.PS2CD || _imageInfo.MediaType == MediaType.MilCD
-            || _imageInfo.MediaType == MediaType.SuperCDROM2 || _imageInfo.MediaType == MediaType.JaguarCD
-            || _imageInfo.MediaType == MediaType.ThreeDO || _imageInfo.MediaType == MediaType.PCFX || _imageInfo.MediaType == MediaType.NeoGeoCD
-            || _imageInfo.MediaType == MediaType.CDTV || _imageInfo.MediaType == MediaType.CD32 || _imageInfo.MediaType == MediaType.Playdia
-            || _imageInfo.MediaType == MediaType.Pippin || _imageInfo.MediaType == MediaType.VideoNow || _imageInfo.MediaType == MediaType.VideoNowColor
-            || _imageInfo.MediaType == MediaType.VideoNowXp || _imageInfo.MediaType == MediaType.CVD || _imageInfo.MediaType == MediaType.FMTOWNS
-            || _imageInfo.MediaType == MediaType.GDR || _imageInfo.MediaType == MediaType.GDROM || _imageInfo.MediaType == MediaType.MEGACD
-            || _imageInfo.MediaType == MediaType.SATURNCD;
+            bool isCdFamily = _imageInfo.MediaType >= MediaType.CD && _imageInfo.MediaType < MediaType.DVDROM ||
+                              _imageInfo.MediaType == MediaType.PS1CD                                         ||
+                              _imageInfo.MediaType == MediaType.PS2CD                                         ||
+                              _imageInfo.MediaType == MediaType.MilCD                                         ||
+                              _imageInfo.MediaType == MediaType.SuperCDROM2                                   ||
+                              _imageInfo.MediaType == MediaType.JaguarCD                                      ||
+                              _imageInfo.MediaType == MediaType.ThreeDO                                       ||
+                              _imageInfo.MediaType == MediaType.PCFX                                          ||
+                              _imageInfo.MediaType == MediaType.NeoGeoCD                                      ||
+                              _imageInfo.MediaType == MediaType.CDTV                                          ||
+                              _imageInfo.MediaType == MediaType.CD32                                          ||
+                              _imageInfo.MediaType == MediaType.Playdia                                       ||
+                              _imageInfo.MediaType == MediaType.Pippin                                        ||
+                              _imageInfo.MediaType == MediaType.VideoNow                                      ||
+                              _imageInfo.MediaType == MediaType.VideoNowColor                                 ||
+                              _imageInfo.MediaType == MediaType.VideoNowXp                                    ||
+                              _imageInfo.MediaType == MediaType.CVD                                           ||
+                              _imageInfo.MediaType == MediaType.FMTOWNS                                       ||
+                              _imageInfo.MediaType == MediaType.GDR                                           ||
+                              _imageInfo.MediaType == MediaType.GDROM                                         ||
+                              _imageInfo.MediaType == MediaType.MEGACD                                        ||
+                              _imageInfo.MediaType == MediaType.SATURNCD;
 
             foreach(Track track in Tracks.OrderBy(static t => t.StartSector))
             {
@@ -143,6 +156,8 @@ public sealed partial class AaruFormat
 
                         continue;
                 }
+
+                if(!isCdFamily) track.Pregap = 0;
 
                 if(track.Pregap > 0)
                 {
