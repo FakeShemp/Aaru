@@ -65,6 +65,9 @@ public sealed partial class AaruFormat
 
         res = aaruf_read_media_tag(_context, buffer, tag, ref length);
 
+        // Totally legal, we need to cut buffer size then
+        if(length < buffer.Length && length > 0) Array.Resize(ref buffer, (int)length);
+
         return StatusToErrorNumber(res);
     }
 
@@ -94,11 +97,17 @@ public sealed partial class AaruFormat
         sectorStatus = (SectorStatus)libSectorStatus;
 
         // Sector not dumped
-        if(res != Status.SectorNotDumped || length <= 0) return StatusToErrorNumber(res);
+        if(res == Status.SectorNotDumped && length > 0)
+        {
+            buffer = new byte[length];
 
-        buffer = new byte[length];
+            return ErrorNumber.NoError;
+        }
 
-        return ErrorNumber.NoError;
+        // Totally legal, we need to cut buffer size then
+        if(length < buffer.Length && length > 0) Array.Resize(ref buffer, (int)length);
+
+        return StatusToErrorNumber(res);
     }
 
     /// <inheritdoc />
@@ -132,11 +141,17 @@ public sealed partial class AaruFormat
         sectorStatus = (SectorStatus)libSectorStatus;
 
         // Sector not dumped
-        if(res != Status.SectorNotDumped || length <= 0) return StatusToErrorNumber(res);
+        if(res == Status.SectorNotDumped && length > 0)
+        {
+            buffer = new byte[length];
 
-        buffer = new byte[length];
+            return ErrorNumber.NoError;
+        }
 
-        return ErrorNumber.NoError;
+        // Totally legal, we need to cut buffer size then
+        if(length < buffer.Length && length > 0) Array.Resize(ref buffer, (int)length);
+
+        return StatusToErrorNumber(res);
     }
 
     /// <inheritdoc />
@@ -166,11 +181,17 @@ public sealed partial class AaruFormat
         sectorStatus = (SectorStatus)libSectorStatus;
 
         // Sector not dumped
-        if(res != Status.SectorNotDumped || length <= 0) return StatusToErrorNumber(res);
+        if(res == Status.SectorNotDumped && length > 0)
+        {
+            buffer = new byte[length];
 
-        buffer = new byte[length];
+            return ErrorNumber.NoError;
+        }
 
-        return ErrorNumber.NoError;
+        // Totally legal, we need to cut buffer size then
+        if(length < buffer.Length && length > 0) Array.Resize(ref buffer, (int)length);
+
+        return StatusToErrorNumber(res);
     }
 
     /// <inheritdoc />
@@ -219,6 +240,9 @@ public sealed partial class AaruFormat
         buffer = new byte[length];
 
         res = aaruf_read_sector_tag(_context, sectorAddress, negative, buffer, ref length, tag);
+
+        // Totally legal, we need to cut buffer size then
+        if(length < buffer.Length && length > 0) Array.Resize(ref buffer, (int)length);
 
         return StatusToErrorNumber(res);
     }
