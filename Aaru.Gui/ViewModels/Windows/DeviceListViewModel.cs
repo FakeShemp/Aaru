@@ -116,7 +116,7 @@ public partial class DeviceListViewModel : ViewModelBase
 
         if(OperatingSystem.IsWindows()) devices = ListDevices.GetList();
 
-        if(OperatingSystem.IsLinux()) devices = ListDevices.GetList();
+        if(OperatingSystem.IsLinux()) devices = Aaru.Devices.Linux.ListDevices.GetList();
 
         if((OperatingSystem.IsWindows() || OperatingSystem.IsLinux()) && devices != null)
         {
