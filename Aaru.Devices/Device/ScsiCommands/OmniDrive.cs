@@ -44,6 +44,7 @@ namespace Aaru.Devices;
 public partial class Device
 {
     readonly NintendoSector _nintendoSectorDecoder = new NintendoSector();
+    readonly Sector         _dvdSectorDecoder      = new Sector();
     enum OmniDriveDiscType
     {
         CD = 0,
@@ -154,10 +155,18 @@ public partial class Device
     ///     derived.
     /// </summary>
     /// <param name="derivedDiscKey">Disc key from LBA 0 (0–15); <c>null</c> until the host has read and derived it.</param>
+    /// <param name="negativeAddressing">
+    ///     True when caller is reading wrapped negative LBAs (lead-in); these sectors use standard DVD descramble.
+    /// </param>
+    /// <param name="regularDataEndExclusive">
+    ///     Exclusive upper bound of regular user-data LBAs. Sectors at or above this are leadout and use standard DVD
+    ///     descramble.
+    /// </param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
     public bool OmniDriveReadNintendoDvd(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba, uint transferLength,
                                         uint timeout, out double duration, bool fua = false, bool descramble = true, 
-                                        byte? derivedDiscKey = null)
+                                        byte? derivedDiscKey = null, bool negativeAddressing = false,
+                                        ulong regularDataEndExclusive = 0)
     {
         senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
@@ -172,44 +181,41 @@ public partial class Device
 
         if(!Sector.CheckIed(buffer, transferLength)) return true;
 
-        if(descramble) {
+        if(descramble)
+        {
             const int sectorBytes = 2064;
             byte[]    outBuf      = new byte[sectorBytes * transferLength];
+            const uint maxRegularLba = 0x00FFFFFF;
 
-            if(lba < 16 && lba + transferLength > 16) {
-                for(uint i = 0; i < transferLength; i++)
+            for(uint i = 0; i < transferLength; i++)
+            {
+                byte[] slice = new byte[sectorBytes];
+                Array.Copy(buffer, i * sectorBytes, slice, 0, sectorBytes);
+
+                uint absLba = lba + i;
+                bool wrappedNegative = negativeAddressing || absLba > maxRegularLba;
+                bool leadout = !wrappedNegative && regularDataEndExclusive > 0 && absLba >= regularDataEndExclusive;
+
+                ErrorNumber errno;
+                byte[]      descrambled;
+
+                if(wrappedNegative || leadout)
+                    errno = _dvdSectorDecoder.Scramble(slice, out descrambled);
+                else
                 {
-                    var slice = new byte[sectorBytes];
-                    Array.Copy(buffer, i * sectorBytes, slice, 0, sectorBytes);
-                    uint absLba = lba + i;
-                    byte key    = absLba < 16 ? (byte)0 : (derivedDiscKey ?? (byte)0);
-
-                    ErrorNumber errno = _nintendoSectorDecoder.Scramble(slice, key, out byte[] descrambled);
-
-                    if(errno != ErrorNumber.NoError || descrambled == null)
-                    {
-                        LastError = (int)errno;
-                        Error     = true;
-
-                        return true;
-                    }
-
-                    Array.Copy(descrambled, 0, outBuf, i * sectorBytes, sectorBytes);
+                    byte key = absLba < 16 ? (byte)0 : (derivedDiscKey ?? (byte)0);
+                    errno = _nintendoSectorDecoder.Scramble(slice, key, out descrambled);
                 }
-            } else {
-                ErrorNumber errno = _nintendoSectorDecoder.Scramble(
-                    buffer,
-                    transferLength,
-                    lba < 16 || lba > 0xffffff ? (byte)0 : (derivedDiscKey ?? (byte)0),
-                    out outBuf);
 
-                if(errno != ErrorNumber.NoError || outBuf == null)
+                if(errno != ErrorNumber.NoError || descrambled == null)
                 {
                     LastError = (int)errno;
                     Error     = true;
 
                     return true;
                 }
+
+                Array.Copy(descrambled, 0, outBuf, i * sectorBytes, sectorBytes);
             }
 
             buffer = outBuf;

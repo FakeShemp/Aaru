@@ -592,7 +592,17 @@ sealed partial class Reader
                 if(_dev.IsOmniDriveFirmware())
                 {
                     bool omniStandardOk = !_dev.OmniDriveReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _, true, true);
-                    bool omniNintendoOk = !_dev.OmniDriveReadNintendoDvd(out _, out senseBuf, 0, 1, _timeout, out _, true, true);
+                    bool omniNintendoOk = !_dev.OmniDriveReadNintendoDvd(out _,
+                                                                          out senseBuf,
+                                                                          0,
+                                                                          1,
+                                                                          _timeout,
+                                                                          out _,
+                                                                          true,
+                                                                          true,
+                                                                          null,
+                                                                          false,
+                                                                          0);
                     OmniDriveReadRaw    = omniStandardOk || omniNintendoOk;
                 }
 
@@ -851,6 +861,9 @@ sealed partial class Reader
                 uint lba = negative ? (uint)(-(long)block) : (uint)block;
 
                 if(OmniDriveNintendoMode)
+                {
+                    ulong regularDataEndExclusive = Blocks + 1;
+
                     sense = _dev.OmniDriveReadNintendoDvd(out buffer,
                                                           out senseBuf,
                                                           lba,
@@ -859,7 +872,10 @@ sealed partial class Reader
                                                           out duration,
                                                           false,
                                                           true,
-                                                          NintendoDerivedDiscKey);
+                                                          NintendoDerivedDiscKey,
+                                                          negative,
+                                                          regularDataEndExclusive);
+                }
                 else
                     sense = _dev.OmniDriveReadRawDvd(out buffer,
                                                      out senseBuf,
