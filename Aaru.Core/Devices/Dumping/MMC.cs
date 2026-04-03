@@ -1,4 +1,4 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
@@ -348,10 +348,7 @@ partial class Dump
 
                     if(nintendoPfi is { DiskCategory: DiskCategory.Nintendo, PartVersion: 15 })
                     {
-                        StoppingErrorMessage?.Invoke(Localization.Core
-                                                                 .Dumping_Nintendo_GameCube_or_Wii_discs_is_not_yet_implemented);
-
-                        return;
+                        dskType = nintendoPfi.Value.DiscSize == DVDSize.Eighty ? MediaType.GOD : MediaType.WOD;
                     }
                 }
 
@@ -656,11 +653,13 @@ partial class Dump
 
         switch(dskType)
         {
-#region DVD-ROM and HD DVD-ROM
+#region DVD-ROM, HD DVD-ROM, GameCube Game Disc and Wii Optical Disc
 
             case MediaType.DVDDownload:
             case MediaType.DVDROM:
             case MediaType.HDDVDROM:
+            case MediaType.GOD:
+            case MediaType.WOD:
                 AaruLogging.WriteLine(Localization.Core.Reading_Burst_Cutting_Area);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
@@ -682,7 +681,7 @@ partial class Dump
 
                 break;
 
-#endregion DVD-ROM and HD DVD-ROM
+#endregion DVD-ROM, HD DVD-ROM, GameCube Game Disc and Wii Optical Disc
 
 #region DVD-RAM and HD DVD-RAM
 

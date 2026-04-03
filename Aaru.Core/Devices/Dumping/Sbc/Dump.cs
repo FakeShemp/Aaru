@@ -1,4 +1,4 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
@@ -35,6 +35,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
@@ -57,6 +58,7 @@ using DVDDecryption = Aaru.Decryption.DVD.Dump;
 using Track = Aaru.CommonTypes.Structs.Track;
 using TrackType = Aaru.CommonTypes.Enums.TrackType;
 using Version = Aaru.CommonTypes.Interop.Version;
+using AaruFormat = Aaru.Images.AaruFormat;
 
 // ReSharper disable JoinDeclarationAndInitializer
 
@@ -337,6 +339,30 @@ partial class Dump
             }
         }
 
+        bool ngcwMode = dskType is MediaType.GOD or MediaType.WOD;
+
+        if(ngcwMode)
+        {
+            if(!scsiReader.OmniDriveReadRaw)
+            {
+                StoppingErrorMessage?.Invoke(Localization.Core.Dumping_Nintendo_GameCube_or_Wii_discs_is_not_yet_implemented);
+
+                return;
+            }
+
+            if(outputFormat is not AaruFormat)
+            {
+                StoppingErrorMessage?.Invoke(string.Format(Localization.Core.Output_format_does_not_support_0,
+                                                           MediaTagType.NgcwJunkMap));
+
+                return;
+            }
+
+            if(blocksToRead > 16) blocksToRead = 16;
+        }
+
+        scsiReader.OmniDriveNintendoMode = ngcwMode;
+
         ret = true;
 
         foreach(MediaTagType tag in mediaTags.Keys.Where(tag => !outputFormat.SupportedMediaTags.Contains(tag)))
@@ -406,7 +432,9 @@ partial class Dump
                    ((dskType >= MediaType.DVDROM && dskType <= MediaType.DVDDownload)
                    || dskType == MediaType.PS2DVD
                    || dskType == MediaType.PS3DVD
-                   || dskType == MediaType.Nuon))
+                   || dskType == MediaType.Nuon
+                   || dskType == MediaType.GOD
+                   || dskType == MediaType.WOD))
                     nominalNegativeSectors = Math.Min(nominalNegativeSectors, DvdLeadinSectors);
 
                 mediaTags.TryGetValue(MediaTagType.BD_DI, out byte[] di);
@@ -783,6 +811,9 @@ partial class Dump
 
         var newTrim = false;
 
+        if(ngcwMode && !InitializeNgcwContext(dskType, scsiReader, outputFormat))
+            return;
+
         if(mediaTags.TryGetValue(MediaTagType.DVD_CMI, out byte[] cmi) &&
            Settings.Settings.Current.EnableDecryption                  &&
            _titleKeys                                                  &&
@@ -791,6 +822,7 @@ partial class Dump
         {
             UpdateStatus?.Invoke(Localization.Core.Title_keys_dumping_is_enabled_This_will_be_very_slow);
             _resume.MissingTitleKeys ??= [..Enumerable.Range(0, (int)blocks).Select(static n => (ulong)n)];
+            InitializeMissingTitleKeysCache();
         }
 
         if(_dev.ScsiType == PeripheralDeviceTypes.OpticalDevice)
@@ -920,7 +952,9 @@ partial class Dump
         if(_resume.BadBlocks.Count > 0 && !_aborted && _retryPasses > 0)
             RetrySbcData(scsiReader, currentTry, extents, ref totalDuration, blankExtents, mediaTag ?? null);
 
-        if(_resume.MissingTitleKeys?.Count > 0        &&
+        SyncMissingTitleKeysToResume();
+
+        if(MissingTitleKeyCount() > 0                 &&
            !_aborted                                  &&
            _retryPasses > 0                           &&
            Settings.Settings.Current.EnableDecryption &&
@@ -934,6 +968,8 @@ partial class Dump
             RetryTitleKeys(dvdDecrypt, mediaTag, ref totalDuration);
 
 #endregion Error handling
+
+        if(ngcwMode) FinalizeNgcwContext(outputFormat);
 
         if(opticalDisc)
         {

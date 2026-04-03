@@ -101,45 +101,55 @@ partial class Dump
 
             if(scsiReader.ReadBuffer3CReadRaw || scsiReader.OmniDriveReadRaw || scsiReader.HldtstReadRaw)
             {
-                var cmi = new byte[1];
-
-                byte[] key = buffer.Skip(7).Take(5).ToArray();
-
-                if(key.All(static k => k == 0))
+                if(_ngcwEnabled)
                 {
-                    outputFormat.WriteSectorTag(new byte[5], badSector, false, SectorTagType.DvdTitleKeyDecrypted);
-
-                    _resume.MissingTitleKeys?.Remove(badSector);
+                    if(TransformNgcwLongSectors(scsiReader, buffer, badSector, 1, out SectorStatus[] statuses))
+                        outputFormat.WriteSectorLong(buffer, badSector, false, statuses[0]);
+                    else
+                        outputFormat.WriteSectorLong(buffer, badSector, false, SectorStatus.NotDumped);
                 }
                 else
                 {
-                    CSS.DecryptTitleKey(discKey, key, out byte[] tmpBuf);
-                    outputFormat.WriteSectorTag(tmpBuf, badSector, false, SectorTagType.DvdTitleKeyDecrypted);
-                    _resume.MissingTitleKeys?.Remove(badSector);
+                    var cmi = new byte[1];
 
-                    cmi[0] = buffer[6];
-                }
+                    byte[] key = buffer.Skip(7).Take(5).ToArray();
 
-                if(!_storeEncrypted)
-                {
-                    ErrorNumber errno =
-                        outputFormat.ReadSectorsTag(badSector,
-                                                    false,
-                                                    1,
-                                                    SectorTagType.DvdTitleKeyDecrypted,
-                                                    out byte[] titleKey);
-
-                    if(errno != ErrorNumber.NoError)
+                    if(key.All(static k => k == 0))
                     {
-                        ErrorMessage?.Invoke(string.Format(Localization.Core.Error_retrieving_title_key_for_sector_0,
-                                                           badSector));
+                        outputFormat.WriteSectorTag(new byte[5], badSector, false, SectorTagType.DvdTitleKeyDecrypted);
+
+                        MarkTitleKeyDumped(badSector);
                     }
                     else
-                        buffer = CSS.DecryptSectorLong(buffer, titleKey, cmi);
-                }
+                    {
+                        CSS.DecryptTitleKey(discKey, key, out byte[] tmpBuf);
+                        outputFormat.WriteSectorTag(tmpBuf, badSector, false, SectorTagType.DvdTitleKeyDecrypted);
+                        MarkTitleKeyDumped(badSector);
 
-                _resume.BadBlocks.Remove(badSector);
-                outputFormat.WriteSectorLong(buffer, badSector, false, SectorStatus.Dumped);
+                        cmi[0] = buffer[6];
+                    }
+
+                    if(!_storeEncrypted)
+                    {
+                        ErrorNumber errno =
+                            outputFormat.ReadSectorsTag(badSector,
+                                                        false,
+                                                        1,
+                                                        SectorTagType.DvdTitleKeyDecrypted,
+                                                        out byte[] titleKey);
+
+                        if(errno != ErrorNumber.NoError)
+                        {
+                            ErrorMessage?.Invoke(string.Format(Localization.Core.Error_retrieving_title_key_for_sector_0,
+                                                               badSector));
+                        }
+                        else
+                            buffer = CSS.DecryptSectorLong(buffer, titleKey, cmi);
+                    }
+
+                    _resume.BadBlocks.Remove(badSector);
+                    outputFormat.WriteSectorLong(buffer, badSector, false, SectorStatus.Dumped);
+                }
             }
             else
                 outputFormat.WriteSector(buffer, badSector, false, SectorStatus.Dumped);

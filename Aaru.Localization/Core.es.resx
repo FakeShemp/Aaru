@@ -925,6 +925,18 @@
     <data name="Dumping_Nintendo_GameCube_or_Wii_discs_is_not_yet_implemented" xml:space="preserve">
         <value>[red]El volcado de discos de Nintendo GameCube o Wii no está implementado todavía.[/]</value>
     </data>
+    <data name="Nintendo_OmniDrive_dump_requires_Aaru_format" xml:space="preserve">
+        <value>[red]El volcado de discos de Nintendo GameCube o Wii con OmniDrive requiere formato de salida Aaru.[/]</value>
+    </data>
+    <data name="Ngcw_dump_parsing_partition_table" xml:space="preserve">
+        <value>[slateblue1]Analizando tabla de particiones de Wii...[/]</value>
+    </data>
+    <data name="Ngcw_dump_wrote_partition_key_map" xml:space="preserve">
+        <value>[slateblue1]Se guardó el mapa de claves de partición de Wii.[/]</value>
+    </data>
+    <data name="Ngcw_dump_wrote_junk_map_0_entries" xml:space="preserve">
+        <value>[slateblue1]Se guardó el mapa de basura de Nintendo con [lime]{0}[/] entradas.[/]</value>
+    </data>
     <data name="Dumping_progress_log" xml:space="preserve">
     <value>################# Registro de progreso del volcado #################</value>
   </data>

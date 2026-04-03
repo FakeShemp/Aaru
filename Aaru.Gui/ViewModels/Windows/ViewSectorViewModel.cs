@@ -33,6 +33,7 @@
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Metadata;
 using Aaru.Gui.Controls;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -135,6 +136,15 @@ public sealed partial class ViewSectorViewModel : ViewModelBase
                 Start = 6,
                 End   = 11
             };
+
+            if (_inputFormat.Info.MediaType is CommonTypes.MediaType.GOD or CommonTypes.MediaType.WOD){
+                dvd_cprmai = new ColorRange
+                {
+                    Color = Brushes.Orange,
+                    Start = 2054,
+                    End   = 2059
+                };
+            }
 
             ColorRange dvd_edc = new ColorRange
             {

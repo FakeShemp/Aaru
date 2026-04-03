@@ -5,7 +5,7 @@
 // Filename       : DataMap.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
-// Component      : Image conversion.
+// Component      : Aaru.Decryption.Ngcw (GPL-3.0-or-later).
 //
 // --[ Description ] ----------------------------------------------------------
 //
@@ -34,10 +34,10 @@ using System;
 using System.Collections.Generic;
 using Aaru.Helpers;
 
-namespace Aaru.Core.Image.Ngcw;
+namespace Aaru.Decryption.Ngcw;
 
 /// <summary>A contiguous region of file data on disc.</summary>
-readonly struct DataRegion : IComparable<DataRegion>
+public readonly struct DataRegion : IComparable<DataRegion>
 {
     public readonly ulong Offset;
     public readonly ulong Length;
@@ -55,7 +55,7 @@ readonly struct DataRegion : IComparable<DataRegion>
 ///     Sorted map of file data regions parsed from a Nintendo GameCube/Wii FST.
 ///     Used to classify disc sectors as data (file content / system area) or potential junk.
 /// </summary>
-static class DataMap
+public static class DataMap
 {
     /// <summary>
     ///     Build a data region map from an FST (File System Table).

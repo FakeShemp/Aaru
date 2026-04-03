@@ -209,55 +209,82 @@ partial class Dump
 
                 _writeStopwatch.Restart();
 
-                byte[] tmpBuf;
-                var    cmi = new byte[blocksToRead];
-
-                for(uint j = 0; j < blocksToRead; j++)
+                if(_ngcwEnabled)
                 {
-                    byte[] key = buffer.Skip((int)(2064 * j + 7)).Take(5).ToArray();
-
-                    if(key.All(static k => k == 0))
+                    if(!TransformNgcwLongSectors(scsiReader, buffer, i, blocksToRead, out SectorStatus[] statuses))
                     {
-                        outputFormat.WriteSectorTag(new byte[5], i + j, false, SectorTagType.DvdTitleKeyDecrypted);
+                        if(_stopOnError) return;
 
-                        _resume.MissingTitleKeys?.Remove(i + j);
+                        outputFormat.WriteSectorsLong(new byte[blockSize * _skip],
+                                                      i,
+                                                      false,
+                                                      _skip,
+                                                      Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
 
-                        continue;
-                    }
+                        for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);
 
-                    CSS.DecryptTitleKey(discKey, key, out tmpBuf);
-                    outputFormat.WriteSectorTag(tmpBuf, i + j, false, SectorTagType.DvdTitleKeyDecrypted);
-                    _resume.MissingTitleKeys?.Remove(i    + j);
-
-                    if(_storeEncrypted) continue;
-
-                    cmi[j] = buffer[2064 * j + 6];
-                }
-
-                // Todo: Flag in the outputFormat that a sector has been decrypted
-                if(!_storeEncrypted)
-                {
-                    ErrorNumber errno =
-                        outputFormat.ReadSectorsTag(i,
-                                                    false,
-                                                    blocksToRead,
-                                                    SectorTagType.DvdTitleKeyDecrypted,
-                                                    out byte[] titleKey);
-
-                    if(errno != ErrorNumber.NoError)
-                    {
-                        ErrorMessage?.Invoke(string.Format(Localization.Core.Error_retrieving_title_key_for_sector_0,
-                                                           i));
+                        mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
+                        ibgLog.Write(i, 0);
+                        AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
+                        i       += _skip - blocksToRead;
+                        newTrim =  true;
                     }
                     else
-                        buffer = CSS.DecryptSectorLong(buffer, titleKey, cmi, blocksToRead);
+                    {
+                        outputFormat.WriteSectorsLong(buffer, i, false, blocksToRead, statuses);
+                    }
                 }
+                else
+                {
+                    var cmi = new byte[blocksToRead];
 
-                outputFormat.WriteSectorsLong(buffer,
-                                              i,
-                                              false,
-                                              blocksToRead,
-                                              Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
+                    for (uint j = 0; j < blocksToRead; j++)
+                    {
+                        byte[] key = buffer.Skip((int)(2064 * j + 7)).Take(5).ToArray();
+
+                        if(key.All(static k => k == 0))
+                        {
+                            outputFormat.WriteSectorTag(new byte[5], i + j, false, SectorTagType.DvdTitleKeyDecrypted);
+
+                            MarkTitleKeyDumped(i + j);
+
+                            continue;
+                        }
+
+                        CSS.DecryptTitleKey(discKey, key, out byte[] tmpBuf);
+                        outputFormat.WriteSectorTag(tmpBuf, i + j, false, SectorTagType.DvdTitleKeyDecrypted);
+                        MarkTitleKeyDumped(i + j);
+
+                        if(_storeEncrypted) continue;
+
+                        cmi[j] = buffer[2064 * j + 6];
+                    }
+
+                    // Todo: Flag in the outputFormat that a sector has been decrypted
+                    if(!_storeEncrypted)
+                    {
+                        ErrorNumber errno =
+                            outputFormat.ReadSectorsTag(i,
+                                                        false,
+                                                        blocksToRead,
+                                                        SectorTagType.DvdTitleKeyDecrypted,
+                                                        out byte[] titleKey);
+
+                        if(errno != ErrorNumber.NoError)
+                        {
+                            ErrorMessage?.Invoke(string.Format(Localization.Core.Error_retrieving_title_key_for_sector_0,
+                                                               i));
+                        }
+                        else
+                            buffer = CSS.DecryptSectorLong(buffer, titleKey, cmi, blocksToRead);
+                    }
+
+                    outputFormat.WriteSectorsLong(buffer,
+                                                  i,
+                                                  false,
+                                                  blocksToRead,
+                                                  Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
+                }
 
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                 extents.Add(i, blocksToRead, true);

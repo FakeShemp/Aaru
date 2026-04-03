@@ -3113,6 +3113,12 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string Cannot_write_retried_sector_0_no_writable_output_image {
+            get {
+                return ResourceManager.GetString("Cannot_write_retried_sector_0_no_writable_output_image", resourceCulture);
+            }
+        }
+        
         public static string Cannot_write_SCR_to_output_image {
             get {
                 return ResourceManager.GetString("Cannot_write_SCR_to_output_image", resourceCulture);

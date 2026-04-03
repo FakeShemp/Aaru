@@ -37,7 +37,9 @@ using System.Collections.Generic;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
-using Aaru.Core.Image.Ngcw;
+using Aaru.Decoders.Nintendo;
+using Aaru.Decryption.Ngcw;
+using NgcwPartitions = Aaru.Decryption.Ngcw.Partitions;
 using Aaru.Helpers;
 using Aaru.Localization;
 
@@ -68,7 +70,7 @@ public partial class Convert
         // Parse Wii partition table
         PulseProgress?.Invoke(UI.Ngcw_parsing_partition_table);
 
-        _ngcwPartitions = Ngcw.Partitions.ParseWiiPartitions(_inputImage);
+        _ngcwPartitions = NgcwPartitions.ParseWiiPartitions(_inputImage);
 
         if(_ngcwPartitions == null)
         {
@@ -83,10 +85,10 @@ public partial class Convert
         // Build partition region map
         PulseProgress?.Invoke(UI.Ngcw_building_partition_key_map);
 
-        _ngcwRegions = Ngcw.Partitions.BuildRegionMap(_ngcwPartitions);
+        _ngcwRegions = NgcwPartitions.BuildRegionMap(_ngcwPartitions);
 
         // Serialize and write partition key map
-        byte[] keyMapData = Ngcw.Partitions.SerializeKeyMap(_ngcwRegions);
+        byte[] keyMapData = NgcwPartitions.SerializeKeyMap(_ngcwRegions);
 
         _outputImage.WriteMediaTag(keyMapData, MediaTagType.WiiPartitionKeyMap);
 
@@ -104,7 +106,7 @@ public partial class Convert
     ///     writes with Unencrypted status; plaintext areas use Dumped/Generable.
     ///     Does not copy sector tags, negative sectors, or overflow sectors.
     /// </summary>
-    ErrorNumber ConvertNgcwSectors()
+    ErrorNumber ConvertNgcwSectors(bool useLong)
     {
         if(_aborted) return ErrorNumber.NoError;
 
@@ -119,7 +121,8 @@ public partial class Convert
 
         if(_mediaType == MediaType.GOD)
         {
-            ErrorNumber errno =
+            ErrorNumber errno = useLong ?
+                ConvertGameCubeSectorsLong(discSize, totalLogicalSectors, jc, ref dataSectors, ref junkSectors) :
                 ConvertGameCubeSectors(discSize, totalLogicalSectors, jc, ref dataSectors, ref junkSectors);
 
             if(errno != ErrorNumber.NoError)
@@ -131,7 +134,9 @@ public partial class Convert
         }
         else
         {
-            ErrorNumber errno = ConvertWiiSectors(discSize, totalLogicalSectors, jc, ref dataSectors, ref junkSectors);
+            ErrorNumber errno = useLong ?
+                ConvertWiiSectorsLong(discSize, totalLogicalSectors, jc, ref dataSectors, ref junkSectors) :
+                ConvertWiiSectors(discSize, totalLogicalSectors, jc, ref dataSectors, ref junkSectors);
 
             if(errno != ErrorNumber.NoError)
             {
@@ -266,6 +271,216 @@ public partial class Convert
         return ErrorNumber.NoError;
     }
 
+    /// <summary>Fill a 32 KiB Wii encrypted group from 2048-byte logical ReadSector slices.</summary>
+    void FillWiiEncryptedGroupFromShortSectors(ulong firstLogicalSector, byte[] encGrp)
+    {
+        const int sectorSize      = Crypto.SECTOR_SIZE;
+        const int sectorsPerBlock = Crypto.LOGICAL_PER_GROUP;
+
+        for(int s = 0; s < sectorsPerBlock; s++)
+        {
+            ulong       sec   = firstLogicalSector + (ulong)s;
+            ErrorNumber errno = _inputImage.ReadSector(sec, false, out byte[] sd, out _);
+
+            if(errno != ErrorNumber.NoError || sd == null)
+                Array.Clear(encGrp, s * sectorSize, sectorSize);
+            else
+                Array.Copy(sd, 0, encGrp, s * sectorSize, sectorSize);
+        }
+    }
+
+    /// <summary>
+    ///     Read one encrypted Wii group from long sectors: copy main_data into <paramref name="encGrp" /> and
+    ///     keep full long buffers for output (one ReadSectorLong per logical sector).
+    /// </summary>
+    void ReadWiiEncryptedGroupFromLongSectors(ulong firstLogicalSector, byte[] encGrp, byte[][] longSectorBuffers,
+                                              int longSectorSize)
+    {
+        const int sectorSize      = Crypto.SECTOR_SIZE;
+        const int sectorsPerBlock = Crypto.LOGICAL_PER_GROUP;
+
+        for(int s = 0; s < sectorsPerBlock; s++)
+        {
+            ulong       sec   = firstLogicalSector + (ulong)s;
+            ErrorNumber errno = _inputImage.ReadSectorLong(sec, false, out byte[] sd, out _);
+
+            byte[] stored = longSectorBuffers[s];
+
+            if(stored == null || stored.Length != longSectorSize)
+            {
+                stored               = new byte[longSectorSize];
+                longSectorBuffers[s] = stored;
+            }
+
+            if(errno != ErrorNumber.NoError || sd == null)
+            {
+                Array.Clear(encGrp, s * sectorSize, sectorSize);
+                Array.Clear(stored, 0, longSectorSize);
+
+                continue;
+            }
+
+            int copyLong = sd.Length < longSectorSize ? sd.Length : longSectorSize;
+            Array.Copy(sd, 0, stored, 0, copyLong);
+
+            if(copyLong < longSectorSize)
+                Array.Clear(stored, copyLong, longSectorSize - copyLong);
+
+            if(sd.Length >= Sector.NintendoMainDataOffset + sectorSize)
+                Array.Copy(sd, Sector.NintendoMainDataOffset, encGrp, s * sectorSize, sectorSize);
+            else
+                Array.Clear(encGrp, s * sectorSize, sectorSize);
+        }
+    }
+
+    /// <summary>
+    ///     Classify FST regions, run LFG junk detection on decrypted user data, and build the 32 KiB
+    ///     plaintext group (hash + user, junk zeroed).
+    /// </summary>
+    byte[] ProcessWiiDecryptedGroup(int inPart, ulong groupDiscOff, byte[] hashBlock, byte[] groupData,
+                                    JunkCollector jc, ref ulong dataSectors, ref ulong junkSectors)
+    {
+        const int groupSize     = Crypto.GROUP_SIZE;
+        const int hashSize      = Crypto.GROUP_HASH_SIZE;
+        const int groupDataSize = Crypto.GROUP_DATA_SIZE;
+        const int sectorSize    = Crypto.SECTOR_SIZE;
+
+        ulong groupNum      = (groupDiscOff - _ngcwPartitions[inPart].DataOffset) / groupSize;
+        ulong logicalOffset = groupNum * groupDataSize;
+
+        bool[] sectorIsData = new bool[16];
+        int    udCount      = 0;
+
+        for(ulong off = 0; off < groupDataSize; off += sectorSize)
+        {
+            ulong chunk = groupDataSize - off;
+
+            if(chunk > sectorSize) chunk = sectorSize;
+
+            if(logicalOffset + off < _ngcwPartSysEnd[inPart])
+                sectorIsData[udCount] = true;
+            else if(_ngcwPartDataMaps[inPart] != null)
+            {
+                sectorIsData[udCount] = DataMap.IsDataRegion(_ngcwPartDataMaps[inPart],
+                                                             logicalOffset + off,
+                                                             chunk);
+            }
+            else
+                sectorIsData[udCount] = true;
+
+            udCount++;
+        }
+
+        ulong blockPhase  = logicalOffset % groupSize;
+        ulong block2Start = blockPhase > 0 ? groupSize - blockPhase : groupDataSize;
+
+        if(block2Start > groupDataSize) block2Start = groupDataSize;
+
+        bool   haveSeed1 = false;
+        uint[] seed1     = new uint[Lfg.SEED_SIZE];
+        bool   haveSeed2 = false;
+        uint[] seed2     = new uint[Lfg.SEED_SIZE];
+
+        for(int s = 0; s < udCount; s++)
+        {
+            if(sectorIsData[s]) continue;
+
+            ulong soff     = (ulong)s * sectorSize;
+            bool  inBlock2 = soff >= block2Start;
+
+            if(inBlock2  && haveSeed2) continue;
+            if(!inBlock2 && haveSeed1) continue;
+
+            int avail = (int)(groupDataSize - soff);
+            int doff  = (int)((logicalOffset + soff) % groupSize);
+
+            if(avail < Lfg.MIN_SEED_DATA_BYTES) continue;
+
+            uint[] dst = inBlock2 ? seed2 : seed1;
+            int    m   = Lfg.GetSeed(groupData.AsSpan((int)soff, avail), doff, dst);
+
+            if(m > 0)
+            {
+                if(inBlock2)
+                    haveSeed2 = true;
+                else
+                    haveSeed1 = true;
+            }
+
+            if(haveSeed1 && haveSeed2) break;
+        }
+
+        byte[] decryptedGroup = new byte[groupSize];
+        Array.Copy(hashBlock, 0, decryptedGroup, 0, hashSize);
+
+        for(int s = 0; s < udCount; s++)
+        {
+            ulong off    = (ulong)s * sectorSize;
+            int   chunk  = groupDataSize - (int)off;
+            int   outOff = hashSize + (int)off;
+
+            if(chunk > sectorSize) chunk = sectorSize;
+
+            if(sectorIsData[s])
+            {
+                Array.Copy(groupData, (int)off, decryptedGroup, outOff, chunk);
+                dataSectors++;
+
+                continue;
+            }
+
+            bool   inBlock2 = off >= block2Start;
+            bool   haveSeed = inBlock2 ? haveSeed2 : haveSeed1;
+            uint[] theSeed  = inBlock2 ? seed2 : seed1;
+
+            if(!haveSeed)
+            {
+                Array.Copy(groupData, (int)off, decryptedGroup, outOff, chunk);
+                dataSectors++;
+
+                continue;
+            }
+
+            uint[] lfgBuffer = new uint[Lfg.MIN_SEED_DATA_BYTES / sizeof(uint)];
+            uint[] seedCopy  = new uint[Lfg.SEED_SIZE];
+            Array.Copy(theSeed, seedCopy, Lfg.SEED_SIZE);
+            Lfg.SetSeed(lfgBuffer, seedCopy);
+            int positionBytes = 0;
+
+            int adv = (int)((logicalOffset + off) % groupSize);
+
+            if(adv > 0)
+            {
+                byte[] discard = new byte[4096];
+                int    rem     = adv;
+
+                while(rem > 0)
+                {
+                    int step = rem > discard.Length ? discard.Length : rem;
+                    Lfg.GetBytes(lfgBuffer, ref positionBytes, discard, 0, step);
+                    rem -= step;
+                }
+            }
+
+            byte[] expected = new byte[sectorSize];
+            Lfg.GetBytes(lfgBuffer, ref positionBytes, expected, 0, chunk);
+
+            if(groupData.AsSpan((int)off, chunk).SequenceEqual(expected.AsSpan(0, chunk)))
+            {
+                Array.Clear(decryptedGroup, outOff, chunk);
+                jc.Add(groupDiscOff + hashSize + off, (ulong)chunk, (ushort)inPart, theSeed);
+                junkSectors++;
+            }
+            else
+            {
+                Array.Copy(groupData, (int)off, decryptedGroup, outOff, chunk);
+                dataSectors++;
+            }
+        }
+
+        return decryptedGroup;
+    }
+
     /// <summary>Wii sector conversion pipeline.</summary>
     ErrorNumber ConvertWiiSectors(ulong discSize, ulong totalLogicalSectors, JunkCollector jc, ref ulong dataSectors,
                                   ref ulong junkSectors)
@@ -294,7 +509,7 @@ public partial class Convert
                                    (long)totalLogicalSectors);
 
             // Check if inside a partition's data area
-            int inPart = Ngcw.Partitions.FindPartitionAtOffset(_ngcwPartitions, offset);
+            int inPart = NgcwPartitions.FindPartitionAtOffset(_ngcwPartitions, offset);
 
             if(inPart >= 0)
             {
@@ -302,162 +517,16 @@ public partial class Convert
                 ulong groupDiscOff = _ngcwPartitions[inPart].DataOffset +
                                      (offset - _ngcwPartitions[inPart].DataOffset) / groupSize * groupSize;
 
-                // Read encrypted group
                 var encGrp = new byte[groupSize];
+                FillWiiEncryptedGroupFromShortSectors(groupDiscOff / sectorSize, encGrp);
 
-                for(var s = 0; s < sectorsPerBlock; s++)
-                {
-                    ulong       sec   = groupDiscOff / sectorSize + (ulong)s;
-                    ErrorNumber errno = _inputImage.ReadSector(sec, false, out byte[] sd, out _);
-
-                    if(errno != ErrorNumber.NoError || sd == null)
-                        Array.Clear(encGrp, s * sectorSize, sectorSize);
-                    else
-                        Array.Copy(sd, 0, encGrp, s * sectorSize, sectorSize);
-                }
-
-                // Decrypt
                 var hashBlock = new byte[hashSize];
                 var groupData = new byte[groupDataSize];
                 Crypto.DecryptGroup(_ngcwPartitions[inPart].TitleKey, encGrp, hashBlock, groupData);
 
-                // Classify user data sectors
-                ulong groupNum      = (groupDiscOff - _ngcwPartitions[inPart].DataOffset) / groupSize;
-                ulong logicalOffset = groupNum                                            * groupDataSize;
-
-                var sectorIsData = new bool[16];
-                var udCount      = 0;
-
-                for(ulong off = 0; off < groupDataSize; off += sectorSize)
-                {
-                    ulong chunk = groupDataSize - off;
-
-                    if(chunk > sectorSize) chunk = sectorSize;
-
-                    if(logicalOffset + off < _ngcwPartSysEnd[inPart])
-                        sectorIsData[udCount] = true;
-                    else if(_ngcwPartDataMaps[inPart] != null)
-                    {
-                        sectorIsData[udCount] = DataMap.IsDataRegion(_ngcwPartDataMaps[inPart],
-                                                                     logicalOffset + off,
-                                                                     chunk);
-                    }
-                    else
-                        sectorIsData[udCount] = true;
-
-                    udCount++;
-                }
-
-                // Extract LFG seeds (up to 2 per group for block boundaries)
-                ulong blockPhase  = logicalOffset % groupSize;
-                ulong block2Start = blockPhase > 0 ? groupSize - blockPhase : groupDataSize;
-
-                if(block2Start > groupDataSize) block2Start = groupDataSize;
-
-                var haveSeed1 = false;
-                var seed1     = new uint[Lfg.SEED_SIZE];
-                var haveSeed2 = false;
-                var seed2     = new uint[Lfg.SEED_SIZE];
-
-                for(var s = 0; s < udCount; s++)
-                {
-                    if(sectorIsData[s]) continue;
-
-                    ulong soff     = (ulong)s * sectorSize;
-                    bool  inBlock2 = soff >= block2Start;
-
-                    if(inBlock2  && haveSeed2) continue;
-                    if(!inBlock2 && haveSeed1) continue;
-
-                    var avail = (int)(groupDataSize - soff);
-                    var doff  = (int)((logicalOffset + soff) % groupSize);
-
-                    if(avail < Lfg.MIN_SEED_DATA_BYTES) continue;
-
-                    uint[] dst = inBlock2 ? seed2 : seed1;
-                    int    m   = Lfg.GetSeed(groupData.AsSpan((int)soff, avail), doff, dst);
-
-                    if(m > 0)
-                    {
-                        if(inBlock2)
-                            haveSeed2 = true;
-                        else
-                            haveSeed1 = true;
-                    }
-
-                    if(haveSeed1 && haveSeed2) break;
-                }
-
-                // Build decrypted group: hash_block + processed user_data
-                var decryptedGroup = new byte[groupSize];
-                Array.Copy(hashBlock, 0, decryptedGroup, 0, hashSize);
-
-                for(var s = 0; s < udCount; s++)
-                {
-                    ulong off    = (ulong)s * sectorSize;
-                    int   chunk  = groupDataSize - (int)off;
-                    int   outOff = hashSize      + (int)off;
-
-                    if(chunk > sectorSize) chunk = sectorSize;
-
-                    if(sectorIsData[s])
-                    {
-                        Array.Copy(groupData, (int)off, decryptedGroup, outOff, chunk);
-                        dataSectors++;
-
-                        continue;
-                    }
-
-                    bool   inBlock2 = off >= block2Start;
-                    bool   haveSeed = inBlock2 ? haveSeed2 : haveSeed1;
-                    uint[] theSeed  = inBlock2 ? seed2 : seed1;
-
-                    if(!haveSeed)
-                    {
-                        Array.Copy(groupData, (int)off, decryptedGroup, outOff, chunk);
-                        dataSectors++;
-
-                        continue;
-                    }
-
-                    // Verify sector against LFG
-                    var lfgBuffer = new uint[Lfg.MIN_SEED_DATA_BYTES / sizeof(uint)];
-                    var seedCopy  = new uint[Lfg.SEED_SIZE];
-                    Array.Copy(theSeed, seedCopy, Lfg.SEED_SIZE);
-                    Lfg.SetSeed(lfgBuffer, seedCopy);
-                    var positionBytes = 0;
-
-                    var adv = (int)((logicalOffset + off) % groupSize);
-
-                    if(adv > 0)
-                    {
-                        var discard = new byte[4096];
-                        int rem     = adv;
-
-                        while(rem > 0)
-                        {
-                            int step = rem > discard.Length ? discard.Length : rem;
-                            Lfg.GetBytes(lfgBuffer, ref positionBytes, discard, 0, step);
-                            rem -= step;
-                        }
-                    }
-
-                    var expected = new byte[sectorSize];
-                    Lfg.GetBytes(lfgBuffer, ref positionBytes, expected, 0, chunk);
-
-                    if(groupData.AsSpan((int)off, chunk).SequenceEqual(expected.AsSpan(0, chunk)))
-                    {
-                        // Junk — zero it out, record in junk map
-                        Array.Clear(decryptedGroup, outOff, chunk);
-                        jc.Add(groupDiscOff + hashSize + off, (ulong)chunk, (ushort)inPart, theSeed);
-                        junkSectors++;
-                    }
-                    else
-                    {
-                        Array.Copy(groupData, (int)off, decryptedGroup, outOff, chunk);
-                        dataSectors++;
-                    }
-                }
+                byte[] decryptedGroup =
+                    ProcessWiiDecryptedGroup(inPart, groupDiscOff, hashBlock, groupData, jc, ref dataSectors,
+                                             ref junkSectors);
 
                 // Write all 16 sectors as SectorStatusUnencrypted
                 for(var s = 0; s < sectorsPerBlock; s++)
@@ -747,4 +816,322 @@ public partial class Convert
 
         return result;
     }
+
+    /// GameCube sector conversion pipeline for long sectors.
+    ErrorNumber ConvertGameCubeSectorsLong(ulong discSize, ulong totalLogicalSectors, JunkCollector jc,
+                                             ref ulong dataSectors, ref ulong junkSectors)
+    {
+        const int blockSize       = Crypto.GROUP_SIZE; // 0x8000 logical (16 × 2048 user bytes)
+        const int sectorsPerBlock = Crypto.LOGICAL_PER_GROUP;
+        const int userSize        = Crypto.SECTOR_SIZE;
+
+        // Junk / FST offsets are in logical (user) byte space. User 2048-byte slices match ReadSector (Nintendo main_data at Sector.NintendoMainDataOffset).
+        ErrorNumber probeErr = _inputImage.ReadSectorLong(0, false, out byte[] longProbe, out _);
+
+        if(probeErr != ErrorNumber.NoError || longProbe == null ||
+           longProbe.Length < Sector.NintendoMainDataOffset + userSize)
+            return ErrorNumber.InOutError;
+
+        int longSectorSize = longProbe.Length;
+
+        // Read disc header to get FST info (logical user bytes via ReadSector)
+        byte[] header = ReadNgcwSectors(0, 2); // first 0x1000 bytes (need 0x42C)
+
+        if(header == null || header.Length < 0x42C) return ErrorNumber.InOutError;
+
+        // Read extended header for FST pointers (at 0x424)
+        byte[] extHeader = ReadNgcwSectors(0, (0x440 + userSize - 1) / userSize);
+
+        var   fstOffset = BigEndianBitConverter.ToUInt32(extHeader, 0x424);
+        var   fstSize   = BigEndianBitConverter.ToUInt32(extHeader, 0x428);
+        ulong sysEnd    = fstOffset + fstSize;
+
+        // Build FST data map
+        DataRegion[] dataMap = null;
+
+        if(fstSize > 0 && fstSize < 64 * 1024 * 1024)
+        {
+            byte[] fst = ReadNgcwBytes(fstOffset, (int)fstSize);
+
+            if(fst != null) dataMap = DataMap.BuildFromFst(fst, 0, 0);
+        }
+
+        // User-only buffer for LFG / data-region junk detection (same as ConvertGameCubeSectors)
+        var userBlockBuf   = new byte[blockSize];
+        var longSectorBufs = new byte[sectorsPerBlock][];
+        var sectorStatuses = new SectorStatus[sectorsPerBlock];
+
+        for(ulong blockOff = 0; blockOff < discSize; blockOff += blockSize)
+        {
+            if(_aborted) break;
+
+            int blockBytes = blockSize;
+
+            if(blockOff + (ulong)blockBytes > discSize) blockBytes = (int)(discSize - blockOff);
+
+            ulong baseSector = blockOff / userSize;
+
+            UpdateProgress?.Invoke(string.Format(UI.Converting_sectors_0_to_1,
+                                                 baseSector,
+                                                 baseSector + sectorsPerBlock),
+                                   (long)baseSector,
+                                   (long)totalLogicalSectors);
+
+            // Read long sectors; pack user main data into userBlockBuf; keep full long buffers for output
+            for(var s = 0; s < sectorsPerBlock && s * userSize < blockBytes; s++)
+            {
+                ErrorNumber errno =
+                    _inputImage.ReadSectorLong(baseSector + (ulong)s, false, out byte[] sectorData, out _);
+
+                byte[] stored = new byte[longSectorSize];
+                longSectorBufs[s] = stored;
+
+                if(errno != ErrorNumber.NoError || sectorData == null)
+                {
+                    Array.Clear(userBlockBuf, s * userSize, userSize);
+
+                    continue;
+                }
+
+                int copyLong = sectorData.Length < longSectorSize ? sectorData.Length : longSectorSize;
+                Array.Copy(sectorData, 0, stored, 0, copyLong);
+
+                if(sectorData.Length >= Sector.NintendoMainDataOffset + userSize)
+                    Array.Copy(sectorData, Sector.NintendoMainDataOffset, userBlockBuf, s * userSize, userSize);
+                else
+                    Array.Clear(userBlockBuf, s * userSize, userSize);
+            }
+
+            Junk.DetectJunkInBlock(userBlockBuf,
+                                   blockBytes,
+                                   blockOff,
+                                   dataMap,
+                                   sysEnd,
+                                   0xFFFF,
+                                   jc,
+                                   ref dataSectors,
+                                   ref junkSectors,
+                                   sectorStatuses);
+
+            int numSectors = blockBytes / userSize;
+
+            for(var si = 0; si < numSectors; si++)
+            {
+                ulong sector = baseSector + (ulong)si;
+                bool  ok     = _outputImage.WriteSectorLong(longSectorBufs[si], sector, false, sectorStatuses[si]);
+
+                if(!ok)
+                {
+                    if(_force)
+                    {
+                        ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_continuing,
+                                                           _outputImage.ErrorMessage,
+                                                           sector));
+                    }
+                    else
+                    {
+                        StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_not_continuing,
+                                                                   _outputImage.ErrorMessage,
+                                                                   sector));
+
+                        return ErrorNumber.WriteError;
+                    }
+                }
+            }
+        }
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Wii sector conversion pipeline for long sectors (main_data + framing).</summary>
+    ErrorNumber ConvertWiiSectorsLong(ulong discSize, ulong totalLogicalSectors, JunkCollector jc,
+                                       ref ulong dataSectors, ref ulong junkSectors)
+    {
+        const int groupSize       = Crypto.GROUP_SIZE;
+        const int hashSize        = Crypto.GROUP_HASH_SIZE;
+        const int groupDataSize   = Crypto.GROUP_DATA_SIZE;
+        const int sectorSize      = Crypto.SECTOR_SIZE;
+        const int sectorsPerBlock = Crypto.LOGICAL_PER_GROUP;
+
+        ErrorNumber probeErr = _inputImage.ReadSectorLong(0, false, out byte[] longProbe, out _);
+
+        if(probeErr != ErrorNumber.NoError || longProbe == null ||
+           longProbe.Length < Sector.NintendoMainDataOffset + sectorSize)
+            return ErrorNumber.InOutError;
+
+        int longSectorSize = longProbe.Length;
+
+        BuildWiiPartitionFstMaps();
+
+        var longSectorBufs = new byte[sectorsPerBlock][];
+
+        ulong offset = 0;
+
+        while(offset < discSize)
+        {
+            if(_aborted) break;
+
+            ulong baseSector = offset / sectorSize;
+
+            UpdateProgress?.Invoke(string.Format(UI.Converting_sectors_0_to_1,
+                                                 baseSector,
+                                                 baseSector + sectorsPerBlock),
+                                   (long)baseSector,
+                                   (long)totalLogicalSectors);
+
+            int inPart = NgcwPartitions.FindPartitionAtOffset(_ngcwPartitions, offset);
+
+            if(inPart >= 0)
+            {
+                ulong groupDiscOff = _ngcwPartitions[inPart].DataOffset +
+                                     (offset - _ngcwPartitions[inPart].DataOffset) / groupSize * groupSize;
+
+                var encGrp = new byte[groupSize];
+                ReadWiiEncryptedGroupFromLongSectors(groupDiscOff / sectorSize, encGrp, longSectorBufs, longSectorSize);
+
+                var hashBlock = new byte[hashSize];
+                var groupData = new byte[groupDataSize];
+                Crypto.DecryptGroup(_ngcwPartitions[inPart].TitleKey, encGrp, hashBlock, groupData);
+
+                byte[] decryptedGroup =
+                    ProcessWiiDecryptedGroup(inPart, groupDiscOff, hashBlock, groupData, jc, ref dataSectors,
+                                             ref junkSectors);
+
+                for(int s = 0; s < sectorsPerBlock; s++)
+                {
+                    int dataOff = s * sectorSize;
+                    int outOff  = hashSize + dataOff;
+
+                    if(dataOff >= groupDataSize)
+                    {
+                        Array.Clear(longSectorBufs[s], Sector.NintendoMainDataOffset, sectorSize);
+
+                        continue;
+                    }
+
+                    int copyLen = groupDataSize - dataOff;
+
+                    if(copyLen > sectorSize)
+                        copyLen = sectorSize;
+
+                    Array.Copy(decryptedGroup, outOff, longSectorBufs[s], Sector.NintendoMainDataOffset, copyLen);
+
+                    if(copyLen < sectorSize)
+                        Array.Clear(longSectorBufs[s], Sector.NintendoMainDataOffset + copyLen, sectorSize - copyLen);
+                }
+
+                for(int s = 0; s < sectorsPerBlock; s++)
+                {
+                    ulong sector = groupDiscOff / sectorSize + (ulong)s;
+                    bool ok = _outputImage.WriteSectorLong(longSectorBufs[s],
+                                                           sector,
+                                                           false,
+                                                           SectorStatus.Unencrypted);
+
+                    if(!ok)
+                    {
+                        if(_force)
+                        {
+                            ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_continuing,
+                                                               _outputImage.ErrorMessage,
+                                                               sector));
+                        }
+                        else
+                        {
+                            StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_not_continuing,
+                                                                       _outputImage.ErrorMessage,
+                                                                       sector));
+
+                            return ErrorNumber.WriteError;
+                        }
+                    }
+                }
+
+                offset = groupDiscOff + groupSize;
+            }
+            else
+            {
+                const int blockSize  = groupSize;
+                ulong     alignedOff = offset & ~(ulong)(blockSize - 1);
+
+                int blockBytes = blockSize;
+
+                if(alignedOff + (ulong)blockBytes > discSize) blockBytes = (int)(discSize - alignedOff);
+
+                var blockBuf = new byte[blockSize];
+
+                for(int s = 0; s < sectorsPerBlock && s * sectorSize < blockBytes; s++)
+                {
+                    ulong       sec   = alignedOff / sectorSize + (ulong)s;
+                    ErrorNumber errno = _inputImage.ReadSectorLong(sec, false, out byte[] sd, out _);
+
+                    byte[] stored = new byte[longSectorSize];
+                    longSectorBufs[s] = stored;
+
+                    if(errno != ErrorNumber.NoError || sd == null)
+                    {
+                        Array.Clear(blockBuf, s * sectorSize, sectorSize);
+                        Array.Clear(stored, 0, longSectorSize);
+
+                        continue;
+                    }
+
+                    int copyLong = sd.Length < longSectorSize ? sd.Length : longSectorSize;
+                    Array.Copy(sd, 0, stored, 0, copyLong);
+
+                    if(copyLong < longSectorSize)
+                        Array.Clear(stored, copyLong, longSectorSize - copyLong);
+
+                    if(sd.Length >= Sector.NintendoMainDataOffset + sectorSize)
+                        Array.Copy(sd, Sector.NintendoMainDataOffset, blockBuf, s * sectorSize, sectorSize);
+                    else
+                        Array.Clear(blockBuf, s * sectorSize, sectorSize);
+                }
+
+                var sectorStatuses = new SectorStatus[sectorsPerBlock];
+
+                Junk.DetectJunkInBlock(blockBuf,
+                                       blockBytes,
+                                       alignedOff,
+                                       null,
+                                       0x50000,
+                                       0xFFFF,
+                                       jc,
+                                       ref dataSectors,
+                                       ref junkSectors,
+                                       sectorStatuses);
+
+                int numSectors = blockBytes / sectorSize;
+
+                for(int si = 0; si < numSectors; si++)
+                {
+                    ulong sector = alignedOff / sectorSize + (ulong)si;
+                    bool  ok     = _outputImage.WriteSectorLong(longSectorBufs[si], sector, false, sectorStatuses[si]);
+
+                    if(!ok)
+                    {
+                        if(_force)
+                        {
+                            ErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_continuing,
+                                                               _outputImage.ErrorMessage,
+                                                               sector));
+                        }
+                        else
+                        {
+                            StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_writing_sector_1_not_continuing,
+                                                                       _outputImage.ErrorMessage,
+                                                                       sector));
+
+                            return ErrorNumber.WriteError;
+                        }
+                    }
+                }
+
+                offset = alignedOff + (ulong)blockBytes;
+            }
+        }
+
+        return ErrorNumber.NoError;
+    }
+
 }

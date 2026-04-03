@@ -971,7 +971,7 @@ In you are unsure, please press N to not continue.</value>
     <value>Skip Wii U disc encryption processing during conversion.</value>
   </data>
     <data name="Bypass_Wii_decryption_help" xml:space="preserve">
-    <value>Skip Wii disc encryption processing during conversion.</value>
+    <value>Skip Wii disc encryption processing during conversion or dump.</value>
   </data>
     <data name="Ngcw_parsing_partition_table" xml:space="preserve">
     <value>[slateblue1]Parsing Wii partition table...[/]</value>
@@ -1002,6 +1002,15 @@ In you are unsure, please press N to not continue.</value>
   </data>
     <data name="Ngcw_disc_number_0" xml:space="preserve">
     <value>[slateblue1]Disc number: [green]{0}[/].[/]</value>
+  </data>
+    <data name="Ngcw_nintendo_software_descramble" xml:space="preserve">
+    <value>[slateblue1]Nintendo software descrambling enabled (OmniDrive raw, descramble=0).[/]</value>
+  </data>
+    <data name="Ngcw_nintendo_derived_key_0" xml:space="preserve">
+    <value>[slateblue1]Derived Nintendo disc key: [green]{0}[/].[/]</value>
+  </data>
+    <data name="Ngcw_wii_dump_bypass_decryption" xml:space="preserve">
+    <value>[slateblue1]Wii partition decryption bypass: storing encrypted partition data as read.[/]</value>
   </data>
     <data name="PS3_disc_key_resolved_from_0" xml:space="preserve">
     <value>[slateblue1]PS3 disc key resolved from [aqua]{0}[/].[/]</value>

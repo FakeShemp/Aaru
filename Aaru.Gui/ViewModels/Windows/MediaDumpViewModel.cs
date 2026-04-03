@@ -753,7 +753,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                            true,
                            1080,
                            Paranoia,
-                           CureParanoia);
+                           CureParanoia,
+                           false);
 
         new Thread(DoWork).Start();
     }

@@ -5,7 +5,7 @@
 // Filename       : Lfg.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
-// Component      : Image conversion.
+// Component      : Aaru.Decryption.Ngcw (GPL-3.0-or-later).
 //
 // --[ Description ] ----------------------------------------------------------
 //
@@ -35,10 +35,10 @@ using System;
 using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 
-namespace Aaru.Core.Image.Ngcw;
+namespace Aaru.Decryption.Ngcw;
 
 /// <summary>Lagged Fibonacci Generator for Nintendo GameCube/Wii junk fill.</summary>
-static class Lfg
+public static class Lfg
 {
     /// <summary>LFG buffer size (number of uint32 words in state).</summary>
     const int K = 521;

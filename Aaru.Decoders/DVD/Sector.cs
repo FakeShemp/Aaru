@@ -43,6 +43,54 @@ namespace Aaru.Decoders.DVD;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 public sealed class Sector
 {
+    /// <summary>Offset of main user data in a standard ECMA-267 DVD sector (bytes 12-2059).</summary>
+    const int DvdMainDataOffset = 12;
+
+    public const int Form1DataSize = 2048;
+    const int Ecma267TableSize = 16 * Form1DataSize; // 32768
+
+    static readonly byte[] _ecma267Table = BuildEcma267Table();
+
+    static byte[] BuildEcma267Table()
+    {
+        byte[] table = new byte[Ecma267TableSize];
+        ushort shiftRegister = 0x0001;
+
+        for(int t = 0; t < Ecma267TableSize; t++)
+        {
+            table[t] = (byte)shiftRegister;
+
+            for(int b = 0; b < 8; b++)
+            {
+                int lsb = (shiftRegister >> 14 & 1) ^ (shiftRegister >> 10 & 1);
+                shiftRegister = (ushort)((shiftRegister << 1 | (ushort)lsb) & 0x7FFF);
+            }
+        }
+
+        return table;
+    }
+
+    /// <summary>Gets the Physical Sector Number (PSN) from the sector header (bytes 1-3, big-endian).</summary>
+    public static int GetPsn(byte[] sector)
+    {
+        if(sector == null || sector.Length < 4) return 0;
+
+        return (sector[1] << 16) | (sector[2] << 8) | sector[3];
+    }
+
+    public static void ApplyTableWithWrap(byte[] sector, int dataStart, int tableOffset)
+    {
+        for(int i = 0; i < Form1DataSize; i++)
+        {
+            int index = tableOffset + i;
+
+            if(index >= Ecma267TableSize)
+                index -= Ecma267TableSize - 1;
+
+            sector[dataStart + i] ^= _ecma267Table[index];
+        }
+    }
+
     static readonly ushort[] _ecma267InitialValues =
     [
         0x0001, 0x5500, 0x0002, 0x2A00, 0x0004, 0x5400, 0x0008, 0x2800, 0x0010, 0x5000, 0x0020, 0x2001, 0x0040,
@@ -109,6 +157,49 @@ public sealed class Sector
         return ret;
     }
 
+    static readonly byte[] DvdGfExp = CreateDvdGfExpTable();
+    static readonly int[] DvdGfLog = CreateDvdGfLogTable(DvdGfExp);
+
+    static byte[] CreateDvdGfExpTable()
+    {
+        const ushort primitive = 0x11D;
+        byte[] exp = new byte[512];
+        exp[0] = 1;
+
+        for(int i = 1; i < 255; i++)
+        {
+            ushort x = (ushort)(exp[i - 1] << 1);
+
+            if((x & 0x100) != 0) x ^= primitive;
+
+            exp[i] = (byte)x;
+        }
+
+        for(int i = 255; i < 512; i++) exp[i] = exp[i - 255];
+
+        return exp;
+    }
+
+    static int[] CreateDvdGfLogTable(byte[] exp)
+    {
+        int[] log = new int[256];
+
+        for(int i = 0; i < 256; i++) log[i] = -1;
+
+        for(int i = 0; i < 255; i++) log[exp[i]] = i;
+
+        log[0] = -1;
+
+        return log;
+    }
+
+    static byte DvdGfMul(byte a, byte b)
+    {
+        if(a == 0 || b == 0) return 0;
+
+        return DvdGfExp[DvdGfLog[a] + DvdGfLog[b]];
+    }
+
     /// <summary>
     ///     Store seed and its cipher in cache
     /// </summary>
@@ -138,6 +229,94 @@ public sealed class Sector
     }
 
     /// <summary>
+    ///     Check if the EDC of a sector is correct
+    /// </summary>
+    /// <param name="sectorLong">Buffer of the sector</param>
+    /// <returns><c>True</c> if EDC is correct, <c>False</c> if not</returns>
+    public static bool CheckEdc(byte[] sectorLong) => ComputeEdc(0, sectorLong, 2060) == BigEndianBitConverter.ToUInt32(sectorLong, 2060);
+
+    /// <summary>
+    ///     Check if the EDC of sectors is correct
+    /// </summary>
+    /// <param name="sectorLong">Buffer of the sector</param>
+    /// <param name="transferLength">The number of sectors to check</param>
+    /// <returns><c>True</c> if EDC is correct, <c>False</c> if not</returns>
+    public static bool CheckEdc(byte[] sectorLong, uint transferLength)
+    {
+        for(uint i = 0; i < transferLength; i++)
+        {
+            if(!CheckEdc(sectorLong.Skip((int)(i * 2064)).Take(2064).ToArray())) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    ///     Computes the 16-bit ID Error Detection (IED) for bytes 0-3 of a DVD ROM sector (ID + 3-byte PSN),
+    ///     per the ECMA-267 RS remainder step used in <c>gpsxre::dvd::DataFrame::ID::valid()</c> (redumper).
+    /// </summary>
+    /// <param name="sectorLong">Buffer of the sector (must be at least 4 bytes; first 4 bytes are the ID field).</param>
+    /// <returns>The IED value in the same byte order as stored at sector bytes 4-5 (little-endian uint16 layout).</returns>
+    public static ushort ComputeIed(byte[] sectorLong)
+    {
+        if(sectorLong == null || sectorLong.Length < 4) return 0;
+
+        // G(x) = x^2 + g1*x + g2, with g1 = alpha^0 + alpha^1, g2 = alpha^0 * alpha^1 in GF(2^8)
+        byte g1 = (byte)(1 ^ DvdGfExp[1]);
+        byte g2 = DvdGfExp[1];
+
+        Span<byte> poly = stackalloc byte[6];
+        poly[0] = sectorLong[0];
+        poly[1] = sectorLong[1];
+        poly[2] = sectorLong[2];
+        poly[3] = sectorLong[3];
+        poly[4] = 0;
+        poly[5] = 0;
+
+        for(int i = 0; i < 4; i++)
+        {
+            byte coef = poly[i];
+
+            if(coef == 0) continue;
+
+            poly[i] = 0;
+            poly[i + 1] ^= DvdGfMul(coef, g1);
+            poly[i + 2] ^= DvdGfMul(coef, g2);
+        }
+
+        return (ushort)(poly[4] | poly[5] << 8);
+    }
+
+    /// <summary>
+    ///     Check if the IED of a sector is correct (bytes 0-3 vs bytes 4-5, same layout as redumper <c>DataFrame::ID</c>).
+    /// </summary>
+    /// <param name="sectorLong">Buffer of the sector</param>
+    /// <returns><c>True</c> if IED is correct, <c>False</c> if not</returns>
+    public static bool CheckIed(byte[] sectorLong)
+    {
+        if(sectorLong == null || sectorLong.Length < 6) return false;
+
+        ushort computed = ComputeIed(sectorLong);
+        ushort stored = (ushort)(sectorLong[4] | sectorLong[5] << 8);
+
+        return computed == stored;
+    }
+
+    /// <summary>
+    ///     Check if the IED of sectors is correct
+    /// </summary>
+    /// <param name="sectorLong">Buffer of the sector</param>
+    /// <param name="transferLength">The number of sectors to check</param>
+    /// <returns><c>True</c> if IED is correct, <c>False</c> if not</returns>
+    public static bool CheckIed(byte[] sectorLong, uint transferLength)
+    {
+        for(uint i = 0; i < transferLength; i++)
+        {
+            if(!CheckIed(sectorLong.Skip((int)(i * 2064)).Take(2064).ToArray())) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
     ///     Tests if a seed unscrambles a sector correctly
     /// </summary>
     /// <param name="sector">Buffer of the scrambled sector</param>
@@ -152,7 +331,7 @@ public sealed class Sector
 
         for(var i = 12; i < 2060; i++) tmp[i] ^= LfsrByte();
 
-        return ComputeEdc(0, tmp, 2060) == BigEndianBitConverter.ToUInt32(sector, 2060);
+        return CheckEdc(tmp);
     }
 
     /// <summary>
@@ -208,17 +387,31 @@ public sealed class Sector
 
         for(var i = 0; i < 2048; i++) scrambled[i + 12] = (byte)(sector[i + 12] ^ cipher[i]);
 
-        return ComputeEdc(0, scrambled, 2060) != BigEndianBitConverter.ToUInt32(sector, 2060)
-                   ? ErrorNumber.NotVerifiable
-                   : ErrorNumber.NoError;
+        return !CheckEdc(scrambled) ? ErrorNumber.NotVerifiable : ErrorNumber.NoError;
     }
 
+    /// <summary>
+    ///     Descrambles a DVD sector. Uses PSN from header (bytes 1-3) to select XOR table.
+    /// </summary>
+    /// <param name="sector">Scrambled 2064-byte sector</param>
+    /// <param name="scrambled">Descrambled sector output</param>
     public ErrorNumber Scramble(byte[] sector, out byte[] scrambled)
     {
         scrambled = new byte[sector.Length];
 
         if(sector is not { Length: 2064 }) return ErrorNumber.NotSupported;
 
+        int psn = GetPsn(sector);
+
+        // Standard DVD: try PSN-based descramble first
+        int offset = (psn >> 4 & 0xF) * Form1DataSize;
+        Array.Copy(sector, 0, scrambled, 0, sector.Length);
+        ApplyTableWithWrap(scrambled, DvdMainDataOffset, offset);
+
+        if(CheckEdc(scrambled))
+            return ErrorNumber.NoError;
+
+        // Fallback: seed search for non-standard
         byte[]? cipher = GetSeed(sector);
 
         return cipher == null ? ErrorNumber.UnrecognizedFormat : UnscrambleSector(sector, cipher, out scrambled);

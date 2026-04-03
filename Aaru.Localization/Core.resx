@@ -1126,6 +1126,9 @@
     <data name="Image_is_not_writable_aborting" xml:space="preserve">
         <value>[red]Image is not writable, aborting...[/]</value>
     </data>
+    <data name="Cannot_write_retried_sector_0_no_writable_output_image" xml:space="preserve">
+        <value>[red]Cannot write retried sector [lime]{0}[/]: output is not a writable image.[/]</value>
+    </data>
     <data name="Could_not_detect_capacity" xml:space="preserve">
         <value>[red]Could not detect capacity...[/]</value>
     </data>
@@ -1394,6 +1397,18 @@
     </data>
     <data name="Dumping_Nintendo_GameCube_or_Wii_discs_is_not_yet_implemented" xml:space="preserve">
         <value>[red]Dumping Nintendo GameCube or Wii discs is not yet implemented.[/]</value>
+    </data>
+    <data name="Nintendo_OmniDrive_dump_requires_Aaru_format" xml:space="preserve">
+        <value>[red]Dumping Nintendo GameCube or Wii discs with OmniDrive requires Aaru output format.[/]</value>
+    </data>
+    <data name="Ngcw_dump_parsing_partition_table" xml:space="preserve">
+        <value>[slateblue1]Parsing Wii partition table...[/]</value>
+    </data>
+    <data name="Ngcw_dump_wrote_partition_key_map" xml:space="preserve">
+        <value>[slateblue1]Stored Wii partition key map.[/]</value>
+    </data>
+    <data name="Ngcw_dump_wrote_junk_map_0_entries" xml:space="preserve">
+        <value>[slateblue1]Stored Nintendo junk map with [lime]{0}[/] entries.[/]</value>
     </data>
     <data name="Reading_Disc_Manufacturing_Information" xml:space="preserve">
         <value>[slateblue1]Reading [italic]Disc Manufacturing Information[/][/]</value>

@@ -135,6 +135,12 @@ public partial class Convert
                 case SectorTagType.CdSectorEccP:
                 case SectorTagType.CdSectorEccQ:
                 case SectorTagType.CdSectorEcc:
+                case SectorTagType.DvdSectorCmi:
+                case SectorTagType.DvdSectorTitleKey:
+                case SectorTagType.DvdSectorEdc:
+                case SectorTagType.DvdSectorIed:
+                case SectorTagType.DvdSectorInformation:
+                case SectorTagType.DvdSectorNumber:
                     // These tags are inline in long sector
                     continue;
                 case SectorTagType.CdTrackFlags:
@@ -329,6 +335,12 @@ public partial class Convert
                 case SectorTagType.CdSectorEccP:
                 case SectorTagType.CdSectorEccQ:
                 case SectorTagType.CdSectorEcc:
+                case SectorTagType.DvdSectorCmi:
+                case SectorTagType.DvdSectorTitleKey:
+                case SectorTagType.DvdSectorEdc:
+                case SectorTagType.DvdSectorIed:
+                case SectorTagType.DvdSectorInformation:
+                case SectorTagType.DvdSectorNumber:
                     // These tags are inline in long sector
                     continue;
                 case SectorTagType.CdTrackFlags:

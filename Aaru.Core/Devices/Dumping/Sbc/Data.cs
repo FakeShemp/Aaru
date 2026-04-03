@@ -116,7 +116,7 @@ partial class Dump
                     {
                         if(_aborted) break;
 
-                        if(!_resume.MissingTitleKeys.Contains(i + j))
+                        if(!ContainsMissingTitleKey(i + j))
 
                             // Key is already dumped.
                             continue;
@@ -147,13 +147,13 @@ partial class Dump
 
                             outputFormat.WriteSectorTag(new byte[5], i + j, false, SectorTagType.DvdTitleKeyDecrypted);
 
-                            _resume.MissingTitleKeys.Remove(i + j);
+                            MarkTitleKeyDumped(i + j);
 
                             continue;
                         }
 
                         outputFormat.WriteSectorTag(titleKey.Value.Key, i + j, false, SectorTagType.DvdSectorTitleKey);
-                        _resume.MissingTitleKeys.Remove(i                 + j);
+                        MarkTitleKeyDumped(i + j);
 
                         CSS.DecryptTitleKey(discKey, titleKey.Value.Key, out tmpBuf);
                         outputFormat.WriteSectorTag(tmpBuf, i + j, false, SectorTagType.DvdTitleKeyDecrypted);

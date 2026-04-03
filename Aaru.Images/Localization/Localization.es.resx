@@ -2970,4 +2970,10 @@
     <data name="WinOnCD_disc_image" xml:space="preserve">
         <value>Imagen de disco de WinOnCD</value>
     </data>
+    <data name="Redumper_Name" xml:space="preserve">
+        <value>Volcado DVD crudo de Redumper</value>
+    </data>
+    <data name="Redumper_disc_image" xml:space="preserve">
+        <value>Imagen de disco DVD crudo de Redumper</value>
+    </data>
 </root>

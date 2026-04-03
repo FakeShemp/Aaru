@@ -5,7 +5,7 @@
 // Filename       : Junk.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
-// Component      : Image conversion.
+// Component      : Aaru.Decryption.Ngcw (GPL-3.0-or-later).
 //
 // --[ Description ] ----------------------------------------------------------
 //
@@ -34,10 +34,10 @@ using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 
-namespace Aaru.Core.Image.Ngcw;
+namespace Aaru.Decryption.Ngcw;
 
 /// <summary>In-memory junk map entry.</summary>
-struct JunkEntry
+public struct JunkEntry
 {
     /// <summary>Disc byte offset where junk starts.</summary>
     public ulong Offset;
@@ -55,7 +55,7 @@ struct JunkEntry
 /// <summary>
 ///     Collects junk entries during conversion, merging contiguous entries with the same seed.
 /// </summary>
-sealed class JunkCollector
+public sealed class JunkCollector
 {
     public int Count => Entries.Count;
 
@@ -110,7 +110,7 @@ sealed class JunkCollector
 /// <summary>
 ///     Junk map serialization/deserialization and block-level junk detection.
 /// </summary>
-static class Junk
+public static class Junk
 {
     const ushort JUNK_MAP_VERSION  = 1;
     const int    JUNK_MAP_HEADER   = 8; // version(2) + count(4) + seed_size(2)
