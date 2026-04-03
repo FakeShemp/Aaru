@@ -58,6 +58,7 @@ using DVDDecryption = Aaru.Decryption.DVD.Dump;
 using Track = Aaru.CommonTypes.Structs.Track;
 using TrackType = Aaru.CommonTypes.Enums.TrackType;
 using Version = Aaru.CommonTypes.Interop.Version;
+using AaruFormat = Aaru.Images.AaruFormat;
 
 // ReSharper disable JoinDeclarationAndInitializer
 
@@ -349,7 +350,7 @@ partial class Dump
                 return;
             }
 
-            if(outputFormat.Format != "Aaru")
+            if(outputFormat is not AaruFormat)
             {
                 StoppingErrorMessage?.Invoke(string.Format(Localization.Core.Output_format_does_not_support_0,
                                                            MediaTagType.NgcwJunkMap));
