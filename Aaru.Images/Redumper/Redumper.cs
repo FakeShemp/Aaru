@@ -84,6 +84,7 @@ public sealed partial class Redumper : IOpticalMediaImage
 
     /// <summary>Derived Nintendo key from LBA 0 so sectors 16+ can be descrambled.</summary>
     byte? _nintendoDerivedKey;
+    ulong _ngcwRegularDataSectors;
 
     IFilter                          _imageFilter;
     ImageInfo                        _imageInfo;

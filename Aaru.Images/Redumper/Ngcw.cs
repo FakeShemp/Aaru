@@ -126,9 +126,19 @@ public sealed partial class Redumper
     {
         byte[] one = new byte[NGCW_LONG_SECTOR_SIZE];
         Array.Copy(buffer, 0, one, 0, NGCW_LONG_SECTOR_SIZE);
-        byte key = lba < NGCW_SECTORS_PER_GROUP ? (byte)0 : (_nintendoDerivedKey ?? (byte)0);
+        bool leadIn  = lba < 0;
+        bool leadOut = _ngcwRegularDataSectors > 0 && lba >= (long)_ngcwRegularDataSectors;
 
-        ErrorNumber error = _nintendoDecoder.Scramble(one, key, out byte[] decoded);
+        ErrorNumber error;
+        byte[]      decoded;
+
+        if(leadIn || leadOut)
+            error = _decoding.Scramble(one, out decoded);
+        else
+        {
+            byte key = lba < NGCW_SECTORS_PER_GROUP ? (byte)0 : (_nintendoDerivedKey ?? (byte)0);
+            error = _nintendoDecoder.Scramble(one, key, out decoded);
+        }
 
         if(error != ErrorNumber.NoError)
         {

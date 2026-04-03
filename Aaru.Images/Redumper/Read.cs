@@ -56,6 +56,7 @@ public sealed partial class Redumper
     public ErrorNumber Open(IFilter imageFilter)
     {
         string filename = imageFilter.Filename;
+        _ngcwRegularDataSectors = 0;
 
         if(string.IsNullOrEmpty(filename)) return ErrorNumber.InvalidArgument;
 
@@ -132,6 +133,10 @@ public sealed partial class Redumper
                                                  : MediaType.WOD,
                     _                     => MediaType.DVDROM
                 };
+
+                if(decodedPfi.Value.DataAreaEndPSN >= decodedPfi.Value.DataAreaStartPSN)
+                    _ngcwRegularDataSectors =
+                        (ulong)(decodedPfi.Value.DataAreaEndPSN - decodedPfi.Value.DataAreaStartPSN) + 1;
             }
         }
 
