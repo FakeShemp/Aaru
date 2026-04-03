@@ -306,6 +306,14 @@ partial class Dump
                 _resume.BadBlocks.Remove(badSector);
                 extents.Add(badSector);
 
+                if(outputFormat is null)
+                {
+                    ErrorMessage?.Invoke(string.Format(Localization.Core.Cannot_write_retried_sector_0_no_writable_output_image,
+                                                       badSector));
+
+                    continue;
+                }
+
                 if(scsiReader.ReadBuffer3CReadRaw || scsiReader.OmniDriveReadRaw || scsiReader.HldtstReadRaw)
                 {
                     if(_ngcwEnabled)
@@ -368,7 +376,18 @@ partial class Dump
                                                    badSector,
                                                    pass));
             }
-            else if(runningPersistent) outputFormat.WriteSector(buffer, badSector, false, SectorStatus.Errored);
+            else if(runningPersistent)
+            {
+                if(outputFormat is null)
+                {
+                    ErrorMessage?.Invoke(string.Format(Localization.Core.Cannot_write_retried_sector_0_no_writable_output_image,
+                                                       badSector));
+
+                    continue;
+                }
+
+                outputFormat.WriteSector(buffer, badSector, false, SectorStatus.Errored);
+            }
         }
 
         if(pass < _retryPasses && !_aborted && _resume.BadBlocks.Count > 0)

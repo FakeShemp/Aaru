@@ -1126,6 +1126,9 @@
     <data name="Image_is_not_writable_aborting" xml:space="preserve">
         <value>[red]Image is not writable, aborting...[/]</value>
     </data>
+    <data name="Cannot_write_retried_sector_0_no_writable_output_image" xml:space="preserve">
+        <value>[red]Cannot write retried sector [lime]{0}[/]: output is not a writable image.[/]</value>
+    </data>
     <data name="Could_not_detect_capacity" xml:space="preserve">
         <value>[red]Could not detect capacity...[/]</value>
     </data>
