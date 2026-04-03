@@ -219,6 +219,11 @@
                             <TextBlock Text="{x:Static localization:UI.Try_to_read_the_title_keys_from_CSS_DVDs}"
                                        TextWrapping="Wrap" />
                         </CheckBox>
+                        <CheckBox IsChecked="{Binding BypassWiiDecryption, Mode=TwoWay}"
+                                  IsVisible="{Binding IsWii, Mode=OneWay}">
+                            <TextBox Text="{x:Static localization:UI.Bypass_Wii_decryption_help}"
+                                     TextWrapping="Wrap" />
+                        </CheckBox>
                     </StackPanel>
                 </TabItem>
                 <!-- TODO: Image options -->

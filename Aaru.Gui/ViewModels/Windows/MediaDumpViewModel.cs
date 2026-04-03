@@ -176,6 +176,10 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
     bool _readTitleKeys;
     [ObservableProperty]
     bool _isDvd;
+    [ObservableProperty]
+    bool _isWii;
+    [ObservableProperty]
+    bool _bypassWiiDecryption;
 
     public MediaDumpViewModel(Device               device, string devicePath, DeviceInfo deviceInfo, Window view,
                               [CanBeNull] ScsiInfo scsiInfo = null)
@@ -213,6 +217,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         CureParanoia          = false;
         StoreEncryptedAsIs    = true;
         ReadTitleKeys         = false;
+        BypassWiiDecryption   = false;
 
         MediaType mediaType;
 
@@ -337,6 +342,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                      or MediaType.DVDRWDL => true,
                     _ => false
                 };
+
+        IsWii = mediaType == MediaType.WOD;
 
         _dev        = device;
         _devicePath = devicePath;
@@ -754,7 +761,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                            1080,
                            Paranoia,
                            CureParanoia,
-                           false);
+                           BypassWiiDecryption);
 
         new Thread(DoWork).Start();
     }
