@@ -138,8 +138,7 @@ public partial class Device
 
         if (!Sector.CheckIed(buffer, transferLength)) return true;
 
-        if(descramble) 
-            if (!Sector.CheckEdc(buffer, transferLength)) return true;
+        if(descramble && !Sector.CheckEdc(buffer, transferLength)) return true;
 
         Error = LastError != 0;
 
