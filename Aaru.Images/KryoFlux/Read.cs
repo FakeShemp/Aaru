@@ -1,4 +1,4 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
@@ -41,6 +41,7 @@ using Aaru.CommonTypes.Structs;
 using Aaru.Filters;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Aaru.CommonTypes;
 
 namespace Aaru.Images;
 
@@ -142,6 +143,8 @@ public sealed partial class KryoFlux
 
         _imageInfo.Heads     = heads;
         _imageInfo.Cylinders = (uint)(tracks.Count / heads);
+        // TODO: Find a way to determine the media type from the track data.
+        _imageInfo.MediaType = MediaType.DOS_35_HD;
 
         return ErrorNumber.NoError;
     }
@@ -155,186 +158,165 @@ public sealed partial class KryoFlux
         Stream trackStream = trackFilter.GetDataForkStream();
         trackStream.Seek(0, SeekOrigin.Begin);
 
-        var fluxPulses = new List<uint>();
-        var indexPositions = new List<uint>();
-        double sck = SCK; // Default sample clock frequency
-        double ick = ICK; // Default index clock frequency
-        bool inStreamRead = false;
-
-        // Read entire file into memory for processing
-        var fileData = new byte[trackStream.Length];
+        byte[] fileData = new byte[trackStream.Length];
         trackStream.EnsureRead(fileData, 0, (int)trackStream.Length);
 
-        int streamPosition = 0;
-        var streamData = new List<byte>();
+        int fileSize = fileData.Length;
 
-        while(streamPosition < fileData.Length)
+        uint[] cellValues         = new uint[fileSize];
+        uint[] cellStreamPositions = new uint[fileSize];
+
+        uint cellAccumulator = 0;
+        int  streamOfs       = 0;
+        uint streamPos       = 0;
+        int  cellPos         = 0;
+        bool oobEnd          = false;
+
+        double sck = SCK;
+        double ick = ICK;
+
+        List<(uint streamPosition, uint timer, uint sysTime)> indexEvents = [];
+
+        int oobHeaderSize = Marshal.SizeOf<OobBlock>();
+
+        while(streamOfs < fileSize && !oobEnd)
         {
-            byte blockId = fileData[streamPosition++];
+            byte curOp = fileData[streamOfs];
+            int  curOpLen;
 
-            switch(blockId)
+            if(curOp == (byte)BlockIds.Oob)
             {
-                case (byte)BlockIds.Oob:
+                if(fileSize - streamOfs < oobHeaderSize)
+                    return ErrorNumber.InvalidArgument;
+
+                byte[] oobBytes = new byte[oobHeaderSize];
+                Array.Copy(fileData, streamOfs, oobBytes, 0, oobHeaderSize);
+                OobBlock oobBlk = Marshal.ByteArrayToStructureLittleEndian<OobBlock>(oobBytes);
+
+                if(oobBlk.blockType == OobTypes.EOF)
                 {
-                    streamPosition--;
+                    oobEnd = true;
 
-                    if(streamPosition + Marshal.SizeOf<OobBlock>() > fileData.Length)
-                        return ErrorNumber.InvalidArgument;
+                    break;
+                }
 
-                    var oob = new byte[Marshal.SizeOf<OobBlock>()];
-                    Array.Copy(fileData, streamPosition, oob, 0, Marshal.SizeOf<OobBlock>());
-                    streamPosition += Marshal.SizeOf<OobBlock>();
+                curOpLen = oobHeaderSize + oobBlk.length;
 
-                    OobBlock oobBlk = Marshal.ByteArrayToStructureLittleEndian<OobBlock>(oob);
+                if(fileSize - streamOfs < curOpLen)
+                    return ErrorNumber.InvalidArgument;
 
-                    if(oobBlk.blockType == OobTypes.EOF)
+                int oobDataStart = streamOfs + oobHeaderSize;
+
+                switch(oobBlk.blockType)
+                {
+                    case OobTypes.KFInfo:
                     {
-                        // Process any remaining stream data
-                        if(streamData.Count > 0 && inStreamRead)
+                        byte[] kfinfo = new byte[oobBlk.length];
+                        Array.Copy(fileData, oobDataStart, kfinfo, 0, oobBlk.length);
+
+                        string   kfinfoStr = StringHandlers.CToString(kfinfo);
+                        string[] lines     = kfinfoStr.Split([','], StringSplitOptions.RemoveEmptyEntries);
+
+                        DateTime blockDate = DateTime.Now;
+                        DateTime blockTime = DateTime.Now;
+                        bool     foundDate = false;
+
+                        foreach(string[] kvp in lines.Select(static line => line.Split('='))
+                                                     .Where(static kvp => kvp.Length == 2))
                         {
-                            ErrorNumber decodeError = DecodeKryoFluxStream(streamData.ToArray(), streamData.Count,
-                                                                          out List<uint> cells);
+                            kvp[0] = kvp[0].Trim();
+                            kvp[1] = kvp[1].Trim();
+                            AaruLogging.Debug(MODULE_NAME, "\"{0}\" = \"{1}\"", kvp[0], kvp[1]);
 
-                            if(decodeError != ErrorNumber.NoError) return decodeError;
+                            switch(kvp[0])
+                            {
+                                case HOST_DATE:
+                                    if(DateTime.TryParseExact(kvp[1],
+                                                              "yyyy.MM.dd",
+                                                              CultureInfo.InvariantCulture,
+                                                              DateTimeStyles.AssumeLocal,
+                                                              out blockDate))
+                                        foundDate = true;
 
-                            fluxPulses.AddRange(cells);
-                            streamData.Clear();
-                            inStreamRead = false;
+                                    break;
+                                case HOST_TIME:
+                                    DateTime.TryParseExact(kvp[1],
+                                                           "HH:mm:ss",
+                                                           CultureInfo.InvariantCulture,
+                                                           DateTimeStyles.AssumeLocal,
+                                                           out blockTime);
+
+                                    break;
+                                case KF_NAME:
+                                    _imageInfo.Application = kvp[1];
+
+                                    break;
+                                case KF_VERSION:
+                                    _imageInfo.ApplicationVersion = kvp[1];
+
+                                    break;
+                                case KF_SCK:
+                                    if(double.TryParse(kvp[1], NumberStyles.Float, CultureInfo.InvariantCulture,
+                                                       out double parsedSck))
+                                        sck = parsedSck;
+
+                                    break;
+                                case KF_ICK:
+                                    if(double.TryParse(kvp[1], NumberStyles.Float, CultureInfo.InvariantCulture,
+                                                       out double parsedIck))
+                                        ick = parsedIck;
+
+                                    break;
+                            }
                         }
 
-                        streamPosition = fileData.Length;
-
-                        break;
-                    }
-
-                    if(streamPosition + oobBlk.length > fileData.Length) return ErrorNumber.InvalidArgument;
-
-                    switch(oobBlk.blockType)
-                    {
-                        case OobTypes.KFInfo:
+                        if(foundDate)
                         {
-                            var kfinfo = new byte[oobBlk.length];
-                            Array.Copy(fileData, streamPosition, kfinfo, 0, oobBlk.length);
-                            streamPosition += oobBlk.length;
-
-                            string kfinfoStr = StringHandlers.CToString(kfinfo);
-                            string[] lines = kfinfoStr.Split([','], StringSplitOptions.RemoveEmptyEntries);
-
-                            DateTime blockDate = DateTime.Now;
-                            DateTime blockTime = DateTime.Now;
-                            var      foundDate = false;
-
-                            foreach(string[] kvp in lines.Select(static line => line.Split('='))
-                                                         .Where(static kvp => kvp.Length == 2))
-                            {
-                                kvp[0] = kvp[0].Trim();
-                                kvp[1] = kvp[1].Trim();
-                                AaruLogging.Debug(MODULE_NAME, "\"{0}\" = \"{1}\"", kvp[0], kvp[1]);
-
-                                switch(kvp[0])
-                                {
-                                    case HOST_DATE:
-                                        if(DateTime.TryParseExact(kvp[1],
-                                                                  "yyyy.MM.dd",
-                                                                  CultureInfo.InvariantCulture,
-                                                                  DateTimeStyles.AssumeLocal,
-                                                                  out blockDate))
-                                            foundDate = true;
-
-                                        break;
-                                    case HOST_TIME:
-                                        DateTime.TryParseExact(kvp[1],
-                                                               "HH:mm:ss",
-                                                               CultureInfo.InvariantCulture,
-                                                               DateTimeStyles.AssumeLocal,
-                                                               out blockTime);
-
-                                        break;
-                                    case KF_NAME:
-                                        _imageInfo.Application = kvp[1];
-
-                                        break;
-                                    case KF_VERSION:
-                                        _imageInfo.ApplicationVersion = kvp[1];
-
-                                        break;
-                                    case KF_SCK:
-                                        if(double.TryParse(kvp[1], NumberStyles.Float, CultureInfo.InvariantCulture,
-                                                           out double parsedSck))
-                                            sck = parsedSck;
-
-                                        break;
-                                    case KF_ICK:
-                                        if(double.TryParse(kvp[1], NumberStyles.Float, CultureInfo.InvariantCulture,
-                                                           out double parsedIck))
-                                            ick = parsedIck;
-
-                                        break;
-                                }
-                            }
-
-                            if(foundDate)
-                            {
-                                var blockTimestamp = new DateTime(blockDate.Year,
+                            DateTime blockTimestamp = new DateTime(blockDate.Year,
                                                                   blockDate.Month,
                                                                   blockDate.Day,
                                                                   blockTime.Hour,
                                                                   blockTime.Minute,
                                                                   blockTime.Second);
 
-                                AaruLogging.Debug(MODULE_NAME, Localization.Found_timestamp_0, blockTimestamp);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Found_timestamp_0, blockTimestamp);
 
-                                if(blockTimestamp < Info.CreationTime) _imageInfo.CreationTime = blockTimestamp;
+                            if(blockTimestamp < Info.CreationTime) _imageInfo.CreationTime = blockTimestamp;
 
-                                if(blockTimestamp > Info.LastModificationTime)
-                                    _imageInfo.LastModificationTime = blockTimestamp;
-                            }
-
-                            break;
+                            if(blockTimestamp > Info.LastModificationTime)
+                                _imageInfo.LastModificationTime = blockTimestamp;
                         }
-                        case OobTypes.StreamInfo:
+
+                        break;
+                    }
+                    case OobTypes.StreamInfo:
+                    {
+                        if(oobDataStart + Marshal.SizeOf<OobStreamRead>() <= fileSize)
                         {
-                            // Process any previous stream data
-                            if(streamData.Count > 0 && inStreamRead)
-                            {
-                                ErrorNumber decodeError = DecodeKryoFluxStream(streamData.ToArray(), streamData.Count,
-                                                                              out List<uint> cells);
+                            byte[] streamReadBytes = new byte[Marshal.SizeOf<OobStreamRead>()];
 
-                                if(decodeError != ErrorNumber.NoError) return decodeError;
-
-                                fluxPulses.AddRange(cells);
-                                streamData.Clear();
-                            }
-
-                            if(streamPosition + Marshal.SizeOf<OobStreamRead>() > fileData.Length)
-                                return ErrorNumber.InvalidArgument;
-
-                            var streamRead = new byte[Marshal.SizeOf<OobStreamRead>()];
-                            Array.Copy(fileData, streamPosition, streamRead, 0, Marshal.SizeOf<OobStreamRead>());
-                            streamPosition += Marshal.SizeOf<OobStreamRead>();
+                            Array.Copy(fileData, oobDataStart, streamReadBytes, 0,
+                                       Marshal.SizeOf<OobStreamRead>());
 
                             OobStreamRead oobStreamRead =
-                                Marshal.ByteArrayToStructureLittleEndian<OobStreamRead>(streamRead);
+                                Marshal.ByteArrayToStructureLittleEndian<OobStreamRead>(streamReadBytes);
 
                             AaruLogging.Debug(MODULE_NAME,
                                               "Stream Read at position {0}, elapsed time {1} ms",
                                               oobStreamRead.streamPosition,
                                               oobStreamRead.trTime);
-
-                            inStreamRead = true;
-
-                            break;
                         }
-                        case OobTypes.Index:
+
+                        break;
+                    }
+                    case OobTypes.Index:
+                    {
+                        if(oobDataStart + Marshal.SizeOf<OobIndex>() <= fileSize)
                         {
-                            if(streamPosition + Marshal.SizeOf<OobIndex>() > fileData.Length)
-                                return ErrorNumber.InvalidArgument;
+                            byte[] indexBytes = new byte[Marshal.SizeOf<OobIndex>()];
+                            Array.Copy(fileData, oobDataStart, indexBytes, 0, Marshal.SizeOf<OobIndex>());
 
-                            var index = new byte[Marshal.SizeOf<OobIndex>()];
-                            Array.Copy(fileData, streamPosition, index, 0, Marshal.SizeOf<OobIndex>());
-                            streamPosition += Marshal.SizeOf<OobIndex>();
-
-                            OobIndex oobIndex = Marshal.ByteArrayToStructureLittleEndian<OobIndex>(index);
+                            OobIndex oobIndex = Marshal.ByteArrayToStructureLittleEndian<OobIndex>(indexBytes);
 
                             AaruLogging.Debug(MODULE_NAME,
                                               "Index signal at stream position {0}, timer {1}, sysTime {2}",
@@ -342,115 +324,158 @@ public sealed partial class KryoFlux
                                               oobIndex.timer,
                                               oobIndex.sysTime);
 
-                            // Store index position in cell buffer
-                            // The index position is the current number of flux pulses decoded
-                            indexPositions.Add((uint)fluxPulses.Count);
-
-                            break;
+                            indexEvents.Add((oobIndex.streamPosition, oobIndex.timer, oobIndex.sysTime));
                         }
-                        case OobTypes.StreamEnd:
-                        {
-                            if(streamPosition + Marshal.SizeOf<OobStreamEnd>() > fileData.Length)
-                                return ErrorNumber.InvalidArgument;
 
-                            var streamEnd = new byte[Marshal.SizeOf<OobStreamEnd>()];
-                            Array.Copy(fileData, streamPosition, streamEnd, 0, Marshal.SizeOf<OobStreamEnd>());
-                            streamPosition += Marshal.SizeOf<OobStreamEnd>();
+                        break;
+                    }
+                    case OobTypes.StreamEnd:
+                    {
+                        if(oobDataStart + Marshal.SizeOf<OobStreamEnd>() <= fileSize)
+                        {
+                            byte[] streamEndBytes = new byte[Marshal.SizeOf<OobStreamEnd>()];
+
+                            Array.Copy(fileData, oobDataStart, streamEndBytes, 0,
+                                       Marshal.SizeOf<OobStreamEnd>());
 
                             OobStreamEnd oobStreamEnd =
-                                Marshal.ByteArrayToStructureLittleEndian<OobStreamEnd>(streamEnd);
+                                Marshal.ByteArrayToStructureLittleEndian<OobStreamEnd>(streamEndBytes);
 
                             AaruLogging.Debug(MODULE_NAME,
                                               "Stream End at position {0}, result {1}",
                                               oobStreamEnd.streamPosition,
                                               oobStreamEnd.result);
-
-                            // Process any remaining stream data
-                            if(streamData.Count > 0 && inStreamRead)
-                            {
-                                ErrorNumber decodeError = DecodeKryoFluxStream(streamData.ToArray(), streamData.Count,
-                                                                              out List<uint> cells);
-
-                                if(decodeError != ErrorNumber.NoError) return decodeError;
-
-                                fluxPulses.AddRange(cells);
-                                streamData.Clear();
-                            }
-
-                            inStreamRead = false;
-
-                            break;
                         }
-                        default:
-                            // Skip unknown OOB types
-                            streamPosition += oobBlk.length;
 
-                            break;
+                        break;
                     }
+                }
+
+                streamOfs += curOpLen;
+
+                continue;
+            }
+
+            // Non-OOB: determine operation length and decode flux data
+            bool newCell = false;
+
+            switch(curOp)
+            {
+                case (byte)BlockIds.Nop1:
+                    curOpLen = 1;
 
                     break;
-                }
+                case (byte)BlockIds.Nop2:
+                    curOpLen = 2;
+
+                    break;
+                case (byte)BlockIds.Nop3:
+                    curOpLen = 3;
+
+                    break;
+                case (byte)BlockIds.Ovl16:
+                    curOpLen          =  1;
+                    cellAccumulator   += 0x10000;
+
+                    break;
+                case (byte)BlockIds.Flux3:
+                    curOpLen        = 3;
+                    cellAccumulator += (uint)((fileData[streamOfs + 1] << 8) | fileData[streamOfs + 2]);
+                    newCell         =  true;
+
+                    break;
                 default:
-                    // Collect stream data for decoding when in Stream Read block
-                    if(inStreamRead)
+                    if(curOp >= 0x0E)
                     {
-                        // Check if this is an OOB marker - if so, decode what we have and handle OOB
-                        if(blockId == (byte)BlockIds.Oob)
-                        {
-                            // Decode collected stream data before handling OOB block
-                            if(streamData.Count > 0)
-                            {
-                                ErrorNumber decodeError = DecodeKryoFluxStream(streamData.ToArray(), streamData.Count,
-                                                                              out List<uint> cells);
-
-                                if(decodeError != ErrorNumber.NoError) return decodeError;
-
-                                fluxPulses.AddRange(cells);
-                                streamData.Clear();
-                            }
-
-                            // Back up to process OOB block
-                            streamPosition--;
-                        }
-                        else
-                        {
-                            streamData.Add(blockId);
-                        }
+                        curOpLen        = 1;
+                        cellAccumulator += curOp;
+                        newCell         =  true;
                     }
-                    // If not in Stream Read block, skip non-stream data
-                    // streamPosition already incremented
+                    else if((curOp & 0xF8) == 0)
+                    {
+                        curOpLen        = 2;
+                        cellAccumulator += ((uint)curOp << 8) | fileData[streamOfs + 1];
+                        newCell         =  true;
+                    }
+                    else
+                        return ErrorNumber.InvalidArgument;
 
                     break;
             }
+
+            if(fileSize - streamOfs < curOpLen)
+                return ErrorNumber.InvalidArgument;
+
+            if(newCell)
+            {
+                cellValues[cellPos]          = cellAccumulator;
+                cellStreamPositions[cellPos] = streamPos;
+                cellPos++;
+                cellAccumulator = 0;
+            }
+
+            streamPos += (uint)curOpLen;
+            streamOfs += curOpLen;
         }
 
-        // Process any remaining stream data
-        if(streamData.Count > 0 && inStreamRead)
+        // Store final partial cell for index resolution boundary
+        cellValues[cellPos]          = cellAccumulator;
+        cellStreamPositions[cellPos] = streamPos;
+
+        int totalCells = cellPos;
+
+        // Resolve index stream positions to cell positions
+        List<uint> indexPositions = [];
+
+        if(indexEvents.Count > 0)
         {
-            ErrorNumber decodeError = DecodeKryoFluxStream(streamData.ToArray(), streamData.Count,
-                                                          out List<uint> cells);
+            int  nextIndex          = 0;
+            uint nextIndexStreamPos = indexEvents[nextIndex].streamPosition;
 
-            if(decodeError != ErrorNumber.NoError) return decodeError;
+            for(int i = 0; i < totalCells; i++)
+            {
+                if(nextIndex >= indexEvents.Count)
+                    break;
 
-            fluxPulses.AddRange(cells);
+                int nextCellPos = i + 1;
+
+                if(nextIndexStreamPos <= cellStreamPositions[nextCellPos])
+                {
+                    if(i == 0 && cellStreamPositions[0] >= nextIndexStreamPos)
+                        nextCellPos = 0;
+
+                    indexPositions.Add((uint)nextCellPos);
+
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "Index {0} resolved to cell position {1}",
+                                      nextIndex, nextCellPos);
+
+                    nextIndex++;
+
+                    if(nextIndex < indexEvents.Count)
+                        nextIndexStreamPos = indexEvents[nextIndex].streamPosition;
+                }
+            }
         }
 
-        // Calculate resolution from sample clock frequency
+        // Build flux pulses array
+        uint[] fluxPulses = new uint[totalCells];
+        Array.Copy(cellValues, fluxPulses, totalCells);
+
         ulong resolution = CalculateResolution(sck);
 
         AaruLogging.Debug(MODULE_NAME,
                           "Decoded {0} flux pulses, {1} index signals, resolution {2} ps",
-                          fluxPulses.Count,
+                          fluxPulses.Length,
                           indexPositions.Count,
                           resolution);
 
-        // Create track capture
-        var capture = new TrackCapture
+        TrackCapture capture = new TrackCapture
         {
             head           = head,
             track          = track,
             resolution     = resolution,
-            fluxPulses     = fluxPulses.ToArray(),
+            fluxPulses     = fluxPulses,
             indexPositions = indexPositions.ToArray()
         };
 

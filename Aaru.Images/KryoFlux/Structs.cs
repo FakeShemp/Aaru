@@ -89,7 +89,8 @@ public sealed partial class KryoFlux
     readonly struct OobStreamEnd
     {
         public readonly uint streamPosition;
-        public readonly ulong result;
+        // The specification says it's a ulong, but the actual data is a uint
+        public readonly uint result;
     }
 
 #endregion
