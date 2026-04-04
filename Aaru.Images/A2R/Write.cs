@@ -61,6 +61,13 @@ public sealed partial class A2R
             return ErrorNumber.WriteError;
         }
 
+        if(dataResolution == 0)
+        {
+            ErrorMessage = Localization.A2R_could_not_scale_index_signals_to_data_resolution;
+
+            return ErrorNumber.InvalidArgument;
+        }
+
         // Per A2R 3.x spec: An RWCP chunk can only have one capture resolution per chunk.
         // If the resolution changes, we need to create a new RWCP chunk.
 
@@ -101,9 +108,9 @@ public sealed partial class A2R
                                                                                      0,
                                                                                      2);
 
-        // Per A2R 3.x spec: Index signals are absolute timings from start of track
+        // Per A2R 3.x spec: Index signals are absolute timings from start of track (in RWCP tick units = data resolution).
         // If capture starts at index signal, that signal should not be included in the array
-        List<uint> a2RIndices = FluxRepresentationsToUInt32List(indexBuffer);
+        List<uint> a2RIndices = FluxRepresentationsToUInt32List(indexBuffer ?? Array.Empty<byte>());
 
         // Per A2R 3.x spec: synchronized indicates if cross-track sync/index was used during imaging
         // If the first index signal is 0, the capture started at index, so synchronized should be 1
@@ -115,15 +122,22 @@ public sealed partial class A2R
 
         if(a2RIndices.Count > 0 && a2RIndices[0] == 0) a2RIndices.RemoveAt(0);
 
+        ErrorNumber scaleError =
+            ScaleCumulativeIndexTicksToDataResolution(a2RIndices, indexResolution, dataResolution, out List<uint> scaledIndices);
+
+        if(scaleError != ErrorNumber.NoError)
+        {
+            ErrorMessage = Localization.A2R_could_not_scale_index_signals_to_data_resolution;
+
+            return scaleError;
+        }
+
+        a2RIndices = scaledIndices;
+
         _writingStream.WriteByte((byte)a2RIndices.Count);
 
-        long previousIndex = 0;
-
-        foreach(uint index in a2RIndices)
-        {
-            _writingStream.Write(BitConverter.GetBytes(index + previousIndex), 0, 4);
-            previousIndex += index;
-        }
+        foreach(uint cumulativeTicks in a2RIndices)
+            _writingStream.Write(BitConverter.GetBytes(cumulativeTicks), 0, 4);
 
         _writingStream.Write(BitConverter.GetBytes(dataBuffer.Length), 0, 4);
         _writingStream.Write(dataBuffer,                               0, dataBuffer.Length);

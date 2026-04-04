@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Aaru.CommonTypes;
+using Aaru.CommonTypes.Enums;
 
 namespace Aaru.Images;
 
@@ -139,11 +140,50 @@ public sealed partial class A2R
             {
                 tick += b;
                 data.Add(tick);
-                tick = 0;
             }
         }
 
         return data;
+    }
+
+    /// <summary>
+    ///     Converts cumulative index signal times from <paramref name="indexResolution" /> tick units to
+    ///     <paramref name="dataResolution" /> tick units. A2R RWCP stores one picoseconds-per-tick for both index and flux
+    ///     (the data resolution); index samples from sources with a different index clock must be rescaled.
+    /// </summary>
+    /// <param name="cumulativeIndexTicks">Cumulative absolute times in index-tick units (same encoding as <see cref="FluxRepresentationsToUInt32List" />).</param>
+    /// <param name="indexResolution">Picoseconds per tick for the index stream.</param>
+    /// <param name="dataResolution">Picoseconds per tick for the RWCP chunk (flux stream).</param>
+    /// <param name="cumulativeDataTicks">Cumulative absolute times in data-tick units.</param>
+    /// <returns><see cref="ErrorNumber.NoError" /> or <see cref="ErrorNumber.InvalidArgument" /> if scaling is impossible.</returns>
+    static ErrorNumber ScaleCumulativeIndexTicksToDataResolution(List<uint> cumulativeIndexTicks,
+                                                                   ulong      indexResolution, ulong dataResolution,
+                                                                   out List<uint> cumulativeDataTicks)
+    {
+        cumulativeDataTicks = new List<uint>();
+
+        if(cumulativeIndexTicks is null || cumulativeIndexTicks.Count == 0) return ErrorNumber.NoError;
+
+        if(dataResolution == 0) return ErrorNumber.InvalidArgument;
+
+        if(indexResolution == dataResolution)
+        {
+            cumulativeDataTicks.AddRange(cumulativeIndexTicks);
+
+            return ErrorNumber.NoError;
+        }
+
+        foreach(uint c in cumulativeIndexTicks)
+        {
+            ulong timePs = (ulong)c * indexResolution;
+            ulong scaled = timePs / dataResolution;
+
+            if(scaled > uint.MaxValue) return ErrorNumber.InvalidArgument;
+
+            cumulativeDataTicks.Add((uint)scaled);
+        }
+
+        return ErrorNumber.NoError;
     }
 
     /// <summary>
