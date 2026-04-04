@@ -9,6 +9,24 @@ namespace Aaru.Core.Image;
 
 public sealed partial class Merger
 {
+    /// <summary>
+    ///     Single extent covering sectors <c>0 .. sectorCount - 1</c>, or an empty list when
+    ///     <paramref name="sectorCount" /> is zero (avoids <c>0 - 1</c> unsigned underflow in callers).
+    /// </summary>
+    static List<Extent> CreateDefaultDumpExtents(ulong sectorCount)
+    {
+        if(sectorCount == 0) return new List<Extent>();
+
+        return new List<Extent>
+        {
+            new Extent
+            {
+                Start = 0,
+                End   = sectorCount - 1
+            }
+        };
+    }
+
     List<ulong> CalculateSectorsToCopy(IMediaImage primaryImage,    IMediaImage secondaryImage, Resume primaryResume,
                                        Resume      secondaryResume, List<ulong> overrideSectorsList)
     {
@@ -16,14 +34,7 @@ public sealed partial class Merger
                                           [
                                               new DumpHardware
                                               {
-                                                  Extents =
-                                                  [
-                                                      new Extent
-                                                      {
-                                                          Start = 0,
-                                                          End   = primaryImage.Info.Sectors - 1
-                                                      }
-                                                  ]
+                                                  Extents = CreateDefaultDumpExtents(primaryImage.Info.Sectors)
                                               }
                                           ];
 
@@ -32,14 +43,7 @@ public sealed partial class Merger
             [
                 new DumpHardware
                 {
-                    Extents =
-                    [
-                        new Extent
-                        {
-                            Start = 0,
-                            End   = secondaryImage.Info.Sectors - 1
-                        }
-                    ]
+                    Extents = CreateDefaultDumpExtents(secondaryImage.Info.Sectors)
                 }
             ];
 
@@ -93,14 +97,7 @@ public sealed partial class Merger
                                           [
                                               new DumpHardware
                                               {
-                                                  Extents =
-                                                  [
-                                                      new Extent
-                                                      {
-                                                          Start = 0,
-                                                          End   = primaryImage.Info.Sectors - 1
-                                                      }
-                                                  ]
+                                                  Extents = CreateDefaultDumpExtents(primaryImage.Info.Sectors)
                                               }
                                           ];
 
@@ -109,14 +106,7 @@ public sealed partial class Merger
             [
                 new DumpHardware
                 {
-                    Extents =
-                    [
-                        new Extent
-                        {
-                            Start = 0,
-                            End   = secondaryImage.Info.Sectors - 1
-                        }
-                    ]
+                    Extents = CreateDefaultDumpExtents(secondaryImage.Info.Sectors)
                 }
             ];
 

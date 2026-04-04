@@ -5536,8 +5536,11 @@ Do you want to continue?</value>
     <data name="Will_copy_0_sectors_from_secondary_image" xml:space="preserve">
         <value>[slateblue1]Will copy [teal]{0}[/] sectors from secondary image.[/]</value>
     </data>
-    <data name="Flux_data_will_be_copied_as_is_from_primary_image" xml:space="preserve">
-        <value>[slateblue1]Flux data will be copied as-is from primary image...[/]</value>
+    <data name="Flux_merge_primary_then_secondary_appended" xml:space="preserve">
+        <value>[slateblue1]Merging flux: primary captures first, then secondary captures appended with renumbered indices...[/]</value>
+    </data>
+    <data name="Flux_merge_primary_flux_only_secondary_not_flux_image" xml:space="preserve">
+        <value>[slateblue1]Secondary image is not a flux image; copying flux captures from the primary image only...[/]</value>
     </data>
     <data name="Copying_file_0_of_partition_1" xml:space="preserve">
         <value>[slateblue1]Copying file [lime]{0}[/] of partition [teal]{1}[/]...[/]</value>

@@ -5452,8 +5452,11 @@ Probadores:
     <data name="Will_copy_0_sectors_from_secondary_image" xml:space="preserve">
         <value>[slateblue1]Se copiarán [teal]{0}[/] sectores de la imagen secundaria.[/]</value>
     </data>
-    <data name="Flux_data_will_be_copied_as_is_from_primary_image" xml:space="preserve">
-        <value>[slateblue1]Los datos de flujo se copiarán tal cual de la imagen primaria...[/]</value>
+    <data name="Flux_merge_primary_then_secondary_appended" xml:space="preserve">
+        <value>[slateblue1]Combinando flujo: primero capturas de la imagen primaria, luego las de la secundaria con índices renumerados...[/]</value>
+    </data>
+    <data name="Flux_merge_primary_flux_only_secondary_not_flux_image" xml:space="preserve">
+        <value>[slateblue1]La imagen secundaria no es de flujo; copiando solo las capturas de flujo de la imagen primaria...[/]</value>
     </data>
     <data name="Copying_file_0_of_partition_1" xml:space="preserve">
         <value>[slateblue1]Copiando fichero [lime]{0}[/] de partición [teal]{1}[/]...[/]</value>

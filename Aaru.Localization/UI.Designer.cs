@@ -5115,6 +5115,24 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Flux_data_will_be_copied_as_is_from_primary_image", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///    Looks up localized string similar to Merging flux: primary captures first, then secondary captures appended with renumbered indices...
+        /// </summary>
+        public static string Flux_merge_primary_then_secondary_appended {
+            get {
+                return ResourceManager.GetString("Flux_merge_primary_then_secondary_appended", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///    Looks up localized string similar to Secondary image is not a flux image; copying flux captures from the primary image only...
+        /// </summary>
+        public static string Flux_merge_primary_flux_only_secondary_not_flux_image {
+            get {
+                return ResourceManager.GetString("Flux_merge_primary_flux_only_secondary_not_flux_image", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Force geometry, only supported in not tape block media. Specify as C/H/S..
