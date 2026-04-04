@@ -68,6 +68,93 @@ public sealed partial class A2R
             return ErrorNumber.InvalidArgument;
         }
 
+        List<uint> rawCumulative = FluxRepresentationsToUInt32List(indexBuffer ?? Array.Empty<byte>());
+
+        if(rawCumulative.Count == 0)
+        {
+            ErrorMessage = Localization.A2R_cannot_index_align_without_index_signals;
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        bool       startsAtIndex = rawCumulative[0] == 0;
+        List<uint> a2RIndices;
+        byte[]     alignedData;
+        byte       synchronizedFlag;
+
+        if(startsAtIndex)
+        {
+            rawCumulative.RemoveAt(0);
+
+            ErrorNumber scaleError =
+                ScaleCumulativeIndexTicksToDataResolution(rawCumulative, indexResolution, dataResolution, out a2RIndices);
+
+            if(scaleError != ErrorNumber.NoError)
+            {
+                ErrorMessage = Localization.A2R_could_not_scale_index_signals_to_data_resolution;
+
+                return scaleError;
+            }
+
+            if(dataBuffer is null || dataBuffer.Length == 0)
+                alignedData = Array.Empty<byte>();
+            else
+            {
+                alignedData = new byte[dataBuffer.Length];
+                Array.Copy(dataBuffer, alignedData, dataBuffer.Length);
+            }
+
+            synchronizedFlag = 1;
+        }
+        else
+        {
+            AaruLogging.Debug(MODULE_NAME, "Capture does not start at index, scaling index signals to data resolution. Some data will be lost.");
+
+            ErrorNumber scaleError =
+                ScaleCumulativeIndexTicksToDataResolution(rawCumulative, indexResolution, dataResolution,
+                                                          out List<uint> scaled);
+
+            if(scaleError != ErrorNumber.NoError)
+            {
+                ErrorMessage = Localization.A2R_could_not_scale_index_signals_to_data_resolution;
+
+                return scaleError;
+            }
+
+            uint t0 = scaled[0];
+
+            AaruLogging.Debug(MODULE_NAME, "Trimmed {0} ticks from start of data", t0);
+            ErrorNumber trimError = TrimFluxDataLeadingTicks(dataBuffer ?? Array.Empty<byte>(), t0, out alignedData);
+
+            if(trimError != ErrorNumber.NoError)
+            {
+                ErrorMessage = Localization.A2R_index_alignment_trim_removed_entire_capture;
+
+                return trimError;
+            }
+
+            a2RIndices = new List<uint>();
+
+            foreach(uint t in scaled)
+            {
+                if(t < t0)
+                {
+                    ErrorMessage = Localization.A2R_index_alignment_trim_removed_entire_capture;
+
+                    return ErrorNumber.InvalidArgument;
+                }
+
+                a2RIndices.Add(t - t0);
+            }
+
+            while(a2RIndices.Count > 0 && a2RIndices[0] == 0)
+                a2RIndices.RemoveAt(0);
+
+            synchronizedFlag = 1;
+        }
+
+        _infoChunkV3.synchronized = (byte)Math.Max(_infoChunkV3.synchronized, synchronizedFlag);
+
         // Per A2R 3.x spec: An RWCP chunk can only have one capture resolution per chunk.
         // If the resolution changes, we need to create a new RWCP chunk.
 
@@ -97,7 +184,7 @@ public sealed partial class A2R
 
         // Per A2R 3.x spec: Capture type 1 = timing (~1.25 revolutions), 3 = xtiming (2.25+ revolutions)
         // Type 2 = bits (legacy, deprecated)
-        _writingStream.WriteByte(IsCaptureTypeTiming(dataResolution, dataBuffer) ? (byte)1 : (byte)3);
+        _writingStream.WriteByte(IsCaptureTypeTiming(dataResolution, alignedData) ? (byte)1 : (byte)3);
 
         // Per A2R 3.x spec: Location uses formula ((cylinder << 1) + side) for most drive types
         // For quarter-step drives (SS 5.25 @ 0.25 step), location is in halfphases
@@ -108,41 +195,15 @@ public sealed partial class A2R
                                                                                      0,
                                                                                      2);
 
-        // Per A2R 3.x spec: Index signals are absolute timings from start of track (in RWCP tick units = data resolution).
-        // If capture starts at index signal, that signal should not be included in the array
-        List<uint> a2RIndices = FluxRepresentationsToUInt32List(indexBuffer ?? Array.Empty<byte>());
-
-        // Per A2R 3.x spec: synchronized indicates if cross-track sync/index was used during imaging
-        // If the first index signal is 0, the capture started at index, so synchronized should be 1
-        if(!_firstCaptureProcessed && a2RIndices.Count > 0)
-        {
-            _infoChunkV3.synchronized = a2RIndices[0] == 0 ? (byte)1 : (byte)0;
-            _firstCaptureProcessed = true;
-        }
-
-        if(a2RIndices.Count > 0 && a2RIndices[0] == 0) a2RIndices.RemoveAt(0);
-
-        ErrorNumber scaleError =
-            ScaleCumulativeIndexTicksToDataResolution(a2RIndices, indexResolution, dataResolution, out List<uint> scaledIndices);
-
-        if(scaleError != ErrorNumber.NoError)
-        {
-            ErrorMessage = Localization.A2R_could_not_scale_index_signals_to_data_resolution;
-
-            return scaleError;
-        }
-
-        a2RIndices = scaledIndices;
-
         _writingStream.WriteByte((byte)a2RIndices.Count);
 
         foreach(uint cumulativeTicks in a2RIndices)
             _writingStream.Write(BitConverter.GetBytes(cumulativeTicks), 0, 4);
 
-        _writingStream.Write(BitConverter.GetBytes(dataBuffer.Length), 0, 4);
-        _writingStream.Write(dataBuffer,                               0, dataBuffer.Length);
+        _writingStream.Write(BitConverter.GetBytes(alignedData.Length), 0, 4);
+        _writingStream.Write(alignedData,                         0, alignedData.Length);
 
-        _currentCaptureOffset += (uint)(9 + a2RIndices.Count * 4 + dataBuffer.Length);
+        _currentCaptureOffset += (uint)(9 + a2RIndices.Count * 4 + alignedData.Length);
 
         return ErrorNumber.NoError;
     }
@@ -173,7 +234,6 @@ public sealed partial class A2R
 
         IsWriting    = true;
         ErrorMessage = null;
-        _firstCaptureProcessed = false;
 
         // Per A2R 3.x spec: File header is 8 bytes
         // Bytes 0-3: "A2R3" (0x33523241 little-endian) - version 3.x
@@ -268,7 +328,6 @@ public sealed partial class A2R
         // Will be set based on first capture's index signals in WriteFluxCapture
         // Default to 0 (will be updated when first capture is written)
         _infoChunkV3.synchronized = 0;
-        _firstCaptureProcessed = false;
 
         // Per A2R 3.x spec: hardSectorCount indicates number of hard sectors (0 = soft sectored)
         // Default to 0 (soft sectored) as most floppies are soft sectored

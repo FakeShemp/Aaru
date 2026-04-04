@@ -187,6 +187,90 @@ public sealed partial class A2R
     }
 
     /// <summary>
+    ///     Decodes the internal flux data buffer into per-interval tick lengths (data resolution ticks between transitions).
+    /// </summary>
+    static List<uint> FluxDataBufferToIntervals(byte[] data)
+    {
+        List<uint> intervals = new List<uint>();
+
+        if(data is null || data.Length == 0) return intervals;
+
+        List<uint> cumulative = FluxRepresentationsToUInt32List(data);
+        uint       previous   = 0;
+
+        foreach(uint c in cumulative)
+        {
+            intervals.Add(c - previous);
+            previous = c;
+        }
+
+        return intervals;
+    }
+
+    /// <summary>
+    ///     Drops <paramref name="trimTicks" /> data ticks from the start of the flux stream and re-encodes the remainder.
+    /// </summary>
+    static ErrorNumber TrimFluxDataLeadingTicks(byte[] data, uint trimTicks, out byte[] trimmed)
+    {
+        trimmed = Array.Empty<byte>();
+
+        if(trimTicks == 0)
+        {
+            if(data is null || data.Length == 0)
+                return ErrorNumber.NoError;
+
+            trimmed = new byte[data.Length];
+            Array.Copy(data, trimmed, data.Length);
+
+            return ErrorNumber.NoError;
+        }
+
+        if(data is null || data.Length == 0) return ErrorNumber.InvalidArgument;
+
+        List<uint> intervals = FluxDataBufferToIntervals(data);
+
+        ulong totalTicks = 0;
+
+        foreach(uint iv in intervals) totalTicks += iv;
+
+        if(trimTicks > totalTicks) return ErrorNumber.InvalidArgument;
+
+        ulong      remaining    = trimTicks;
+        List<uint> newIntervals = new List<uint>();
+
+        foreach(uint interval in intervals)
+        {
+            if(remaining == 0)
+            {
+                newIntervals.Add(interval);
+
+                continue;
+            }
+
+            if(remaining >= (ulong)interval)
+            {
+                remaining -= interval;
+
+                continue;
+            }
+
+            uint part = interval - (uint)remaining;
+            remaining = 0;
+            newIntervals.Add(part);
+        }
+
+        if(newIntervals.Count == 0) return ErrorNumber.InvalidArgument;
+
+        List<byte> encoded = new List<byte>();
+
+        foreach(uint iv in newIntervals) encoded.AddRange(UInt32ToFluxRepresentation(iv));
+
+        trimmed = encoded.ToArray();
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>
     ///     Determines if a flux capture is a "timing" capture (~1.25 revolutions) or "xtiming" capture (2.25+ revolutions).
     ///     Per A2R 3.x spec: timing captures are quick flux captures (~1.25 revolutions), xtiming captures are extended
     ///     captures (2.25+ revolutions) used for error correction and analysis.
