@@ -173,15 +173,12 @@ public sealed partial class A2R
             return ErrorNumber.NoError;
         }
 
-        foreach(uint c in cumulativeIndexTicks)
-        {
-            ulong timePs = (ulong)c * indexResolution;
-            ulong scaled = timePs / dataResolution;
+        IEnumerable<ulong> scaledTicks = cumulativeIndexTicks.Select(c => ((ulong)c * indexResolution) / dataResolution);
 
-            if(scaled > uint.MaxValue) return ErrorNumber.InvalidArgument;
+        if(scaledTicks.Any(scaled => scaled > uint.MaxValue))
+            return ErrorNumber.InvalidArgument;
 
-            cumulativeDataTicks.Add((uint)scaled);
-        }
+        cumulativeDataTicks = scaledTicks.Select(scaled => (uint)scaled).ToList();
 
         return ErrorNumber.NoError;
     }
