@@ -549,9 +549,8 @@ public sealed partial class SuperCardPro
 
         byte scpTrackNum = (byte)HeadTrackSubToScpTrack(head, track, subTrack, Header.heads);
 
-        if(!ScpTracks.ContainsKey(scpTrackNum)) return ErrorNumber.OutOfRange;
-
-        TrackHeader scpTrack = ScpTracks[scpTrackNum];
+        if(!ScpTracks.TryGetValue(scpTrackNum, out TrackHeader scpTrack))
+            return ErrorNumber.OutOfRange;
 
         // Per SCP spec: indexTime is duration in nanoseconds/25ns for one revolution
         for(var i = 0; i < Header.revolutions; i++)
