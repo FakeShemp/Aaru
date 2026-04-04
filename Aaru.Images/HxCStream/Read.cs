@@ -340,6 +340,8 @@ public sealed partial class HxCStream
 
                         AaruLogging.Debug(MODULE_NAME, "Decoded {0} flux pulses (expected {1})", pulses.Length, numberOfPulses);
 
+                        if(pulses.Length != numberOfPulses) return ErrorNumber.InvalidArgument;
+
                         fluxPulses.AddRange(pulses);
 
                         packetOffset += Marshal.SizeOf<HxCStreamPackedStreamHeader>() + streamHeader.packedSize;
