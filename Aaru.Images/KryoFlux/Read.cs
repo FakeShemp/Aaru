@@ -671,7 +671,7 @@ public sealed partial class KryoFlux
 
         if(capture == null) return ErrorNumber.OutOfRange;
 
-        var tmpBuffer = new List<byte> { 0 };
+        var tmpBuffer = new List<byte>();
         uint previousPosition = 0;
 
         foreach(uint indexPos in capture.indexPositions)
