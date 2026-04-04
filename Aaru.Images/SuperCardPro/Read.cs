@@ -577,9 +577,8 @@ public sealed partial class SuperCardPro
         // Per SCP spec: bitCellEncoding (byte 0x09) = 0 means 16 bits, other values are for future expansion
         if(Header.bitCellEncoding != 0 && Header.bitCellEncoding != 16) return ErrorNumber.NotImplemented;
 
-        if(!ScpTracks.ContainsKey(scpTrackNum)) return ErrorNumber.OutOfRange;
-
-        TrackHeader scpTrack = ScpTracks[scpTrackNum];
+        if(!ScpTracks.TryGetValue(scpTrackNum, out TrackHeader scpTrack))
+            return ErrorNumber.OutOfRange;
 
         Stream stream = _scpFilter.GetDataForkStream();
         var    br     = new BinaryReader(stream);
