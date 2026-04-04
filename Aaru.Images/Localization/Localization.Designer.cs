@@ -600,6 +600,24 @@ namespace Aaru.Images {
             }
         }
         
+        internal static string A2R_could_not_scale_index_signals_to_data_resolution {
+            get {
+                return ResourceManager.GetString("A2R_could_not_scale_index_signals_to_data_resolution", resourceCulture);
+            }
+        }
+        
+        internal static string A2R_cannot_index_align_without_index_signals {
+            get {
+                return ResourceManager.GetString("A2R_cannot_index_align_without_index_signals", resourceCulture);
+            }
+        }
+        
+        internal static string A2R_index_alignment_trim_removed_entire_capture {
+            get {
+                return ResourceManager.GetString("A2R_index_alignment_trim_removed_entire_capture", resourceCulture);
+            }
+        }
+        
         internal static string Tried_to_write_past_image_size {
             get {
                 return ResourceManager.GetString("Tried_to_write_past_image_size", resourceCulture);

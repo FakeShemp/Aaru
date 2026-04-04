@@ -59,7 +59,6 @@ public sealed partial class A2R : IWritableFluxImage
     // Offset from the start of the current RWCP to the next capture
     uint _currentCaptureOffset = 16;
     uint _currentResolution;
-    bool _firstCaptureProcessed;
 
     // 53 = A2R header, INFO header, INFO data
     long                       _currentRwcpStart = 53;

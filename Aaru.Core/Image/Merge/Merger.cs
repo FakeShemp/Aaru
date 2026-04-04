@@ -220,12 +220,15 @@ public sealed partial class Merger
         InitProgress?.Invoke();
         PulseProgress?.Invoke(UI.Calculating_sectors_to_merge);
 
-        List<ulong> sectorsToCopyFromSecondImage =
-            CalculateSectorsToCopy(primaryImage, secondaryImage, primaryResume, secondaryResume, overrideSectorsList);
+            List<ulong> sectorsToCopyFromSecondImage =
+                CalculateSectorsToCopy(primaryImage, secondaryImage, primaryResume, secondaryResume, overrideSectorsList);
 
         EndProgress?.Invoke();
 
-        if(sectorsToCopyFromSecondImage.Count == 0)
+        // Flux images might contain no decoded data, which results in a sector count of 0. We allow this if the image contains flux.
+        var containsFlux = primaryImage is IFluxImage || secondaryImage is IFluxImage;
+
+        if(sectorsToCopyFromSecondImage.Count == 0 && !containsFlux)
         {
             StoppingErrorMessage
               ?.Invoke(UI.No_sectors_to_merge__output_image_will_be_identical_to_primary_image_not_continuing);
@@ -344,10 +347,15 @@ public sealed partial class Merger
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            if(primaryImage is IFluxImage inputFlux && outputFormat is IWritableFluxImage outputFlux)
+            if(primaryImage is IFluxImage primaryFlux && outputFormat is IWritableFluxImage outputFlux)
             {
-                UpdateStatus?.Invoke(UI.Flux_data_will_be_copied_as_is_from_primary_image);
-                errno = CopyFlux(inputFlux, outputFlux);
+                IFluxImage secondaryFlux = secondaryImage as IFluxImage;
+
+                UpdateStatus?.Invoke(secondaryFlux != null
+                                         ? UI.Flux_merge_primary_then_secondary_appended
+                                         : UI.Flux_merge_primary_flux_only_secondary_not_flux_image);
+
+                errno = MergeFlux(primaryFlux, secondaryFlux, outputFlux);
 
                 if(errno != ErrorNumber.NoError) return errno;
             }
