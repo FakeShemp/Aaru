@@ -47,4 +47,10 @@ public sealed partial class SuperCardPro
     readonly byte[] _scpSignature = "SCP"u8.ToArray();
     /// <summary>SuperCardPro track header signature: "TRK"</summary>
     readonly byte[] _trkSignature = "TRK"u8.ToArray();
+
+    /// <summary>Per SCP spec: Extended mode TDH table offset (when FLAGS bit 6 is set)</summary>
+    const uint EXTENDED_MODE_TDH_OFFSET = 0x80;
+
+    /// <summary>Per SCP spec: Extended mode reserved bytes size (bytes 0x10-0x7F when FLAGS bit 6 is set)</summary>
+    const uint EXTENDED_MODE_RESERVED_SIZE = 0x70;
 }

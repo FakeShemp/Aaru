@@ -48,6 +48,7 @@ public sealed partial class SuperCardPro
 #region IWritableFluxImage Members
 
     /// <inheritdoc />
+    /// <summary>Opens and parses SuperCard Pro flux image file</summary>
     public ErrorNumber Open(IFilter imageFilter)
     {
         Header     = new ScpHeader();
@@ -56,8 +57,12 @@ public sealed partial class SuperCardPro
 
         _scpFilter = imageFilter;
 
+        // Per SCP spec: Minimum file size is header size (bytes 0x00-0x0F + TDH offset table)
         if(_scpStream.Length < Marshal.SizeOf<ScpHeader>()) return ErrorNumber.InvalidArgument;
 
+        // Per SCP spec: Read header starting at byte 0x00
+        // Bytes 0x00-0x02: "SCP" signature
+        // Byte 0x03: Version/revision (Version<<4|Revision)
         var hdr = new byte[Marshal.SizeOf<ScpHeader>()];
         _scpStream.EnsureRead(hdr, 0, Marshal.SizeOf<ScpHeader>());
 
@@ -76,31 +81,58 @@ public sealed partial class SuperCardPro
         AaruLogging.Debug(MODULE_NAME, "header.resolution = {0}",      Header.resolution);
         AaruLogging.Debug(MODULE_NAME, "header.checksum = 0x{0:X8}",   Header.checksum);
 
-        AaruLogging.Debug(MODULE_NAME, "header.flags.StartsAtIndex = {0}", Header.flags == ScpFlags.StartsAtIndex);
+        // Per SCP spec: FLAGS byte (0x08) bit definitions
+        // Bit 0 (INDEX): cleared = no index reference, set = flux starts at index
+        // Bit 1 (TPI): cleared = 48TPI, set = 96TPI (5.25" drives only)
+        // Bit 2 (RPM): cleared = 300 RPM, set = 360 RPM
+        // Bit 3 (TYPE): cleared = original flux, set = normalized flux
+        // Bit 4 (MODE): cleared = read-only, set = read/write capable
+        // Bit 5 (FOOTER): cleared = no footer, set = footer present
+        // Bit 6 (EXTENDED MODE): cleared = floppy only, set = extended mode (tapes/hard drives)
+        // Bit 7 (FLUX CREATOR): cleared = SuperCard Pro, set = other device
+        AaruLogging.Debug(MODULE_NAME, "header.flags.StartsAtIndex = {0}", Header.flags.HasFlag(ScpFlags.StartsAtIndex));
 
-        AaruLogging.Debug(MODULE_NAME, "header.flags.Tpi = {0}", Header.flags == ScpFlags.Tpi ? "96tpi" : "48tpi");
+        AaruLogging.Debug(MODULE_NAME, "header.flags.Tpi = {0}", Header.flags.HasFlag(ScpFlags.Tpi) ? "96tpi" : "48tpi");
 
-        AaruLogging.Debug(MODULE_NAME, "header.flags.Rpm = {0}", Header.flags == ScpFlags.Rpm ? "360rpm" : "300rpm");
+        AaruLogging.Debug(MODULE_NAME, "header.flags.Rpm = {0}", Header.flags.HasFlag(ScpFlags.Rpm) ? "360rpm" : "300rpm");
 
-        AaruLogging.Debug(MODULE_NAME, "header.flags.Normalized = {0}", Header.flags == ScpFlags.Normalized);
+        AaruLogging.Debug(MODULE_NAME, "header.flags.Normalized = {0}", Header.flags.HasFlag(ScpFlags.Normalized));
 
-        AaruLogging.Debug(MODULE_NAME, "header.flags.Writable = {0}", Header.flags == ScpFlags.Writable);
+        AaruLogging.Debug(MODULE_NAME, "header.flags.Writable = {0}", Header.flags.HasFlag(ScpFlags.Writable));
 
-        AaruLogging.Debug(MODULE_NAME, "header.flags.HasFooter = {0}", Header.flags == ScpFlags.HasFooter);
+        AaruLogging.Debug(MODULE_NAME, "header.flags.HasFooter = {0}", Header.flags.HasFlag(ScpFlags.HasFooter));
 
-        AaruLogging.Debug(MODULE_NAME, "header.flags.NotFloppy = {0}", Header.flags == ScpFlags.NotFloppy);
+        AaruLogging.Debug(MODULE_NAME, "header.flags.NotFloppy = {0}", Header.flags.HasFlag(ScpFlags.NotFloppy));
 
         AaruLogging.Debug(MODULE_NAME,
                           "header.flags.CreatedByOtherDevice = {0}",
-                          Header.flags == ScpFlags.CreatedByOtherDevice);
+                          Header.flags.HasFlag(ScpFlags.CreatedByOtherDevice));
 
+        // Per SCP spec: First 3 bytes must be "SCP" signature
         if(!_scpSignature.SequenceEqual(Header.signature)) return ErrorNumber.InvalidArgument;
+
+        // Extended mode (FLAGS bit 6) indicates non-floppy media (tapes/hard drives)
+        // These remain unimplemented for now
+        if(Header.flags.HasFlag(ScpFlags.NotFloppy)) return ErrorNumber.NotImplemented;
+
+        // Since we only support floppy disks, always set MetadataMediaType to BlockMedia
+        _imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
 
         ScpTracks = new Dictionary<byte, TrackHeader>();
 
+        // Per SCP spec: For single-sided disks, skip TDH entries appropriately
+        // heads = 0: both heads (read all tracks)
+        // heads = 1: side 0 only (read even entries: 0,2,4,6...)
+        // heads = 2: side 1 only (read odd entries: 1,3,5,7...)
         for(byte t = Header.start; t <= Header.end; t++)
         {
             if(t >= Header.offsets.Length) break;
+
+            // Skip entries based on single-sided disk configuration
+            if(Header.heads == 1 && (t % 2) != 0) continue; // Side 0 only - skip odd entries
+            if(Header.heads == 2 && (t % 2) == 0) continue; // Side 1 only - skip even entries
+
+            if(Header.offsets[t] == 0) continue; // Per SCP spec: 0x00000000 means no flux data for this track
 
             _scpStream.Position = Header.offsets[t];
 
@@ -110,9 +142,11 @@ public sealed partial class SuperCardPro
                 Entries   = new TrackEntry[Header.revolutions]
             };
 
+            // Per SCP spec: Track Data Header (TDH) starts with "TRK" signature (3 bytes) + track number (1 byte)
             _scpStream.EnsureRead(trk.Signature, 0, trk.Signature.Length);
             trk.TrackNumber = (byte)_scpStream.ReadByte();
 
+            // Per SCP spec: Validate TDH signature for recovery from corrupt files
             if(!trk.Signature.SequenceEqual(_trkSignature))
             {
                 AaruLogging.Debug(MODULE_NAME,
@@ -135,6 +169,8 @@ public sealed partial class SuperCardPro
 
             AaruLogging.Debug(MODULE_NAME, Localization.Found_track_0_at_1, t, Header.offsets[t]);
 
+            // Per SCP spec: Each revolution has 3 longwords: indexTime, trackLength, dataOffset
+            // dataOffset is relative to start of TDH (not file start)
             for(byte r = 0; r < Header.revolutions; r++)
             {
                 var rev = new byte[Marshal.SizeOf<TrackEntry>()];
@@ -142,14 +178,12 @@ public sealed partial class SuperCardPro
 
                 trk.Entries[r] = Marshal.ByteArrayToStructureLittleEndian<TrackEntry>(rev);
 
-                // De-relative offsets
+                // Per SCP spec: dataOffset is relative to TDH start, convert to absolute file offset
                 trk.Entries[r].dataOffset += Header.offsets[t];
             }
 
             ScpTracks.Add(t, trk);
         }
-
-        _imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
 
         switch(Header.type)
         {
@@ -184,7 +218,7 @@ public sealed partial class SuperCardPro
 
                 break;
             case ScpDiskType.AtariFMEx:
-                break;
+                return ErrorNumber.NotImplemented;
             case ScpDiskType.AtariSTSS:
                 _imageInfo.MediaType = MediaType.ATARI_35_SS_DD;
                 _imageInfo.Cylinders = (uint)int.Max((Header.end + 1) / 2, 80);
@@ -197,6 +231,9 @@ public sealed partial class SuperCardPro
                 _imageInfo.Heads     = 2;
 
                 break;
+            case ScpDiskType.AtariSTSSHD: // Per SCP spec v2.5: Atari ST SS HD
+            case ScpDiskType.AtariSTDSHD: // Per SCP spec v2.5: Atari ST DS HD
+                return ErrorNumber.NotImplemented;
             case ScpDiskType.AppleII:
                 _imageInfo.MediaType = MediaType.Apple32DS;
                 _imageInfo.Cylinders = (uint)int.Max((Header.end + 1) / 2, 40);
@@ -204,7 +241,7 @@ public sealed partial class SuperCardPro
 
                 break;
             case ScpDiskType.AppleIIPro:
-                break;
+                return ErrorNumber.NotImplemented;
             case ScpDiskType.Apple400K:
                 _imageInfo.MediaType       = MediaType.AppleSonySS;
                 _imageInfo.Cylinders       = (uint)int.Max((Header.end + 1) / 2, 80);
@@ -253,15 +290,10 @@ public sealed partial class SuperCardPro
 
                 break;
             case ScpDiskType.TandySSDD:
-                return ErrorNumber.NotImplemented;
             case ScpDiskType.TandyDSSD:
-                return ErrorNumber.NotImplemented;
             case ScpDiskType.TandyDSDD:
-                return ErrorNumber.NotImplemented;
             case ScpDiskType.Ti994A:
-                return ErrorNumber.NotImplemented;
             case ScpDiskType.RolandD20:
-                return ErrorNumber.NotImplemented;
             case ScpDiskType.AmstradCPC:
                 return ErrorNumber.NotImplemented;
             case ScpDiskType.Generic360K:
@@ -292,14 +324,12 @@ public sealed partial class SuperCardPro
             case ScpDiskType.TapeGCR1:
             case ScpDiskType.TapeGCR2:
             case ScpDiskType.TapeMFM:
-                _imageInfo.MediaType = MediaType.UnknownTape;
-
-                break;
+                // Tapes remain unimplemented for now
+                return ErrorNumber.NotImplemented;
             case ScpDiskType.HddMFM:
             case ScpDiskType.HddRLL:
-                _imageInfo.MediaType = MediaType.GENERIC_HDD;
-
-                break;
+                // Hard drives remain unimplemented for now
+                return ErrorNumber.NotImplemented;
             default:
                 _imageInfo.MediaType = MediaType.Unknown;
 
@@ -311,9 +341,21 @@ public sealed partial class SuperCardPro
                 break;
         }
 
+        // Per SCP spec: Timestamp (if present) appears after track data, before footer
+        // Read timestamp if present
+        long lastTrackDataPosition = _scpStream.Position;
+        string timestamp = ReadTimestamp(_scpStream, lastTrackDataPosition);
+
+        if(timestamp != null)
+        {
+            AaruLogging.Debug(MODULE_NAME, "Found timestamp: \"{0}\"", timestamp);
+            // Timestamp is informative only - we use footer timestamps if footer is present
+        }
+
+        // Per SCP spec: Footer detection - look for "FPCS" signature
         if(Header.flags.HasFlag(ScpFlags.HasFooter))
         {
-            long position = _scpStream.Position;
+            long position = timestamp != null ? _scpStream.Position : lastTrackDataPosition;
             _scpStream.Seek(-4, SeekOrigin.End);
 
             while(_scpStream.Position >= position)
@@ -416,7 +458,18 @@ public sealed partial class SuperCardPro
                     _imageInfo.DriveFirmwareRevision =
                         $"{(footer.firmwareVersion & 0xF0) >> 4}.{footer.firmwareVersion & 0xF}";
 
-                    _imageInfo.Version = $"{(footer.imageVersion & 0xF0) >> 4}.{footer.imageVersion & 0xF}";
+                    // Per SCP spec: When FOOTER bit is set and version byte is 0, use footer version
+                    if(Header.version == 0)
+                    {
+                        _imageInfo.Version = $"{(footer.imageVersion & 0xF0) >> 4}.{footer.imageVersion & 0xF}";
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Using footer version (header version was 0): {0}",
+                                          _imageInfo.Version);
+                    }
+                    else
+                    {
+                        _imageInfo.Version = $"{(footer.imageVersion & 0xF0) >> 4}.{footer.imageVersion & 0xF}";
+                    }
 
                     break;
                 }
@@ -430,7 +483,6 @@ public sealed partial class SuperCardPro
             _imageInfo.ApplicationVersion = $"{(Header.version & 0xF0) >> 4}.{Header.version & 0xF}";
             _imageInfo.CreationTime = imageFilter.CreationTime;
             _imageInfo.LastModificationTime = imageFilter.LastWriteTime;
-            _imageInfo.Version = "2.4";
         }
 
         return ErrorNumber.NoError;
@@ -485,16 +537,22 @@ public sealed partial class SuperCardPro
     {
         buffer = null;
 
+        // Non-floppy media (tapes/hard drives) not supported
         if(Header.flags.HasFlag(ScpFlags.NotFloppy)) return ErrorNumber.NotImplemented;
 
         if(captureIndex > 0) return ErrorNumber.OutOfRange;
 
         List<byte> tmpBuffer = [];
 
+        // Per SCP spec: If flux starts at index, add initial 0 marker
         if(Header.flags.HasFlag(ScpFlags.StartsAtIndex)) tmpBuffer.Add(0);
 
-        TrackHeader scpTrack = ScpTracks[(byte)HeadTrackSubToScpTrack(head, track, subTrack)];
+        byte scpTrackNum = (byte)HeadTrackSubToScpTrack(head, track, subTrack, Header.heads);
 
+        if(!ScpTracks.TryGetValue(scpTrackNum, out TrackHeader scpTrack))
+            return ErrorNumber.OutOfRange;
+
+        // Per SCP spec: indexTime is duration in nanoseconds/25ns for one revolution
         for(var i = 0; i < Header.revolutions; i++)
             tmpBuffer.AddRange(UInt32ToFluxRepresentation(scpTrack.Entries[i].indexTime));
 
@@ -507,15 +565,20 @@ public sealed partial class SuperCardPro
     {
         buffer = null;
 
+        // Non-floppy media (tapes/hard drives) not supported
         if(Header.flags.HasFlag(ScpFlags.NotFloppy)) return ErrorNumber.NotImplemented;
 
-        if(HeadTrackSubToScpTrack(head, track, subTrack) > Header.end) return ErrorNumber.OutOfRange;
+        byte scpTrackNum = (byte)HeadTrackSubToScpTrack(head, track, subTrack, Header.heads);
+
+        if(scpTrackNum > Header.end) return ErrorNumber.OutOfRange;
 
         if(captureIndex > 0) return ErrorNumber.OutOfRange;
 
+        // Per SCP spec: bitCellEncoding (byte 0x09) = 0 means 16 bits, other values are for future expansion
         if(Header.bitCellEncoding != 0 && Header.bitCellEncoding != 16) return ErrorNumber.NotImplemented;
 
-        TrackHeader scpTrack = ScpTracks[(byte)HeadTrackSubToScpTrack(head, track, subTrack)];
+        if(!ScpTracks.TryGetValue(scpTrackNum, out TrackHeader scpTrack))
+            return ErrorNumber.OutOfRange;
 
         Stream stream = _scpFilter.GetDataForkStream();
         var    br     = new BinaryReader(stream);
@@ -526,9 +589,8 @@ public sealed partial class SuperCardPro
         {
             br.BaseStream.Seek(scpTrack.Entries[i].dataOffset, SeekOrigin.Begin);
 
-            // TODO: Check for 0x0000
-            for(ulong j = 0; j < scpTrack.Entries[i].trackLength; j++)
-                tmpBuffer.AddRange(UInt16ToFluxRepresentation(BigEndianBitConverter.ToUInt16(br.ReadBytes(2), 0)));
+            // Per SCP spec: Handle 0x0000 overflow entries in flux data (strongbits protection)
+            ReadFluxDataWithOverflow(br, scpTrack.Entries[i].trackLength, tmpBuffer);
         }
 
         buffer = tmpBuffer.ToArray();
@@ -569,10 +631,27 @@ public sealed partial class SuperCardPro
             {
                 byte scpTrack = kvp.Key;
 
-                // Reverse HeadTrackSubToScpTrack: scpTrack = head + track * 2
-                uint   head         = (uint)(scpTrack % 2);
-                ushort track        = (ushort)(scpTrack / 2);
+                // Reverse HeadTrackSubToScpTrack based on heads configuration
+                // Per SCP spec: Single-sided disks use specific entry patterns
+                uint head;
+                ushort track;
                 const byte subTrack = 0; // SuperCardPro always has subTrack = 0
+
+                if(Header.heads == 1) // Side 0 only - even entries
+                {
+                    track = (ushort)(scpTrack / 2);
+                    head  = 0;
+                }
+                else if(Header.heads == 2) // Side 1 only - odd entries
+                {
+                    track = (ushort)(scpTrack / 2);
+                    head  = 1;
+                }
+                else // Double-sided - standard mapping
+                {
+                    head  = (uint)(scpTrack % 2);
+                    track = (ushort)(scpTrack / 2);
+                }
 
                 return new FluxCapture
                 {

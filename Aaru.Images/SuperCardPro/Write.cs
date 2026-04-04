@@ -58,8 +58,8 @@ public sealed partial class SuperCardPro
 
         if(subTrack != 0) return ErrorNumber.NotSupported;
 
-        Header.start = byte.Min((byte)HeadTrackSubToScpTrack(head, track, subTrack), Header.start);
-        Header.end   = byte.Max((byte)HeadTrackSubToScpTrack(head, track, subTrack), Header.end);
+        Header.start = byte.Min((byte)HeadTrackSubToScpTrack(head, track, subTrack, Header.heads), Header.start);
+        Header.end   = byte.Max((byte)HeadTrackSubToScpTrack(head, track, subTrack, Header.heads), Header.end);
 
         ulong scpResolution = dataResolution / DEFAULT_RESOLUTION - 1;
 
@@ -72,7 +72,7 @@ public sealed partial class SuperCardPro
         // SCP can only have one resolution for all tracks
         if(Header.resolution != scpResolution) return ErrorNumber.NotSupported;
 
-        long scpTrack = HeadTrackSubToScpTrack(head, track, subTrack);
+        long scpTrack = HeadTrackSubToScpTrack(head, track, subTrack, Header.heads);
 
         _writingStream.Seek(0x10 + 4 * scpTrack, SeekOrigin.Begin);
         _writingStream.Write(BitConverter.GetBytes(_trackOffset), 0, 4);
