@@ -383,6 +383,12 @@ public sealed partial class HxCStream
         {
             IoStreamState previousState = DecodeIoStreamValue(ioStream[0]);
             bool oldIndex = previousState.IndexSignal;
+            bool startsAtIndex = previousState.IndexSignal;
+            if(startsAtIndex)
+            {
+                indexPositions.Add(0);
+            }
+
             uint totalTicks = 0;
             int pulseIndex = 0;
 
@@ -559,7 +565,7 @@ public sealed partial class HxCStream
 
         if(capture == null) return ErrorNumber.OutOfRange;
 
-        var tmpBuffer = new List<byte> { 0 };
+        var tmpBuffer = new List<byte>();
         uint previousTicks = 0;
 
         foreach(uint indexPos in capture.indexPositions)
