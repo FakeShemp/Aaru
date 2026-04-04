@@ -5638,4 +5638,10 @@ Do you want to continue?</value>
     <data name="Image_Write_Metadata_Command_Description" xml:space="preserve">
         <value>Writes metadata to an AaruFormat image.</value>
     </data>
+    <data name="Insufficient_permissions_trying_to_open_device" xml:space="preserve">
+        <value>Insufficient permissions trying to open device.</value>
+    </data>
+    <data name="You_do_not_have_enough_privileges_to_access_the_device" xml:space="preserve">
+        <value>You do not have enough privileges to access the device.</value>
+    </data>
 </root>

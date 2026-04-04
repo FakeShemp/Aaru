@@ -362,19 +362,38 @@ public partial class DeviceViewModel : ViewModelBase
         switch(dev)
         {
             case null:
-                AaruLogging.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
-
-                Dispatcher.UIThread.Invoke(() =>
+                if(OperatingSystem.IsWindows() && (int)devErrno == 5)
                 {
-                    IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
-                        string.Format(UI.Could_not_open_device_error_0, devErrno),
-                        ButtonEnum.Ok,
-                        Icon.Error);
+                    AaruLogging.Error(UI.Insufficient_permissions_trying_to_open_device);
 
-                    _ = msbox.ShowAsync();
+                    Dispatcher.UIThread.Invoke(() =>
+                    {
+                        IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                            UI.You_do_not_have_enough_privileges_to_access_the_device,
+                            ButtonEnum.Ok,
+                            Icon.Error);
 
-                    _window.Close();
-                });
+                        _ = msbox.ShowAsync();
+
+                        _window.Close();
+                    });
+                }
+                else
+                {
+                    AaruLogging.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
+
+                    Dispatcher.UIThread.Invoke(() =>
+                    {
+                        IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                            string.Format(UI.Could_not_open_device_error_0, devErrno),
+                            ButtonEnum.Ok,
+                            Icon.Error);
+
+                        _ = msbox.ShowAsync();
+
+                        _window.Close();
+                    });
+                }
 
                 return;
             case Devices.Remote.Device remoteDev:

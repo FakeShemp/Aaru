@@ -5554,4 +5554,10 @@ Probadores:
     <data name="Image_Write_Metadata_Command_Description" xml:space="preserve">
         <value>Escribe los metadatados a una imagen AaruFormat.</value>
     </data>
+    <data name="Insufficient_permissions_trying_to_open_device" xml:space="preserve">
+        <value>Permisos insuficientes al intentar abrir el dispositivo.</value>
+    </data>
+    <data name="You_do_not_have_enough_privileges_to_access_the_device" xml:space="preserve">
+        <value>No tiene los privilegios suficientes para acceder al dispositivo.</value>
+    </data>
 </root>
