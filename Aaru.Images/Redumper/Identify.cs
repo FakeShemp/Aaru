@@ -9,7 +9,7 @@
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Identifies Redumper raw DVD dump images.
+//     Identifies Redumper raw DVD (.sdram + .state) and Blu-ray (.sbram + .state) dumps.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -42,29 +42,29 @@ public sealed partial class Redumper
     /// <inheritdoc />
     public bool Identify(IFilter imageFilter)
     {
-        string filename = imageFilter.Filename;
+        string path = imageFilter.Path;
 
-        if(string.IsNullOrEmpty(filename)) return false;
+        if(string.IsNullOrEmpty(path)) return false;
 
-        string extension = Path.GetExtension(filename)?.ToLower();
+        string extension = Path.GetExtension(path)?.ToLower();
 
         if(extension != ".state") return false;
 
-        string basePath = filename[..^".state".Length];
+        string basePath  = path[..^".state".Length];
         string sdramPath = basePath + ".sdram";
-
-        if(!File.Exists(sdramPath)) return false;
+        string sbramPath = basePath + ".sbram";
 
         long stateLength = imageFilter.DataForkLength;
-        long sdramLength = new FileInfo(sdramPath).Length;
 
-        if(sdramLength == 0 || stateLength == 0) return false;
+        bool sdramOk = File.Exists(sdramPath) &&
+                       new FileInfo(sdramPath).Length % RECORDING_FRAME_SIZE == 0 &&
+                       stateLength == new FileInfo(sdramPath).Length / RECORDING_FRAME_SIZE;
 
-        if(sdramLength % RECORDING_FRAME_SIZE != 0) return false;
+        bool sbramOk = File.Exists(sbramPath) &&
+                       new FileInfo(sbramPath).Length % BD_DATA_FRAME_SIZE == 0 &&
+                       stateLength == new FileInfo(sbramPath).Length / BD_DATA_FRAME_SIZE;
 
-        long frameCount = sdramLength / RECORDING_FRAME_SIZE;
-
-        return stateLength == frameCount;
+        return sdramOk || sbramOk;
     }
 
 #endregion

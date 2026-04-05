@@ -9,7 +9,7 @@
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Verifies Redumper raw DVD dump images.
+//     Verifies Redumper raw DVD and Blu-ray dump images.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -31,8 +31,10 @@
 // ****************************************************************************/
 
 using System.Collections.Generic;
+using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
-using Aaru.Decoders.DVD;
+using Aaru.Decoders.Bluray;
+using DvdSector = Aaru.Decoders.DVD.Sector;
 
 namespace Aaru.Images;
 
@@ -43,19 +45,42 @@ public sealed partial class Redumper
     /// <inheritdoc />
     public bool? VerifySector(ulong sectorAddress)
     {
-        long frameIndex = (long)sectorAddress - LBA_START;
+        long frameIndex = (long)sectorAddress - _lbaStart;
 
         if(frameIndex < 0 || frameIndex >= _totalFrames) return null;
 
         if(MapState(_stateData[frameIndex]) != SectorStatus.Dumped) return null;
 
-        ErrorNumber errno = ReadSectorLong(sectorAddress, false, out byte[] dvdSector, out _);
+        if(_isBluRay)
+        {
+            ErrorNumber errno = ReadBdFrameRawForVerify(sectorAddress, out byte[] raw);
 
-        if(errno != ErrorNumber.NoError || dvdSector is null) return null;
+            if(errno != ErrorNumber.NoError || raw is null) return null;
 
-        if(!Sector.CheckIed(dvdSector)) return false;
+            return DataFrame.IsValid(raw, (int)sectorAddress, _bdNintendo);
+        }
 
-        return Sector.CheckEdc(dvdSector, 1);
+        ErrorNumber err = ReadSectorLong(sectorAddress, false, out byte[] dvdSector, out _);
+
+        if(err != ErrorNumber.NoError || dvdSector is null) return null;
+
+        if(!DvdSector.CheckIed(dvdSector)) return false;
+
+        return DvdSector.CheckEdc(dvdSector, 1);
+    }
+
+    /// <summary>Reads scrambled BD frame without going through ReadSectorLong (avoids double descramble).</summary>
+    ErrorNumber ReadBdFrameRawForVerify(ulong sectorAddress, out byte[] raw)
+    {
+        raw = null;
+
+        long frameIndex = (long)sectorAddress - _lbaStart;
+
+        if(frameIndex < 0 || frameIndex >= _totalFrames) return ErrorNumber.OutOfRange;
+
+        raw = ReadBdFrame(frameIndex);
+
+        return raw is null ? ErrorNumber.InvalidArgument : ErrorNumber.NoError;
     }
 
     /// <inheritdoc />

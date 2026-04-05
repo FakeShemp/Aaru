@@ -9,7 +9,7 @@
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Contains properties for Redumper raw DVD dump images.
+//     Contains properties for Redumper raw DVD and Blu-ray dump images.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -83,7 +83,8 @@ public sealed partial class Redumper
         MediaTagType.DVD_PFI,
         MediaTagType.DVD_PFI_2ndLayer,
         MediaTagType.DVD_DMI,
-        MediaTagType.DVD_BCA
+        MediaTagType.DVD_BCA,
+        MediaTagType.BD_BCA
     ];
 
     /// <inheritdoc />
@@ -94,7 +95,8 @@ public sealed partial class Redumper
         SectorTagType.DvdSectorIed,
         SectorTagType.DvdSectorCmi,
         SectorTagType.DvdSectorTitleKey,
-        SectorTagType.DvdSectorEdc
+        SectorTagType.DvdSectorEdc,
+        SectorTagType.BluRaySectorEdc
     ];
 
     /// <inheritdoc />
@@ -102,6 +104,8 @@ public sealed partial class Redumper
     [
         MediaType.DVDROM, MediaType.DVDR, MediaType.DVDRDL, MediaType.DVDRW, MediaType.DVDRWDL, MediaType.DVDRAM,
         MediaType.DVDPR, MediaType.DVDPRDL, MediaType.DVDPRW, MediaType.DVDPRWDL, MediaType.GOD, MediaType.WOD,
+        MediaType.BDROM, MediaType.BDR, MediaType.BDRE, MediaType.BDRXL, MediaType.BDREXL, MediaType.UHDBD, 
+        MediaType.PS3DVD, MediaType.PS3BD, MediaType.PS4BD, MediaType.PS5BD, MediaType.PS2DVD, MediaType.Nuon,
     ];
 
     /// <inheritdoc />
