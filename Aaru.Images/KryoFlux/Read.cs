@@ -173,8 +173,6 @@ public sealed partial class KryoFlux
 
         // Sample Frequency
         double sck = SCK;
-        // Index Frequency
-        double ick = ICK;
 
         List<(uint streamPosition, uint timer, uint sysTime)> indexEvents = [];
 
