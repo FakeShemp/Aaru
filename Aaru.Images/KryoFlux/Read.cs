@@ -1,4 +1,4 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
@@ -37,9 +37,11 @@ using System.IO;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 using Aaru.Filters;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Aaru.CommonTypes;
 
 namespace Aaru.Images;
 
@@ -76,6 +78,7 @@ public sealed partial class KryoFlux
 
         // TODO: This is supposing NoFilter, shouldn't
         tracks = new SortedDictionary<byte, IFilter>();
+        _trackCaptures = [];
         byte step    = 1;
         byte heads   = 2;
         var  topHead = false;
@@ -131,46 +134,87 @@ public sealed partial class KryoFlux
             _imageInfo.CreationTime         = DateTime.MaxValue;
             _imageInfo.LastModificationTime = DateTime.MinValue;
 
-            Stream trackStream = trackFilter.GetDataForkStream();
+            ErrorNumber processError = ProcessTrackFile(trackfile, (uint)head, (ushort)cylinder, trackFilter);
 
-            while(trackStream.Position < trackStream.Length)
+            if(processError != ErrorNumber.NoError) return processError;
+
+            tracks.Add(t, trackFilter);
+        }
+
+        _imageInfo.Heads     = heads;
+        _imageInfo.Cylinders = (uint)(tracks.Count / heads);
+        // TODO: Find a way to determine the media type from the track data.
+        _imageInfo.MediaType = MediaType.DOS_35_HD;
+
+        return ErrorNumber.NoError;
+    }
+
+    ErrorNumber ProcessTrackFile(string trackfile, uint head, ushort track, IFilter trackFilter)
+    {
+        if(!File.Exists(trackfile)) return ErrorNumber.NoSuchFile;
+
+        AaruLogging.Debug(MODULE_NAME, "Processing track file: {0} (head {1}, track {2})", trackfile, head, track);
+
+        Stream trackStream = trackFilter.GetDataForkStream();
+        trackStream.Seek(0, SeekOrigin.Begin);
+
+        byte[] fileData = new byte[trackStream.Length];
+        trackStream.EnsureRead(fileData, 0, (int)trackStream.Length);
+
+        int fileSize = fileData.Length;
+
+        uint[] cellValues         = new uint[fileSize];
+        uint[] cellStreamPositions = new uint[fileSize];
+
+        uint cellAccumulator = 0;
+        int  streamOfs       = 0;
+        uint streamPos       = 0;
+        int  cellPos         = 0;
+
+        // Sample Frequency
+        double sck = SCK;
+
+        List<(uint streamPosition, uint timer, uint sysTime)> indexEvents = [];
+
+        int oobHeaderSize = Marshal.SizeOf<OobBlock>();
+
+        while(streamOfs < fileSize)
+        {
+            byte curOp = fileData[streamOfs];
+            int  curOpLen;
+
+            if(curOp == (byte)BlockIds.Oob)
             {
-                var blockId = (byte)trackStream.ReadByte();
+                if(fileSize - streamOfs < oobHeaderSize)
+                    return ErrorNumber.InvalidArgument;
 
-                switch(blockId)
+                byte[] oobBytes = new byte[oobHeaderSize];
+                Array.Copy(fileData, streamOfs, oobBytes, 0, oobHeaderSize);
+                OobBlock oobBlk = Marshal.ByteArrayToStructureLittleEndian<OobBlock>(oobBytes);
+
+                if(oobBlk.blockType == OobTypes.EOF)
+                    break;
+
+                curOpLen = oobHeaderSize + oobBlk.length;
+
+                if(fileSize - streamOfs < curOpLen)
+                    return ErrorNumber.InvalidArgument;
+
+                int oobDataStart = streamOfs + oobHeaderSize;
+
+                switch(oobBlk.blockType)
                 {
-                    case (byte)BlockIds.Oob:
+                    case OobTypes.KFInfo:
                     {
-                        trackStream.Position--;
+                        byte[] kfinfo = new byte[oobBlk.length];
+                        Array.Copy(fileData, oobDataStart, kfinfo, 0, oobBlk.length);
 
-                        var oob = new byte[Marshal.SizeOf<OobBlock>()];
-                        trackStream.EnsureRead(oob, 0, Marshal.SizeOf<OobBlock>());
-
-                        OobBlock oobBlk = Marshal.ByteArrayToStructureLittleEndian<OobBlock>(oob);
-
-                        if(oobBlk.blockType == OobTypes.EOF)
-                        {
-                            trackStream.Position = trackStream.Length;
-
-                            break;
-                        }
-
-                        if(oobBlk.blockType != OobTypes.KFInfo)
-                        {
-                            trackStream.Position += oobBlk.length;
-
-                            break;
-                        }
-
-                        var kfinfo = new byte[oobBlk.length];
-                        trackStream.EnsureRead(kfinfo, 0, oobBlk.length);
-                        string kfinfoStr = StringHandlers.CToString(kfinfo);
-
-                        string[] lines = kfinfoStr.Split([','], StringSplitOptions.RemoveEmptyEntries);
+                        string   kfinfoStr = StringHandlers.CToString(kfinfo);
+                        string[] lines     = kfinfoStr.Split([','], StringSplitOptions.RemoveEmptyEntries);
 
                         DateTime blockDate = DateTime.Now;
                         DateTime blockTime = DateTime.Now;
-                        var      foundDate = false;
+                        bool     foundDate = false;
 
                         foreach(string[] kvp in lines.Select(static line => line.Split('='))
                                                      .Where(static kvp => kvp.Length == 2))
@@ -206,17 +250,30 @@ public sealed partial class KryoFlux
                                     _imageInfo.ApplicationVersion = kvp[1];
 
                                     break;
+                                case KF_SCK:
+                                    if(double.TryParse(kvp[1], NumberStyles.Float, CultureInfo.InvariantCulture,
+                                                       out double parsedSck))
+                                        sck = parsedSck;
+
+                                    break;
+                                case KF_ICK:
+                                     // Parse KF_ICK for validation purposes; parsed value is not currently used.
+                                     // We use sample frequency space instead.
+                                     _ = double.TryParse(kvp[1], NumberStyles.Float, CultureInfo.InvariantCulture,
+                                                         out _);
+
+                                    break;
                             }
                         }
 
                         if(foundDate)
                         {
-                            var blockTimestamp = new DateTime(blockDate.Year,
-                                                              blockDate.Month,
-                                                              blockDate.Day,
-                                                              blockTime.Hour,
-                                                              blockTime.Minute,
-                                                              blockTime.Second);
+                            DateTime blockTimestamp = new DateTime(blockDate.Year,
+                                                                  blockDate.Month,
+                                                                  blockDate.Day,
+                                                                  blockTime.Hour,
+                                                                  blockTime.Minute,
+                                                                  blockTime.Second);
 
                             AaruLogging.Debug(MODULE_NAME, Localization.Found_timestamp_0, blockTimestamp);
 
@@ -228,37 +285,199 @@ public sealed partial class KryoFlux
 
                         break;
                     }
-                    case (byte)BlockIds.Flux2:
-                    case (byte)BlockIds.Flux2_1:
-                    case (byte)BlockIds.Flux2_2:
-                    case (byte)BlockIds.Flux2_3:
-                    case (byte)BlockIds.Flux2_4:
-                    case (byte)BlockIds.Flux2_5:
-                    case (byte)BlockIds.Flux2_6:
-                    case (byte)BlockIds.Flux2_7:
-                    case (byte)BlockIds.Nop2:
-                        trackStream.Position++;
+                    case OobTypes.StreamInfo:
+                    {
+                        if(oobDataStart + Marshal.SizeOf<OobStreamRead>() <= fileSize)
+                        {
+                            byte[] streamReadBytes = new byte[Marshal.SizeOf<OobStreamRead>()];
 
-                        continue;
-                    case (byte)BlockIds.Nop3:
-                    case (byte)BlockIds.Flux3:
-                        trackStream.Position += 2;
+                            Array.Copy(fileData, oobDataStart, streamReadBytes, 0,
+                                       Marshal.SizeOf<OobStreamRead>());
 
-                        continue;
-                    default:
-                        continue;
+                            OobStreamRead oobStreamRead =
+                                Marshal.ByteArrayToStructureLittleEndian<OobStreamRead>(streamReadBytes);
+
+                            AaruLogging.Debug(MODULE_NAME,
+                                              "Stream Read at position {0}, elapsed time {1} ms",
+                                              oobStreamRead.streamPosition,
+                                              oobStreamRead.trTime);
+                        }
+
+                        break;
+                    }
+                    case OobTypes.Index:
+                    {
+                        if(oobDataStart + Marshal.SizeOf<OobIndex>() <= fileSize)
+                        {
+                            byte[] indexBytes = new byte[Marshal.SizeOf<OobIndex>()];
+                            Array.Copy(fileData, oobDataStart, indexBytes, 0, Marshal.SizeOf<OobIndex>());
+
+                            OobIndex oobIndex = Marshal.ByteArrayToStructureLittleEndian<OobIndex>(indexBytes);
+
+                            AaruLogging.Debug(MODULE_NAME,
+                                              "Index signal at stream position {0}, timer {1}, sysTime {2}",
+                                              oobIndex.streamPosition,
+                                              oobIndex.timer,
+                                              oobIndex.sysTime);
+
+                            indexEvents.Add((oobIndex.streamPosition, oobIndex.timer, oobIndex.sysTime));
+                        }
+
+                        break;
+                    }
+                    case OobTypes.StreamEnd:
+                    {
+                        if(oobDataStart + Marshal.SizeOf<OobStreamEnd>() <= fileSize)
+                        {
+                            byte[] streamEndBytes = new byte[Marshal.SizeOf<OobStreamEnd>()];
+
+                            Array.Copy(fileData, oobDataStart, streamEndBytes, 0,
+                                       Marshal.SizeOf<OobStreamEnd>());
+
+                            OobStreamEnd oobStreamEnd =
+                                Marshal.ByteArrayToStructureLittleEndian<OobStreamEnd>(streamEndBytes);
+
+                            AaruLogging.Debug(MODULE_NAME,
+                                              "Stream End at position {0}, result {1}",
+                                              oobStreamEnd.streamPosition,
+                                              oobStreamEnd.result);
+                        }
+
+                        break;
+                    }
                 }
+
+                streamOfs += curOpLen;
+
+                continue;
             }
 
-            tracks.Add(t, trackFilter);
+            // Non-OOB: determine operation length and decode flux data
+            bool newCell = false;
+
+            switch(curOp)
+            {
+                case (byte)BlockIds.Nop1:
+                    curOpLen = 1;
+
+                    break;
+                case (byte)BlockIds.Nop2:
+                    curOpLen = 2;
+
+                    break;
+                case (byte)BlockIds.Nop3:
+                    curOpLen = 3;
+
+                    break;
+                case (byte)BlockIds.Ovl16:
+                    curOpLen          =  1;
+                    cellAccumulator   += 0x10000;
+
+                    break;
+                case (byte)BlockIds.Flux3:
+                    curOpLen        = 3;
+                    cellAccumulator += (uint)((fileData[streamOfs + 1] << 8) | fileData[streamOfs + 2]);
+                    newCell         =  true;
+
+                    break;
+                default:
+                    if(curOp >= 0x0E)
+                    {
+                        curOpLen        = 1;
+                        cellAccumulator += curOp;
+                        newCell         =  true;
+                    }
+                    else if((curOp & 0xF8) == 0)
+                    {
+                        curOpLen        = 2;
+                        cellAccumulator += ((uint)curOp << 8) | fileData[streamOfs + 1];
+                        newCell         =  true;
+                    }
+                    else
+                        return ErrorNumber.InvalidArgument;
+
+                    break;
+            }
+
+            if(fileSize - streamOfs < curOpLen)
+                return ErrorNumber.InvalidArgument;
+
+            if(newCell)
+            {
+                cellValues[cellPos]          = cellAccumulator;
+                cellStreamPositions[cellPos] = streamPos;
+                cellPos++;
+                cellAccumulator = 0;
+            }
+
+            streamPos += (uint)curOpLen;
+            streamOfs += curOpLen;
         }
 
-        _imageInfo.Heads     = heads;
-        _imageInfo.Cylinders = (uint)(tracks.Count / heads);
+        // Store final partial cell for index resolution boundary
+        cellValues[cellPos]          = cellAccumulator;
+        cellStreamPositions[cellPos] = streamPos;
 
-        AaruLogging.Error(Localization.Flux_decoding_is_not_yet_implemented);
+        int totalCells = cellPos;
 
-        return ErrorNumber.NotImplemented;
+        // Resolve index stream positions to cell positions
+        List<uint> indexPositions = [];
+
+        if(indexEvents.Count > 0)
+        {
+            int  nextIndex          = 0;
+            uint nextIndexStreamPos = indexEvents[nextIndex].streamPosition;
+
+            for(int i = 0; i < totalCells; i++)
+            {
+                if(nextIndex >= indexEvents.Count)
+                    break;
+
+                int nextCellPos = i + 1;
+
+                if(nextIndexStreamPos <= cellStreamPositions[nextCellPos])
+                {
+                    if(i == 0 && cellStreamPositions[0] >= nextIndexStreamPos)
+                        nextCellPos = 0;
+
+                    indexPositions.Add((uint)nextCellPos);
+
+                    AaruLogging.Debug(MODULE_NAME,
+                                      "Index {0} resolved to cell position {1}",
+                                      nextIndex, nextCellPos);
+
+                    nextIndex++;
+
+                    if(nextIndex < indexEvents.Count)
+                        nextIndexStreamPos = indexEvents[nextIndex].streamPosition;
+                }
+            }
+        }
+
+        // Build flux pulses array
+        uint[] fluxPulses = new uint[totalCells];
+        Array.Copy(cellValues, fluxPulses, totalCells);
+
+        ulong resolution = CalculateResolution(sck);
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "Decoded {0} flux pulses, {1} index signals, resolution {2} ps",
+                          fluxPulses.Length,
+                          indexPositions.Count,
+                          resolution);
+
+        TrackCapture capture = new TrackCapture
+        {
+            head           = head,
+            track          = track,
+            resolution     = resolution,
+            fluxPulses     = fluxPulses,
+            indexPositions = indexPositions.ToArray()
+        };
+
+        _trackCaptures.Add(capture);
+
+        return ErrorNumber.NoError;
     }
 
     /// <inheritdoc />
@@ -317,6 +536,233 @@ public sealed partial class KryoFlux
         sectorStatus = null;
 
         return ErrorNumber.NotImplemented;
+    }
+
+#endregion
+
+#region IFluxImage Members
+
+    /// <inheritdoc />
+    public ErrorNumber CapturesLength(uint head, ushort track, byte subTrack, out uint length)
+    {
+        length = 0;
+
+        if(_trackCaptures == null) return ErrorNumber.NotOpened;
+
+        // KryoFlux doesn't support subtracks - only subTrack 0 is valid
+        if(subTrack != 0) return ErrorNumber.OutOfRange;
+
+        // KryoFlux has one file per track/head, which results in exactly one capture
+        bool hasCapture = _trackCaptures.Any(c => c.head == head && c.track == track);
+
+        length = hasCapture ? 1u : 0u;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFluxIndexResolution(uint      head, ushort track, byte subTrack, uint captureIndex,
+                                               out ulong resolution)
+    {
+        resolution = 0;
+
+        // KryoFlux doesn't support subtracks - only subTrack 0 is valid
+        if(subTrack != 0) return ErrorNumber.OutOfRange;
+
+        // KryoFlux has one file per track/head, which results in exactly one capture (captureIndex 0)
+        if(captureIndex != 0) return ErrorNumber.OutOfRange;
+
+        TrackCapture capture = _trackCaptures.Find(c => c.head == head && c.track == track);
+
+        if(capture == null) return ErrorNumber.OutOfRange;
+
+        resolution = capture.resolution;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFluxDataResolution(uint      head, ushort track, byte subTrack, uint captureIndex,
+                                              out ulong resolution)
+    {
+        resolution = 0;
+
+        // KryoFlux doesn't support subtracks - only subTrack 0 is valid
+        if(subTrack != 0) return ErrorNumber.OutOfRange;
+
+        // KryoFlux has one file per track/head, which results in exactly one capture (captureIndex 0)
+        if(captureIndex != 0) return ErrorNumber.OutOfRange;
+
+        TrackCapture capture = _trackCaptures.Find(c => c.head == head && c.track == track);
+
+        if(capture == null) return ErrorNumber.OutOfRange;
+
+        resolution = capture.resolution;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFluxResolution(uint      head,            ushort    track, byte subTrack, uint captureIndex,
+                                          out ulong indexResolution, out ulong dataResolution)
+    {
+        indexResolution = dataResolution = 0;
+
+        // KryoFlux doesn't support subtracks - only subTrack 0 is valid
+        if(subTrack != 0) return ErrorNumber.OutOfRange;
+
+        // KryoFlux has one file per track/head, which results in exactly one capture (captureIndex 0)
+        if(captureIndex != 0) return ErrorNumber.OutOfRange;
+
+        TrackCapture capture = _trackCaptures.Find(c => c.head == head && c.track == track);
+
+        if(capture == null) return ErrorNumber.OutOfRange;
+
+        indexResolution = dataResolution = capture.resolution;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFluxCapture(uint       head,            ushort    track, byte subTrack, uint captureIndex,
+                                       out ulong  indexResolution, out ulong dataResolution, out byte[] indexBuffer,
+                                       out byte[] dataBuffer)
+    {
+        indexBuffer = dataBuffer = null;
+        indexResolution = dataResolution = 0;
+
+        // KryoFlux doesn't support subtracks - only subTrack 0 is valid
+        if(subTrack != 0) return ErrorNumber.OutOfRange;
+
+        // KryoFlux has one file per track/head, which results in exactly one capture (captureIndex 0)
+        if(captureIndex != 0) return ErrorNumber.OutOfRange;
+
+        ErrorNumber error = ReadFluxResolution(head, track, subTrack, captureIndex, out indexResolution,
+                                               out dataResolution);
+
+        if(error != ErrorNumber.NoError) return error;
+
+        error = ReadFluxDataCapture(head, track, subTrack, captureIndex, out dataBuffer);
+
+        if(error != ErrorNumber.NoError) return error;
+
+        error = ReadFluxIndexCapture(head, track, subTrack, captureIndex, out indexBuffer);
+
+        return error;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFluxIndexCapture(uint       head, ushort track, byte subTrack, uint captureIndex,
+                                            out byte[] buffer)
+    {
+        buffer = null;
+
+        // KryoFlux doesn't support subtracks - only subTrack 0 is valid
+        if(subTrack != 0) return ErrorNumber.OutOfRange;
+
+        // KryoFlux has one file per track/head, which results in exactly one capture (captureIndex 0)
+        if(captureIndex != 0) return ErrorNumber.OutOfRange;
+
+        TrackCapture capture = _trackCaptures.Find(c => c.head == head && c.track == track);
+
+        if(capture == null) return ErrorNumber.OutOfRange;
+
+        var tmpBuffer = new List<byte>();
+        uint previousPosition = 0;
+
+        foreach(uint indexPos in capture.indexPositions)
+        {
+            // Calculate ticks from start to this index position
+            uint ticks = 0;
+            for(uint i = previousPosition; i < indexPos && i < capture.fluxPulses.Length; i++)
+                ticks += capture.fluxPulses[i];
+
+            uint deltaTicks = ticks;
+            tmpBuffer.AddRange(UInt32ToFluxRepresentation(deltaTicks));
+            previousPosition = indexPos;
+        }
+
+        buffer = tmpBuffer.ToArray();
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber
+        ReadFluxDataCapture(uint head, ushort track, byte subTrack, uint captureIndex, out byte[] buffer)
+    {
+        buffer = null;
+
+        // KryoFlux doesn't support subtracks - only subTrack 0 is valid
+        if(subTrack != 0) return ErrorNumber.OutOfRange;
+
+        // KryoFlux has one file per track/head, which results in exactly one capture (captureIndex 0)
+        if(captureIndex != 0) return ErrorNumber.OutOfRange;
+
+        TrackCapture capture = _trackCaptures.Find(c => c.head == head && c.track == track);
+
+        if(capture == null) return ErrorNumber.OutOfRange;
+
+        var tmpBuffer = new List<byte>();
+
+        foreach(uint pulse in capture.fluxPulses) tmpBuffer.AddRange(UInt32ToFluxRepresentation(pulse));
+
+        buffer = tmpBuffer.ToArray();
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber SubTrackLength(uint head, ushort track, out byte length)
+    {
+        length = 0;
+
+        if(_trackCaptures == null) return ErrorNumber.NotOpened;
+
+        // KryoFlux doesn't support subtracks - filenames only contain cylinder and head
+        // Check if any captures exist for this track
+        List<TrackCapture> captures = _trackCaptures.FindAll(c => c.head == head && c.track == track);
+
+        if(captures.Count <= 0) return ErrorNumber.OutOfRange;
+
+        // Always return 1 since KryoFlux doesn't support subtracks
+        length = 1;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetAllFluxCaptures(out List<FluxCapture> captures)
+    {
+        captures = [];
+
+        if(_trackCaptures is { Count: > 0 })
+        {
+            // Group captures by head/track to assign capture indices
+            // Note: KryoFlux doesn't support subtracks, so subTrack is always 0
+            var grouped = _trackCaptures.GroupBy(c => new { c.head, c.track })
+                                      .ToList();
+
+            foreach(var group in grouped)
+            {
+                uint captureIndex = 0;
+
+                foreach(TrackCapture trackCapture in group)
+                {
+                    captures.Add(new FluxCapture
+                    {
+                        Head            = trackCapture.head,
+                        Track           = trackCapture.track,
+                        SubTrack        = 0, // KryoFlux doesn't support subtracks
+                        CaptureIndex    = captureIndex++,
+                        IndexResolution = trackCapture.resolution,
+                        DataResolution  = trackCapture.resolution
+                    });
+                }
+            }
+        }
+
+        return ErrorNumber.NoError;
     }
 
 #endregion

@@ -1,15 +1,15 @@
-﻿// /***************************************************************************
+// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Constants.cs
+// Filename       : Helpers.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Disk image plugins.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Contains constants for KryoFlux STREAM images.
+//     Contains helpers for KryoFlux STREAM images.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,29 +30,47 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Aaru.Images;
 
-[SuppressMessage("ReSharper", "UnusedMember.Local")]
+[SuppressMessage("ReSharper", "UnusedType.Global")]
 public sealed partial class KryoFlux
 {
-    const string HOST_DATE  = "host_date";
-    const string HOST_TIME  = "host_time";
-    const string KF_NAME    = "name";
-    const string KF_VERSION = "version";
-    const string KF_DATE    = "date";
-    const string KF_TIME    = "time";
-    const string KF_HW_ID   = "hwid";
-    const string KF_HW_RV   = "hwrv";
-    const string KF_SCK     = "sck";
-    const string KF_ICK     = "ick";
+    /// <summary>
+    ///     Converts a uint32 cell value to Aaru's flux representation format.
+    ///     Format: byte array where 255 = overflow, remainder = value
+    /// </summary>
+    /// <param name="ticks">The cell value in clock cycles</param>
+    /// <returns>Flux representation as byte array</returns>
+    static byte[] UInt32ToFluxRepresentation(uint ticks)
+    {
+        uint over = ticks / 255;
 
-    // Per KryoFlux spec: Clock frequencies for current hardware
-    // mck = Master Clock Frequency = ((18432000 * 73) / 14) / 2
-    // sck = Sample Frequency = mck / 2
-    // ick = Index Frequency = mck / 16
-    const double MCK = (18432000.0 * 73.0 / 14.0) / 2.0;
-    const double SCK = MCK / 2.0;
-    const double ICK = MCK / 16.0;
+        if(over == 0) return [(byte)ticks];
+
+        var expanded = new byte[over + 1];
+        Array.Fill(expanded, (byte)255, 0, (int)over);
+        expanded[^1] = (byte)(ticks % 255);
+
+        return expanded;
+    }
+
+    /// <summary>
+    ///     Calculates resolution in picoseconds from sample clock frequency.
+    ///     Resolution = (1 / sck) * 1e12 picoseconds
+    /// </summary>
+    /// <param name="sck">Sample clock frequency in Hz</param>
+    /// <returns>Resolution in picoseconds</returns>
+    static ulong CalculateResolution(double sck)
+    {
+        if(sck <= 0) return 0;
+
+        double periodSeconds = 1.0 / sck;
+        double periodPicoseconds = periodSeconds * 1e12;
+
+        return (ulong)periodPicoseconds;
+    }
 }
+
