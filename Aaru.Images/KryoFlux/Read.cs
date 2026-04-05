@@ -170,16 +170,17 @@ public sealed partial class KryoFlux
         int  streamOfs       = 0;
         uint streamPos       = 0;
         int  cellPos         = 0;
-        bool oobEnd          = false;
 
+        // Sample Frequency
         double sck = SCK;
+        // Index Frequency
         double ick = ICK;
 
         List<(uint streamPosition, uint timer, uint sysTime)> indexEvents = [];
 
         int oobHeaderSize = Marshal.SizeOf<OobBlock>();
 
-        while(streamOfs < fileSize && !oobEnd)
+        while(streamOfs < fileSize)
         {
             byte curOp = fileData[streamOfs];
             int  curOpLen;
@@ -194,11 +195,7 @@ public sealed partial class KryoFlux
                 OobBlock oobBlk = Marshal.ByteArrayToStructureLittleEndian<OobBlock>(oobBytes);
 
                 if(oobBlk.blockType == OobTypes.EOF)
-                {
-                    oobEnd = true;
-
                     break;
-                }
 
                 curOpLen = oobHeaderSize + oobBlk.length;
 
@@ -262,9 +259,10 @@ public sealed partial class KryoFlux
 
                                     break;
                                 case KF_ICK:
-                                    if(double.TryParse(kvp[1], NumberStyles.Float, CultureInfo.InvariantCulture,
-                                                       out double parsedIck))
-                                        ick = parsedIck;
+                                     // Parse KF_ICK for validation purposes; parsed value is not currently used.
+                                     // We use sample frequency space instead.
+                                     _ = double.TryParse(kvp[1], NumberStyles.Float, CultureInfo.InvariantCulture,
+                                                         out _);
 
                                     break;
                             }
