@@ -230,6 +230,8 @@ public sealed partial class Redumper
     {
         TryBdNintendoFromPhysicalSidecar(basePath);
 
+        LoadScsiSidecar(basePath, ".physical", null, MediaTagType.BD_DI);
+
         LoadScsiSidecar(basePath, ".bca", null, MediaTagType.BD_BCA);
     }
 
@@ -239,22 +241,17 @@ public sealed partial class Redumper
     /// </summary>
     void TryBdNintendoFromPhysicalSidecar(string basePath)
     {
-        string[] candidates = [basePath + ".physical", basePath + ".0.physical"];
+        string path = basePath + ".physical";
 
-        foreach (string path in candidates)
-        {
-            if (!File.Exists(path)) continue;
+        if (!File.Exists(path)) return;
 
-            byte[] data = File.ReadAllBytes(path);
+        byte[] data = File.ReadAllBytes(path);
 
-            if (data.Length <= SCSI_HEADER_SIZE) continue;
+        if (data.Length <= SCSI_HEADER_SIZE) return;
 
-            byte[] payload = new byte[data.Length - SCSI_HEADER_SIZE];
-            Array.Copy(data, SCSI_HEADER_SIZE, payload, 0, payload.Length);
+        byte[] payload = new byte[data.Length - SCSI_HEADER_SIZE];
+        Array.Copy(data, SCSI_HEADER_SIZE, payload, 0, payload.Length);
 
-            if (payload.Length > 0 && payload.All(b => b == 0)) _bdNintendo = true;
-
-            return;
-        }
+        if (payload.Length > 0 && payload.All(b => b == 0)) _bdNintendo = true;
     }
 }
