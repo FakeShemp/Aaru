@@ -41,10 +41,12 @@ namespace Aaru.Checksums;
 /// <summary>Implements ReedSolomon and CRC32 algorithms as used by CD-ROM</summary>
 public static class CdChecksums
 {
-    const  string MODULE_NAME = "CD checksums";
-    static byte[] _eccFTable;
-    static byte[] _eccBTable;
-    static uint[] _edcTable;
+    const  string                             MODULE_NAME = "CD checksums";
+    static byte[]                             _eccFTable;
+    static byte[]                             _eccBTable;
+    static uint[]                             _edcTable;
+    static Dictionary<uint, EccSyndromeMatch> _eccPSyndromeTable;
+    static Dictionary<uint, EccSyndromeMatch> _eccQSyndromeTable;
 
     /// <summary>Checks the EDC and ECC of a CD sector</summary>
     /// <param name="buffer">CD sector</param>
@@ -114,6 +116,13 @@ public static class CdChecksums
 
     static void EccInit()
     {
+        if(_eccFTable         != null &&
+           _eccBTable         != null &&
+           _edcTable          != null &&
+           _eccPSyndromeTable != null &&
+           _eccQSyndromeTable != null)
+            return;
+
         _eccFTable = new byte[256];
         _eccBTable = new byte[256];
         _edcTable  = new uint[256];
@@ -121,7 +130,7 @@ public static class CdChecksums
         for(uint i = 0; i < 256; i++)
         {
             uint edc = i;
-            var  j   = (uint)(i << 1 ^ ((i & 0x80) == 0x80 ? 0x11D : 0));
+            uint j   = i << 1 ^ ((i & 0x80) == 0x80 ? 0x11D : 0U);
             _eccFTable[i]     = (byte)j;
             _eccBTable[i ^ j] = (byte)i;
 
@@ -129,6 +138,60 @@ public static class CdChecksums
 
             _edcTable[i] = edc;
         }
+
+        _eccPSyndromeTable = BuildSyndromeTable(24);
+        _eccQSyndromeTable = BuildSyndromeTable(43);
+    }
+
+    static Dictionary<uint, EccSyndromeMatch> BuildSyndromeTable(int minorCount)
+    {
+        Dictionary<uint, EccSyndromeMatch> table = new();
+        var                                row   = new byte[minorCount];
+
+        for(var position = 0; position < minorCount + 2; position++)
+        {
+            for(var error = 1; error < 256; error++)
+            {
+                Array.Clear(row, 0, row.Length);
+
+                byte storedA = 0;
+                byte storedB = 0;
+
+                if(position < minorCount)
+                    row[position] = (byte)error;
+                else if(position == minorCount)
+                    storedA = (byte)error;
+                else
+                    storedB = (byte)error;
+
+                ComputeEcc(row, out byte calcA, out byte calcB);
+
+                var syndrome = (uint)((calcA ^ storedA) << 8 | calcB ^ storedB);
+
+                if(syndrome == 0 || table.ContainsKey(syndrome)) continue;
+
+                table.Add(syndrome, new EccSyndromeMatch(position, (byte)error));
+            }
+        }
+
+        return table;
+    }
+
+    static void ComputeEcc(IReadOnlyList<byte> data, out byte eccA, out byte eccB)
+    {
+        eccA = 0;
+        eccB = 0;
+
+        for(var i = 0; i < data.Count; i++)
+        {
+            byte temp = data[i];
+            eccA ^= temp;
+            eccB ^= temp;
+            eccA =  _eccFTable[eccA];
+        }
+
+        eccA = _eccBTable[_eccFTable[eccA] ^ eccB];
+        eccB = (byte)(eccA ^ eccB);
     }
 
     static bool CheckEcc(byte[] address, byte[] data, uint majorCount, uint minorCount, uint majorMult, uint minorInc,
@@ -405,6 +468,176 @@ public static class CdChecksums
         }
     }
 
+    /// <summary>
+    ///     Attempts to repair a raw 2352-byte data sector using the stored ECC-P and ECC-Q values according to ECMA-119.
+    /// </summary>
+    /// <param name="buffer">Raw 2352-byte sector.</param>
+    /// <returns>
+    ///     <c>true</c> if the sector was already correct or could be corrected, <c>false</c> if it could not be corrected,
+    ///     and <c>null</c> if the input is invalid or the sector type has no repairable ECC.
+    /// </returns>
+    public static bool? FixSector(byte[] buffer)
+    {
+        if(buffer is not { Length: 2352 }) return null;
+
+        EccInit();
+
+        if(buffer[0x000] != 0x00 ||
+           buffer[0x001] != 0xFF ||
+           buffer[0x002] != 0xFF ||
+           buffer[0x003] != 0xFF ||
+           buffer[0x004] != 0xFF ||
+           buffer[0x005] != 0xFF ||
+           buffer[0x006] != 0xFF ||
+           buffer[0x007] != 0xFF ||
+           buffer[0x008] != 0xFF ||
+           buffer[0x009] != 0xFF ||
+           buffer[0x00A] != 0xFF ||
+           buffer[0x00B] != 0x00)
+            return null;
+
+        return (buffer[0x00F] & 0x03) switch
+               {
+                   0x01                                     => FixMode1Sector(buffer),
+                   0x02 when (buffer[0x012] & 0x20) == 0x20 => null,
+                   0x02                                     => FixMode2Form1Sector(buffer),
+                   _                                        => null
+               };
+    }
+
+    static bool FixMode1Sector(byte[] sector)
+    {
+        bool? status = CheckCdSectorChannel(sector, out bool? correctEccP, out bool? correctEccQ, out bool? _);
+
+        if(status == true) return true;
+
+        for(var i = 0x814; i < 0x81C; i++) sector[i] = 0;
+
+        if(correctEccP == true && correctEccQ == true)
+        {
+            UpdateEdc(sector, 0, 0x810, 0x810);
+
+            return CheckCdSectorChannel(sector, out _, out _, out _) == true;
+        }
+
+        int[] pMap = CreateOffsetMap(2064, 0x0C, 0x10, false);
+        int[] qMap = CreateOffsetMap(2236, 0x0C, 0x10, false);
+
+        return FixSectorWithEcc(sector, pMap, qMap, 0x81C, 0x8C8, 0, 0x810, 0x810);
+    }
+
+    static bool FixMode2Form1Sector(byte[] sector)
+    {
+        bool? status = CheckCdSectorChannel(sector, out bool? correctEccP, out bool? correctEccQ, out bool? _);
+
+        if(status == true) return true;
+
+        if(correctEccP == true && correctEccQ == true)
+        {
+            UpdateEdc(sector, 0x10, 0x808, 0x818);
+
+            return CheckCdSectorChannel(sector, out _, out _, out _) == true;
+        }
+
+        int[] pMap = CreateOffsetMap(2064, 0, 0x10, true);
+        int[] qMap = CreateOffsetMap(2236, 0, 0x10, true);
+
+        return FixSectorWithEcc(sector, pMap, qMap, 0x81C, 0x8C8, 0x10, 0x808, 0x818);
+    }
+
+    static bool FixSectorWithEcc(byte[] sector,          int[] pMap,    int[] qMap, int eccPOffset, int eccQOffset,
+                                 int    edcSourceOffset, int   edcSize, int   edcOffset)
+    {
+        for(var pass = 0; pass < 16; pass++)
+        {
+            bool corrected = TryFixEcc(sector, pMap, eccPOffset, 86, 24, 2, 86, _eccPSyndromeTable);
+            corrected = TryFixEcc(sector, qMap, eccQOffset, 52, 43, 86, 88, _eccQSyndromeTable) || corrected;
+
+            bool? status =
+                CheckCdSectorChannel(sector, out bool? correctEccP, out bool? correctEccQ, out bool? correctEdc);
+
+            if(correctEccP == true && correctEccQ == true)
+            {
+                if(correctEdc != true) UpdateEdc(sector, edcSourceOffset, edcSize, edcOffset);
+
+                return CheckCdSectorChannel(sector, out _, out _, out _) == true;
+            }
+
+            if(!corrected || status == null) break;
+        }
+
+        return false;
+    }
+
+    static bool TryFixEcc(byte[] sector, int[] offsetMap, int eccOffset, int majorCount, int minorCount, int majorMult,
+                          int    minorInc, Dictionary<uint, EccSyndromeMatch> syndromeTable)
+    {
+        var corrected = false;
+        int size      = majorCount * minorCount;
+
+        for(var major = 0; major < majorCount; major++)
+        {
+            int index      = (major >> 1) * majorMult + (major & 1);
+            var row        = new byte[minorCount];
+            var rowOffsets = new int[minorCount];
+
+            for(var minor = 0; minor < minorCount; minor++)
+            {
+                int offset = offsetMap[index];
+                rowOffsets[minor] =  offset;
+                row[minor]        =  offset >= 0 ? sector[offset] : (byte)0;
+                index             += minorInc;
+
+                if(index >= size) index -= size;
+            }
+
+            ComputeEcc(row, out byte calcA, out byte calcB);
+
+            byte storedA  = sector[eccOffset + major];
+            byte storedB  = sector[eccOffset + majorCount + major];
+            var  syndrome = (uint)((calcA ^ storedA) << 8 | calcB ^ storedB);
+
+            if(syndrome == 0 || !syndromeTable.TryGetValue(syndrome, out EccSyndromeMatch match)) continue;
+
+            if(match.Position < minorCount)
+            {
+                int offset = rowOffsets[match.Position];
+
+                if(offset < 0) continue;
+
+                sector[offset] ^= match.Error;
+            }
+            else if(match.Position == minorCount)
+                sector[eccOffset + major] ^= match.Error;
+            else
+                sector[eccOffset + majorCount + major] ^= match.Error;
+
+            corrected = true;
+        }
+
+        return corrected;
+    }
+
+    static int[] CreateOffsetMap(int size, int addressOffset, int dataOffset, bool zeroAddress)
+    {
+        var map = new int[size];
+
+        for(var i = 0; i < 4; i++) map[i] = zeroAddress ? -1 : addressOffset + i;
+
+        for(var i = 4; i < size; i++) map[i] = dataOffset + i - 4;
+
+        return map;
+    }
+
+    static void UpdateEdc(byte[] sector, int sourceOffset, int size, int destinationOffset)
+    {
+        var data = new byte[size];
+        Array.Copy(sector, sourceOffset, data, 0, size);
+        uint   edc       = ComputeEdc(0, data, size);
+        byte[] storedEdc = BitConverter.GetBytes(edc);
+        Array.Copy(storedEdc, 0, sector, destinationOffset, storedEdc.Length);
+    }
+
     static uint ComputeEdc(uint edc, IReadOnlyList<byte> src, int size)
     {
         var pos = 0;
@@ -663,5 +896,17 @@ public static class CdChecksums
                           calculatedCdtp4Crc);
 
         return false;
+    }
+
+    readonly struct EccSyndromeMatch
+    {
+        public readonly int  Position;
+        public readonly byte Error;
+
+        public EccSyndromeMatch(int position, byte error)
+        {
+            Position = position;
+            Error    = error;
+        }
     }
 }
