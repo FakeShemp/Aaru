@@ -37,6 +37,7 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
@@ -71,6 +72,8 @@ public sealed partial class CPM : IReadOnlyFilesystem
     /// <summary>Timestamp in volume label for update</summary>
     byte[] _labelUpdateDate;
     bool _mounted;
+    /// <summary>The mounted partition</summary>
+    Partition _partition;
     /// <summary>Cached file passwords</summary>
     Dictionary<string, byte[]> _passwordCache;
     /// <summary>Sector deinterleaving mask</summary>

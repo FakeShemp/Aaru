@@ -57,8 +57,9 @@ public sealed partial class CPM
     public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
                              Dictionary<string, string> options,     string    @namespace)
     {
-        _device   = imagePlugin;
-        _encoding = encoding ?? Encoding.GetEncoding("IBM437");
+        _device    = imagePlugin;
+        _partition = partition;
+        _encoding  = encoding ?? Encoding.GetEncoding("IBM437");
 
         // As the identification is so complex, just call Identify() and relay on its findings
         if(!Identify(_device, partition) || !_cpmFound || _workingDefinition == null || _dpb == null)
@@ -165,9 +166,8 @@ public sealed partial class CPM
                 if(errno != ErrorNumber.NoError) return errno;
 
                 if(_workingDefinition.complement)
-                {
-                    for(var b = 0; b < readSector.Length; b++) readSector[b] = (byte)(~readSector[b] & 0xFF);
-                }
+                    for(var b = 0; b < readSector.Length; b++)
+                        readSector[b] = (byte)(~readSector[b] & 0xFF);
 
                 deinterleavedSectors.Add((ulong)p, readSector);
             }
