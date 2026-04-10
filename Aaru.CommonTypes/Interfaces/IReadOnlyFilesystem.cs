@@ -104,6 +104,25 @@ public interface IReadOnlyFilesystem : IFilesystem
     /// <returns>Error number.</returns>
     ErrorNumber Stat(string path, out FileEntryInfo stat);
 
+    /// <summary>Finds the files that overlap any of the specified media sector extents.</summary>
+    /// <param name="sectorExtents">Absolute media sector extents, inclusive, relative to the mounted image.</param>
+    /// <param name="files">Files that overlap the requested extents.</param>
+    /// <param name="initProgress">Initializes a progress indicator before the filesystem traversal begins.</param>
+    /// <param name="updateProgress">Updates a progress indicator while the filesystem traversal advances.</param>
+    /// <param name="pulseProgress">Pulses a progress indicator when traversal is indeterminate.</param>
+    /// <param name="endProgress">Uninitializes the progress indicator after the traversal ends.</param>
+    /// <returns>Error number.</returns>
+    ErrorNumber GetFilesWithAffectedSectors(IEnumerable<(ulong Start, ulong End)> sectorExtents,
+                                            out List<FileSectorInfo> files, InitProgressHandler initProgress = null,
+                                            UpdateProgressHandler updateProgress = null,
+                                            PulseProgressHandler pulseProgress = null,
+                                            EndProgressHandler endProgress = null)
+    {
+        files = [];
+
+        return ErrorNumber.NotSupported;
+    }
+
     /// <summary>Solves a symbolic link.</summary>
     /// <param name="path">Link path.</param>
     /// <param name="dest">Link destination.</param>

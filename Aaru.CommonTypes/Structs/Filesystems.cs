@@ -38,6 +38,7 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
@@ -254,6 +255,22 @@ public class FileEntryInfo
         get => LastWriteTimeUtc?.ToLocalTime();
         set => LastWriteTimeUtc = value?.ToUniversalTime();
     }
+}
+
+/// <summary>Information about a file affected by a range of media sectors.</summary>
+public class FileSectorInfo
+{
+    /// <summary>File path inside the mounted filesystem.</summary>
+    public string Path { get; set; }
+
+    /// <summary>Optional alternate stream, fork or extended attribute name.</summary>
+    public string Stream { get; set; }
+
+    /// <summary>inode number for this file (or other unique identifier for the volume).</summary>
+    public ulong Inode { get; set; }
+
+    /// <summary>The media sector extents that overlap this file.</summary>
+    public List<(ulong Start, ulong End)> AffectedSectors { get; set; }
 }
 
 /// <summary>Information about a volume</summary>

@@ -5563,4 +5563,43 @@ Probadores:
     <data name="You_do_not_have_enough_privileges_to_access_the_device" xml:space="preserve">
         <value>No tiene los privilegios suficientes para acceder al dispositivo.</value>
     </data>
+    <data name="Image_Analyze_Command_Description" xml:space="preserve">
+        <value>Analiza sectores no volcados o dañados e informa de los archivos a los que afectan.</value>
+    </data>
+    <data name="Resume_file_to_use_for_analysis" xml:space="preserve">
+        <value>Archivo de reanudación a usar para el análisis.</value>
+    </data>
+    <data name="No_sector_analysis_data_available" xml:space="preserve">
+        <value>[red]No se encontró una lista de bloques erróneos ni extensiones de hardware de volcado en los metadatos de la imagen ni en el sidecar de reanudación.[/]</value>
+    </data>
+    <data name="Using_resume_file_0" xml:space="preserve">
+        <value>[bold]Usando archivo de reanudación:[/] [green]{0}[/]</value>
+    </data>
+    <data name="Affected_sector_extents" xml:space="preserve">
+        <value>Extensiones de sectores afectados</value>
+    </data>
+    <data name="Errored_sectors" xml:space="preserve">
+        <value>Sectores con errores</value>
+    </data>
+    <data name="Undumped_sectors" xml:space="preserve">
+        <value>Sectores no volcados</value>
+    </data>
+    <data name="Damaged_subchannel_sectors" xml:space="preserve">
+        <value>Sectores con subcanal dañado</value>
+    </data>
+    <data name="Track_0_session_1_2" xml:space="preserve">
+        <value>Pista {0}, sesión {1}, {2}</value>
+    </data>
+    <data name="Intersession_area_between_sessions_0_and_1" xml:space="preserve">
+        <value>Área entre sesiones de un CD multisesión entre las sesiones {0} y {1}</value>
+    </data>
+    <data name="Outside_known_track_bounds" xml:space="preserve">
+        <value>Fuera de los límites conocidos de las pistas</value>
+    </data>
+    <data name="Sector_to_file_analysis_not_yet_implemented_for_0" xml:space="preserve">
+        <value>El análisis de sectores a archivos aún no está implementado para {0}.</value>
+    </data>
+    <data name="No_files_in_0_overlap_the_affected_sectors" xml:space="preserve">
+        <value>Ningún archivo en {0} se superpone con los sectores afectados.</value>
+    </data>
 </root>

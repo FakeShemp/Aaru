@@ -5647,4 +5647,43 @@ Do you want to continue?</value>
     <data name="You_do_not_have_enough_privileges_to_access_the_device" xml:space="preserve">
         <value>You do not have enough privileges to access the device.</value>
     </data>
+    <data name="Image_Analyze_Command_Description" xml:space="preserve">
+        <value>Analyzes undumped and damaged sectors and reports the files they affect.</value>
+    </data>
+    <data name="Resume_file_to_use_for_analysis" xml:space="preserve">
+        <value>Resume file to use for the analysis.</value>
+    </data>
+    <data name="No_sector_analysis_data_available" xml:space="preserve">
+        <value>[red]No bad block list or dump hardware extents were found in the image metadata or resume sidecar.[/]</value>
+    </data>
+    <data name="Using_resume_file_0" xml:space="preserve">
+        <value>[bold]Using resume file:[/] [green]{0}[/]</value>
+    </data>
+    <data name="Affected_sector_extents" xml:space="preserve">
+        <value>Affected sector extents</value>
+    </data>
+    <data name="Errored_sectors" xml:space="preserve">
+        <value>Errored sectors</value>
+    </data>
+    <data name="Undumped_sectors" xml:space="preserve">
+        <value>Undumped sectors</value>
+    </data>
+    <data name="Damaged_subchannel_sectors" xml:space="preserve">
+        <value>Damaged subchannel sectors</value>
+    </data>
+    <data name="Track_0_session_1_2" xml:space="preserve">
+        <value>Track {0}, session {1}, {2}</value>
+    </data>
+    <data name="Intersession_area_between_sessions_0_and_1" xml:space="preserve">
+        <value>Multisession intersession area between sessions {0} and {1}</value>
+    </data>
+    <data name="Outside_known_track_bounds" xml:space="preserve">
+        <value>Outside known track bounds</value>
+    </data>
+    <data name="Sector_to_file_analysis_not_yet_implemented_for_0" xml:space="preserve">
+        <value>Sector-to-file analysis is not yet implemented for {0}.</value>
+    </data>
+    <data name="No_files_in_0_overlap_the_affected_sectors" xml:space="preserve">
+        <value>No files in {0} overlap the affected sectors.</value>
+    </data>
 </root>

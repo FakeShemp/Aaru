@@ -365,6 +365,9 @@ class MainClass
                                               {
                                                   image.SetDescription(UI.Image_Command_Family_Description);
 
+                                                  image.AddCommand<AnalyzeCommand>("analyze")
+                                                       .WithDescription(UI.Image_Analyze_Command_Description);
+
                                                   image.AddCommand<ChecksumCommand>("checksum")
                                                        .WithAlias("chk")
                                                        .WithDescription(UI.Image_Checksum_Command_Description);
