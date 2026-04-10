@@ -54,7 +54,8 @@ public sealed partial class ISO9660
     public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
                              Dictionary<string, string> options,     string    @namespace)
     {
-        _encoding = encoding ?? Encoding.GetEncoding(1252);
+        _encoding       = encoding ?? Encoding.GetEncoding(1252);
+        _partitionStart = partition.Start;
         var vdMagic = new byte[5]; // Volume Descriptor magic "CD001"
         var hsMagic = new byte[5]; // Volume Descriptor magic "CDROM"
 
