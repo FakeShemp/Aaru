@@ -53,6 +53,8 @@ public sealed partial class CBM
     public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
                              Dictionary<string, string> options,     string    @namespace)
     {
+        _device = imagePlugin;
+
         if(partition.Start > 0) return ErrorNumber.InvalidArgument;
 
         if(imagePlugin.Info.SectorSize != 256) return ErrorNumber.InvalidArgument;
@@ -241,9 +243,8 @@ public sealed partial class CBM
             _statfs.FreeFiles--;
 
             for(var i = 0; i < dirEntry.name.Length; i++)
-            {
-                if(dirEntry.name[i] == 0xA0) dirEntry.name[i] = 0;
-            }
+                if(dirEntry.name[i] == 0xA0)
+                    dirEntry.name[i] = 0;
 
             string name = StringHandlers.CToString(dirEntry.name, encoding);
 

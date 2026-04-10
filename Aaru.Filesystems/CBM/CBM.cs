@@ -42,6 +42,7 @@ public sealed partial class CBM : IReadOnlyFilesystem
     byte[]                         _bam;
     Dictionary<string, CachedFile> _cache;
     bool                           _debug;
+    IMediaImage                    _device;
     byte[]                         _diskHeader;
     bool                           _is1581;
     bool                           _mounted;
