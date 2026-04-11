@@ -527,6 +527,9 @@ In you are unsure, please press N to not continue.</value>
     <data name="Title_Name" xml:space="preserve">
     <value>[bold][darkgreen]Name[/][/]</value>
   </data>
+    <data name="Title_Xattr_or_stream" xml:space="preserve">
+    <value>[bold][darkgreen]Xattr / stream[/][/]</value>
+  </data>
     <data name="Title_Type" xml:space="preserve">
     <value>[bold][olive]Type[/][/]</value>
   </data>

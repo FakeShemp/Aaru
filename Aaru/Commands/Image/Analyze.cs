@@ -725,6 +725,8 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
             return;
         }
 
+        bool hasXattrs = files.Any(static file => !string.IsNullOrWhiteSpace(file.Stream));
+
         Table table = new();
 
         table.AddColumn(new TableColumn(UI.Title_File_path)
@@ -737,10 +739,13 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
             NoWrap = false
         });
 
-        table.AddColumn(new TableColumn($"[underline]{UI.Title_Name}[/]")
+        if(hasXattrs)
         {
-            NoWrap = true
-        });
+            table.AddColumn(new TableColumn($"[underline]{UI.Title_Xattr_or_stream}[/]")
+            {
+                NoWrap = true
+            });
+        }
 
         foreach(FileSectorInfo file in files.OrderBy(static file => file.Path).ThenBy(static file => file.Stream))
         {
@@ -748,9 +753,12 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
                                       file.AffectedSectors.OrderBy(static extent => extent.Start)
                                           .Select(static extent => $"{extent.Start}-{extent.End}"));
 
-            table.AddRow(Markup.Escape(file.Path ?? string.Empty),
-                         Markup.Escape(extents),
-                         Markup.Escape(file.Stream ?? string.Empty));
+            if(hasXattrs)
+                table.AddRow(Markup.Escape(file.Path ?? string.Empty),
+                             Markup.Escape(extents),
+                             Markup.Escape(file.Stream ?? string.Empty));
+            else
+                table.AddRow(Markup.Escape(file.Path ?? string.Empty), Markup.Escape(extents));
         }
 
         AnsiConsole.Write(table);

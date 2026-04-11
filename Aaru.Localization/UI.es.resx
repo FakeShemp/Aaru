@@ -2615,6 +2615,9 @@ Probadores:
     <data name="Title_Name" xml:space="preserve">
         <value>[bold][darkgreen]Nombre[/][/]</value>
     </data>
+    <data name="Title_Xattr_or_stream" xml:space="preserve">
+        <value>[bold][darkgreen]Xattr / flujo[/][/]</value>
+    </data>
     <data name="Title_Namespace" xml:space="preserve">
         <value>[dargreen]Espacio de nombres[/]</value>
     </data>

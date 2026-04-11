@@ -1047,6 +1047,12 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string Title_Xattr_or_stream {
+            get {
+                return ResourceManager.GetString("Title_Xattr_or_stream", resourceCulture);
+            }
+        }
+        
         public static string Title_Type {
             get {
                 return ResourceManager.GetString("Title_Type", resourceCulture);
