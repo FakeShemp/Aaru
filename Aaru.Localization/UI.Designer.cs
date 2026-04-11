@@ -11148,6 +11148,12 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string Ignore_subchannels_during_analysis {
+            get {
+                return ResourceManager.GetString("Ignore_subchannels_during_analysis", resourceCulture);
+            }
+        }
+        
         public static string Resume_file_to_use_for_analysis {
             get {
                 return ResourceManager.GetString("Resume_file_to_use_for_analysis", resourceCulture);

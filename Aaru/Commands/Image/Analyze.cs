@@ -70,13 +70,14 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
 
         if(!parsedOptions.ContainsKey("debug")) parsedOptions.Add("debug", settings.Debug.ToString());
 
-        AaruLogging.Debug(MODULE_NAME, "--debug={0}",       settings.Debug);
-        AaruLogging.Debug(MODULE_NAME, "--encoding={0}",    Markup.Escape(settings.Encoding   ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--input={0}",       Markup.Escape(settings.ImagePath  ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--namespace={0}",   Markup.Escape(settings.Namespace  ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--options={0}",     Markup.Escape(settings.Options    ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--resume-file={0}", Markup.Escape(settings.ResumeFile ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--verbose={0}",     settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",              settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--encoding={0}",           Markup.Escape(settings.Encoding   ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--input={0}",              Markup.Escape(settings.ImagePath  ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--namespace={0}",          Markup.Escape(settings.Namespace  ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--options={0}",            Markup.Escape(settings.Options    ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--resume-file={0}",        Markup.Escape(settings.ResumeFile ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--ignore-subchannels={0}", settings.IgnoreSubchannels);
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}",            settings.Verbose);
 
         IFilter inputFilter = null;
 
@@ -179,7 +180,7 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
                 AaruLogging.WriteLine();
             }
 
-            List<AffectedExtent> affectedExtents = GetAffectedExtents(baseImage, resume);
+            List<AffectedExtent> affectedExtents = GetAffectedExtents(baseImage, resume, settings.IgnoreSubchannels);
 
             if(affectedExtents.Count == 0)
             {
@@ -345,7 +346,7 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
         }
     }
 
-    static List<AffectedExtent> GetAffectedExtents(IBaseImage image, Resume resume)
+    static List<AffectedExtent> GetAffectedExtents(IBaseImage image, Resume resume, bool ignoreSubchannels)
     {
         List<AffectedExtent> affected     = [];
         ulong                totalSectors = image.Info.Sectors;
@@ -364,8 +365,11 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
         foreach((ulong start, ulong end) extent in badSectors)
             affected.Add(new AffectedExtent(AffectedSectorKind.Error, extent.start, extent.end));
 
-        foreach((ulong start, ulong end) extent in subchannelSectors)
-            affected.Add(new AffectedExtent(AffectedSectorKind.Subchannel, extent.start, extent.end));
+        if(!ignoreSubchannels)
+        {
+            foreach((ulong start, ulong end) extent in subchannelSectors)
+                affected.Add(new AffectedExtent(AffectedSectorKind.Subchannel, extent.start, extent.end));
+        }
 
         if(dumpedExtents.Count > 0)
         {
@@ -762,9 +766,7 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
                              ColorizeCell(file.Stream ?? string.Empty, fileKind));
             }
             else
-            {
                 table.AddRow(ColorizeCell(file.Path ?? string.Empty, fileKind), ColorizeCell(extents, fileKind));
-            }
         }
 
         AnsiConsole.Write(table);
@@ -919,6 +921,9 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
         [CommandOption("-n|--namespace")]
         [DefaultValue(null)]
         public string Namespace { get; init; }
+        [LocalizedDescription(nameof(UI.Ignore_subchannels_during_analysis))]
+        [CommandOption("--ignore-subchannel|--ignore-subchannels")]
+        public bool IgnoreSubchannels { get; init; }
         [LocalizedDescription(nameof(UI.Resume_file_to_use_for_analysis))]
         [CommandOption("-r|--resume-file")]
         [DefaultValue(null)]

@@ -5653,6 +5653,9 @@ Do you want to continue?</value>
     <data name="Image_Analyze_Command_Description" xml:space="preserve">
         <value>Analyzes undumped and damaged sectors and reports the files they affect.</value>
     </data>
+    <data name="Ignore_subchannels_during_analysis" xml:space="preserve">
+        <value>Ignore damaged subchannels during analysis.</value>
+    </data>
     <data name="Resume_file_to_use_for_analysis" xml:space="preserve">
         <value>Resume file to use for the analysis.</value>
     </data>

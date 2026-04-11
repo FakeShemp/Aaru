@@ -5569,6 +5569,9 @@ Probadores:
     <data name="Image_Analyze_Command_Description" xml:space="preserve">
         <value>Analiza sectores no volcados o dañados e informa de los archivos a los que afectan.</value>
     </data>
+    <data name="Ignore_subchannels_during_analysis" xml:space="preserve">
+        <value>Ignora los subcanales dañados durante el análisis.</value>
+    </data>
     <data name="Resume_file_to_use_for_analysis" xml:space="preserve">
         <value>Archivo de reanudación a usar para el análisis.</value>
     </data>
