@@ -11225,5 +11225,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("No_files_in_0_overlap_the_affected_sectors", resourceCulture);
             }
         }
+        
+        public static string Start_reverse_error_retry {
+            get {
+                return ResourceManager.GetString("Start_reverse_error_retry", resourceCulture);
+            }
+        }
     }
 }

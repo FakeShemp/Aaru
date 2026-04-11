@@ -125,6 +125,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--paranoia={0}",                settings.Paranoia);
         AaruLogging.Debug(MODULE_NAME, "--cure-paranoia={0}",           settings.CureParanoia);
         AaruLogging.Debug(MODULE_NAME, "--raw={0}",                     settings.Raw);
+        AaruLogging.Debug(MODULE_NAME, "--start-reverse={0}",           settings.StartReverse);
 
         Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
         AaruLogging.Debug(MODULE_NAME, UI.Parsed_options);
@@ -528,7 +529,8 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   (uint)settings.Dimensions,
                                   settings.Paranoia,
                                   settings.CureParanoia,
-                                  settings.BypassWiiDecryption);
+                                  settings.BypassWiiDecryption,
+                                  settings.StartReverse);
 
             AnsiConsole.Progress()
                        .AutoClear(true)
@@ -801,6 +803,9 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [LocalizedDescription(nameof(UI.Output_image_path_Dump_help))]
         [CommandArgument(1, "<output-path>")]
         public string OutputPath { get; init; }
+        [LocalizedDescription(nameof(UI.Start_reverse_error_retry))]
+        [CommandOption("--start-reverse")]
+        public bool StartReverse { get; init; }
     }
 
 #endregion

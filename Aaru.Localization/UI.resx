@@ -5692,4 +5692,7 @@ Do you want to continue?</value>
     <data name="No_files_in_0_overlap_the_affected_sectors" xml:space="preserve">
         <value>No files in {0} overlap the affected sectors.</value>
     </data>
+    <data name="Start_reverse_error_retry" xml:space="preserve">
+        <value>Start error retrying in reverse.</value>
+    </data>
 </root>

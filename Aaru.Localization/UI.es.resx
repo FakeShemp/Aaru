@@ -5608,4 +5608,7 @@ Probadores:
     <data name="No_files_in_0_overlap_the_affected_sectors" xml:space="preserve">
         <value>Ningún archivo en {0} se superpone con los sectores afectados.</value>
     </data>
+    <data name="Start_reverse_error_retry" xml:space="preserve">
+        <value>Comenzar reintentos de errores al revés.</value>
+    </data>
 </root>

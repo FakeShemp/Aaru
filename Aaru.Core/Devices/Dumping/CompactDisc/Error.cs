@@ -213,9 +213,22 @@ partial class Dump
         }
 
         InitProgress?.Invoke();
+        var firstTry = true;
+
     cdRepeatRetry:
         ulong[]     tmpArray              = _resume.BadBlocks.ToArray();
         List<ulong> sectorsNotEvenPartial = [];
+
+        if(firstTry)
+        {
+            if(_startReverse)
+            {
+                tmpArray = tmpArray.Reverse().ToArray();
+                forward  = false;
+            }
+
+            firstTry = false;
+        }
 
         for(var i = 0; i < tmpArray.Length; i++)
         {
@@ -465,9 +478,8 @@ partial class Dump
 
                 // MEDIUM ERROR, retry with ignore error below
                 if(decSense is { ASC: 0x11 })
-                {
-                    if(!sectorsNotEvenPartial.Contains(badSector)) sectorsNotEvenPartial.Add(badSector);
-                }
+                    if(!sectorsNotEvenPartial.Contains(badSector))
+                        sectorsNotEvenPartial.Add(badSector);
             }
 
             // Because one block has been partially used to fix the offset

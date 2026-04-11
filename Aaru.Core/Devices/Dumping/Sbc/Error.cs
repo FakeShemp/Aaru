@@ -238,8 +238,21 @@ partial class Dump
         }
 
         InitProgress?.Invoke();
+
+        var firstTry = true;
     repeatRetry:
         ulong[] tmpArray = _resume.BadBlocks.ToArray();
+
+        if(firstTry)
+        {
+            if(_startReverse)
+            {
+                tmpArray = tmpArray.Reverse().ToArray();
+                forward  = false;
+            }
+
+            firstTry = false;
+        }
 
         foreach(ulong badSector in tmpArray)
         {
@@ -308,7 +321,8 @@ partial class Dump
 
                 if(outputFormat is null)
                 {
-                    ErrorMessage?.Invoke(string.Format(Localization.Core.Cannot_write_retried_sector_0_no_writable_output_image,
+                    ErrorMessage?.Invoke(string.Format(Localization.Core
+                                                                   .Cannot_write_retried_sector_0_no_writable_output_image,
                                                        badSector));
 
                     continue;
@@ -331,7 +345,10 @@ partial class Dump
 
                         if(key.All(static k => k == 0))
                         {
-                            outputFormat.WriteSectorTag(new byte[5], badSector, false, SectorTagType.DvdTitleKeyDecrypted);
+                            outputFormat.WriteSectorTag(new byte[5],
+                                                        badSector,
+                                                        false,
+                                                        SectorTagType.DvdTitleKeyDecrypted);
 
                             MarkTitleKeyDumped(badSector);
                         }
@@ -356,7 +373,7 @@ partial class Dump
                             if(errno != ErrorNumber.NoError)
                             {
                                 ErrorMessage?.Invoke(string.Format(Localization.Core
-                                                                               .Error_retrieving_title_key_for_sector_0,
+                                                                      .Error_retrieving_title_key_for_sector_0,
                                                                    badSector));
                             }
                             else
@@ -380,7 +397,8 @@ partial class Dump
             {
                 if(outputFormat is null)
                 {
-                    ErrorMessage?.Invoke(string.Format(Localization.Core.Cannot_write_retried_sector_0_no_writable_output_image,
+                    ErrorMessage?.Invoke(string.Format(Localization.Core
+                                                                   .Cannot_write_retried_sector_0_no_writable_output_image,
                                                        badSector));
 
                     continue;
