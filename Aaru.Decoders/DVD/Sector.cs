@@ -434,4 +434,14 @@ public sealed class Sector
 
         return ErrorNumber.NoError;
     }
+
+    public static byte[] GetUserData(byte[] data)
+    {
+        if(data.Length != 2064) return data;
+
+        byte[] sector = new byte[2048];
+        Array.Copy(data, 12, sector, 0, 2048);
+
+        return sector;
+    }
 }
