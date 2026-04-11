@@ -55,6 +55,7 @@ public sealed partial class Merger
     const string            MODULE_NAME = "Image merger";
     bool                    _aborted;
     readonly PluginRegister _plugins = PluginRegister.Singleton;
+    byte[][]? _aacsDecryptedCpsUnitKeys;
 
     public ErrorNumber Start()
     {

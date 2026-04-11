@@ -6,10 +6,9 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Core.Media;
-using Aaru.Decryption.DVD;
 using Aaru.Devices;
 using Aaru.Localization;
-using Aaru.Logging;
+using MediaType = Aaru.CommonTypes.MediaType;
 
 namespace Aaru.Core.Image;
 
@@ -173,8 +172,39 @@ public sealed partial class Merger
 
         InitProgress?.Invoke();
         InitProgress2?.Invoke();
-        byte[] generatedTitleKeys = null;
-        var    currentTrack       = 0;
+        var currentTrack = 0;
+
+        _aacsDecryptedCpsUnitKeys = null;
+
+        if(decrypt)
+        {
+            if(IsHdDvdAacsMedia(inputOptical.Info.MediaType))
+            {
+                StoppingErrorMessage?.Invoke(Aaru.Localization.Core.Aacs_hddvd_not_supported);
+
+                return ErrorNumber.UnsupportedMedia;
+            }
+
+            if(IsBluRayAacsMedia(inputOptical.Info.MediaType))
+            {
+                _aacsDecryptedCpsUnitKeys = AacsKeyResolver.TryGetDecryptedCpsUnitKeys(inputOptical,
+                    _plugins,
+                    Encoding.UTF8,
+                    out string aacsErr);
+
+                if(_aacsDecryptedCpsUnitKeys == null)
+                {
+                    StoppingErrorMessage?.Invoke(aacsErr ?? Aaru.Localization.Core.Aacs_missing_unit_keys);
+
+                    return ErrorNumber.NoData;
+                }
+
+                return CopyAacsBdOpticalSectorsPrimary(inputOptical, outputOptical);
+            }
+
+            if(CssDvdSectorDecrypt.IsDvdMedia(inputOptical.Info.MediaType))
+                return CopyCssDvdOpticalSectorsPrimary(inputOptical, outputOptical, useLong);
+        }
 
         foreach(Track track in inputOptical.Tracks)
         {
@@ -269,17 +299,6 @@ public sealed partial class Merger
                                                            out sector,
                                                            out sectorStatusArray);
 
-                    // TODO: Move to generic place when anything but CSS DVDs can be decrypted
-                    if(IsDvdMedia(inputOptical.Info.MediaType) && decrypt)
-                    {
-                        DecryptDvdSector(ref sector,
-                                         inputOptical,
-                                         doneSectors + track.StartSector,
-                                         sectorsToDo,
-                                         _plugins,
-                                         ref generatedTitleKeys);
-                    }
-
                     if(errno == ErrorNumber.NoError)
                     {
                         result = sectorsToDo == 1
@@ -329,9 +348,11 @@ public sealed partial class Merger
     {
         if(_aborted) return ErrorNumber.NoError;
 
+        if(decrypt && CssDvdSectorDecrypt.IsDvdMedia(inputOptical.Info.MediaType))
+            return CopyCssDvdOpticalSectorsSecondary(inputOptical, outputOptical, useLong, sectorsToCopy);
+
         InitProgress?.Invoke();
-        byte[] generatedTitleKeys   = null;
-        int    howManySectorsToCopy = sectorsToCopy.Count(t => t < inputOptical.Info.Sectors);
+        int howManySectorsToCopy = sectorsToCopy.Count(t => t < inputOptical.Info.Sectors);
         var    howManySectorsCopied = 0;
 
         foreach(ulong sectorAddress in sectorsToCopy.Where(t => t < inputOptical.Info.Sectors)
@@ -374,10 +395,6 @@ public sealed partial class Merger
             else
             {
                 errno = inputOptical.ReadSector(sectorAddress, false, out sector, out sectorStatus);
-
-                // TODO: Move to generic place when anything but CSS DVDs can be decrypted
-                if(IsDvdMedia(inputOptical.Info.MediaType) && decrypt)
-                    DecryptDvdSector(ref sector, inputOptical, sectorAddress, 1, _plugins, ref generatedTitleKeys);
 
                 if(errno == ErrorNumber.NoError)
                     result = outputOptical.WriteSector(sector, sectorAddress, false, sectorStatus);
@@ -753,98 +770,21 @@ public sealed partial class Merger
         return ErrorNumber.NoError;
     }
 
-    /// <summary>
-    ///     Decrypts DVD sectors using CSS (Content Scramble System) decryption
-    ///     Retrieves decryption keys from sector tags or generates them from ISO9660 filesystem
-    ///     Only MPEG packets within sectors can be encrypted
-    /// </summary>
-    void DecryptDvdSector(ref byte[]     sector, IOpticalMediaImage inputOptical, ulong sectorAddress, uint sectorsToDo,
-                          PluginRegister plugins, ref byte[] generatedTitleKeys)
-    {
-        if(_aborted) return;
+    static bool IsBluRayAacsMedia(MediaType mediaType) =>
+        mediaType is MediaType.BDROM
+                  or MediaType.BDR
+                  or MediaType.BDRE
+                  or MediaType.BDRXL
+                  or MediaType.BDREXL
+                  or MediaType.UHDBD;
 
-        // Only sectors which are MPEG packets can be encrypted.
-        if(!Mpeg.ContainsMpegPackets(sector, sectorsToDo)) return;
-
-        byte[] cmi, titleKey;
-
-        if(sectorsToDo == 1)
-        {
-            if(inputOptical.ReadSectorTag(sectorAddress, false, SectorTagType.DvdSectorCmi, out cmi) ==
-               ErrorNumber.NoError &&
-               inputOptical.ReadSectorTag(sectorAddress, false, SectorTagType.DvdTitleKeyDecrypted, out titleKey) ==
-               ErrorNumber.NoError)
-                sector = CSS.DecryptSector(sector, titleKey, cmi);
-            else
-            {
-                if(generatedTitleKeys == null) GenerateDvdTitleKeys(inputOptical, plugins, ref generatedTitleKeys);
-
-                if(generatedTitleKeys != null)
-                {
-                    sector = CSS.DecryptSector(sector,
-                                               generatedTitleKeys.Skip((int)(5 * sectorAddress)).Take(5).ToArray(),
-                                               null);
-                }
-            }
-        }
-        else
-        {
-            if(inputOptical.ReadSectorsTag(sectorAddress, false, sectorsToDo, SectorTagType.DvdSectorCmi, out cmi) ==
-               ErrorNumber.NoError &&
-               inputOptical.ReadSectorsTag(sectorAddress,
-                                           false,
-                                           sectorsToDo,
-                                           SectorTagType.DvdTitleKeyDecrypted,
-                                           out titleKey) ==
-               ErrorNumber.NoError)
-                sector = CSS.DecryptSector(sector, titleKey, cmi, sectorsToDo);
-            else
-            {
-                if(generatedTitleKeys == null) GenerateDvdTitleKeys(inputOptical, plugins, ref generatedTitleKeys);
-
-                if(generatedTitleKeys != null)
-                {
-                    sector = CSS.DecryptSector(sector,
-                                               generatedTitleKeys.Skip((int)(5 * sectorAddress))
-                                                                 .Take((int)(5 * sectorsToDo))
-                                                                 .ToArray(),
-                                               null,
-                                               sectorsToDo);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    ///     Generates DVD CSS title keys from ISO9660 filesystem
-    ///     Used when explicit title keys are not available in sector tags
-    ///     Searches for ISO9660 partitions to derive decryption keys
-    /// </summary>
-    void GenerateDvdTitleKeys(IOpticalMediaImage inputOptical, PluginRegister plugins, ref byte[] generatedTitleKeys)
-    {
-        if(_aborted) return;
-
-        List<Partition> partitions = Partitions.GetAll(inputOptical);
-
-        partitions = partitions.FindAll(p =>
-        {
-            Filesystems.Identify(inputOptical, out List<string> idPlugins, p);
-
-            return idPlugins.Contains("iso9660 filesystem");
-        });
-
-        if(!plugins.ReadOnlyFilesystems.TryGetValue("iso9660 filesystem", out IReadOnlyFilesystem rofs)) return;
-
-        AaruLogging.Debug(MODULE_NAME, UI.Generating_decryption_keys);
-
-        generatedTitleKeys = CSS.GenerateTitleKeys(inputOptical, partitions, inputOptical.Info.Sectors, rofs);
-    }
-
-    static bool IsDvdMedia(MediaType mediaType) =>
-
-        // Checks if media type is any variant of DVD (ROM, R, RDL, PR, PRDL)
-        // Consolidates media type checking logic used throughout conversion process
-        mediaType is MediaType.DVDROM or MediaType.DVDR or MediaType.DVDRDL or MediaType.DVDPR or MediaType.DVDPRDL;
+    static bool IsHdDvdAacsMedia(MediaType mediaType) =>
+        mediaType is MediaType.HDDVDROM
+                  or MediaType.HDDVDRAM
+                  or MediaType.HDDVDR
+                  or MediaType.HDDVDRW
+                  or MediaType.HDDVDRDL
+                  or MediaType.HDDVDRWDL;
 
     private static bool IsCompactDiscMedia(MediaType mediaType) =>
 
