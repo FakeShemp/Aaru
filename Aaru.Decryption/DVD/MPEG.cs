@@ -143,6 +143,27 @@ public class Mpeg
         return false;
     }
 
+    /// <summary>DVD raw long sector size (sync/header + 2048 user + 4 suffix) per CSS long decrypt.</summary>
+    public const uint DvdLongSectorStride = 2064;
+
+    /// <summary>User data starts at this offset inside each <see cref="DvdLongSectorStride"/>-byte block.</summary>
+    public const uint DvdLongSectorUserOffset = 12;
+
+    /// <summary>True if any logical DVD long sector in the buffer contains an MPEG pack header at the user payload offset.</summary>
+    public static bool ContainsMpegPacketsLong(byte[] sectorData, uint blocks)
+    {
+        if(sectorData.Length < (long)blocks * (long)DvdLongSectorStride) return false;
+
+        for(uint i = 0; i < blocks; i++)
+        {
+            int off = (int)(DvdLongSectorUserOffset + i * DvdLongSectorStride);
+
+            if(IsMpegPacket(sectorData.Skip(off))) return true;
+        }
+
+        return false;
+    }
+
     public static bool IsMpegPacket(IEnumerable<byte> sector) =>
         sector.Take(3).ToArray().SequenceEqual(_mpeg2PackHeaderStartCode);
 
