@@ -287,8 +287,10 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
                                                                             },
                                                                             (text, current, maximum) =>
                                                                             {
-                                                                                progressTask ??= ctx.AddTask(text);
-                                                                                progressTask.Description = text;
+                                                                                progressTask ??=
+                                                                                    ctx.AddTask(text);
+
+                                                                                progressTask.Description     = text;
                                                                                 progressTask.IsIndeterminate = false;
 
                                                                                 progressTask.MaxValue =
@@ -301,8 +303,7 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
                                                                             },
                                                                             text =>
                                                                             {
-                                                                                progressTask ??=
-                                                                                    ctx.AddTask(text);
+                                                                                progressTask ??= ctx.AddTask(text);
 
                                                                                 progressTask.Description     = text;
                                                                                 progressTask.IsIndeterminate = true;
@@ -373,7 +374,7 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
                 affected.Add(new AffectedExtent(AffectedSectorKind.Undumped, extent.start, extent.end));
         }
 
-        return affected.OrderBy(static extent => extent.Start).ThenBy(static extent => extent.End).ToList();
+        return NormalizeAffectedExtents(affected);
     }
 
     static List<(ulong start, ulong end)> GetDumpedExtents(IEnumerable<DumpHardware> imageDumpHardware,
@@ -512,6 +513,76 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
         normalizedExtents.Add(currentExtent);
 
         return normalizedExtents;
+    }
+
+    static List<AffectedExtent> NormalizeAffectedExtents(IEnumerable<AffectedExtent> extents)
+    {
+        List<AffectedExtent>           normalized = [];
+        List<(ulong start, ulong end)> claimed    = [];
+
+        AffectedSectorKind[] priorities =
+        [
+            AffectedSectorKind.Error, AffectedSectorKind.Subchannel, AffectedSectorKind.Undumped
+        ];
+
+        foreach(AffectedSectorKind kind in priorities)
+        {
+            List<(ulong start, ulong end)> kindExtents = NormalizeExtents(extents.Where(extent => extent.Kind == kind)
+                                                                             .Select(extent => (extent.Start,
+                                                                                              extent.End)));
+
+            if(claimed.Count > 0) kindExtents = SubtractExtents(kindExtents, claimed);
+
+            foreach((ulong start, ulong end) extent in kindExtents)
+                normalized.Add(new AffectedExtent(kind, extent.start, extent.end));
+
+            claimed = NormalizeExtents(claimed.Concat(kindExtents));
+        }
+
+        return normalized.OrderBy(static extent => extent.Start)
+                         .ThenBy(static extent => extent.End)
+                         .ThenBy(static extent => extent.Kind)
+                         .ToList();
+    }
+
+    static List<(ulong start, ulong end)> SubtractExtents(IEnumerable<(ulong start, ulong end)> sourceExtents,
+                                                          IEnumerable<(ulong start, ulong end)> excludedExtents)
+    {
+        List<(ulong start, ulong end)> normalizedSource   = NormalizeExtents(sourceExtents);
+        List<(ulong start, ulong end)> normalizedExcluded = NormalizeExtents(excludedExtents);
+        List<(ulong start, ulong end)> remaining          = [];
+
+        foreach((ulong start, ulong end) source in normalizedSource)
+        {
+            List<(ulong start, ulong end)> fragments = [source];
+
+            foreach((ulong start, ulong end) excluded in normalizedExcluded)
+            {
+                if(fragments.Count == 0) break;
+
+                List<(ulong start, ulong end)> nextFragments = [];
+
+                foreach((ulong start, ulong end) fragment in fragments)
+                {
+                    if(excluded.end < fragment.start || excluded.start > fragment.end)
+                    {
+                        nextFragments.Add(fragment);
+
+                        continue;
+                    }
+
+                    if(excluded.start > fragment.start) nextFragments.Add((fragment.start, excluded.start - 1));
+
+                    if(excluded.end < fragment.end) nextFragments.Add((excluded.end + 1, fragment.end));
+                }
+
+                fragments = nextFragments;
+            }
+
+            remaining.AddRange(fragments);
+        }
+
+        return NormalizeExtents(remaining);
     }
 
     static List<(ulong start, ulong end)> FilterExtentsForPartition(IEnumerable<AffectedExtent> affectedExtents,
