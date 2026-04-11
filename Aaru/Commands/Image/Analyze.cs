@@ -287,8 +287,7 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
                                                                             },
                                                                             (text, current, maximum) =>
                                                                             {
-                                                                                progressTask ??=
-                                                                                    ctx.AddTask(text);
+                                                                                progressTask ??= ctx.AddTask(text);
 
                                                                                 progressTask.Description     = text;
                                                                                 progressTask.IsIndeterminate = false;
@@ -318,7 +317,7 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
                 switch(filesError)
                 {
                     case ErrorNumber.NoError:
-                        PrintFilesystemResults(fs, files);
+                        PrintFilesystemResults(fs, files, affectedExtents);
 
                         break;
                     case ErrorNumber.NotSupported:
@@ -713,7 +712,8 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
         AaruLogging.WriteLine();
     }
 
-    static void PrintFilesystemResults(IReadOnlyFilesystem fs, IReadOnlyList<FileSectorInfo> files)
+    static void PrintFilesystemResults(IReadOnlyFilesystem           fs, IReadOnlyList<FileSectorInfo> files,
+                                       IReadOnlyList<AffectedExtent> affectedExtents)
     {
         AaruLogging.WriteLine($"[bold]{string.Format(UI.Identified_by_0, fs.Name)}[/]");
 
@@ -753,16 +753,75 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
                                       file.AffectedSectors.OrderBy(static extent => extent.Start)
                                           .Select(static extent => $"{extent.Start}-{extent.End}"));
 
+            AffectedSectorKind? fileKind = GetFileAffectedSectorKind(file, affectedExtents);
+
             if(hasXattrs)
-                table.AddRow(Markup.Escape(file.Path ?? string.Empty),
-                             Markup.Escape(extents),
-                             Markup.Escape(file.Stream ?? string.Empty));
+            {
+                table.AddRow(ColorizeCell(file.Path ?? string.Empty,   fileKind),
+                             ColorizeCell(extents,                     fileKind),
+                             ColorizeCell(file.Stream ?? string.Empty, fileKind));
+            }
             else
-                table.AddRow(Markup.Escape(file.Path ?? string.Empty), Markup.Escape(extents));
+            {
+                table.AddRow(ColorizeCell(file.Path ?? string.Empty, fileKind), ColorizeCell(extents, fileKind));
+            }
         }
 
         AnsiConsole.Write(table);
         AaruLogging.WriteLine();
+    }
+
+    static AffectedSectorKind? GetFileAffectedSectorKind(FileSectorInfo                file,
+                                                         IReadOnlyList<AffectedExtent> affectedExtents)
+    {
+        if(file?.AffectedSectors      == null ||
+           file.AffectedSectors.Count == 0    ||
+           affectedExtents            == null ||
+           affectedExtents.Count      == 0)
+            return null;
+
+        AffectedSectorKind[] priorities =
+        [
+            AffectedSectorKind.Error, AffectedSectorKind.Subchannel, AffectedSectorKind.Undumped
+        ];
+
+        foreach(AffectedSectorKind kind in priorities)
+        {
+            foreach((ulong Start, ulong End) fileExtent in file.AffectedSectors)
+            {
+                foreach(AffectedExtent affectedExtent in affectedExtents)
+                {
+                    if(affectedExtent.Kind != kind) continue;
+                    if(fileExtent.End < affectedExtent.Start || fileExtent.Start > affectedExtent.End) continue;
+
+                    return kind;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    static string ColorizeCell(string value, AffectedSectorKind? kind)
+    {
+        string escapedValue = Markup.Escape(value ?? string.Empty);
+
+        if(!kind.HasValue) return escapedValue;
+
+        return $"[{GetAffectedSectorColor(kind.Value)}]{escapedValue}[/]";
+    }
+
+    static string GetAffectedSectorColor(AffectedSectorKind kind)
+    {
+        switch(kind)
+        {
+            case AffectedSectorKind.Error:
+                return "red";
+            case AffectedSectorKind.Subchannel:
+                return "yellow3";
+            default:
+                return "slateblue1";
+        }
     }
 
     static string GetAffectedExtentType(AffectedSectorKind kind)
