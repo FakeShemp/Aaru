@@ -251,6 +251,9 @@ partial class Dump
                 forward  = false;
             }
 
+            // Spin up... usually always fails...
+            _ = scsiReader.ReadBlock(out _, tmpArray[0], out _, out _, out _);
+
             firstTry = false;
         }
 

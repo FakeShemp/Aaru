@@ -227,6 +227,24 @@ partial class Dump
                 forward  = false;
             }
 
+            // Spin up... usually always fails...
+            _ = _dev.ReadCd(out _,
+                            out _,
+                            (uint)tmpArray[0],
+                            blockSize,
+                            1,
+                            MmcSectorTypes.AllTypes,
+                            false,
+                            false,
+                            true,
+                            MmcHeaderCodes.AllHeaders,
+                            true,
+                            true,
+                            MmcErrorField.None,
+                            supportedSubchannel,
+                            _dev.Timeout,
+                            out _);
+
             firstTry = false;
         }
 
