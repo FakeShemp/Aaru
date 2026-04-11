@@ -48,6 +48,8 @@ public sealed partial class ZZZRawImage
     readonly        byte[] _cdSync = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00];
     readonly (MediaTagType tag, string name)[] _readWriteSidecars =
     [
+        (MediaTagType.AacsMediaKey, ".mk.bin"), (MediaTagType.AacsVolumeUniqueKey, ".vuk.bin"),
+        (MediaTagType.AACS_VolumeIdentifier, ".vid.bin"),
         (MediaTagType.ATA_IDENTIFY, ".identify.bin"), (MediaTagType.BD_DI, ".di.bin"),
         (MediaTagType.CD_ATIP, ".atip.bin"), (MediaTagType.CD_FullTOC, ".toc.bin"),
         (MediaTagType.CD_FirstTrackPregap, ".leadin.bin"), (MediaTagType.CD_PMA, ".pma.bin"),
