@@ -121,9 +121,14 @@ public sealed partial class ISO9660
                 continue;
             }
 
-            AddOverlappingFile(entryPath, null,              entry,                sectorExtents, files);
-            AddOverlappingFile(entryPath, "resource-fork",   entry.ResourceFork,   sectorExtents, files);
-            AddOverlappingFile(entryPath, "associated-file", entry.AssociatedFile, sectorExtents, files);
+            AddOverlappingFile(entryPath, null,                             entry,              sectorExtents, files);
+            AddOverlappingFile(entryPath, Xattrs.XATTR_APPLE_RESOURCE_FORK, entry.ResourceFork, sectorExtents, files);
+
+            AddOverlappingFile(entryPath,
+                               Xattrs.XATTR_ISO9660_ASSOCIATED_FILE,
+                               entry.AssociatedFile,
+                               sectorExtents,
+                               files);
         }
 
         return ErrorNumber.NoError;

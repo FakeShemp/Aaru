@@ -93,8 +93,15 @@ public sealed partial class AppleMFS
     void AddOverlappingFile(string path, FileEntry entry, IReadOnlyList<(ulong Start, ulong End)> sectorExtents,
                             List<FileSectorInfo> files)
     {
-        AddOverlappingFork(path, null,            entry.flFlNum, entry.flStBlk,  entry.flLgLen,  sectorExtents, files);
-        AddOverlappingFork(path, "resource-fork", entry.flFlNum, entry.flRStBlk, entry.flRLgLen, sectorExtents, files);
+        AddOverlappingFork(path, null, entry.flFlNum, entry.flStBlk, entry.flLgLen, sectorExtents, files);
+
+        AddOverlappingFork(path,
+                           Xattrs.XATTR_APPLE_RESOURCE_FORK,
+                           entry.flFlNum,
+                           entry.flRStBlk,
+                           entry.flRLgLen,
+                           sectorExtents,
+                           files);
     }
 
     void AddOverlappingFork(string path, string stream, uint fileId, ushort startBlock, uint logicalLength,

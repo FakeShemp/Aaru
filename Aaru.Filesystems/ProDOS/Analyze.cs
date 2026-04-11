@@ -179,7 +179,7 @@ public sealed partial class ProDOSPlugin
                                          extKeyBlock.resource_fork.eof[2] << 16);
 
             return AddForkOverlaps(path,
-                                   "resource-fork",
+                                   Xattrs.XATTR_APPLE_RESOURCE_FORK,
                                    entry.KeyBlock,
                                    resourceStorageType,
                                    extKeyBlock.resource_fork.key_block,

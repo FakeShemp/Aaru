@@ -147,7 +147,7 @@ public sealed partial class AppleHFS
         if(fileEntry.ResourceForkLogicalSize == 0) return ErrorNumber.NoError;
 
         return AddForkOverlaps(path,
-                               "resource-fork",
+                               Xattrs.XATTR_APPLE_RESOURCE_FORK,
                                fileEntry.CNID,
                                ForkType.Resource,
                                fileEntry.ResourceForkLogicalSize,
