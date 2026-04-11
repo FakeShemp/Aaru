@@ -153,7 +153,10 @@ public enum SectorTagType
     AppleProfileTag = 20,
     /// <summary>Priam Data Tower sector tag, 24 bytes</summary>
     [Description("Priam Data Tower sector tag")]
-    PriamDataTowerTag = 21
+    PriamDataTowerTag = 21,
+    /// <summary>Blu-ray sector EDC, 4 bytes</summary>
+    [Description("Blu-ray sector EDC")]
+    BluRaySectorEdc = 22
 }
 
 /// <summary>Metadata present for each media.</summary>
@@ -417,7 +420,13 @@ public enum MediaTagType
     WiiPartitionKeyMap = 83,
     ///<summary>Nintendo GameCube/Wii junk region map with LFG seeds</summary>
     [Description("Nintendo GameCube/Wii junk region map with LFG seeds")]
-    NgcwJunkMap = 84
+    NgcwJunkMap = 84,
+    /// <summary>AACS Media Key</summary>
+    [Description("AACS Media Key")]
+    AacsMediaKey = 85,
+    /// <summary>AACS Volume Unique Key</summary>
+    [Description("AACS Volume Unique Key")]
+    AacsVolumeUniqueKey = 86
 }
 
 /// <summary>Enumeration of media types defined in metadata</summary>
