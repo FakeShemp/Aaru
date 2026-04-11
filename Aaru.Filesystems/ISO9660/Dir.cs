@@ -450,6 +450,8 @@ public sealed partial class ISO9660
         {
             var systemAreaSignature = BigEndianBitConverter.ToUInt16(data, systemAreaOff);
 
+            if(systemAreaOff + 6 + 2 > data.Length) break;
+
             if(BigEndianBitConverter.ToUInt16(data, systemAreaOff + 6) == XA_MAGIC) systemAreaSignature = XA_MAGIC;
 
             AppleCommon.FInfo fInfo;
