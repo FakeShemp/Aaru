@@ -6958,5 +6958,83 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Output_format_not_initialized", resourceCulture);
             }
         }
+
+        public static string Aacs_missing_volume_unique_key {
+            get {
+                return ResourceManager.GetString("Aacs_missing_volume_unique_key", resourceCulture);
+            }
+        }
+
+        public static string Aacs_missing_unit_keys {
+            get {
+                return ResourceManager.GetString("Aacs_missing_unit_keys", resourceCulture);
+            }
+        }
+
+        public static string Aacs_unit_key_inf_invalid {
+            get {
+                return ResourceManager.GetString("Aacs_unit_key_inf_invalid", resourceCulture);
+            }
+        }
+
+        public static string Aacs_encrypted_unit_key_invalid_length {
+            get {
+                return ResourceManager.GetString("Aacs_encrypted_unit_key_invalid_length", resourceCulture);
+            }
+        }
+
+        public static string Aacs2_unit_keys_not_supported {
+            get {
+                return ResourceManager.GetString("Aacs2_unit_keys_not_supported", resourceCulture);
+            }
+        }
+
+        public static string Aacs_hddvd_not_supported {
+            get {
+                return ResourceManager.GetString("Aacs_hddvd_not_supported", resourceCulture);
+            }
+        }
+
+        public static string Aacs_incomplete_cps_unit_at_track_end {
+            get {
+                return ResourceManager.GetString("Aacs_incomplete_cps_unit_at_track_end", resourceCulture);
+            }
+        }
+
+        public static string Aacs_incomplete_cps_unit_at_track_end_continuing {
+            get {
+                return ResourceManager.GetString("Aacs_incomplete_cps_unit_at_track_end_continuing", resourceCulture);
+            }
+        }
+
+        public static string Aacs_incomplete_cps_unit_pending_before_read_error {
+            get {
+                return ResourceManager.GetString("Aacs_incomplete_cps_unit_pending_before_read_error", resourceCulture);
+            }
+        }
+
+        public static string Aacs_incomplete_cps_unit_after_read_error_continuing {
+            get {
+                return ResourceManager.GetString("Aacs_incomplete_cps_unit_after_read_error_continuing", resourceCulture);
+            }
+        }
+
+        public static string Aacs_could_not_decrypt_cps_unit_starting_at_0 {
+            get {
+                return ResourceManager.GetString("Aacs_could_not_decrypt_cps_unit_starting_at_0", resourceCulture);
+            }
+        }
+
+        public static string Aacs_could_not_decrypt_cps_unit_starting_at_0_continuing {
+            get {
+                return ResourceManager.GetString("Aacs_could_not_decrypt_cps_unit_starting_at_0_continuing", resourceCulture);
+            }
+        }
+
+        public static string Aacs_bd_decrypt_requires_0_byte_sectors {
+            get {
+                return ResourceManager.GetString("Aacs_bd_decrypt_requires_0_byte_sectors", resourceCulture);
+            }
+        }
     }
 }
