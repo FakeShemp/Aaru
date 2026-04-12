@@ -150,7 +150,8 @@ public sealed partial class AppleHFS
 
             // Calculate sector info for this extent
             // HFS uses 512-byte sectors internally; extent.xdrStABN is in allocation blocks
-            ulong extentOffsetSector512 = (ulong)extent.xdrStABN * _mdb.drAlBlkSiz / 512 + offsetInExtent / 512;
+            // drAlBlSt is the first allocation block start sector (in 512-byte sectors)
+            ulong extentOffsetSector512 = _mdb.drAlBlSt + (ulong)extent.xdrStABN * _mdb.drAlBlkSiz / 512 + offsetInExtent / 512;
 
             // Convert to device sector address
             HfsOffsetToDeviceSector(extentOffsetSector512, out ulong deviceSector, out uint byteOffset);
@@ -646,7 +647,8 @@ public sealed partial class AppleHFS
             uint toRead     = Math.Min(extentSize, logicalSize - bytesRead);
 
             // Read the allocation blocks for this extent
-            ulong extentOffsetSector512 = (ulong)extent.xdrStABN * _mdb.drAlBlkSiz / 512;
+            // drAlBlSt is the first allocation block start sector (in 512-byte sectors)
+            ulong extentOffsetSector512 = _mdb.drAlBlSt + (ulong)extent.xdrStABN * _mdb.drAlBlkSiz / 512;
 
             // Convert to device sector address
             HfsOffsetToDeviceSector(extentOffsetSector512, out ulong deviceSector, out uint byteOffset);
