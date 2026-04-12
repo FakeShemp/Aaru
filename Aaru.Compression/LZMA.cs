@@ -72,7 +72,7 @@ public partial class LZMA
         }
 
         using var cmpMs     = new MemoryStream(source);
-        using var lzmaBlock = new LzmaStream(properties, cmpMs);
+        using var lzmaBlock = LzmaStream.Create(properties, cmpMs);
         lzmaBlock.EnsureRead(destination, 0, destination.Length);
 
         return destination.Length;
@@ -118,7 +118,7 @@ public partial class LZMA
 
         var lzmaEncoderProperties = new LzmaEncoderProperties(true, (int)dictSize, fb);
 
-        using var lzmaStream = new LzmaStream(lzmaEncoderProperties, false, new MemoryStream(destination));
+        using var lzmaStream = LzmaStream.Create(lzmaEncoderProperties, false, new MemoryStream(destination));
 
         lzmaStream.Write(source, 0, source.Length);
         properties = new byte[lzmaStream.Properties.Length];
