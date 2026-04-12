@@ -52,7 +52,7 @@ sealed class WriteMetadataCommand : Command<WriteMetadataCommand.Settings>
     const string MODULE_NAME = "Write-metadata command";
 
     /// <inheritdoc />
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

@@ -49,7 +49,7 @@ sealed class MetadataSchemaCommand : Command<MetadataSchemaCommand.Settings>
 {
     const string MODULE_NAME = "Metadata Schema command";
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

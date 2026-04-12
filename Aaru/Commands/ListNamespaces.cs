@@ -48,7 +48,7 @@ sealed class ListNamespacesCommand : Command<ListNamespacesCommand.Settings>
 {
     const string MODULE_NAME = "List-Namespaces command";
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

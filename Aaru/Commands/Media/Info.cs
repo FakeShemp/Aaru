@@ -69,7 +69,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 {
     const string MODULE_NAME = "Media-Info command";
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
 
     {
         MainClass.PrintCopyright();

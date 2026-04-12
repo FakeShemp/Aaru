@@ -46,7 +46,7 @@ sealed class ListEncodingsCommand : Command<ListEncodingsCommand.Settings>
 {
     const string MODULE_NAME = "List-Encodings command";
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
 
     {
         MainClass.PrintCopyright();

@@ -51,7 +51,7 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
 {
     const string MODULE_NAME = "Decode command";
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

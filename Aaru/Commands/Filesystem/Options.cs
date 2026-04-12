@@ -49,7 +49,7 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
 {
     const string MODULE_NAME = "List-Options command";
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
 
     {
         MainClass.PrintCopyright();

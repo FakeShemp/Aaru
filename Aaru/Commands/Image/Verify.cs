@@ -54,7 +54,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 {
     const string MODULE_NAME = "Verify command";
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

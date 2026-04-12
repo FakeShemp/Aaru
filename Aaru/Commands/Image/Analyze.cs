@@ -60,7 +60,7 @@ sealed class AnalyzeCommand : Command<AnalyzeCommand.Settings>
 {
     const string MODULE_NAME = "Image-analyze command";
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

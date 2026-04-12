@@ -47,7 +47,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 {
     const string MODULE_NAME = "Formats command";
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
 
     {
         MainClass.PrintCopyright();

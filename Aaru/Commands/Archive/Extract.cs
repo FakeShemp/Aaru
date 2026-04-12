@@ -57,8 +57,8 @@ sealed class ArchiveExtractCommand : AsyncCommand<ArchiveExtractCommand.Settings
     const int    BUFFER_SIZE = 16777216;
     const string MODULE_NAME = "Extract-Files command";
 
-    public override async Task<int> ExecuteAsync(CommandContext    context, Settings settings,
-                                                 CancellationToken cancellationToken)
+    protected override async Task<int> ExecuteAsync(CommandContext    context, Settings settings,
+                                                    CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

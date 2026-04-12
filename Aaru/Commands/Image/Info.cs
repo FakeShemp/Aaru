@@ -47,7 +47,7 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
 {
     const string MODULE_NAME = "Image-info command";
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

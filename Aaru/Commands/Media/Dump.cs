@@ -70,7 +70,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
     static ProgressTask _progressTask1;
     static ProgressTask _progressTask2;
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

@@ -53,7 +53,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 {
     const string MODULE_NAME = "Archive list command";
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

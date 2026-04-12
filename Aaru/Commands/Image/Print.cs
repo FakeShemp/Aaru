@@ -49,7 +49,7 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
 {
     const string MODULE_NAME = "PrintHex command";
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
 
     {
         MainClass.PrintCopyright();

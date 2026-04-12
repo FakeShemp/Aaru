@@ -52,8 +52,8 @@ sealed class UpdateCommand : AsyncCommand<UpdateCommand.Settings>
     const    string MODULE_NAME = "Update command";
     readonly bool   _mainDbUpdate;
 
-    public override async Task<int> ExecuteAsync(CommandContext    context, Settings settings,
-                                                 CancellationToken cancellationToken)
+    protected override async Task<int> ExecuteAsync(CommandContext    context, Settings settings,
+                                                    CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

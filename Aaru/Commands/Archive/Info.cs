@@ -50,7 +50,7 @@ sealed class ArchiveInfoCommand : Command<ArchiveInfoCommand.Settings>
 {
     const string MODULE_NAME = "Analyze command";
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 
