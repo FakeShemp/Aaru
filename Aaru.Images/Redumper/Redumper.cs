@@ -9,7 +9,7 @@
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Manages Redumper raw DVD dump images (.sdram + .state).
+//     Manages Redumper raw DVD (.sdram + .state) and Blu-ray (.sbram + .state) dumps.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -39,11 +39,10 @@ namespace Aaru.Images;
 
 /// <inheritdoc cref="Aaru.CommonTypes.Interfaces.IOpticalMediaImage" />
 /// <summary>
-///     Implements reading Redumper raw DVD dump images (.sdram with .state sidecar).
-///     The .sdram file stores scrambled DVD RecordingFrames (2366 bytes each, including
-///     inner and outer Reed–Solomon parity). The .state file has one byte per frame
-///     indicating dump status. The first frame in the file corresponds to physical
-///     sector number LBA_START (-0x30000 / -196608).
+///     Implements reading Redumper raw DVD (.sdram + .state) and Blu-ray (.sbram + .state) dumps.
+///     DVD .sdram stores scrambled RecordingFrames (2366 bytes each). BD .sbram stores
+///     scrambled DataFrames (2052 bytes: 2048 user + 4 EDC). The .state file has one byte
+///     per frame. DVD LBA at file offset 0 is -0x30000; BD LBA at offset 0 is -0x100000.
 /// </summary>
 public sealed partial class Redumper : IOpticalMediaImage
 {
@@ -55,8 +54,8 @@ public sealed partial class Redumper : IOpticalMediaImage
     /// <summary>Size of a DVD sector without parity (ID + CPR_MAI + user data + EDC).</summary>
     const int DVD_SECTOR_SIZE = 2064;
 
-    /// <summary>DVD user data size.</summary>
-    const int DVD_USER_DATA_SIZE = 2048;
+    /// <summary>DVD/BD user data size.</summary>
+    const int USER_DATA_SIZE = 2048;
 
     /// <summary>Number of main-data bytes per row in a RecordingFrame.</summary>
     const int ROW_MAIN_DATA_SIZE = 172;
@@ -70,14 +69,26 @@ public sealed partial class Redumper : IOpticalMediaImage
     /// <summary>Size of the outer parity block.</summary>
     const int PARITY_OUTER_SIZE = 182;
 
-    /// <summary>
-    ///     First physical LBA stored at file offset 0 in the .sdram/.state files.
-    ///     DVD user-data LBA 0 starts at file index -LBA_START (196608).
-    /// </summary>
-    const int LBA_START = -0x30000;
+    /// <summary>First physical LBA at file offset 0 for DVD .sdram/.state.</summary>
+    const int DVD_LBA_START = -0x30000;
+
+    /// <summary>First physical LBA at file offset 0 for BD .sbram/.state.</summary>
+    const int BD_LBA_START = -0x100000;
+
+    /// <summary>One BD DataFrame in .sbram: main_data + EDC.</summary>
+    const int BD_DATA_FRAME_SIZE = Decoders.Bluray.DataFrame.Size;
 
     /// <summary>SCSI READ DVD STRUCTURE parameter list header size (4 bytes).</summary>
     const int SCSI_HEADER_SIZE = 4;
+
+    /// <summary>Active LBA at index 0; <see cref="DVD_LBA_START" /> or <see cref="BD_LBA_START" />.</summary>
+    int _lbaStart;
+
+    /// <summary>True when the data file is .sbram (Blu-ray DataFrame) instead of .sdram.</summary>
+    bool _isBluRay;
+
+    /// <summary>Wii U–style BD: physical structure payload all zeros (see redumper bd_extract_iso).</summary>
+    bool _bdNintendo;
 
     readonly Decoders.DVD.Sector      _decoding = new();
     readonly Decoders.Nintendo.Sector _nintendoDecoder = new();
@@ -90,7 +101,8 @@ public sealed partial class Redumper : IOpticalMediaImage
     ImageInfo                        _imageInfo;
     Dictionary<MediaTagType, byte[]> _mediaTags;
     byte[]                           _stateData;
-    IFilter                          _sdramFilter;
+    IFilter                          _ramFilter;
+    string                           _ramPath;
     long                             _totalFrames;
 
     public Redumper() => _imageInfo = new ImageInfo

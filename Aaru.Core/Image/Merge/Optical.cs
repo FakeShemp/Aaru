@@ -435,6 +435,7 @@ public sealed partial class Merger
                 case SectorTagType.DvdSectorIed:
                 case SectorTagType.DvdSectorInformation:
                 case SectorTagType.DvdSectorNumber:
+                case SectorTagType.BluRaySectorEdc:
                     // This tags are inline in long sector
                     continue;
             }
@@ -668,6 +669,7 @@ public sealed partial class Merger
                 case SectorTagType.DvdSectorIed:
                 case SectorTagType.DvdSectorInformation:
                 case SectorTagType.DvdSectorNumber:
+                case SectorTagType.BluRaySectorEdc:
                     // This tags are inline in long sector
                     continue;
             }

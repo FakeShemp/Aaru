@@ -158,6 +158,20 @@ public sealed partial class ViewSectorViewModel : ViewModelBase
             return;
         }
 
+        if(SectorData.Length == 2052 && LongSectorChecked)
+        {
+            // Blu-ray sector
+
+            ColorRange bd_edc = new ColorRange
+            {
+                Color = Brushes.LimeGreen,
+                Start = 2048,
+                End   = 2051
+            };
+
+            HighlightRanges = [bd_edc];
+        }
+
         // Not a standard CD sector
         if(SectorData.Length != 2352) return;
 

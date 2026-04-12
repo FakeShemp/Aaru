@@ -49,6 +49,8 @@ public sealed partial class Redumper
     {
         _nintendoDerivedKey = null;
 
+        if(_isBluRay) return;
+
         if(!IsNintendoMediaType(_imageInfo.MediaType)) return;
 
         EnsureNintendoDerivedKeyFromLba0();
@@ -84,7 +86,7 @@ public sealed partial class Redumper
 
         int lba = negative ? -(int)sectorAddress : (int)sectorAddress;
 
-        long frameIndex = (long)lba - LBA_START;
+        long frameIndex = (long)lba - _lbaStart;
 
         if(frameIndex < 0 || frameIndex >= _totalFrames) return ErrorNumber.OutOfRange;
 
