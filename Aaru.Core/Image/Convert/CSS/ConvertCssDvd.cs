@@ -48,7 +48,6 @@ public partial class Convert
                                         (long)doneSectors,
                                         (long)trackSectors);
 
-                bool         useNotLong        = false;
                 bool         result            = false;
                 SectorStatus sectorStatus      = SectorStatus.NotDumped;
                 SectorStatus[] sectorStatusArray = new SectorStatus[1];
@@ -112,21 +111,8 @@ public partial class Convert
                         }
                     }
 
-                    if(!result && sector.Length % 2352 != 0)
-                    {
-                        if(!_force)
-                        {
-                            StoppingErrorMessage
-                              ?.Invoke(UI.Input_image_is_not_returning_raw_sectors_use_force_if_you_want_to_continue);
-
-                            return ErrorNumber.InOutError;
-                        }
-
-                        useNotLong = true;
-                    }
                 }
-
-                if(!useLong || useNotLong)
+                else
                 {
                     errno = sectorsToDo == 1
                                 ? inputOptical.ReadSector(doneSectors + track.StartSector,

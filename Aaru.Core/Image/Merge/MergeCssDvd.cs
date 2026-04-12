@@ -117,12 +117,6 @@ public sealed partial class Merger
                         return ErrorNumber.WriteError;
                     }
 
-                    if(!result && sector.Length % 2352 != 0)
-                    {
-                        StoppingErrorMessage?.Invoke(UI.Input_image_is_not_returning_long_sectors_not_continuing);
-
-                        return ErrorNumber.InOutError;
-                    }
                 }
                 else
                 {
@@ -252,12 +246,6 @@ public sealed partial class Merger
                     return ErrorNumber.WriteError;
                 }
 
-                if(!result && sector.Length % 2352 != 0)
-                {
-                    StoppingErrorMessage?.Invoke(UI.Input_image_is_not_returning_long_sectors_not_continuing);
-
-                    return ErrorNumber.InOutError;
-                }
             }
             else
             {
