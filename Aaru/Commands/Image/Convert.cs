@@ -44,6 +44,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Metadata;
 using Aaru.Core;
+using Aaru.Images;
 using Aaru.Localization;
 using Aaru.Logging;
 using Schemas;
@@ -234,6 +235,23 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
         if(outputFormat == null) return (int)ErrorNumber.FormatNotFound;
 
+        if(settings.ErrorRecovery > 0)
+        {
+            if(outputFormat is not AaruFormat)
+            {
+                AaruLogging.Error(UI.Error_recovery_is_only_supported_in_AaruFormat);
+
+                return (int)ErrorNumber.NotSupported;
+            }
+
+            if(settings.ErrorRecovery > 100)
+            {
+                AaruLogging.Error(UI.Maximum_error_recovery_is_100);
+
+                return (int)ErrorNumber.InvalidArgument;
+            }
+        }
+
         if(settings.Verbose)
             AaruLogging.Verbose(UI.Output_image_format_0_1, outputFormat.Name, outputFormat.Id);
         else
@@ -274,7 +292,8 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     settings.BypassPs3Decryption,
                                     settings.BypassWiiuDecryption,
                                     settings.BypassWiiDecryption,
-                                    settings.InputPath);
+                                    settings.InputPath,
+                                    settings.ErrorRecovery);
 
         ErrorNumber errno = ErrorNumber.NoError;
 
@@ -560,6 +579,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--aaru-metadata={0}", Markup.Escape(settings.AaruMetadata ?? ""));
         AaruLogging.Debug(MODULE_NAME, "--ignore-negative-sectors={0}", settings.IgnoreNegativeSectors);
         AaruLogging.Debug(MODULE_NAME, "--ignore-overflow-sectors={0}", settings.IgnoreOverflowSectors);
+        AaruLogging.Debug(MODULE_NAME, "--error-recovery={0}", settings.ErrorRecovery);
 
         AaruLogging.Debug(MODULE_NAME, UI.Parsed_options);
 
@@ -758,5 +778,9 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         [DefaultValue(false)]
         [CommandOption("--ignore-overflow-sectors")]
         public bool IgnoreOverflowSectors { get; init; }
+        [LocalizedDescription(nameof(UI.Add_error_recovery))]
+        [DefaultValue(0)]
+        [CommandOption("--error-recovery")]
+        public int ErrorRecovery { get; set; }
     }
 }

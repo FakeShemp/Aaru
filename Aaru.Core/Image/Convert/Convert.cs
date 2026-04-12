@@ -27,6 +27,7 @@ public partial class Convert
     readonly string                                      _driveManufacturer;
     readonly string                                      _driveModel;
     readonly string                                      _driveSerialNumber;
+    readonly int                                         _errorRecovery;
     readonly bool                                        _fixSubchannel;
     readonly bool                                        _fixSubchannelCrc;
     readonly bool                                        _fixSubchannelPosition;
@@ -64,7 +65,7 @@ public partial class Convert
                    PluginRegister plugins, bool fixSubchannelPosition, bool fixSubchannel, bool fixSubchannelCrc,
                    bool generateSubchannels, (uint cylinders, uint heads, uint sectors)? geometryValues, Resume resume,
                    Metadata sidecar, bool bypassPs3Decryption, bool bypassWiiuDecryption, bool bypassWiiDecryption,
-                   string inputPath = null)
+                   string inputPath, int errorRecovery)
     {
         _inputImage            = inputImage;
         _outputImage           = outputImage;
@@ -102,6 +103,7 @@ public partial class Convert
         _bypassWiiuDecryption  = bypassWiiuDecryption;
         _bypassWiiDecryption   = bypassWiiDecryption;
         _inputPath             = inputPath;
+        _errorRecovery         = errorRecovery;
     }
 
     public ErrorNumber Start()

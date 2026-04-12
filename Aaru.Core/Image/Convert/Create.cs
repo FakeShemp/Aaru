@@ -1,4 +1,5 @@
 using Aaru.CommonTypes.Enums;
+using Aaru.Images;
 using Aaru.Localization;
 
 namespace Aaru.Core.Image;
@@ -25,6 +26,8 @@ public partial class Convert
                                            _negativeSectors,
                                            _overflowSectors,
                                            _inputImage.Info.SectorSize);
+
+        if(_outputImage is AaruFormat aif && _errorRecovery > 0) aif.SetErasureCodingAuto((byte)_errorRecovery);
 
         EndProgress?.Invoke();
 

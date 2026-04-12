@@ -5695,4 +5695,13 @@ Do you want to continue?</value>
     <data name="Start_reverse_error_retry" xml:space="preserve">
         <value>Start error retrying in reverse.</value>
     </data>
+    <data name="Add_error_recovery" xml:space="preserve">
+        <value>Add the specified percentage of error recovery (only AaruFormat).</value>
+    </data>
+    <data name="Error_recovery_is_only_supported_in_AaruFormat" xml:space="preserve">
+        <value>Error recovery is only supported in AaruFormat</value>
+    </data>
+    <data name="Maximum_error_recovery_is_100" xml:space="preserve">
+        <value>Maximum error recovery is 100%</value>
+    </data>
 </root>

@@ -352,7 +352,8 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                                  false,
                                  false,
                                  false,
-                                 SourceText);
+                                 SourceText,
+                                 0);
 
         // Prepare UI
         await Dispatcher.UIThread.InvokeAsync(() =>

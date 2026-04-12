@@ -46,6 +46,7 @@ using Aaru.Core.Graphics;
 using Aaru.Core.Logging;
 using Aaru.Decoders.MMC;
 using Aaru.Decoders.SecureDigital;
+using Aaru.Images;
 using Aaru.Logging;
 using Humanizer;
 using CSD = Aaru.Decoders.MMC.CSD;
@@ -456,6 +457,8 @@ public partial class Dump
 
             return;
         }
+
+        if(outputFormat is AaruFormat aif && _errorRecovery > 0) aif.SetErasureCodingAuto((byte)_errorRecovery);
 
         if(cid != null)
         {

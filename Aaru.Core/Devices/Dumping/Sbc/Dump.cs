@@ -35,7 +35,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Text.Json;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
@@ -76,16 +75,16 @@ partial class Dump
              DVDDecryption                    dvdDecrypt = null)
     {
         bool               sense;
-        byte               scsiMediumType     = 0;
-        byte               scsiDensityCode    = 0;
+        byte               scsiMediumType = 0;
+        byte               scsiDensityCode = 0;
         var                containsFloppyPage = false;
-        const ushort       sbcProfile         = 0x0001;
-        const uint         DvdLeadinSectors   = 4096; // Usable Lead-in before LBA 0 per DVD spec (PSN 0x02F000–0x02FFFF)
-        double             totalDuration      = 0;
-        double             currentSpeed       = 0;
-        double             maxSpeed           = double.MinValue;
-        double             minSpeed           = double.MaxValue;
-        Modes.DecodedMode? decMode            = null;
+        const ushort       sbcProfile = 0x0001;
+        const uint         DvdLeadinSectors = 4096; // Usable Lead-in before LBA 0 per DVD spec (PSN 0x02F000–0x02FFFF)
+        double             totalDuration = 0;
+        double             currentSpeed = 0;
+        double             maxSpeed = double.MinValue;
+        double             minSpeed = double.MaxValue;
+        Modes.DecodedMode? decMode = null;
         bool               ret;
         ExtentsULong       blankExtents = null;
         var                outputFormat = _outputPlugin as IWritableImage;
@@ -325,9 +324,9 @@ partial class Dump
 
                 scsiReader.layerbreak = decodedPfi?.Layer0EndPSN ?? 0;
                 if(scsiReader.layerbreak == 0) scsiReader.layerbreak = decodedPfi?.DataAreaEndPSN ?? 0;
-                scsiReader.otp        = decodedPfi?.TrackPath ?? false;
+                scsiReader.otp = decodedPfi?.TrackPath ?? false;
 
-                if(scsiReader.HldtstReadRaw) blocksToRead = 1;
+                if(scsiReader.HldtstReadRaw) blocksToRead    = 1;
                 if(scsiReader.OmniDriveReadRaw) blocksToRead = 31;
 
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_raw_bytes_1_cooked_bytes_per_sector,
@@ -345,7 +344,8 @@ partial class Dump
         {
             if(!scsiReader.OmniDriveReadRaw)
             {
-                StoppingErrorMessage?.Invoke(Localization.Core.Dumping_Nintendo_GameCube_or_Wii_discs_is_not_yet_implemented);
+                StoppingErrorMessage?.Invoke(Localization.Core
+                                                         .Dumping_Nintendo_GameCube_or_Wii_discs_is_not_yet_implemented);
 
                 return;
             }
@@ -410,6 +410,8 @@ partial class Dump
                 return;
             }
 
+            if(outputFormat is AaruFormat aif && _errorRecovery > 0) aif.SetErasureCodingAuto((byte)_errorRecovery);
+
             imageCreated = true;
         }
 
@@ -428,13 +430,13 @@ partial class Dump
                 if(decodedPfi.HasValue) nominalNegativeSectors = decodedPfi.Value.DataAreaStartPSN;
 
                 if(scsiReader.OmniDriveReadRaw &&
-                   decodedPfi.HasValue &&
-                   ((dskType >= MediaType.DVDROM && dskType <= MediaType.DVDDownload)
-                   || dskType == MediaType.PS2DVD
-                   || dskType == MediaType.PS3DVD
-                   || dskType == MediaType.Nuon
-                   || dskType == MediaType.GOD
-                   || dskType == MediaType.WOD))
+                   decodedPfi.HasValue         &&
+                   (dskType >= MediaType.DVDROM && dskType <= MediaType.DVDDownload ||
+                    dskType == MediaType.PS2DVD                                     ||
+                    dskType == MediaType.PS3DVD                                     ||
+                    dskType == MediaType.Nuon                                       ||
+                    dskType == MediaType.GOD                                        ||
+                    dskType == MediaType.WOD))
                     nominalNegativeSectors = Math.Min(nominalNegativeSectors, DvdLeadinSectors);
 
                 mediaTags.TryGetValue(MediaTagType.BD_DI, out byte[] di);
@@ -587,6 +589,9 @@ partial class Dump
                             return;
                         }
 
+                        if(outputFormat is AaruFormat aif && _errorRecovery > 0)
+                            aif.SetErasureCodingAuto((byte)_errorRecovery);
+
                         imageCreated = true;
 
 #if DEBUG
@@ -722,6 +727,8 @@ partial class Dump
                 return;
             }
 
+            if(outputFormat is AaruFormat aif && _errorRecovery > 0) aif.SetErasureCodingAuto((byte)_errorRecovery);
+
             if(writeSingleOpticalTrack)
             {
                 UpdateStatus?.Invoke(Localization.Core
@@ -811,8 +818,7 @@ partial class Dump
 
         var newTrim = false;
 
-        if(ngcwMode && !InitializeNgcwContext(dskType, scsiReader, outputFormat))
-            return;
+        if(ngcwMode && !InitializeNgcwContext(dskType, scsiReader, outputFormat)) return;
 
         if(mediaTags.TryGetValue(MediaTagType.DVD_CMI, out byte[] cmi) &&
            Settings.Settings.Current.EnableDecryption                  &&
@@ -849,33 +855,35 @@ partial class Dump
 
             if(scsiReader.HldtstReadRaw || scsiReader.ReadBuffer3CReadRaw || scsiReader.OmniDriveReadRaw)
             {
-                uint nominalForRawDvd = 0;
+                uint nominalForRawDvd  = 0;
                 uint overflowForRawDvd = 0;
+
                 if(scsiReader.OmniDriveReadRaw && outputFormat is IWritableOpticalImage optImg)
                 {
                     if(optImg.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreNegativeSectors))
                         nominalForRawDvd = nominalNegativeSectors;
+
                     if(optImg.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreOverflowSectors))
                         overflowForRawDvd = 100u;
                 }
 
                 ReadRawDvdData(blocks,
-                              blocksToRead,
-                              blockSize,
-                              currentTry,
-                              extents,
-                              ref currentSpeed,
-                              ref minSpeed,
-                              ref maxSpeed,
-                              ref totalDuration,
-                              scsiReader,
-                              mhddLog,
-                              ibgLog,
-                              ref imageWriteDuration,
-                              ref newTrim,
-                              discKey ?? null,
-                              nominalForRawDvd,
-                              overflowForRawDvd);
+                               blocksToRead,
+                               blockSize,
+                               currentTry,
+                               extents,
+                               ref currentSpeed,
+                               ref minSpeed,
+                               ref maxSpeed,
+                               ref totalDuration,
+                               scsiReader,
+                               mhddLog,
+                               ibgLog,
+                               ref imageWriteDuration,
+                               ref newTrim,
+                               discKey ?? null,
+                               nominalForRawDvd,
+                               overflowForRawDvd);
             }
             else
             {
@@ -962,8 +970,8 @@ partial class Dump
 
            // Unnecessary since keys are already in raw data
            !scsiReader.ReadBuffer3CReadRaw &&
-           !scsiReader.OmniDriveReadRaw &&
-           !scsiReader.HldtstReadRaw &&
+           !scsiReader.OmniDriveReadRaw    &&
+           !scsiReader.HldtstReadRaw       &&
            mediaTag is not null)
             RetryTitleKeys(dvdDecrypt, mediaTag, ref totalDuration);
 

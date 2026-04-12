@@ -6,6 +6,7 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Metadata;
+using Aaru.Images;
 using Aaru.Localization;
 using File = System.IO.File;
 using MediaType = Aaru.CommonTypes.MediaType;
@@ -49,7 +50,8 @@ public sealed partial class Merger
     bool                       generateSubchannels,
     bool                       decrypt,
     bool                       ignoreNegativeSectors,
-    bool                       ignoreOverflowSectors
+    bool                       ignoreOverflowSectors,
+    int                        errorRecovery
 )
 {
     const string            MODULE_NAME = "Image merger";
@@ -144,6 +146,23 @@ public sealed partial class Merger
 
         UpdateStatus?.Invoke(string.Format(UI.Output_image_format_0, outputFormat.Name));
 
+        if(errorRecovery > 0)
+        {
+            if(outputFormat is not AaruFormat)
+            {
+                StoppingErrorMessage?.Invoke(UI.Error_recovery_is_only_supported_in_AaruFormat);
+
+                return ErrorNumber.NotSupported;
+            }
+
+            if(errorRecovery > 100)
+            {
+                StoppingErrorMessage?.Invoke(UI.Maximum_error_recovery_is_100);
+
+                return ErrorNumber.InvalidArgument;
+            }
+        }
+
         if(primaryImage.Info.Sectors != secondaryImage.Info.Sectors)
         {
             StoppingErrorMessage?.Invoke(UI.Images_have_different_number_of_sectors_cannot_merge);
@@ -220,13 +239,13 @@ public sealed partial class Merger
         InitProgress?.Invoke();
         PulseProgress?.Invoke(UI.Calculating_sectors_to_merge);
 
-            List<ulong> sectorsToCopyFromSecondImage =
-                CalculateSectorsToCopy(primaryImage, secondaryImage, primaryResume, secondaryResume, overrideSectorsList);
+        List<ulong> sectorsToCopyFromSecondImage =
+            CalculateSectorsToCopy(primaryImage, secondaryImage, primaryResume, secondaryResume, overrideSectorsList);
 
         EndProgress?.Invoke();
 
         // Flux images might contain no decoded data, which results in a sector count of 0. We allow this if the image contains flux.
-        var containsFlux = primaryImage is IFluxImage || secondaryImage is IFluxImage;
+        bool containsFlux = primaryImage is IFluxImage || secondaryImage is IFluxImage;
 
         if(sectorsToCopyFromSecondImage.Count == 0 && !containsFlux)
         {
@@ -349,7 +368,7 @@ public sealed partial class Merger
 
             if(primaryImage is IFluxImage primaryFlux && outputFormat is IWritableFluxImage outputFlux)
             {
-                IFluxImage secondaryFlux = secondaryImage as IFluxImage;
+                var secondaryFlux = secondaryImage as IFluxImage;
 
                 UpdateStatus?.Invoke(secondaryFlux != null
                                          ? UI.Flux_merge_primary_then_secondary_appended

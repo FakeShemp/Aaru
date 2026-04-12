@@ -11231,5 +11231,23 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Start_reverse_error_retry", resourceCulture);
             }
         }
+        
+        public static string Add_error_recovery {
+            get {
+                return ResourceManager.GetString("Add_error_recovery", resourceCulture);
+            }
+        }
+        
+        public static string Error_recovery_is_only_supported_in_AaruFormat {
+            get {
+                return ResourceManager.GetString("Error_recovery_is_only_supported_in_AaruFormat", resourceCulture);
+            }
+        }
+        
+        public static string Maximum_error_recovery_is_100 {
+            get {
+                return ResourceManager.GetString("Maximum_error_recovery_is_100", resourceCulture);
+            }
+        }
     }
 }

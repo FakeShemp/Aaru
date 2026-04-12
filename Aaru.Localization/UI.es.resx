@@ -5611,4 +5611,13 @@ Probadores:
     <data name="Start_reverse_error_retry" xml:space="preserve">
         <value>Comenzar reintentos de errores al revés.</value>
     </data>
+    <data name="Add_error_recovery" xml:space="preserve">
+        <value>Añade el porcentaje especificado de recuperación de errores (sólo AaruFormat).</value>
+    </data>
+    <data name="Error_recovery_is_only_supported_in_AaruFormat" xml:space="preserve">
+        <value>La recuperación de errores solo está soportada en AaruFormat</value>
+    </data>
+    <data name="Maximum_error_recovery_is_100" xml:space="preserve">
+        <value>La recuperación de errores máxima es 100%</value>
+    </data>
 </root>

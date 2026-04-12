@@ -48,6 +48,7 @@ using Aaru.Decoders.DVD;
 using Aaru.Decoders.SCSI;
 using Aaru.Decoders.Xbox;
 using Aaru.Devices;
+using Aaru.Images;
 using Aaru.Logging;
 using Humanizer;
 using Device = Aaru.Devices.Remote.Device;
@@ -514,6 +515,8 @@ partial class Dump
 
             return;
         }
+
+        if(outputFormat is AaruFormat aif && _errorRecovery > 0) aif.SetErasureCodingAuto((byte)_errorRecovery);
 
         _dumpStopwatch.Restart();
         double imageWriteDuration = 0;
@@ -1088,9 +1091,8 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-            {
-                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
-            }
+                for(ulong i = ur; i < ur + blocksToRead; i++)
+                    tmpList.Add(i);
 
             tmpList.Sort();
 

@@ -51,6 +51,7 @@ using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Core;
 using Aaru.Core.Devices.Dumping;
 using Aaru.Core.Logging;
+using Aaru.Images;
 using Aaru.Localization;
 using Aaru.Logging;
 using Schemas;
@@ -126,6 +127,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--cure-paranoia={0}",           settings.CureParanoia);
         AaruLogging.Debug(MODULE_NAME, "--raw={0}",                     settings.Raw);
         AaruLogging.Debug(MODULE_NAME, "--start-reverse={0}",           settings.StartReverse);
+        AaruLogging.Debug(MODULE_NAME, "--error-recovery={0}",          settings.ErrorRecovery);
 
         Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
         AaruLogging.Debug(MODULE_NAME, UI.Parsed_options);
@@ -480,6 +482,23 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
 
             IBaseWritableImage outputFormat = candidates[0];
 
+            if(settings.ErrorRecovery > 0)
+            {
+                if(outputFormat is not AaruFormat)
+                {
+                    AaruLogging.Error(UI.Error_recovery_is_only_supported_in_AaruFormat);
+
+                    return (int)ErrorNumber.NotSupported;
+                }
+
+                if(settings.ErrorRecovery > 100)
+                {
+                    AaruLogging.Error(UI.Maximum_error_recovery_is_100);
+
+                    return (int)ErrorNumber.InvalidArgument;
+                }
+            }
+
             DeviceLog.StartLog(dev, settings.Private);
 
             if(settings.Verbose)
@@ -530,7 +549,8 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   settings.Paranoia,
                                   settings.CureParanoia,
                                   settings.BypassWiiDecryption,
-                                  settings.StartReverse);
+                                  settings.StartReverse,
+                                  settings.ErrorRecovery);
 
             AnsiConsole.Progress()
                        .AutoClear(true)
@@ -806,6 +826,10 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [LocalizedDescription(nameof(UI.Start_reverse_error_retry))]
         [CommandOption("--start-reverse")]
         public bool StartReverse { get; init; }
+        [LocalizedDescription(nameof(UI.Add_error_recovery))]
+        [DefaultValue(0)]
+        [CommandOption("--error-recovery")]
+        public int ErrorRecovery { get; set; }
     }
 
 #endregion

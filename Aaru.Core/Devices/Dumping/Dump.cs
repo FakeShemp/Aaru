@@ -83,6 +83,7 @@ public partial class Dump
     readonly        Stopwatch                  _dumpStopwatch;
     readonly        Encoding                   _encoding;
     readonly        ErrorLog                   _errorLog;
+    readonly        int                        _errorRecovery;
     readonly        bool                       _fixSubchannel;
     readonly        bool                       _fixSubchannelCrc;
     readonly        bool                       _fixSubchannelPosition;
@@ -103,6 +104,7 @@ public partial class Dump
     readonly        bool                       _retrySubchannel;
     readonly        Stopwatch                  _sidecarStopwatch;
     readonly        Stopwatch                  _speedStopwatch;
+    readonly        bool                       _startReverse;
     readonly        bool                       _stopOnError;
     readonly        bool                       _storeEncrypted;
     readonly        DumpSubchannel             _subchannel;
@@ -125,7 +127,6 @@ public partial class Dump
     bool                                       _skipCdireadyHole;
     int                                        _speed;
     int                                        _speedMultiplier;
-    readonly bool                              _startReverse;
     bool                                       _supportsPlextorD8;
     bool                                       _useBufferedReads;
 
@@ -183,7 +184,7 @@ public partial class Dump
                 bool fixSubchannel, bool fixSubchannelCrc, bool skipCdireadyHole, ErrorLog errorLog,
                 bool generateSubchannels, uint maximumReadable, bool useBufferedReads, bool storeEncrypted,
                 bool titleKeys, uint ignoreCdrRunOuts, bool createGraph, uint dimensions, bool paranoia,
-                bool cureParanoia, bool bypassWiiDecryption, bool startReverse)
+                bool cureParanoia, bool bypassWiiDecryption, bool startReverse, int errorRecovery)
     {
         _doResume              = doResume;
         _dev                   = dev;
@@ -229,6 +230,7 @@ public partial class Dump
         _cureParanoia          = cureParanoia;
         _bypassWiiDecryption   = bypassWiiDecryption;
         _startReverse          = startReverse;
+        _errorRecovery         = errorRecovery;
         _dumpStopwatch         = new Stopwatch();
         _sidecarStopwatch      = new Stopwatch();
         _speedStopwatch        = new Stopwatch();

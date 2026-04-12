@@ -43,6 +43,7 @@ using Aaru.Core.Graphics;
 using Aaru.Core.Logging;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
+using Aaru.Images;
 using Aaru.Logging;
 using Humanizer;
 using Track = Aaru.CommonTypes.Structs.Track;
@@ -168,6 +169,8 @@ public partial class Dump
 
             return;
         }
+
+        if(outputOptical is AaruFormat aif && _errorRecovery > 0) aif.SetErasureCodingAuto((byte)_errorRecovery);
 
         _dumpStopwatch.Restart();
         double imageWriteDuration = 0;

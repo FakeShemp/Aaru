@@ -45,6 +45,7 @@ using Aaru.Core.Graphics;
 using Aaru.Core.Logging;
 using Aaru.Decoders.ATA;
 using Aaru.Decoders.PCMCIA;
+using Aaru.Images;
 using Aaru.Logging;
 using Humanizer;
 using Identify = Aaru.CommonTypes.Structs.Devices.ATA.Identify;
@@ -249,6 +250,8 @@ public partial class Dump
 
                     return;
                 }
+
+                if(outputFormat is AaruFormat aif && _errorRecovery > 0) aif.SetErasureCodingAuto((byte)_errorRecovery);
 
                 // Setting geometry
                 outputFormat.SetGeometry(cylinders, heads, sectors);

@@ -1,6 +1,7 @@
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.Images;
 using Aaru.Localization;
 
 namespace Aaru.Core.Image;
@@ -22,6 +23,8 @@ public sealed partial class Merger
                                           negativeSectors,
                                           overflowSectors,
                                           primaryImage.Info.SectorSize);
+
+        if(outputImage is AaruFormat aif && errorRecovery > 0) aif.SetErasureCodingAuto((byte)errorRecovery);
 
         EndProgress?.Invoke();
 
