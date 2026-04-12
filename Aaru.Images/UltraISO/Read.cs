@@ -38,7 +38,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
 using Aaru.Logging;
-using SharpCompress.Compressors.BZip2;
+using Aaru.Compression;
 
 namespace Aaru.Images;
 
@@ -124,22 +124,7 @@ public sealed partial class UltraISO
 
                 decompressedData = new byte[decompressedSize];
 
-                using var compressedStream = new MemoryStream(compressedData);
-
-                using var bz2Stream = new BZip2Stream(compressedStream,
-                                                      SharpCompress.Compressors.CompressionMode.Decompress,
-                                                      false);
-
-                var totalRead = 0;
-
-                while(totalRead < decompressedSize)
-                {
-                    int read = bz2Stream.Read(decompressedData, totalRead, (int)decompressedSize - totalRead);
-
-                    if(read == 0) break;
-
-                    totalRead += read;
-                }
+                BZip2.DecodeBuffer(compressedData, decompressedData);
 
                 break;
             }
