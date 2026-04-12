@@ -7036,5 +7036,65 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Aacs_bd_decrypt_requires_0_byte_sectors", resourceCulture);
             }
         }
+
+        public static string Aacs_hddvd_missing_unit_keys {
+            get {
+                return ResourceManager.GetString("Aacs_hddvd_missing_unit_keys", resourceCulture);
+            }
+        }
+
+        public static string Aacs_hddvd_unit_keys_invalid {
+            get {
+                return ResourceManager.GetString("Aacs_hddvd_unit_keys_invalid", resourceCulture);
+            }
+        }
+
+        public static string Aacs_hddvd_udf_mount_failed {
+            get {
+                return ResourceManager.GetString("Aacs_hddvd_udf_mount_failed", resourceCulture);
+            }
+        }
+
+        public static string Aacs_hddvd_no_evo_extents {
+            get {
+                return ResourceManager.GetString("Aacs_hddvd_no_evo_extents", resourceCulture);
+            }
+        }
+
+        public static string Aacs_hddvd_decrypt_requires_2048_byte_sectors {
+            get {
+                return ResourceManager.GetString("Aacs_hddvd_decrypt_requires_2048_byte_sectors", resourceCulture);
+            }
+        }
+
+        public static string Aacs_hddvd_broad_decrypt_scope_continuing {
+            get {
+                return ResourceManager.GetString("Aacs_hddvd_broad_decrypt_scope_continuing", resourceCulture);
+            }
+        }
+
+        public static string Aacs_hddvd_no_cpi_for_encrypted_pack_at_lba_0 {
+            get {
+                return ResourceManager.GetString("Aacs_hddvd_no_cpi_for_encrypted_pack_at_lba_0", resourceCulture);
+            }
+        }
+
+        public static string Aacs_hddvd_no_cpi_for_encrypted_pack_at_lba_0_continuing {
+            get {
+                return ResourceManager.GetString("Aacs_hddvd_no_cpi_for_encrypted_pack_at_lba_0_continuing", resourceCulture);
+            }
+        }
+
+        public static string Aacs_hddvd_no_title_key_for_pack_at_lba_0 {
+            get {
+                return ResourceManager.GetString("Aacs_hddvd_no_title_key_for_pack_at_lba_0", resourceCulture);
+            }
+        }
+
+        public static string Aacs_hddvd_no_title_key_for_pack_at_lba_0_continuing {
+            get {
+                return ResourceManager.GetString("Aacs_hddvd_no_title_key_for_pack_at_lba_0_continuing", resourceCulture);
+            }
+        }
     }
 }

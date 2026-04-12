@@ -38,14 +38,37 @@ using System;
 
 namespace Aaru.Decryption.Aacs;
 
-/// <summary>Decrypts one 6144-byte aligned unit using decrypted CPS unit keys.</summary>
+/// <summary>Decrypts AACS aligned units (Blu-ray 6144-byte CPS) and HD DVD per-pack encryption.</summary>
 public static class AacsStreamDecrypt
 {
-    /// <summary>User-data sector size and bus-encryption block size.</summary>
+    /// <summary>User-data sector size.</summary>
     public const int SectorLen = 2048;
 
-    /// <summary>Three user sectors: CPS aligned unit length.</summary>
+    /// <summary>Three user sectors: BD CPS aligned unit length.</summary>
     public const int AlignedUnitLen = 6144;
+
+    /// <summary>Unencrypted header portion of an HD DVD pack (bytes 0-127).</summary>
+    public const int HddvdPackHeaderLen = 128;
+
+    /// <summary>Encrypted portion of an HD DVD pack (bytes 128-2047).</summary>
+    public const int HddvdPackEncryptedLen = 1920;
+
+    /// <summary>Offset of the CPI field within a navigation pack.</summary>
+    const int CPI_OFFSET = 0x3C;
+
+    /// <summary>Length of the CPI field.</summary>
+    const int CPI_LEN = 16;
+
+    /// <summary>Offset of <c>PES_scrambling_control</c> in a pack (byte 20, bits 5:4).</summary>
+    const int PES_SC_OFFSET = 20;
+
+    /// <summary>Offset of <c>Title Key Data (Dtk)</c> within a regular encrypted pack (bytes 84-87).</summary>
+    const int DTK_OFFSET = 84;
+
+    /// <summary>Length of <c>Dtk</c>.</summary>
+    const int DTK_LEN = 4;
+
+    #region Blu-ray CPS aligned-unit decryption
 
     /// <summary>
     ///     If the unit is marked unencrypted (MPEG-TS copy permission bits), returns <see langword="true"/>
@@ -62,7 +85,6 @@ public static class AacsStreamDecrypt
         if(decryptedCpsUnitKeys.Length == 0)
             return false;
 
-        // If the unit is not encrypted, return true.
         if((unit[0] & 0xc0) == 0)
             return true;
 
@@ -83,10 +105,7 @@ public static class AacsStreamDecrypt
         return false;
     }
 
-    /// <summary>Decrypts one unit with a given CPS unit key.</summary>
-    /// <param name="unit">Unit to decrypt.</param>
-    /// <param name="decryptedCpsUnitKey">Decrypted CPS unit key.</param>
-    /// <returns>True if the unit was decrypted successfully.</returns>
+    /// <summary>Decrypts one BD CPS unit with a given key.</summary>
     public static bool TryDecryptUnitWithKey(Span<byte> unit, ReadOnlySpan<byte> decryptedCpsUnitKey)
     {
         if(unit.Length != AlignedUnitLen)
@@ -96,40 +115,125 @@ public static class AacsStreamDecrypt
             throw new ArgumentException("CPS unit key must be 16 bytes.", nameof(decryptedCpsUnitKey));
 
         Span<byte> key = stackalloc byte[16];
-        AacsCrypto.Aes128EcbEncrypt(decryptedCpsUnitKey, unit.Slice(0, 16), key);
-
-        for(int a = 0; a < 16; a++)
-            key[a] ^= unit[a];
+        AacsCrypto.AesG(decryptedCpsUnitKey, unit.Slice(0, 16), key);
 
         ReadOnlySpan<byte> cipher = unit.Slice(16, AlignedUnitLen - 16);
-        Span<byte>         plain  = unit.Slice(16, AlignedUnitLen - 16);
         byte[]             tmp    = new byte[AlignedUnitLen - 16];
         AacsCrypto.AacsCbcDecrypt(key, cipher, tmp);
-        tmp.CopyTo(plain);
+        tmp.CopyTo(unit.Slice(16));
 
         return VerifyAndNormalizeTransportStream(unit);
     }
 
     /// <summary>Verifies and normalizes the transport stream. Removes copy-permission indicator bits.</summary>
-    /// <param name="unit">Unit to verify and normalize.</param>
-    /// <returns>True if the unit was verified and normalized successfully.</returns>
     public static bool VerifyAndNormalizeTransportStream(Span<byte> unit)
     {
         if(unit.Length != AlignedUnitLen)
             throw new ArgumentException($"Unit must be {AlignedUnitLen} bytes.", nameof(unit));
 
-        // In AACS aligned units, payload is expected to be 32 packets of 192 bytes.
-        // Each 192-byte packet has a 4-byte TP extra header followed by a TS packet.
         for(int i = 0; i < AlignedUnitLen; i += 192)
         {
-            // The TS sync byte (0x47) must be at offset +4 because of that extra 4-byte header.
             if(unit[i + 4] != 0x47)
                 return false;
 
-            // Clear copy-permission indicator bits in the TP extra header.
             unit[i] &= 0x3f;
         }
 
         return true;
     }
+
+    #endregion
+
+    #region HD DVD per-pack decryption
+
+    /// <summary>Returns <see langword="true"/> if <paramref name="sector"/> is an HD DVD navigation pack (NV_PCK).</summary>
+    public static bool IsHddvdNavPack(ReadOnlySpan<byte> sector)
+    {
+        if(sector.Length < SectorLen)
+            return false;
+
+        return sector[0x11] == 0xBB &&
+               sector[0x2A] == 0x00 &&
+               sector[0x2B] == 0x01 &&
+               sector[0x2C] == 0xBF;
+    }
+
+    /// <summary>Extracts the CPI field and <c>TITLE_KEY_PTR</c> from an HD DVD navigation pack.</summary>
+    /// <param name="sector">2048-byte navigation pack.</param>
+    /// <param name="cpiField">16-byte CPI field.</param>
+    /// <param name="titleKeyPtr">1-based index into the TKF, or 0 if no key is valid.</param>
+    /// <returns><see langword="true"/> if <c>KEY_VF</c> indicates a valid title key.</returns>
+    public static bool ParseHddvdNavPack(ReadOnlySpan<byte> sector, out byte[] cpiField, out int titleKeyPtr)
+    {
+        cpiField    = new byte[CPI_LEN];
+        titleKeyPtr = 0;
+
+        if(sector.Length < SectorLen)
+            return false;
+
+        sector.Slice(CPI_OFFSET, CPI_LEN).CopyTo(cpiField);
+
+        bool keyValid = (cpiField[0] & 0x80) != 0;
+
+        if(keyValid)
+            titleKeyPtr = cpiField[2] & 0xFF;
+
+        return keyValid;
+    }
+
+    /// <summary>Returns <see langword="true"/> if the pack is encrypted (<c>PES_scrambling_control == 01₂</c>).</summary>
+    public static bool IsHddvdPackEncrypted(ReadOnlySpan<byte> sector)
+    {
+        if(sector.Length < SectorLen)
+            return false;
+
+        return ((sector[PES_SC_OFFSET] >> 4) & 3) == 1;
+    }
+
+    /// <summary>
+    ///     Decrypts one HD DVD encrypted pack in-place. Derives <c>Kc = AES-G(Kt, Dtk || CPIlsb_96)</c>,
+    ///     decrypts the 1920-byte encrypted portion (bytes 128-2047), and clears <c>PES_scrambling_control</c>.
+    /// </summary>
+    /// <param name="sector">2048-byte pack (modified in-place).</param>
+    /// <param name="titleKey">Decrypted 16-byte title key (Kt).</param>
+    /// <param name="cpiField">16-byte CPI field from the current navigation pack.</param>
+    public static void DecryptHddvdPack(Span<byte> sector, ReadOnlySpan<byte> titleKey, ReadOnlySpan<byte> cpiField)
+    {
+        if(sector.Length != SectorLen)
+            throw new ArgumentException($"Pack must be {SectorLen} bytes.", nameof(sector));
+
+        if(titleKey.Length != 16)
+            throw new ArgumentException("Title key must be 16 bytes.", nameof(titleKey));
+
+        if(cpiField.Length != CPI_LEN)
+            throw new ArgumentException($"CPI field must be {CPI_LEN} bytes.", nameof(cpiField));
+
+        Span<byte> seed = stackalloc byte[16];
+        sector.Slice(DTK_OFFSET, DTK_LEN).CopyTo(seed[..DTK_LEN]);
+        cpiField.Slice(DTK_LEN, CPI_LEN - DTK_LEN).CopyTo(seed[DTK_LEN..]);
+
+        Span<byte> contentKey = stackalloc byte[16];
+        AacsCrypto.AesH(titleKey, seed, contentKey);
+
+        byte[] encrypted = new byte[HddvdPackEncryptedLen];
+        sector.Slice(HddvdPackHeaderLen, HddvdPackEncryptedLen).CopyTo(encrypted);
+
+        byte[] decrypted = new byte[HddvdPackEncryptedLen];
+        AacsCrypto.AacsCbcDecrypt(contentKey, encrypted, decrypted);
+        decrypted.CopyTo(sector.Slice(HddvdPackHeaderLen));
+
+        sector[PES_SC_OFFSET] &= 0xCF;
+    }
+
+    /// <summary>Clears the CPI-related bytes in a navigation pack header after extraction.</summary>
+    public static void ClearHddvdNavPackCpi(Span<byte> sector)
+    {
+        if(sector.Length < SectorLen)
+            return;
+
+        sector[CPI_OFFSET] = 0;
+        sector[0x48]       = 0;
+    }
+
+    #endregion
 }
