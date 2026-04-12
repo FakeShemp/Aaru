@@ -75,7 +75,7 @@
     <PackageVersion Include="System.Security.Principal.Windows" Version="6.0.0-preview.5.21301.5" />
     <PackageVersion Include="System.Text.Encoding.CodePages" Version="10.0.0" />
     <PackageVersion Include="System.Text.Json" Version="10.0.0" />
-    <PackageVersion Include="System.ValueTuple" Version="4.6.1" />
+    <PackageVersion Include="System.ValueTuple" Version="4.6.2" />
     <PackageVersion Include="Text.Analyzers" Version="4.14.0" />
     <PackageVersion Include="Unclassified.NetRevisionTask" Version="0.4.4" />
     <PackageVersion Include="Packaging.Targets" Version="0.1.232" />
