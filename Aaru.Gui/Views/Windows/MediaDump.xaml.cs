@@ -42,9 +42,6 @@ public sealed class MediaDump : Window
     public MediaDump()
     {
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
     }
 
     void InitializeComponent() => AvaloniaXamlLoader.Load(this);

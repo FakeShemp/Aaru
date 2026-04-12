@@ -42,9 +42,6 @@ public partial class MhddLogView : Window
     public MhddLogView()
     {
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
     }
 
     /// <inheritdoc />

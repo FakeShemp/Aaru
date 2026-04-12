@@ -42,9 +42,6 @@ public partial class DeviceView : Window
     public DeviceView()
     {
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
     }
 
     /// <inheritdoc />

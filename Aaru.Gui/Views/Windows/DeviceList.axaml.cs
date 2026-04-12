@@ -42,9 +42,6 @@ public partial class DeviceList : Window
     public DeviceList()
     {
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
     }
 
     /// <inheritdoc />

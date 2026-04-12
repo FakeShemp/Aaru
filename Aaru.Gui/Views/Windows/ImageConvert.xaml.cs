@@ -42,9 +42,6 @@ public sealed class ImageConvert : Window
     public ImageConvert()
     {
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
     }
 
     void InitializeComponent() => AvaloniaXamlLoader.Load(this);

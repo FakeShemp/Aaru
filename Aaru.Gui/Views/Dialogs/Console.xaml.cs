@@ -41,9 +41,6 @@ public sealed class Console : Window
     public Console()
     {
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
     }
 
     void InitializeComponent() => AvaloniaXamlLoader.Load(this);

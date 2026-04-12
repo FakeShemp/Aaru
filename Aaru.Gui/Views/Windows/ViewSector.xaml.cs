@@ -41,9 +41,6 @@ public sealed class ViewSector : Window
     public ViewSector()
     {
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
     }
 
     void InitializeComponent() => AvaloniaXamlLoader.Load(this);

@@ -41,9 +41,6 @@ public sealed class Encodings : Window
     public Encodings()
     {
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
     }
 
     void InitializeComponent() => AvaloniaXamlLoader.Load(this);

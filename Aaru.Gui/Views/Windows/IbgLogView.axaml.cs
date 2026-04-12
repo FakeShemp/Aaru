@@ -42,9 +42,6 @@ public partial class IbgLogView : Window
     public IbgLogView()
     {
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
     }
 
     /// <inheritdoc />

@@ -42,9 +42,6 @@ public sealed class ImageChecksum : Window
     public ImageChecksum()
     {
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
     }
 
     void InitializeComponent() => AvaloniaXamlLoader.Load(this);

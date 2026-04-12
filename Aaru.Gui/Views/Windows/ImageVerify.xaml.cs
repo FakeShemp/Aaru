@@ -42,9 +42,6 @@ public sealed class ImageVerify : Window
     public ImageVerify()
     {
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
     }
 
     void InitializeComponent() => AvaloniaXamlLoader.Load(this);

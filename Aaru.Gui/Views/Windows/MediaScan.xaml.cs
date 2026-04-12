@@ -42,9 +42,6 @@ public sealed class MediaScan : Window
     public MediaScan()
     {
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
     }
 
     void InitializeComponent() => AvaloniaXamlLoader.Load(this);
