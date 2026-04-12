@@ -234,9 +234,14 @@ public sealed partial class ISO9660
                     }
                 }
 
-                byte[] sectorData = data.Length == 2064
-                                  ? Decoders.DVD.Sector.GetUserData(data)
-                                  : Sector.GetUserData(data, interleaved, fileNumber);
+                byte[] sectorData;
+
+                if(data.Length == 2064) // DVD sector
+                    sectorData = Decoders.DVD.Sector.GetUserData(data);
+                else if(data.Length == 2052) // Blu-ray sector
+                    sectorData = Decoders.Bluray.Sector.GetUserData(data);
+                else // CD sector
+                    sectorData = Sector.GetUserData(data, interleaved, fileNumber);
 
                 ms.Write(sectorData, 0, sectorData.Length);
             }

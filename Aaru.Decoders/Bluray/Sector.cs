@@ -77,4 +77,14 @@ public sealed class Sector
         }
         return true;
     }
+
+    public static byte[] GetUserData(byte[] data)
+    {
+        if(data.Length != 2052) return data;
+
+        byte[] sector = new byte[2048];
+        Array.Copy(data, 0, sector, 0, 2048);
+
+        return sector;
+    }
 }
