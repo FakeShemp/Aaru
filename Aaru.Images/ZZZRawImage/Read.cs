@@ -619,6 +619,16 @@ public sealed partial class ZZZRawImage
             else if(gcMagic == NGC_GC_MAGIC) _imageInfo.MediaType = MediaType.GOD;
         }
 
+        // Check for HD DVD video discs: .iso extension, size divisible by 2048, contains HVDVD_TS folder
+        // Needed for identifying the correct AACS path, so we don't misidentify it as a BD video disc
+        if(_extension == ".iso" &&
+           _imageInfo.SectorSize == 2048 &&
+           _imageInfo.ImageSize % 2048 == 0 &&
+           _imageInfo.Sectors > 0 &&
+           (_imageInfo.MediaType == MediaType.BDR || _imageInfo.MediaType == MediaType.BDRXL) &&
+           TryDetectHdDvdVideoIso())
+            _imageInfo.MediaType = MediaType.HDDVDROM;
+
         // Check for bare .bca sidecar (64 bytes) for GameCube/Wii discs
         if(_imageInfo.MediaType is MediaType.GOD or MediaType.WOD && !_mediaTags.ContainsKey(MediaTagType.DVD_BCA))
         {

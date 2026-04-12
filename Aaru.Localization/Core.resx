@@ -3562,4 +3562,43 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="Output_format_not_initialized" xml:space="preserve">
       <value>[red]Output format not initialized.[/]</value>
     </data>
+    <data name="Aacs_missing_volume_unique_key" xml:space="preserve">
+        <value>Blu-ray AACS decryption requires AACS_VolumeUniqueKey media tag, or both AACS_MediaKey and AACS_VolumeIdentifier.</value>
+    </data>
+    <data name="Aacs_missing_unit_keys" xml:space="preserve">
+        <value>Blu-ray AACS decryption requires CPS unit keys: AACS/Unit_Key_RO.inf on a mounted UDF/ISO partition, or AACS_DataKeys media tag.</value>
+    </data>
+    <data name="Aacs_unit_key_inf_invalid" xml:space="preserve">
+        <value>AACS/Unit_Key_RO.inf could not be parsed.</value>
+    </data>
+    <data name="Aacs_encrypted_unit_key_invalid_length" xml:space="preserve">
+        <value>Invalid encrypted CPS unit key length (expected 16 bytes).</value>
+    </data>
+    <data name="Aacs2_unit_keys_not_supported" xml:space="preserve">
+        <value>AACS2 (Ultra HD Blu-ray) unit keys are not supported in this version.</value>
+    </data>
+    <data name="Aacs_hddvd_not_supported" xml:space="preserve">
+        <value>HD DVD AACS decryption is not implemented.</value>
+    </data>
+    <data name="Aacs_incomplete_cps_unit_at_track_end" xml:space="preserve">
+        <value>Incomplete AACS CPS unit at end of track ({0} sector(s) pending, starting at LBA {1}).</value>
+    </data>
+    <data name="Aacs_incomplete_cps_unit_at_track_end_continuing" xml:space="preserve">
+        <value>Incomplete AACS CPS unit ({0} sector(s) pending, starting at LBA {1}); writing pending sectors as-is and continuing.</value>
+    </data>
+    <data name="Aacs_incomplete_cps_unit_pending_before_read_error" xml:space="preserve">
+        <value>Cannot read sectors while an incomplete AACS CPS unit is pending (started at LBA {0}).</value>
+    </data>
+    <data name="Aacs_incomplete_cps_unit_after_read_error_continuing" xml:space="preserve">
+        <value>Read failed with an incomplete AACS CPS unit pending ({0} sector(s) from LBA {1}); writing pending sectors as-is and continuing.</value>
+    </data>
+    <data name="Aacs_could_not_decrypt_cps_unit_starting_at_0" xml:space="preserve">
+        <value>Could not decrypt AACS CPS unit starting at LBA {0}.</value>
+    </data>
+    <data name="Aacs_could_not_decrypt_cps_unit_starting_at_0_continuing" xml:space="preserve">
+        <value>Could not decrypt AACS CPS unit starting at LBA {0}; writing ciphertext and continuing.</value>
+    </data>
+    <data name="Aacs_bd_decrypt_requires_0_byte_sectors" xml:space="preserve">
+        <value>Blu-ray AACS decryption requires {0}-byte user sectors; this image reports a different sector size.</value>
+    </data>
 </root>

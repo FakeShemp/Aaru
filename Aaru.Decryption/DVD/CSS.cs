@@ -624,13 +624,26 @@ public class CSS
     /// <param name="keyData">The encryption keys.</param>
     /// <param name="blocks">Number of sectors in <c>sectorData</c>.</param>
     /// <param name="blockSize">Size of one sector.</param>
+    /// <param name="blockAppliedCssDecrypt">
+    ///     If non-null and <c>Length >= blocks</c>, each element is set to <c>true</c> when CSS unscrambling was
+    ///     applied to that logical block, and <c>false</c> when the sector was left unchanged (including the global
+    ///     "no encryption" early return and per-block <see cref="IsEncrypted"/> false).
+    /// </param>
     /// <returns>The decrypted sector.</returns>
     public static byte[] DecryptSector(byte[] sectorData, byte[] keyData, byte[]? cmiData, uint blocks = 1,
-                                       uint   blockSize = 2048)
+                                       uint blockSize = 2048, bool[]? blockAppliedCssDecrypt = null)
     {
         // None of the sectors are encrypted
-        if(cmiData != null && cmiData.All(static cmi => (cmi & 0x80) >> 7 == 0) || keyData.All(static k => k == 0))
+        if((cmiData != null && cmiData.All(static cmi => (cmi & 0x80) >> 7 == 0)) || keyData.All(static k => k == 0))
+        {
+            if(blockAppliedCssDecrypt != null)
+            {
+                for(uint i = 0; i < blocks && i < (uint)blockAppliedCssDecrypt.Length; i++)
+                    blockAppliedCssDecrypt[i] = false;
+            }
+
             return sectorData;
+        }
 
         var decryptedBuffer = new byte[sectorData.Length];
 
@@ -641,10 +654,16 @@ public class CSS
 
             if(!IsEncrypted(cmiData?[i], currentKey, currentSector))
             {
+                if(blockAppliedCssDecrypt != null && i < (uint)blockAppliedCssDecrypt.Length)
+                    blockAppliedCssDecrypt[i] = false;
+
                 Array.Copy(currentSector, 0, decryptedBuffer, (int)(i * blockSize), blockSize);
 
                 continue;
             }
+
+            if(blockAppliedCssDecrypt != null && i < (uint)blockAppliedCssDecrypt.Length)
+                blockAppliedCssDecrypt[i] = true;
 
             Array.Copy(UnscrambleSector(currentKey, currentSector),
                        0,
@@ -662,13 +681,26 @@ public class CSS
     /// <param name="keyData">The encryption keys.</param>
     /// <param name="blocks">Number of sectors in <c>sectorData</c>.</param>
     /// <param name="blockSize">Size of one sector.</param>
+    /// <param name="blockAppliedCssDecrypt">
+    ///     If non-null and <c>Length >= blocks</c>, each element is set to <c>true</c> when CSS unscrambling was
+    ///     applied to that logical block, and <c>false</c> when the sector was left unchanged (including the global
+    ///     "no encryption" early return and per-block <see cref="IsEncrypted"/> false).
+    /// </param>
     /// <returns>The decrypted sector.</returns>
     public static byte[] DecryptSectorLong(byte[] sectorData, byte[] keyData, byte[]? cmiData, uint blocks = 1,
-                                           uint   blockSize = 2048)
+                                           uint blockSize = 2048, bool[]? blockAppliedCssDecrypt = null)
     {
         // None of the sectors are encrypted
-        if(cmiData != null && cmiData.All(static cmi => (cmi & 0x80) >> 7 == 0) || keyData.All(static k => k == 0))
+        if((cmiData != null && cmiData.All(static cmi => (cmi & 0x80) >> 7 == 0)) || keyData.All(static k => k == 0))
+        {
+            if(blockAppliedCssDecrypt != null)
+            {
+                for(uint i = 0; i < blocks && i < (uint)blockAppliedCssDecrypt.Length; i++)
+                    blockAppliedCssDecrypt[i] = false;
+            }
+
             return sectorData;
+        }
 
         var decryptedBuffer = new byte[sectorData.Length];
 
@@ -684,10 +716,16 @@ public class CSS
 
             if(!IsEncrypted(cmiData?[i], currentKey, currentSector))
             {
+                if(blockAppliedCssDecrypt != null && i < (uint)blockAppliedCssDecrypt.Length)
+                    blockAppliedCssDecrypt[i] = false;
+
                 Array.Copy(currentSector, 0, decryptedBuffer, (int)(12 + i * blockSize + 16 * i), blockSize);
 
                 continue;
             }
+
+            if(blockAppliedCssDecrypt != null && i < (uint)blockAppliedCssDecrypt.Length)
+                blockAppliedCssDecrypt[i] = true;
 
             Array.Copy(UnscrambleSector(currentKey, currentSector),
                        0,
@@ -1024,7 +1062,7 @@ public class CSS
     /// <param name="fs"><c>IReadOnlyFilesystem</c> to check in.</param>
     /// <param name="partition"><c>Partition</c> to check in.</param>
     /// <returns><c>true</c> if <c>VIDEO_TS</c> folder was found.</returns>
-    static bool HasVideoTsFolder(IOpticalMediaImage input, IReadOnlyFilesystem fs, Partition partition)
+    public static bool HasVideoTsFolder(IOpticalMediaImage input, IReadOnlyFilesystem fs, Partition partition)
     {
         ErrorNumber error = fs.Mount(input, partition, null, null, null);
 

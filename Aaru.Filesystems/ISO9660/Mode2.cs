@@ -135,7 +135,9 @@ public sealed partial class ISO9660
 
             if(_blockSize == 2048)
             {
-                buffer = Sector.GetUserData(data, interleaved, fileNumber);
+                buffer = data.Length == 2064
+                              ? Decoders.DVD.Sector.GetUserData(data)
+                              : Sector.GetUserData(data, interleaved, fileNumber);
 
                 return ErrorNumber.NoError;
             }
@@ -232,7 +234,9 @@ public sealed partial class ISO9660
                     }
                 }
 
-                byte[] sectorData = Sector.GetUserData(data, interleaved, fileNumber);
+                byte[] sectorData = data.Length == 2064
+                                  ? Decoders.DVD.Sector.GetUserData(data)
+                                  : Sector.GetUserData(data, interleaved, fileNumber);
 
                 ms.Write(sectorData, 0, sectorData.Length);
             }
