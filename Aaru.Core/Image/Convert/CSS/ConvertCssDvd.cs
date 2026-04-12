@@ -39,12 +39,7 @@ public partial class Convert
                 if(_aborted) break;
                 byte[] sector;
 
-                uint sectorsToDo;
-
-                if(trackSectors - doneSectors >= _count)
-                    sectorsToDo = _count;
-                else
-                    sectorsToDo = (uint)(trackSectors - doneSectors);
+                uint sectorsToDo = trackSectors - doneSectors >= _count ? _count : (uint)(trackSectors - doneSectors);
 
                 UpdateProgress2?.Invoke(string.Format(UI.Converting_sectors_0_to_1_in_track_2,
                                                       doneSectors + track.StartSector,

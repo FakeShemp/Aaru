@@ -54,12 +54,9 @@ public sealed partial class Merger
 
                 byte[] sector;
 
-                uint sectorsToDo;
-
-                if(trackSectors - doneSectors >= (ulong)count)
-                    sectorsToDo = (uint)count;
-                else
-                    sectorsToDo = (uint)(trackSectors - doneSectors);
+                uint sectorsToDo = trackSectors - doneSectors >= (ulong)count
+                                    ? (uint)count
+                                    : (uint)(trackSectors - doneSectors);
 
                 UpdateProgress2?.Invoke(string.Format(UI.Copying_sectors_0_to_1_in_track_2,
                                                       doneSectors + track.StartSector,
@@ -212,8 +209,7 @@ public sealed partial class Merger
         int    howManySectorsToCopy = sectorsToCopy.Count(t => t < inputOptical.Info.Sectors);
         int howManySectorsCopied = 0;
 
-        foreach(ulong sectorAddress in sectorsToCopy.Where(t => t < inputOptical.Info.Sectors)
-                                                    .TakeWhile(_ => !_aborted))
+        foreach(ulong sectorAddress in sectorsToCopy.Where(t => t < inputOptical.Info.Sectors))
         {
             UpdateProgress?.Invoke(string.Format(UI.Copying_sector_0, sectorAddress),
                                    howManySectorsCopied,
