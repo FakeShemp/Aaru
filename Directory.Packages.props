@@ -47,7 +47,7 @@
     <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="4.14.1" />
     <PackageVersion Include="Sentry" Version="6.3.1" />
     <PackageVersion Include="Sentry.Serilog" Version="6.3.1" />
-    <PackageVersion Include="Serilog" Version="4.3.0" />
+    <PackageVersion Include="Serilog" Version="4.3.1" />
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageVersion Include="Serilog.Sinks.Spectre" Version="0.5.0" />
     <PackageVersion Include="SharpCompress" Version="0.41.0" />
