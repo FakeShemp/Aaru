@@ -246,6 +246,7 @@ Fully supported file-systems (identify and extraction)
 * NILFS2
 * Nintendo optical filesystems (GameCube and Wii)
 * OS-9 Random Block File
+* PlayStation File System
 * Professional File System
 * QNX4 filesystems
 * QNX6 filesystems
