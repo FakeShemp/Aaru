@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : SonyPFS.cs
+// Filename       : Unsupported.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : PlayStation FileSystem plugin.
@@ -26,25 +26,21 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
-using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Enums;
 
 namespace Aaru.Filesystems;
 
-public partial class SonyPFS : IReadOnlyFilesystem
+public partial class SonyPFS
 {
     /// <inheritdoc />
-    public string Name => Localization.PlayStation_FileSystem;
+    public ErrorNumber ListXAttr(string path, out List<string> xattrs)
+    {
+        xattrs = [];
+
+        return ErrorNumber.NotSupported;
+    }
+
     /// <inheritdoc />
-    public Guid Id => new("A68A4B2D-BF28-4D32-BDDB-638C03507A5F");
-    /// <inheritdoc />
-    public string Author => Authors.NataliaPortillo;
-    /// <inheritdoc />
-    public FileSystem Metadata { get; private set; }
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
-    /// <inheritdoc />
-    public Dictionary<string, string> Namespaces => [];
+    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf) => ErrorNumber.NotSupported;
 }

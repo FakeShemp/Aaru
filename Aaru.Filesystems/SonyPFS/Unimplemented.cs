@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : SonyPFS.cs
+// Filename       : Unimplemented.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : PlayStation FileSystem plugin.
@@ -28,23 +28,49 @@
 
 using System;
 using System.Collections.Generic;
-using Aaru.CommonTypes.AaruMetadata;
+using System.Text;
+using Aaru.CommonTypes;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Filesystems;
 
-public partial class SonyPFS : IReadOnlyFilesystem
+public partial class SonyPFS
 {
     /// <inheritdoc />
-    public string Name => Localization.PlayStation_FileSystem;
+    public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
+                             Dictionary<string, string> options,     string    @namespace) =>
+        throw new NotImplementedException();
+
     /// <inheritdoc />
-    public Guid Id => new("A68A4B2D-BF28-4D32-BDDB-638C03507A5F");
+    public ErrorNumber Unmount() => throw new NotImplementedException();
+
     /// <inheritdoc />
-    public string Author => Authors.NataliaPortillo;
+    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
+
     /// <inheritdoc />
-    public FileSystem Metadata { get; private set; }
+    public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
+
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
+    public ErrorNumber ReadLink(string path, out string dest) => throw new NotImplementedException();
+
     /// <inheritdoc />
-    public Dictionary<string, string> Namespaces => [];
+    public ErrorNumber OpenFile(string path, out IFileNode node) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
+        throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename) => throw new NotImplementedException();
 }
