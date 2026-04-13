@@ -377,6 +377,9 @@ In you are unsure, please press N to not continue.</value>
     <data name="Extract_only_from_specified_volume_number" xml:space="preserve">
     <value>Extract only from the specified volume number (0-indexed). If not specified, extracts from all volumes.</value>
   </data>
+    <data name="List_only_specified_volume_number" xml:space="preserve">
+    <value>List only the specified volume number (0-indexed). If not specified, lists all volumes.</value>
+  </data>
     <data name="Volume_number_0_not_found_only_1_volumes_found" xml:space="preserve">
     <value>[red]Volume number [orange3]{0}[/] not found. Only [orange3]{1}[/] volumes were found.[/]</value>
   </data>

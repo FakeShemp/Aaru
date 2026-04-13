@@ -1129,6 +1129,9 @@
     <data name="Extract_only_from_specified_volume_number" xml:space="preserve">
     <value>Extraer solo del número de volumen especificado (indexado desde 0). Si no se especifica, extrae de todos los volúmenes.</value>
   </data>
+    <data name="List_only_specified_volume_number" xml:space="preserve">
+    <value>Listar solo el número de volumen especificado (indexado desde 0). Si no se especifica, lista todos los volúmenes.</value>
+  </data>
     <data name="Volume_number_0_not_found_only_1_volumes_found" xml:space="preserve">
     <value>[red]No se encontró el volumen número [orange3]{0}[/]. Solo se encontraron [orange3]{1}[/] volúmenes.[/]</value>
   </data>

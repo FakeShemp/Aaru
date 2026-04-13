@@ -65,6 +65,7 @@ sealed class LsCommand : Command<LsCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--input={0}",    Markup.Escape(settings.ImagePath ?? ""));
         AaruLogging.Debug(MODULE_NAME, "--options={0}",  Markup.Escape(settings.Options   ?? ""));
         AaruLogging.Debug(MODULE_NAME, "--verbose={0}",  settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--volume={0}",   settings.Volume?.ToString() ?? "all");
         Statistics.AddCommand("ls");
 
         IFilter inputFilter = null;
@@ -207,10 +208,12 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
             AaruLogging.WriteLine(UI._0_partitions_found, partitions.Count);
 
+            var volumeCounter = 0;
+
             for(var i = 0; i < partitions.Count; i++)
             {
-                AaruLogging.WriteLine();
-                AaruLogging.WriteLine($"[bold]{string.Format(UI.Partition_0, partitions[i].Sequence)}[/]");
+                // Skip partitions if we've already found and listed the requested volume
+                if(settings.Volume.HasValue && volumeCounter > settings.Volume.Value) break;
 
                 List<string> idPlugins = null;
 
@@ -221,10 +224,50 @@ sealed class LsCommand : Command<LsCommand.Settings>
                 });
 
                 if(idPlugins.Count == 0)
-                    AaruLogging.WriteLine(UI.Filesystem_not_identified);
+                {
+                    if(!settings.Volume.HasValue)
+                    {
+                        AaruLogging.WriteLine();
+                        AaruLogging.WriteLine($"[bold]{string.Format(UI.Partition_0, partitions[i].Sequence)}[/]");
+                        AaruLogging.WriteLine(UI.Filesystem_not_identified);
+                    }
+                }
                 else
                 {
                     ErrorNumber error = ErrorNumber.InvalidArgument;
+
+                    // Check if any identified plugin is a readable filesystem
+                    var hasReadOnlyFs = false;
+
+                    foreach(string pluginName in idPlugins)
+                    {
+                        if(plugins.ReadOnlyFilesystems.ContainsKey(pluginName))
+                        {
+                            hasReadOnlyFs = true;
+
+                            break;
+                        }
+                    }
+
+                    // Count this as a volume if it has a readable filesystem
+                    // If targeting a specific volume and this isn't it, skip entirely
+                    if(hasReadOnlyFs)
+                    {
+                        if(settings.Volume.HasValue && settings.Volume.Value != volumeCounter)
+                        {
+                            volumeCounter++;
+
+                            continue;
+                        }
+
+                        volumeCounter++;
+                    }
+
+                    if(!settings.Volume.HasValue)
+                    {
+                        AaruLogging.WriteLine();
+                        AaruLogging.WriteLine($"[bold]{string.Format(UI.Partition_0, partitions[i].Sequence)}[/]");
+                    }
 
                     if(idPlugins.Count > 1)
                     {
@@ -266,6 +309,12 @@ sealed class LsCommand : Command<LsCommand.Settings>
                         plugins.ReadOnlyFilesystems.TryGetValue(idPlugins[0], out IReadOnlyFilesystem fs);
 
                         if(fs is null) continue;
+
+                        if(settings.Volume.HasValue)
+                        {
+                            AaruLogging.WriteLine();
+                            AaruLogging.WriteLine($"[bold]{string.Format(UI.Partition_0, partitions[i].Sequence)}[/]");
+                        }
 
                         AaruLogging.WriteLine($"[bold]{string.Format(UI.Identified_by_0, fs.Name)}[/]");
 
@@ -455,6 +504,10 @@ sealed class LsCommand : Command<LsCommand.Settings>
         [CommandOption("-n|--namespace")]
         [DefaultValue(null)]
         public string Namespace { get; init; }
+        [LocalizedDescription(nameof(UI.List_only_specified_volume_number))]
+        [CommandOption("--volume")]
+        [DefaultValue(null)]
+        public int? Volume { get; init; }
         [LocalizedDescription(nameof(UI.Media_image_path))]
         [CommandArgument(0, "<image-path>")]
         public string ImagePath { get; init; }
