@@ -350,4 +350,7 @@
     <data name="Archive_contains_0_files" xml:space="preserve">
         <value>[slateblue1]Archive contains [green]{0}[/] files[/]</value>
     </data>
+    <data name="EwfArchive_Name" xml:space="preserve">
+        <value>Expert Witness Format Logical Evidence (EWF-L)</value>
+    </data>
 </root>

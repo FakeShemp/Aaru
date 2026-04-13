@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Identify.cs
+// Filename       : Info.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
-// Component      : Disk image plugins.
+// Component      : EWF logical evidence plugin.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Identifies Expert Witness Format disk images.
+//     Identifies Expert Witness Format logical evidence files.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -32,37 +32,46 @@
 
 using System;
 using System.IO;
+using System.Text;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Helpers;
-using Aaru.Logging;
 
-namespace Aaru.Images;
+namespace Aaru.Archives;
 
-public sealed partial class Ewf
+public sealed partial class EwfArchive
 {
-#region IOpticalMediaImage Members
+#region IArchive Members
 
     /// <inheritdoc />
-    public bool Identify(IFilter imageFilter)
+    public bool Identify(IFilter filter)
     {
-        Stream stream = imageFilter.GetDataForkStream();
-        stream.Seek(0, SeekOrigin.Begin);
+        if(filter.DataForkLength < SIGNATURE_LENGTH) return false;
 
-        if(stream.Length < SIGNATURE_LENGTH) return false;
+        Stream stream = filter.GetDataForkStream();
+        stream.Position = 0;
 
         var signatureBytes = new byte[SIGNATURE_LENGTH];
-        stream.EnsureRead(signatureBytes, 0, SIGNATURE_LENGTH);
+        stream.ReadExactly(signatureBytes, 0, SIGNATURE_LENGTH);
 
-        AaruLogging.Debug(MODULE_NAME, Localization.Ewf_Identify_Signature_0, BitConverter.ToString(signatureBytes));
+        if(signatureBytes.AsSpan().SequenceEqual(LVF_SIGNATURE)) return true;
 
-        if(signatureBytes.AsSpan().SequenceEqual(EVF_SIGNATURE)) return true;
-
-        if(signatureBytes.AsSpan().SequenceEqual(EVF2_SIGNATURE)) return true;
-
-        // LVF and LEF2 signatures are for logical evidence files (L01/Lx01),
-        // handled by the IArchive plugin in Aaru.Archives
+        if(signatureBytes.AsSpan().SequenceEqual(LEF2_SIGNATURE)) return true;
 
         return false;
+    }
+
+    /// <inheritdoc />
+    public void GetInformation(IFilter filter, Encoding encoding, out string information)
+    {
+        information = "";
+
+        if(!Opened) return;
+
+        var sb = new StringBuilder();
+        sb.AppendLine("[bold][blue]EWF Logical Evidence File:[/][/]");
+        sb.AppendFormat("[slateblue1]Format:[/] [green]{0}[/]", _isV2 ? "EWF2 (Lx01)" : "EWF (L01)").AppendLine();
+        sb.AppendFormat("[slateblue1]Files:[/] [teal]{0}[/]",   _entries?.Count ?? 0).AppendLine();
+
+        information = sb.ToString();
     }
 
 #endregion

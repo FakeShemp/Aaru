@@ -160,6 +160,7 @@ Supported archives
 ==================
 
 * ARC (.ARC)
+* Expert Witness Format (EWF)
 * HA (.HA)
 * PAK (.PAK)
 * Symbian Installation File (.SIS)

@@ -698,5 +698,11 @@ namespace Aaru.Archives {
                 return ResourceManager.GetString("Archive_contains_0_files", resourceCulture);
             }
         }
+        
+        internal static string EwfArchive_Name {
+            get {
+                return ResourceManager.GetString("EwfArchive_Name", resourceCulture);
+            }
+        }
     }
 }

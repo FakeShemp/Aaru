@@ -342,4 +342,7 @@
     <data name="Archive_contains_0_files" xml:space="preserve">
         <value>[slateblue1]El archivo contiene [green]{0}[/] ficheros[/]</value>
     </data>
+    <data name="EwfArchive_Name" xml:space="preserve">
+        <value>Evidencia Lógica Expert Witness Format (EWF-L)</value>
+    </data>
 </root>
