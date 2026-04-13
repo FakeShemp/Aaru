@@ -30,6 +30,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -215,6 +217,49 @@ public partial class SonyPFS
 
         read           =  length - remaining;
         pfsNode.Offset += read;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber err = GetFileEntry(path, out DirEntry entry);
+
+        if(err != ErrorNumber.NoError) return err;
+
+        err = ReadInode(entry.Inode, entry.SubPart, out Inode inode);
+
+        if(err != ErrorNumber.NoError) return err;
+
+        if((inode.mode & (ushort)FileType.IFMT) != (ushort)FileType.IFLNK) return ErrorNumber.InvalidArgument;
+
+        // Symlink target is stored as raw bytes starting at data[1] in the inode
+        // data[0] is the inode's own block; data[1..] onward contains the path string
+        // Reinterpret data[1..] as bytes
+        int blockInfoSize  = Marshal.SizeOf<BlockInfo>();
+        int maxStringBytes = (PFS_INODE_MAX_BLOCKS - 1) * blockInfoSize;
+        var linkBytes      = new byte[maxStringBytes];
+
+        for(var i = 1; i < inode.data.Length; i++)
+        {
+            int offset = (i - 1) * blockInfoSize;
+
+            byte[] biBytes = Helpers.Marshal.StructureToByteArrayLittleEndian(inode.data[i]);
+
+            Array.Copy(biBytes, 0, linkBytes, offset, blockInfoSize);
+        }
+
+        // Find null terminator
+        int len = Array.IndexOf(linkBytes, (byte)0);
+
+        if(len < 0) len = maxStringBytes;
+
+        dest = Encoding.ASCII.GetString(linkBytes, 0, len);
 
         return ErrorNumber.NoError;
     }
