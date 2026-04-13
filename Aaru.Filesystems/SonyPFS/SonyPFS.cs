@@ -31,25 +31,25 @@ using System.Collections.Generic;
 using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 
 namespace Aaru.Filesystems;
 
 public partial class SonyPFS : IReadOnlyFilesystem
 {
-    bool           _mounted;
-    IMediaImage    _image;
-    Encoding       _encoding;
-    SuperBlock     _superBlock;
-    uint           _sectorSize;
-    uint           _sectorsPerZone;
-    uint           _inodeScale;
-    ulong          _partitionStart;
-    FileSystemInfo _statfs;
+    uint _blockScale;
 
     Dictionary<string, Dictionary<string, DirEntry>> _directoryCache;
+    Encoding                                         _encoding;
+    IMediaImage                                      _image;
+    uint                                             _inodeScale;
+    bool                                             _mounted;
+    ulong                                            _partitionStart;
     Dictionary<string, DirEntry>                     _rootDirectoryCache;
+    uint                                             _sectorSize;
+    uint                                             _sectorsPerZone;
+    FileSystemInfo                                   _statfs;
+    SuperBlock                                       _superBlock;
 
     /// <inheritdoc />
     public string Name => Localization.PlayStation_FileSystem;

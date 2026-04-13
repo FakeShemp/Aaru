@@ -41,32 +41,30 @@ public partial class SonyPFS
     /// <returns><see cref="ErrorNumber.NoError" /> on success.</returns>
     ErrorNumber ReadInode(uint blockNumber, ushort subpart, out Inode inode)
     {
-        inode = default;
+        inode = default(Inode);
 
         // Only main partition is accessible through the image
-        if(subpart != 0)
-            return ErrorNumber.InvalidArgument;
+        if(subpart != 0) return ErrorNumber.InvalidArgument;
 
-        // Calculate the sector offset: blockNumber << inode_scale gives the block in zone units,
-        // then multiply by sectors per zone to get sector offset
-        ulong sectorOffset = (ulong)(blockNumber << (int)_inodeScale) * _sectorsPerZone;
-        ulong sector       = _partitionStart + sectorOffset;
+        // blockNumber << inode_scale gives the metadata block number,
+        // then << blockScale converts to sector number.
+        // PFS block numbers are relative to the raw APA partition start, but
+        // partition.Start already skips the reserved area, so subtract it.
+        ulong sectorOffset = (ulong)(blockNumber << (int)_inodeScale) << (int)_blockScale;
+        ulong sector       = _partitionStart + sectorOffset - PFS_APA_RESERVED_SECTORS;
 
         int inodeSize     = Marshal.SizeOf<Inode>();
         var sectorsToRead = (uint)((inodeSize + _sectorSize - 1) / _sectorSize);
 
         ErrorNumber errno = _image.ReadSectors(sector, false, sectorsToRead, out byte[] data, out _);
 
-        if(errno != ErrorNumber.NoError)
-            return errno;
+        if(errno != ErrorNumber.NoError) return errno;
 
-        if(data.Length < inodeSize)
-            return ErrorNumber.InvalidArgument;
+        if(data.Length < inodeSize) return ErrorNumber.InvalidArgument;
 
         inode = Marshal.ByteArrayToStructureLittleEndian<Inode>(data);
 
-        if(inode.magic != PFS_SEGD_MAGIC && inode.magic != PFS_SEGI_MAGIC)
-            return ErrorNumber.InvalidArgument;
+        if(inode.magic != PFS_SEGD_MAGIC && inode.magic != PFS_SEGI_MAGIC) return ErrorNumber.InvalidArgument;
 
         return ErrorNumber.NoError;
     }
@@ -80,12 +78,15 @@ public partial class SonyPFS
     {
         data = null;
 
-        if(bi.subpart != 0)
-            return ErrorNumber.InvalidArgument;
+        if(bi.subpart != 0) return ErrorNumber.InvalidArgument;
 
-        ulong sectorOffset = (ulong)((bi.number + offsetInZone) << (int)_inodeScale) * _sectorsPerZone;
-        ulong sector       = _partitionStart + sectorOffset;
+        // (bi.number + offsetInZone) << inode_scale gives metadata block,
+        // then << blockScale converts to sector number.
+        // Subtract APA reserved area since partition.Start already skips it.
+        ulong sectorOffset = (ulong)(bi.number + offsetInZone << (int)_inodeScale) << (int)_blockScale;
+        ulong sector       = _partitionStart + sectorOffset - PFS_APA_RESERVED_SECTORS;
 
+        // Read one zone worth of data
         ErrorNumber errno = _image.ReadSectors(sector, false, _sectorsPerZone, out data, out _);
 
         return errno;
@@ -96,8 +97,12 @@ public partial class SonyPFS
     {
         try
         {
-            return new DateTimeOffset(pfsDateTime.year, pfsDateTime.month, pfsDateTime.day,
-                                      pfsDateTime.hour, pfsDateTime.min, pfsDateTime.sec,
+            return new DateTimeOffset(pfsDateTime.year,
+                                      pfsDateTime.month,
+                                      pfsDateTime.day,
+                                      pfsDateTime.hour,
+                                      pfsDateTime.min,
+                                      pfsDateTime.sec,
                                       TimeSpan.Zero);
         }
         catch

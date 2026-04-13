@@ -65,4 +65,11 @@ public partial class SonyPFS
 
     /// <summary>Maximum number of journal log entries.</summary>
     const int PFS_JOURNAL_MAX_ENTRIES = 127;
+
+    /// <summary>
+    ///     Number of 512-byte sectors reserved at the start of an APA main partition.
+    ///     PFS block numbers are relative to the raw partition start, but partition.Start
+    ///     already skips this reserved area, so we subtract it when converting PFS addresses.
+    /// </summary>
+    const ulong PFS_APA_RESERVED_SECTORS = 8192;
 }

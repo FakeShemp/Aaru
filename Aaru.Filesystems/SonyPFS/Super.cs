@@ -50,8 +50,7 @@ public partial class SonyPFS
         _sectorSize     = imagePlugin.Info.SectorSize;
         _partitionStart = partition.Start;
 
-        if(_sectorSize < 512)
-            return ErrorNumber.InvalidArgument;
+        if(_sectorSize < 512) return ErrorNumber.InvalidArgument;
 
         // Read superblock from sector 0 of partition data area
         int sbSize        = Marshal.SizeOf<SuperBlock>();
@@ -59,24 +58,20 @@ public partial class SonyPFS
 
         ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, false, sectorsToRead, out byte[] sector, out _);
 
-        if(errno != ErrorNumber.NoError)
-            return errno;
+        if(errno != ErrorNumber.NoError) return errno;
 
-        if(sector.Length < sbSize)
-            return ErrorNumber.InvalidArgument;
+        if(sector.Length < sbSize) return ErrorNumber.InvalidArgument;
 
         _superBlock = Marshal.ByteArrayToStructureLittleEndian<SuperBlock>(sector);
 
-        if(_superBlock.magic != PFS_SUPER_MAGIC)
-            return ErrorNumber.InvalidArgument;
+        if(_superBlock.magic != PFS_SUPER_MAGIC) return ErrorNumber.InvalidArgument;
 
-        if(_superBlock.version > PFS_FORMAT_VERSION)
-            return ErrorNumber.InvalidArgument;
+        if(_superBlock.version > PFS_FORMAT_VERSION) return ErrorNumber.InvalidArgument;
 
         // Validate zone size is a power of 2 and within range
-        if((_superBlock.zone_size & (_superBlock.zone_size - 1)) != 0 ||
-           _superBlock.zone_size < 2048                               ||
-           _superBlock.zone_size > 131072)
+        if((_superBlock.zone_size & _superBlock.zone_size - 1) != 0   ||
+           _superBlock.zone_size                               < 2048 ||
+           _superBlock.zone_size                               > 131072)
             return ErrorNumber.InvalidArgument;
 
         // Calculate scale factors (matching libpfs pfsMountSuperBlock)
@@ -84,15 +79,14 @@ public partial class SonyPFS
         // inode_scale  = log2(zone_size / PFS_META_SIZE)
         _sectorsPerZone = _superBlock.zone_size / _sectorSize;
         _inodeScale     = GetScale(_superBlock.zone_size, PFS_META_SIZE);
+        _blockScale     = GetScale(PFS_META_SIZE,         _sectorSize);
 
         // Read root directory inode
         errno = ReadInode(_superBlock.root.number, _superBlock.root.subpart, out Inode rootInode);
 
-        if(errno != ErrorNumber.NoError)
-            return errno;
+        if(errno != ErrorNumber.NoError) return errno;
 
-        if((rootInode.mode & (ushort)FileType.IFMT) != (ushort)FileType.IFDIR)
-            return ErrorNumber.InvalidArgument;
+        if((rootInode.mode & (ushort)FileType.IFMT) != (ushort)FileType.IFDIR) return ErrorNumber.InvalidArgument;
 
         // Read and cache root directory
         _rootDirectoryCache = ReadDirectory(rootInode);
@@ -128,8 +122,7 @@ public partial class SonyPFS
     /// <inheritdoc />
     public ErrorNumber Unmount()
     {
-        if(!_mounted)
-            return ErrorNumber.AccessDenied;
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
         _rootDirectoryCache = null;
         _directoryCache     = null;
@@ -143,8 +136,7 @@ public partial class SonyPFS
     {
         stat = null;
 
-        if(!_mounted)
-            return ErrorNumber.AccessDenied;
+        if(!_mounted) return ErrorNumber.AccessDenied;
 
         stat = _statfs.ShallowCopy();
 
@@ -156,8 +148,7 @@ public partial class SonyPFS
     {
         uint scale = 0;
 
-        while((size << (int)scale) != num)
-            scale++;
+        while(size << (int)scale != num) scale++;
 
         return scale;
     }
