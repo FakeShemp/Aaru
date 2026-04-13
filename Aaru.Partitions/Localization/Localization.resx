@@ -1415,4 +1415,55 @@
     <data name="Filecore" xml:space="preserve">
     <value>FileCore</value>
   </data>
+    <data name="APA_Name" xml:space="preserve">
+    <value>PlayStation 2 APA</value>
+  </data>
+    <data name="APA_magic_not_found" xml:space="preserve">
+    <value>APA magic not found</value>
+  </data>
+    <data name="APA_invalid_checksum" xml:space="preserve">
+    <value>APA header has invalid checksum</value>
+  </data>
+    <data name="APA_MBR_magic_not_found" xml:space="preserve">
+    <value>APA MBR magic string not found</value>
+  </data>
+    <data name="APA_MBR_version_0" xml:space="preserve">
+    <value>APA MBR version: {0}</value>
+  </data>
+    <data name="APA_total_sectors_0" xml:space="preserve">
+    <value>APA total sectors: {0}</value>
+  </data>
+    <data name="APA_circular_reference_at_sector_0" xml:space="preserve">
+    <value>APA circular reference detected at sector {0}</value>
+  </data>
+    <data name="APA_invalid_checksum_at_sector_0" xml:space="preserve">
+    <value>APA invalid checksum at sector {0}</value>
+  </data>
+    <data name="APA_sub_partition_0_of_1" xml:space="preserve">
+    <value>Sub-partition {0} of {1}</value>
+  </data>
+    <data name="APA_type_MBR" xml:space="preserve">
+    <value>Master Boot Record</value>
+  </data>
+    <data name="APA_type_EXT2_swap" xml:space="preserve">
+    <value>Linux EXT2 swap</value>
+  </data>
+    <data name="APA_type_EXT2" xml:space="preserve">
+    <value>Linux EXT2</value>
+  </data>
+    <data name="APA_type_ReiserFS" xml:space="preserve">
+    <value>ReiserFS</value>
+  </data>
+    <data name="APA_type_PFS" xml:space="preserve">
+    <value>PlayStation File System (PFS)</value>
+  </data>
+    <data name="APA_type_CFS" xml:space="preserve">
+    <value>CFS</value>
+  </data>
+    <data name="APA_type_HDLoader" xml:space="preserve">
+    <value>HDLoader</value>
+  </data>
+    <data name="APA_type_unknown_0" xml:space="preserve">
+    <value>Unknown type 0x{0:X4}</value>
+  </data>
 </root>

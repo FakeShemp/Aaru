@@ -171,6 +171,7 @@ Supported partitioning schemes
 * Acorn Linux and RISCiX partitions
 * ACT Apricot partitions
 * Amiga Rigid Disk Block (RDB)
+* APA (Sony PlayStation 2 partitions)
 * Apple Partition Map
 * Atari AHDI and ICDPro
 * BSD disklabels

@@ -1408,4 +1408,55 @@
     <data name="_unmountable_" xml:space="preserve">
     <value> (no montable)</value>
   </data>
+    <data name="APA_Name" xml:space="preserve">
+    <value>PlayStation 2 APA</value>
+  </data>
+    <data name="APA_magic_not_found" xml:space="preserve">
+    <value>No se encontró la firma mágica de APA</value>
+  </data>
+    <data name="APA_invalid_checksum" xml:space="preserve">
+    <value>La cabecera APA tiene una suma de verificación inválida</value>
+  </data>
+    <data name="APA_MBR_magic_not_found" xml:space="preserve">
+    <value>No se encontró la cadena mágica del MBR de APA</value>
+  </data>
+    <data name="APA_MBR_version_0" xml:space="preserve">
+    <value>Versión del MBR de APA: {0}</value>
+  </data>
+    <data name="APA_total_sectors_0" xml:space="preserve">
+    <value>Sectores totales de APA: {0}</value>
+  </data>
+    <data name="APA_circular_reference_at_sector_0" xml:space="preserve">
+    <value>Referencia circular de APA detectada en el sector {0}</value>
+  </data>
+    <data name="APA_invalid_checksum_at_sector_0" xml:space="preserve">
+    <value>Suma de verificación inválida de APA en el sector {0}</value>
+  </data>
+    <data name="APA_sub_partition_0_of_1" xml:space="preserve">
+    <value>Sub-partición {0} de {1}</value>
+  </data>
+    <data name="APA_type_MBR" xml:space="preserve">
+    <value>Registro de arranque maestro</value>
+  </data>
+    <data name="APA_type_EXT2_swap" xml:space="preserve">
+    <value>Intercambio Linux EXT2</value>
+  </data>
+    <data name="APA_type_EXT2" xml:space="preserve">
+    <value>Linux EXT2</value>
+  </data>
+    <data name="APA_type_ReiserFS" xml:space="preserve">
+    <value>ReiserFS</value>
+  </data>
+    <data name="APA_type_PFS" xml:space="preserve">
+    <value>Sistema de ficheros PlayStation (PFS)</value>
+  </data>
+    <data name="APA_type_CFS" xml:space="preserve">
+    <value>CFS</value>
+  </data>
+    <data name="APA_type_HDLoader" xml:space="preserve">
+    <value>HDLoader</value>
+  </data>
+    <data name="APA_type_unknown_0" xml:space="preserve">
+    <value>Tipo desconocido 0x{0:X4}</value>
+  </data>
 </root>
