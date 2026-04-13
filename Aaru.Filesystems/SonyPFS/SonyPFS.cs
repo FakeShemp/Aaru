@@ -28,13 +28,29 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 
 namespace Aaru.Filesystems;
 
 public partial class SonyPFS : IReadOnlyFilesystem
 {
+    bool           _mounted;
+    IMediaImage    _image;
+    Encoding       _encoding;
+    SuperBlock     _superBlock;
+    uint           _sectorSize;
+    uint           _sectorsPerZone;
+    uint           _inodeScale;
+    ulong          _partitionStart;
+    FileSystemInfo _statfs;
+
+    Dictionary<string, Dictionary<string, DirEntry>> _directoryCache;
+    Dictionary<string, DirEntry>                     _rootDirectoryCache;
+
     /// <inheritdoc />
     public string Name => Localization.PlayStation_FileSystem;
     /// <inheritdoc />

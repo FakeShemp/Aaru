@@ -27,9 +27,6 @@
 // ****************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -38,17 +35,6 @@ namespace Aaru.Filesystems;
 
 public partial class SonyPFS
 {
-    /// <inheritdoc />
-    public ErrorNumber Mount(IMediaImage                imagePlugin, Partition partition, Encoding encoding,
-                             Dictionary<string, string> options,     string    @namespace) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber Unmount() => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber StatFs(out FileSystemInfo stat) => throw new NotImplementedException();
-
     /// <inheritdoc />
     public ErrorNumber Stat(string path, out FileEntryInfo stat) => throw new NotImplementedException();
 
@@ -64,13 +50,4 @@ public partial class SonyPFS
     /// <inheritdoc />
     public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read) =>
         throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber OpenDir(string path, out IDirNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber CloseDir(IDirNode node) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadDir(IDirNode node, out string filename) => throw new NotImplementedException();
 }
