@@ -7833,5 +7833,11 @@ namespace Aaru.Filesystems {
                 return ResourceManager.GetString("Namespace_showing_only_the_latest_version_without_version_suffix", resourceCulture);
             }
         }
+        
+        internal static string PlayStation_FileSystem {
+            get {
+                return ResourceManager.GetString("PlayStation_FileSystem", resourceCulture);
+            }
+        }
     }
 }

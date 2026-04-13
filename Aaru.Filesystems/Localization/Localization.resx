@@ -3923,4 +3923,7 @@
     <data name="Namespace_showing_only_the_latest_version_without_version_suffix" xml:space="preserve">
         <value>Namespace showing only the latest version without version suffix</value>
     </data>
+    <data name="PlayStation_FileSystem" xml:space="preserve">
+        <value>PlayStation FileSystem</value>
+    </data>
 </root>
