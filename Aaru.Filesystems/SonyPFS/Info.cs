@@ -26,7 +26,6 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
@@ -69,6 +68,66 @@ public partial class SonyPFS
     public void GetInformation(IMediaImage imagePlugin, Partition partition, Encoding encoding, out string information,
                                out FileSystem metadata)
     {
-        throw new NotImplementedException();
+        information = "";
+        metadata    = new FileSystem();
+
+        uint sectorSize = imagePlugin.Info.SectorSize;
+
+        if(sectorSize < 512)
+            return;
+
+        int sbSize        = Marshal.SizeOf<SuperBlock>();
+        var sectorsToRead = (uint)((sbSize + sectorSize - 1) / sectorSize);
+
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, false, sectorsToRead, out byte[] sector, out _);
+
+        if(errno != ErrorNumber.NoError)
+            return;
+
+        if(sector.Length < sbSize)
+            return;
+
+        SuperBlock sb = Marshal.ByteArrayToStructureLittleEndian<SuperBlock>(sector);
+
+        if(sb.magic != PFS_SUPER_MAGIC)
+            return;
+
+        var sbInfo = new StringBuilder();
+
+        sbInfo.AppendLine(Localization.PFS_filesystem);
+        sbInfo.AppendFormat(Localization.Format_version_0, sb.version).AppendLine();
+
+        sbInfo.AppendFormat(Localization.Last_modified_by_module_version_0_1, sb.modver >> 8, sb.modver & 0xFF)
+              .AppendLine();
+
+        sbInfo.AppendFormat(Localization._0_bytes_per_zone, sb.zone_size).AppendLine();
+        sbInfo.AppendFormat(Localization._0_sub_partitions, sb.num_subs).AppendLine();
+
+        sbInfo.AppendFormat(Localization.Root_directory_is_at_block_0_sub_partition_1,
+                            sb.root.number, sb.root.subpart)
+              .AppendLine();
+
+        sbInfo.AppendFormat(Localization.Journal_is_at_block_0_sub_partition_1_size_2_blocks,
+                            sb.log.number, sb.log.subpart, sb.log.count)
+              .AppendLine();
+
+        if((sb.pfsFsckStat & (uint)FsckStatus.WRITE_ERROR) != 0)
+            sbInfo.AppendLine(Localization.Filesystem_has_write_errors);
+
+        if((sb.pfsFsckStat & (uint)FsckStatus.ERRORS_FIXED) != 0)
+            sbInfo.AppendLine(Localization.Filesystem_errors_were_fixed);
+
+        if(sb.pfsFsckStat != 0)
+            sbInfo.AppendLine(Localization.Volume_is_dirty);
+
+        information = sbInfo.ToString();
+
+        metadata = new FileSystem
+        {
+            Type        = FS_TYPE,
+            ClusterSize = sb.zone_size,
+            Clusters    = (partition.End - partition.Start + 1) * sectorSize / sb.zone_size,
+            Dirty       = sb.pfsFsckStat != 0
+        };
     }
 }

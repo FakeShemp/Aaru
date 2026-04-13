@@ -3917,4 +3917,25 @@
     <data name="PlayStation_FileSystem" xml:space="preserve">
         <value>Sistema de ficheros de PlayStation</value>
     </data>
+    <data name="PFS_filesystem" xml:space="preserve">
+        <value>Sistema de ficheros de PlayStation (PFS)</value>
+    </data>
+    <data name="_0_sub_partitions" xml:space="preserve">
+        <value>{0} sub-particiones</value>
+    </data>
+    <data name="Last_modified_by_module_version_0_1" xml:space="preserve">
+        <value>Modificado por última vez por la versión del módulo {0}.{1}</value>
+    </data>
+    <data name="Filesystem_has_write_errors" xml:space="preserve">
+        <value>El sistema de ficheros tiene errores de escritura</value>
+    </data>
+    <data name="Filesystem_errors_were_fixed" xml:space="preserve">
+        <value>Los errores del sistema de ficheros fueron corregidos</value>
+    </data>
+    <data name="Root_directory_is_at_block_0_sub_partition_1" xml:space="preserve">
+        <value>El directorio raíz está en el bloque {0}, sub-partición {1}</value>
+    </data>
+    <data name="Journal_is_at_block_0_sub_partition_1_size_2_blocks" xml:space="preserve">
+        <value>El diario está en el bloque {0}, sub-partición {1}, tamaño {2} bloques</value>
+    </data>
 </root>

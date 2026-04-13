@@ -3926,4 +3926,25 @@
     <data name="PlayStation_FileSystem" xml:space="preserve">
         <value>PlayStation FileSystem</value>
     </data>
+    <data name="PFS_filesystem" xml:space="preserve">
+        <value>PlayStation FileSystem (PFS)</value>
+    </data>
+    <data name="_0_sub_partitions" xml:space="preserve">
+        <value>{0} sub-partitions</value>
+    </data>
+    <data name="Last_modified_by_module_version_0_1" xml:space="preserve">
+        <value>Last modified by module version {0}.{1}</value>
+    </data>
+    <data name="Filesystem_has_write_errors" xml:space="preserve">
+        <value>Filesystem has write errors</value>
+    </data>
+    <data name="Filesystem_errors_were_fixed" xml:space="preserve">
+        <value>Filesystem errors were fixed</value>
+    </data>
+    <data name="Root_directory_is_at_block_0_sub_partition_1" xml:space="preserve">
+        <value>Root directory is at block {0}, sub-partition {1}</value>
+    </data>
+    <data name="Journal_is_at_block_0_sub_partition_1_size_2_blocks" xml:space="preserve">
+        <value>Journal is at block {0}, sub-partition {1}, size {2} blocks</value>
+    </data>
 </root>
