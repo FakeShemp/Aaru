@@ -5967,5 +5967,17 @@ namespace Aaru.Images {
                 return ResourceManager.GetString("Redumper_disc_image", resourceCulture);
             }
         }
+        
+        internal static string Ewf_Name {
+            get {
+                return ResourceManager.GetString("Ewf_Name", resourceCulture);
+            }
+        }
+        
+        internal static string Ewf_Identify_Signature_0 {
+            get {
+                return ResourceManager.GetString("Ewf_Identify_Signature_0", resourceCulture);
+            }
+        }
     }
 }

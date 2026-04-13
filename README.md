@@ -98,6 +98,7 @@ Media image formats we can read
 * DiscJuggler images
 * Dreamcast GDI
 * Easy CD Creator images (.CIF)
+* Expert Witness Format (EWF)
 * HD-Copy disk images
 * HxCStream
 * MAME Compressed Hunks of Data (CHD)

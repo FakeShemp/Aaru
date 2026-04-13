@@ -2995,4 +2995,10 @@
     <data name="Redumper_disc_image" xml:space="preserve">
         <value>Redumper raw DVD disc image</value>
     </data>
+    <data name="Ewf_Name" xml:space="preserve">
+        <value>Expert Witness Format (EWF)</value>
+    </data>
+    <data name="Ewf_Identify_Signature_0" xml:space="preserve">
+        <value>Signature: {0}</value>
+    </data>
 </root>

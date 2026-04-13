@@ -2976,4 +2976,10 @@
     <data name="Redumper_disc_image" xml:space="preserve">
         <value>Imagen de disco DVD crudo de Redumper</value>
     </data>
+    <data name="Ewf_Name" xml:space="preserve">
+        <value>Formato Expert Witness (EWF)</value>
+    </data>
+    <data name="Ewf_Identify_Signature_0" xml:space="preserve">
+        <value>Firma: {0}</value>
+    </data>
 </root>
