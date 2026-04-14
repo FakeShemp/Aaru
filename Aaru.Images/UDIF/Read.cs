@@ -42,7 +42,8 @@ using Aaru.Helpers;
 using Aaru.Logging;
 using Claunia.PropertyList;
 using Claunia.RsrcFork;
-using Ionic.Zlib;
+using SharpCompress.Compressors;
+using SharpCompress.Compressors.Deflate;
 using SharpCompress.Compressors.Xz;
 using Version = Resources.Version;
 
