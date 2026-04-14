@@ -28,7 +28,8 @@
 
 using System.IO;
 using System.Runtime.InteropServices;
-using Ionic.BZip2;
+using SharpCompress.Compressors;
+using SharpCompress.Compressors.BZip2;
 
 namespace Aaru.Compression;
 
@@ -62,7 +63,7 @@ public partial class BZip2
         }
 
         using var cmpMs     = new MemoryStream(source);
-        using var decStream = new BZip2InputStream(cmpMs, false);
+        using var decStream = BZip2Stream.Create(cmpMs, CompressionMode.Decompress, false);
 
         return decStream.Read(destination, 0, destination.Length);
     }
@@ -84,7 +85,7 @@ public partial class BZip2
         }
 
         using var cmpMs     = new MemoryStream(source);
-        using var encStream = new BZip2OutputStream(new MemoryStream(destination), blockSize100K);
+        using var encStream = BZip2Stream.Create(new MemoryStream(destination), CompressionMode.Compress, false);
         encStream.Write(source, 0, source.Length);
 
         return source.Length;

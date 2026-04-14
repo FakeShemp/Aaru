@@ -34,7 +34,6 @@
   <ItemGroup>
     <PackageReference Include="Claunia.Encoding"/>
     <PackageReference Include="Claunia.RsrcFork"/>
-    <PackageReference Include="DotNetZip"/>
     <PackageReference Include="Humanizer"/>
     <PackageReference Include="libaaruformat"/>
     <PackageReference Include="plist-cil"/>

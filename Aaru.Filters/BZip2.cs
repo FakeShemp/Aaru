@@ -36,7 +36,8 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Helpers.IO;
-using Ionic.BZip2;
+using SharpCompress.Compressors;
+using SharpCompress.Compressors.BZip2;
 
 namespace Aaru.Filters;
 
@@ -142,11 +143,14 @@ public class BZip2 : IFilter
     /// <inheritdoc />
     public ErrorNumber Open(byte[] buffer)
     {
-        _dataStream    = new MemoryStream(buffer);
-        BasePath       = null;
-        CreationTime   = DateTime.UtcNow;
-        LastWriteTime  = CreationTime;
-        _innerStream   = new ForcedSeekStream<BZip2InputStream>(_dataStream, false);
+        _dataStream   = new MemoryStream(buffer);
+        BasePath      = null;
+        CreationTime  = DateTime.UtcNow;
+        LastWriteTime = CreationTime;
+
+        _innerStream =
+            new ForcedSeekStream<BZip2Stream>(BZip2Stream.Create(_dataStream, CompressionMode.Decompress, false));
+
         DataForkLength = _innerStream.Length;
 
         return ErrorNumber.NoError;
@@ -155,11 +159,14 @@ public class BZip2 : IFilter
     /// <inheritdoc />
     public ErrorNumber Open(Stream stream)
     {
-        _dataStream    = stream;
-        BasePath       = null;
-        CreationTime   = DateTime.UtcNow;
-        LastWriteTime  = CreationTime;
-        _innerStream   = new ForcedSeekStream<BZip2InputStream>(_dataStream, false);
+        _dataStream   = stream;
+        BasePath      = null;
+        CreationTime  = DateTime.UtcNow;
+        LastWriteTime = CreationTime;
+
+        _innerStream =
+            new ForcedSeekStream<BZip2Stream>(BZip2Stream.Create(_dataStream, CompressionMode.Decompress, false));
+
         DataForkLength = _innerStream.Length;
 
         return ErrorNumber.NoError;
@@ -172,9 +179,12 @@ public class BZip2 : IFilter
         BasePath    = System.IO.Path.GetFullPath(path);
 
         var fi = new FileInfo(path);
-        CreationTime   = fi.CreationTimeUtc;
-        LastWriteTime  = fi.LastWriteTimeUtc;
-        _innerStream   = new ForcedSeekStream<BZip2InputStream>(_dataStream, false);
+        CreationTime  = fi.CreationTimeUtc;
+        LastWriteTime = fi.LastWriteTimeUtc;
+
+        _innerStream =
+            new ForcedSeekStream<BZip2Stream>(BZip2Stream.Create(_dataStream, CompressionMode.Decompress, false));
+
         DataForkLength = _innerStream.Length;
 
         return ErrorNumber.NoError;

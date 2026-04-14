@@ -45,7 +45,6 @@
     <ProjectReference Include="..\Aaru.Helpers\Aaru.Helpers.csproj"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetZip"/>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
     <PackageReference Include="SharpCompress"/>
   </ItemGroup>

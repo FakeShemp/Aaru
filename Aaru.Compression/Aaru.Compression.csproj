@@ -79,7 +79,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Aaru.Compression.Native"/>
-    <PackageReference Include="DotNetZip"/>
     <PackageReference Include="Newtonsoft.Json"/>
     <PackageReference Include="Sentry"/>
     <PackageReference Include="SharpCompress"/>
