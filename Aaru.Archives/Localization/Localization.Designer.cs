@@ -657,6 +657,12 @@ namespace Aaru.Archives {
             }
         }
         
+        internal static string LHA_archive {
+            get {
+                return ResourceManager.GetString("LHA_archive", resourceCulture);
+            }
+        }
+        
         internal static string AMG_archive {
             get {
                 return ResourceManager.GetString("AMG_archive", resourceCulture);

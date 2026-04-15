@@ -329,6 +329,9 @@
     <data name="ARC_archive" xml:space="preserve">
         <value>[bold][blue]ARC archive[/][/]</value>
     </data>
+    <data name="LHA_archive" xml:space="preserve">
+        <value>[bold][blue]LHA archive[/][/]</value>
+    </data>
     <data name="AMG_archive" xml:space="preserve">
         <value>[bold][blue]AMG archive[/][/]</value>
     </data>
