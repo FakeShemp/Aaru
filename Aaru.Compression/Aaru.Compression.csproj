@@ -38,6 +38,7 @@
     </DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AceStream.cs" />
     <Compile Include="ADC.cs"/>
     <Compile Include="AppleRle.cs"/>
     <Compile Include="Arc\CrunchStream.cs"/>
