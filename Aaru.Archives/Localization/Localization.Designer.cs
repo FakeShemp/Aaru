@@ -836,5 +836,47 @@ namespace Aaru.Archives {
                 return ResourceManager.GetString("RAR_has_recovery_record", resourceCulture);
             }
         }
+
+        internal static string Zip_Name {
+            get {
+                return ResourceManager.GetString("Zip_Name", resourceCulture);
+            }
+        }
+
+        internal static string ZIP_archive {
+            get {
+                return ResourceManager.GetString("ZIP_archive", resourceCulture);
+            }
+        }
+
+        internal static string ZIP_entries_0 {
+            get {
+                return ResourceManager.GetString("ZIP_entries_0", resourceCulture);
+            }
+        }
+
+        internal static string ZIP_files_0 {
+            get {
+                return ResourceManager.GetString("ZIP_files_0", resourceCulture);
+            }
+        }
+
+        internal static string ZIP_directories_0 {
+            get {
+                return ResourceManager.GetString("ZIP_directories_0", resourceCulture);
+            }
+        }
+
+        internal static string ZIP_encrypted_entries_0 {
+            get {
+                return ResourceManager.GetString("ZIP_encrypted_entries_0", resourceCulture);
+            }
+        }
+
+        internal static string ZIP_comment_0 {
+            get {
+                return ResourceManager.GetString("ZIP_comment_0", resourceCulture);
+            }
+        }
     }
 }

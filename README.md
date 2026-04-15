@@ -172,6 +172,7 @@ Supported archives
 * RAR (.RAR)
 * Symbian Installation File (.SIS)
 * Xbox 360 Secure Transacted File System (STFS)
+* ZIP (.ZIP)
 * ZOO (.ZOO)
 
 Supported partitioning schemes

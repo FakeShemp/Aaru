@@ -411,4 +411,25 @@
     <data name="RAR_has_recovery_record" xml:space="preserve">
         <value>[slateblue1]El archivo tiene [green]registro de recuperación[/][/]</value>
     </data>
+    <data name="Zip_Name" xml:space="preserve">
+        <value>ZIP</value>
+    </data>
+    <data name="ZIP_archive" xml:space="preserve">
+        <value>[bold][blue]Archivo ZIP[/][/]</value>
+    </data>
+    <data name="ZIP_entries_0" xml:space="preserve">
+        <value>[slateblue1]Entradas: [green]{0}[/][/]</value>
+    </data>
+    <data name="ZIP_files_0" xml:space="preserve">
+        <value>[slateblue1]Archivos: [green]{0}[/][/]</value>
+    </data>
+    <data name="ZIP_directories_0" xml:space="preserve">
+        <value>[slateblue1]Directorios: [green]{0}[/][/]</value>
+    </data>
+    <data name="ZIP_encrypted_entries_0" xml:space="preserve">
+        <value>[slateblue1]Entradas cifradas: [green]{0}[/][/]</value>
+    </data>
+    <data name="ZIP_comment_0" xml:space="preserve">
+        <value>[slateblue1]Comentario del archivo: [green]{0}[/][/]</value>
+    </data>
 </root>
