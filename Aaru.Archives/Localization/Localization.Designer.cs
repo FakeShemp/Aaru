@@ -710,5 +710,71 @@ namespace Aaru.Archives {
                 return ResourceManager.GetString("EwfArchive_Name", resourceCulture);
             }
         }
+        
+        internal static string Ace_Name {
+            get {
+                return ResourceManager.GetString("Ace_Name", resourceCulture);
+            }
+        }
+        
+        internal static string ACE_archive {
+            get {
+                return ResourceManager.GetString("ACE_archive", resourceCulture);
+            }
+        }
+        
+        internal static string ACE_version_created_0_1 {
+            get {
+                return ResourceManager.GetString("ACE_version_created_0_1", resourceCulture);
+            }
+        }
+        
+        internal static string ACE_version_needed_0_1 {
+            get {
+                return ResourceManager.GetString("ACE_version_needed_0_1", resourceCulture);
+            }
+        }
+        
+        internal static string ACE_host_os_0 {
+            get {
+                return ResourceManager.GetString("ACE_host_os_0", resourceCulture);
+            }
+        }
+        
+        internal static string ACE_solid_archive {
+            get {
+                return ResourceManager.GetString("ACE_solid_archive", resourceCulture);
+            }
+        }
+        
+        internal static string ACE_multi_volume_archive {
+            get {
+                return ResourceManager.GetString("ACE_multi_volume_archive", resourceCulture);
+            }
+        }
+        
+        internal static string ACE_locked_archive {
+            get {
+                return ResourceManager.GetString("ACE_locked_archive", resourceCulture);
+            }
+        }
+        
+        internal static string ACE_sfx_archive {
+            get {
+                return ResourceManager.GetString("ACE_sfx_archive", resourceCulture);
+            }
+        }
+        
+        internal static string ACE_has_recovery_record {
+            get {
+                return ResourceManager.GetString("ACE_has_recovery_record", resourceCulture);
+            }
+        }
+        
+        internal static string ACE_volume_number_0 {
+            get {
+                return ResourceManager.GetString("ACE_volume_number_0", resourceCulture);
+            }
+        }
     }
 }

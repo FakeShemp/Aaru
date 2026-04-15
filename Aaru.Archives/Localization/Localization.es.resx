@@ -348,4 +348,37 @@
     <data name="EwfArchive_Name" xml:space="preserve">
         <value>Evidencia Lógica Expert Witness Format (EWF-L)</value>
     </data>
+    <data name="Ace_Name" xml:space="preserve">
+        <value>Archivo ACE</value>
+    </data>
+    <data name="ACE_archive" xml:space="preserve">
+        <value>[bold][blue]Archivo ACE[/][/]</value>
+    </data>
+    <data name="ACE_version_created_0_1" xml:space="preserve">
+        <value>[slateblue1]Creado con ACE versión [green]{0}.{1}[/][/]</value>
+    </data>
+    <data name="ACE_version_needed_0_1" xml:space="preserve">
+        <value>[slateblue1]Necesita ACE versión [green]{0}.{1}[/] para extraer[/]</value>
+    </data>
+    <data name="ACE_host_os_0" xml:space="preserve">
+        <value>[slateblue1]Creado en [green]{0}[/][/]</value>
+    </data>
+    <data name="ACE_solid_archive" xml:space="preserve">
+        <value>[slateblue1]El archivo es [green]sólido[/][/]</value>
+    </data>
+    <data name="ACE_multi_volume_archive" xml:space="preserve">
+        <value>[slateblue1]El archivo es [green]multi-volumen[/][/]</value>
+    </data>
+    <data name="ACE_locked_archive" xml:space="preserve">
+        <value>[slateblue1]El archivo está [green]bloqueado[/][/]</value>
+    </data>
+    <data name="ACE_sfx_archive" xml:space="preserve">
+        <value>[slateblue1]El archivo es [green]auto-extraíble[/][/]</value>
+    </data>
+    <data name="ACE_has_recovery_record" xml:space="preserve">
+        <value>[slateblue1]El archivo tiene [green]registro de recuperación[/][/]</value>
+    </data>
+    <data name="ACE_volume_number_0" xml:space="preserve">
+        <value>[slateblue1]Número de volumen: [green]{0}[/][/]</value>
+    </data>
 </root>

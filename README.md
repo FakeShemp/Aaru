@@ -159,6 +159,7 @@ Media image formats we can write to
 Supported archives
 ==================
 
+* ACE (.ACE)
 * ARC (.ARC)
 * Expert Witness Format (EWF)
 * HA (.HA)
