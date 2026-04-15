@@ -81,6 +81,7 @@
     <Compile Include="Zip\PpmdStream.cs" />
     <Compile Include="Zip\ReduceStream.cs"/>
     <Compile Include="Zip\ShrinkStream.cs"/>
+    <Compile Include="Zip\WavpackStream.cs" />
     <Compile Include="ZSTD.cs"/>
   </ItemGroup>
   <ItemGroup>
