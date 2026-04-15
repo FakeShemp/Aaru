@@ -12,7 +12,8 @@ public partial class PpmdStream : Stream
     readonly long   _length;
     long            _position;
 
-    public PpmdStream(Stream compressedStream, long decompressedLength, int maxOrder, int subAllocSize, bool restoration)
+    public PpmdStream(Stream compressedStream, long decompressedLength, int maxOrder, int subAllocSize,
+                      bool   restoration)
     {
         if(compressedStream == null) throw new ArgumentNullException(nameof(compressedStream));
         if(!compressedStream.CanRead) throw new ArgumentException("Stream must be readable", nameof(compressedStream));
@@ -25,11 +26,10 @@ public partial class PpmdStream : Stream
 
         // Allocate output buffer
         _decoded = new byte[decompressedLength];
-        var outLen = (nint)decompressedLength;
 
         // Call native decompressor
         int err = AARU_zip_ppmd_decode_buffer(_decoded,
-                                              ref outLen,
+                                              (nint)decompressedLength,
                                               inBuf,
                                               inBuf.Length,
                                               maxOrder,
@@ -38,8 +38,7 @@ public partial class PpmdStream : Stream
 
         if(err != 0) throw new InvalidOperationException("PPMd decompression failed");
 
-        // Adjust actual length in case it differs
-        _length   = outLen;
+        _length   = decompressedLength;
         _position = 0;
     }
 
@@ -55,8 +54,8 @@ public partial class PpmdStream : Stream
     }
 
     [LibraryImport("libAaru.Compression.Native")]
-    public static partial int AARU_zip_ppmd_decode_buffer(byte[] dst_buffer, ref nint dst_size,  byte[] src_buffer,
-                                                          nint   src_size,   int      max_order, int    sub_alloc_size,
+    public static partial int AARU_zip_ppmd_decode_buffer(byte[] dst_buffer, nint dst_size,  byte[] src_buffer,
+                                                          nint   src_size,   int  max_order, int    sub_alloc_size,
                                                           int    restoration);
 
     public override void Flush()
