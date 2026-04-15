@@ -66,6 +66,7 @@
     <Compile Include="Pak\CrushStream.cs"/>
     <Compile Include="Pak\DistillStream.cs"/>
     <Compile Include="PmarcStream.cs"/>
+    <Compile Include="RarStream.cs"/>
     <Compile Include="TeleDiskLzh.cs"/>
     <Compile Include="cuetools.net/CUETools.Codecs/*.cs"/>
     <Compile Include="cuetools.net/CUETools.Codecs/CommandLine/*.cs"/>
@@ -76,13 +77,13 @@
     <Compile Include="cuetools.net/CUETools.Codecs.Flake/*.cs"/>
     <Compile Include="cuetools.net/CUETools.Codecs.Flake/Properties/*.cs"/>
     <Compile Include="XZ.cs"/>
-    <Compile Include="Zip\Deflate64Stream.cs" />
+    <Compile Include="Zip\Deflate64Stream.cs"/>
     <Compile Include="Zip\ImplodeStream.cs"/>
-    <Compile Include="Zip\JpegStream.cs" />
-    <Compile Include="Zip\PpmdStream.cs" />
+    <Compile Include="Zip\JpegStream.cs"/>
+    <Compile Include="Zip\PpmdStream.cs"/>
     <Compile Include="Zip\ReduceStream.cs"/>
     <Compile Include="Zip\ShrinkStream.cs"/>
-    <Compile Include="Zip\WavpackStream.cs" />
+    <Compile Include="Zip\WavpackStream.cs"/>
     <Compile Include="ZSTD.cs"/>
   </ItemGroup>
   <ItemGroup>
