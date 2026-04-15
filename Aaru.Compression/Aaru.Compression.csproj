@@ -47,6 +47,7 @@
     <Compile Include="BZip2.cs"/>
     <Compile Include="FLAC.cs"/>
     <Compile Include="HaStream.cs"/>
+    <Compile Include="LarcStream.cs" />
     <Compile Include="Lh5Stream.cs"/>
     <Compile Include="LhaStream.cs"/>
     <Compile Include="LzdStream.cs"/>
