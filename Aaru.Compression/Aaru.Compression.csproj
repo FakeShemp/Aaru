@@ -38,19 +38,19 @@
     </DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AceStream.cs" />
+    <Compile Include="AceStream.cs"/>
     <Compile Include="ADC.cs"/>
     <Compile Include="AppleRle.cs"/>
     <Compile Include="Arc\CrunchStream.cs"/>
     <Compile Include="Arc\LzwStream.cs"/>
     <Compile Include="Arc\PackStream.cs"/>
     <Compile Include="Arc\SqueezeStream.cs"/>
-    <Compile Include="ArjStream.cs" />
-    <Compile Include="ArjzStream.cs" />
+    <Compile Include="ArjStream.cs"/>
+    <Compile Include="ArjzStream.cs"/>
     <Compile Include="BZip2.cs"/>
     <Compile Include="FLAC.cs"/>
     <Compile Include="HaStream.cs"/>
-    <Compile Include="LarcStream.cs" />
+    <Compile Include="LarcStream.cs"/>
     <Compile Include="Lh5Stream.cs"/>
     <Compile Include="LhaStream.cs"/>
     <Compile Include="LzdStream.cs"/>
@@ -65,7 +65,7 @@
     <Compile Include="Native.cs"/>
     <Compile Include="Pak\CrushStream.cs"/>
     <Compile Include="Pak\DistillStream.cs"/>
-    <Compile Include="PmarcStream.cs" />
+    <Compile Include="PmarcStream.cs"/>
     <Compile Include="TeleDiskLzh.cs"/>
     <Compile Include="cuetools.net/CUETools.Codecs/*.cs"/>
     <Compile Include="cuetools.net/CUETools.Codecs/CommandLine/*.cs"/>
@@ -76,6 +76,7 @@
     <Compile Include="cuetools.net/CUETools.Codecs.Flake/*.cs"/>
     <Compile Include="cuetools.net/CUETools.Codecs.Flake/Properties/*.cs"/>
     <Compile Include="XZ.cs"/>
+    <Compile Include="Zip\ShrinkStream.cs"/>
     <Compile Include="ZSTD.cs"/>
   </ItemGroup>
   <ItemGroup>
