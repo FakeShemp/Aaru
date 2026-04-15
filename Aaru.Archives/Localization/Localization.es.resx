@@ -387,4 +387,28 @@
     <data name="ARJ_Name" xml:space="preserve">
         <value>ARJ</value>
     </data>
+    <data name="Rar_Name" xml:space="preserve">
+        <value>RAR</value>
+    </data>
+    <data name="RAR_archive" xml:space="preserve">
+        <value>[bold][blue]Archivo RAR[/][/]</value>
+    </data>
+    <data name="RAR_5_archive" xml:space="preserve">
+        <value>[bold][blue]Archivo RAR 5.0[/][/]</value>
+    </data>
+    <data name="RAR_solid_archive" xml:space="preserve">
+        <value>[slateblue1]El archivo es [green]sólido[/][/]</value>
+    </data>
+    <data name="RAR_multi_volume_archive" xml:space="preserve">
+        <value>[slateblue1]El archivo es [green]multi-volumen[/][/]</value>
+    </data>
+    <data name="RAR_locked_archive" xml:space="preserve">
+        <value>[slateblue1]El archivo está [green]bloqueado[/][/]</value>
+    </data>
+    <data name="RAR_encrypted_archive" xml:space="preserve">
+        <value>[slateblue1]El archivo está [green]cifrado[/][/]</value>
+    </data>
+    <data name="RAR_has_recovery_record" xml:space="preserve">
+        <value>[slateblue1]El archivo tiene [green]registro de recuperación[/][/]</value>
+    </data>
 </root>

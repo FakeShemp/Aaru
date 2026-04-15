@@ -788,5 +788,53 @@ namespace Aaru.Archives {
                 return ResourceManager.GetString("ARJ_Name", resourceCulture);
             }
         }
+
+        internal static string Rar_Name {
+            get {
+                return ResourceManager.GetString("Rar_Name", resourceCulture);
+            }
+        }
+
+        internal static string RAR_archive {
+            get {
+                return ResourceManager.GetString("RAR_archive", resourceCulture);
+            }
+        }
+
+        internal static string RAR_5_archive {
+            get {
+                return ResourceManager.GetString("RAR_5_archive", resourceCulture);
+            }
+        }
+
+        internal static string RAR_solid_archive {
+            get {
+                return ResourceManager.GetString("RAR_solid_archive", resourceCulture);
+            }
+        }
+
+        internal static string RAR_multi_volume_archive {
+            get {
+                return ResourceManager.GetString("RAR_multi_volume_archive", resourceCulture);
+            }
+        }
+
+        internal static string RAR_locked_archive {
+            get {
+                return ResourceManager.GetString("RAR_locked_archive", resourceCulture);
+            }
+        }
+
+        internal static string RAR_encrypted_archive {
+            get {
+                return ResourceManager.GetString("RAR_encrypted_archive", resourceCulture);
+            }
+        }
+
+        internal static string RAR_has_recovery_record {
+            get {
+                return ResourceManager.GetString("RAR_has_recovery_record", resourceCulture);
+            }
+        }
     }
 }

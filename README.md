@@ -169,6 +169,7 @@ Supported archives
 * LHA (.LZH)
 * PAK (.PAK)
 * PMARC (.PMA)
+* RAR (.RAR)
 * Symbian Installation File (.SIS)
 * Xbox 360 Secure Transacted File System (STFS)
 * ZOO (.ZOO)
