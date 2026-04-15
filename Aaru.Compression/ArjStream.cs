@@ -37,7 +37,7 @@ public partial class ArjStream : Stream
                       _ => throw new ArgumentException("Invalid method")
                   };
 
-        if(err != 0) throw new InvalidOperationException("ACE decompression failed");
+        if(err != 0) throw new InvalidOperationException("ARJ decompression failed");
 
         // Adjust actual length in case it differs
         _length   = outLen;
