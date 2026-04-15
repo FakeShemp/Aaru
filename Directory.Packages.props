@@ -1,12 +1,12 @@
 <Project>
   <ItemGroup>
     <PackageVersion Include="Aaru.Checksums.Native" Version="6.0.0-alpha.11"/>
-    <PackageVersion Include="Aaru.Compression.Native" Version="6.0.0-alpha.14"/>
+    <PackageVersion Include="Aaru.Compression.Native" Version="6.0.0-alpha.15"/>
     <PackageVersion Include="AsyncFixer" Version="2.1.0"/>
-    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="12.0.0"/>
-    <PackageVersion Include="Avalonia.Desktop" Version="12.0.0"/>
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.0.0"/>
-    <PackageVersion Include="Avalonia" Version="12.0.0"/>
+    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.3.13"/>
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.14"/>
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.14"/>
+    <PackageVersion Include="Avalonia" Version="11.3.14"/>
     <PackageVersion Include="Claunia.Encoding" Version="1.9.2"/>
     <PackageVersion Include="Claunia.RsrcFork" Version="1.2.0"/>
     <PackageVersion Include="Consolonia" Version="11.3.7-beta.1773"/>
@@ -15,7 +15,7 @@
     <PackageVersion Include="ErrorProne.NET.Structs" Version="0.1.2"/>
     <PackageVersion Include="FluentAssertions.Analyzers" Version="0.34.1"/>
     <PackageVersion Include="FluentAssertions" Version="8.9.0"/>
-    <PackageVersion Include="FluentIcons.Avalonia" Version="2.1.323"/>
+    <PackageVersion Include="FluentIcons.Avalonia" Version="2.0.321"/>
     <PackageVersion Include="Humanizer.Core" Version="3.0.10"/>
     <PackageVersion Include="Humanizer" Version="3.0.10"/>
     <PackageVersion Include="JetBrains.Annotations" Version="2025.2.4"/>
@@ -49,14 +49,14 @@
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0"/>
     <PackageVersion Include="Serilog.Sinks.Spectre" Version="0.5.0"/>
     <PackageVersion Include="SharpCompress" Version="0.47.4"/>
-    <PackageVersion Include="SkiaSharp" Version="3.119.3-preview.1.1"/>
-    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="3.119.3-preview.1.1" Condition="$([MSBuild]::IsOSPlatform('Linux'))"/>
+    <PackageVersion Include="SkiaSharp" Version="3.119.1"/>
+    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="3.119.1" Condition="$([MSBuild]::IsOSPlatform('Linux'))"/>
     <PackageVersion Include="SmartAnalyzers.MultithreadingAnalyzer" Version="1.1.31"/>
     <PackageVersion Include="Spectre.Console.Analyzer" Version="1.0.0"/>
     <PackageVersion Include="Spectre.Console" Version="0.55.0"/>
     <PackageVersion Include="Spectre.Console.Cli" Version="0.55.0"/>
     <PackageVersion Include="Spectre.Console.Json" Version="0.55.0"/>
-    <PackageVersion Include="Svg.Controls.Avalonia" Version="12.0.0.2"/>
+    <PackageVersion Include="Svg.Controls.Avalonia" Version="11.3.9.5"/>
     <PackageVersion Include="System.Collections" Version="4.3.0"/>
     <PackageVersion Include="System.ComponentModel.Annotations" Version="6.0.0-preview.4.21253.7"/>
     <PackageVersion Include="System.Diagnostics.Debug" Version="4.3.0"/>
