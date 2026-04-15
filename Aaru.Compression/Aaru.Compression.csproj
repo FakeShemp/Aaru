@@ -62,6 +62,7 @@
     <Compile Include="Native.cs"/>
     <Compile Include="Pak\CrushStream.cs"/>
     <Compile Include="Pak\DistillStream.cs"/>
+    <Compile Include="PmarcStream.cs" />
     <Compile Include="TeleDiskLzh.cs"/>
     <Compile Include="cuetools.net/CUETools.Codecs/*.cs"/>
     <Compile Include="cuetools.net/CUETools.Codecs/CommandLine/*.cs"/>
