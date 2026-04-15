@@ -45,6 +45,7 @@
     <Compile Include="Arc\LzwStream.cs"/>
     <Compile Include="Arc\PackStream.cs"/>
     <Compile Include="Arc\SqueezeStream.cs"/>
+    <Compile Include="ArjStream.cs" />
     <Compile Include="BZip2.cs"/>
     <Compile Include="FLAC.cs"/>
     <Compile Include="HaStream.cs"/>
