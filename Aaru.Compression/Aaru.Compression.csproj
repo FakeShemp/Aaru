@@ -76,6 +76,7 @@
     <Compile Include="cuetools.net/CUETools.Codecs.Flake/*.cs"/>
     <Compile Include="cuetools.net/CUETools.Codecs.Flake/Properties/*.cs"/>
     <Compile Include="XZ.cs"/>
+    <Compile Include="Zip\Deflate64Stream.cs" />
     <Compile Include="Zip\ImplodeStream.cs"/>
     <Compile Include="Zip\ReduceStream.cs"/>
     <Compile Include="Zip\ShrinkStream.cs"/>
