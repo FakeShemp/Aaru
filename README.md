@@ -161,6 +161,8 @@ Supported archives
 
 * ACE (.ACE)
 * ARC (.ARC)
+* ARJ (.ARJ)
+* ARJZ (.ARZ)
 * Expert Witness Format (EWF)
 * HA (.HA)
 * LARC (.LZS)

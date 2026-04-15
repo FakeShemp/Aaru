@@ -389,4 +389,10 @@
     <data name="ACE_volume_number_0" xml:space="preserve">
         <value>[slateblue1]Volume number: [green]{0}[/][/]</value>
     </data>
+    <data name="ARJ_archive" xml:space="preserve">
+        <value>[bold][blue]ARJ archive[/][/]</value>
+    </data>
+    <data name="ARJ_Name" xml:space="preserve">
+        <value>ARJ</value>
+    </data>
 </root>
