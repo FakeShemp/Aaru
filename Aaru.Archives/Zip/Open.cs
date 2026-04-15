@@ -1,6 +1,8 @@
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -513,6 +515,31 @@ public sealed partial class Zip
                     break;
                 }
 
+                case EXTRA_UNICODE_COMMENT when extSize >= 6:
+                {
+                    byte ucVersion = reader.ReadByte();
+
+                    if(ucVersion == 1)
+                    {
+                        reader.ReadUInt32(); // CRC32 of original comment
+
+                        int ucLen = extSize - 5;
+
+                        if(ucLen > 0)
+                        {
+                            byte[] ucBytes = reader.ReadBytes(ucLen);
+
+                            int trimLen = ucLen;
+
+                            while(trimLen > 0 && ucBytes[trimLen - 1] == 0) trimLen--;
+
+                            if(trimLen > 0) entry.UnicodeComment = Encoding.UTF8.GetString(ucBytes, 0, trimLen);
+                        }
+                    }
+
+                    break;
+                }
+
                 case EXTRA_WINZIP_AES when extSize >= 7:
                 {
                     ushort aesVersion = reader.ReadUInt16();
@@ -527,6 +554,451 @@ public sealed partial class Zip
 
                     break;
                 }
+
+                case EXTRA_NTFS when extSize >= 8:
+                {
+                    reader.ReadUInt32(); // reserved
+
+                    long tagEnd = nextExtra;
+
+                    while(_stream.Position + 4 <= tagEnd)
+                    {
+                        ushort tag     = reader.ReadUInt16();
+                        ushort tagSize = reader.ReadUInt16();
+
+                        if(_stream.Position + tagSize > tagEnd) break;
+
+                        if(tag == 0x0001 && tagSize >= 24)
+                        {
+                            long mtime = reader.ReadInt64();
+                            long atime = reader.ReadInt64();
+                            long ctime = reader.ReadInt64();
+
+                            try
+                            {
+                                entry.LastWriteTime  = DateTime.FromFileTimeUtc(mtime);
+                                entry.LastAccessTime = DateTime.FromFileTimeUtc(atime);
+                                entry.CreationTime   = DateTime.FromFileTimeUtc(ctime);
+                            }
+                            catch(ArgumentOutOfRangeException)
+                            {
+                                // Invalid FILETIME values
+                            }
+                        }
+                        else
+                            _stream.Position += tagSize;
+                    }
+
+                    break;
+                }
+
+                case EXTRA_PKWARE_UNIX when extSize >= 12:
+                {
+                    entry.LastAccessTime = DateTimeOffset.FromUnixTimeSeconds(reader.ReadInt32()).DateTime;
+                    entry.LastWriteTime  = DateTimeOffset.FromUnixTimeSeconds(reader.ReadInt32()).DateTime;
+                    entry.Uid            = reader.ReadUInt16();
+                    entry.Gid            = reader.ReadUInt16();
+
+                    int remaining = extSize - 12;
+
+                    if(remaining > 0)
+                    {
+                        // Determine if symlink or device from Unix mode in external attributes
+                        var fileType = (ushort)(entry.UnixPermissions & S_IFMT);
+
+                        if(fileType == S_IFLNK && remaining > 0)
+                        {
+                            byte[] linkTarget = reader.ReadBytes(remaining);
+                            entry.SymlinkTarget = Encoding.UTF8.GetString(linkTarget);
+                            entry.IsSymlink     = true;
+                        }
+                        else if((fileType == S_IFBLK || fileType == S_IFCHR) && remaining >= 8)
+                        {
+                            uint major = reader.ReadUInt32();
+                            uint minor = reader.ReadUInt32();
+                            entry.DeviceNo = (ulong)major << 32 | minor;
+                        }
+                    }
+
+                    break;
+                }
+
+                case EXTRA_ASI_UNIX when extSize >= 12:
+                {
+                    reader.ReadUInt32(); // CRC32
+
+                    ushort mode   = reader.ReadUInt16();
+                    uint   sizDev = reader.ReadUInt32();
+                    entry.Uid = reader.ReadUInt16();
+                    entry.Gid = reader.ReadUInt16();
+
+                    entry.UnixPermissions = mode;
+
+                    var fileType = (ushort)(mode & S_IFMT);
+
+                    if(fileType == S_IFLNK)
+                    {
+                        int linkLen = extSize - 12;
+
+                        if(linkLen > 0)
+                        {
+                            byte[] linkTarget = reader.ReadBytes(linkLen);
+                            entry.SymlinkTarget = Encoding.UTF8.GetString(linkTarget);
+                        }
+
+                        entry.IsSymlink = true;
+                    }
+                    else if(fileType == S_IFBLK || fileType == S_IFCHR) entry.DeviceNo = sizDev;
+
+                    break;
+                }
+
+                case EXTRA_MAC_OLD when extSize >= 30:
+                {
+                    byte[] sigBytes = reader.ReadBytes(4);
+                    uint   macSig   = BinaryPrimitives.ReadUInt32BigEndian(sigBytes);
+
+                    // "JLEE" in big-endian = 0x4A4C4545
+                    if(macSig == 0x4A4C4545)
+                    {
+                        byte[] finfo = reader.ReadBytes(16);
+
+                        byte[] crDatBytes = reader.ReadBytes(4);
+                        byte[] mdDatBytes = reader.ReadBytes(4);
+                        uint   crDat      = BinaryPrimitives.ReadUInt32BigEndian(crDatBytes);
+                        uint   mdDat      = BinaryPrimitives.ReadUInt32BigEndian(mdDatBytes);
+
+                        byte[] flagsBytes = reader.ReadBytes(4);
+                        uint   macFlags   = BinaryPrimitives.ReadUInt32BigEndian(flagsBytes);
+
+                        if(crDat != 0) entry.CreationTime  = _macEpoch.AddSeconds(crDat);
+                        if(mdDat != 0) entry.LastWriteTime = _macEpoch.AddSeconds(mdDat);
+
+                        // FinderInfo: 16-byte FInfo (pad to 32 bytes with zeros for FXInfo)
+                        entry.FinderInfo = new byte[32];
+                        Array.Copy(finfo, 0, entry.FinderInfo, 0, 16);
+
+                        // Extract file type and creator from FInfo (big-endian)
+                        if(finfo[0] != 0 || finfo[1] != 0 || finfo[2] != 0 || finfo[3] != 0)
+                            entry.MacFileType = Encoding.ASCII.GetString(finfo, 0, 4);
+
+                        if(finfo[4] != 0 || finfo[5] != 0 || finfo[6] != 0 || finfo[7] != 0)
+                            entry.MacCreator = Encoding.ASCII.GetString(finfo, 4, 4);
+
+                        // Bit 0 of flags: 1=data fork, 0=resource fork
+                        if((macFlags & 1) == 0)
+                        {
+                            // This entry is a resource fork — store the entire file data as resource fork
+                            // The resource fork data is in the main file entry data, not in this extra field
+                            // Mark it via the FinderInfo; actual data extraction handled by GetEntry
+                        }
+                    }
+
+                    break;
+                }
+
+                case EXTRA_ZIPIT_MAC1 when extSize >= 9:
+                {
+                    byte[] sigBytes = reader.ReadBytes(4);
+                    uint   zpitSig  = BinaryPrimitives.ReadUInt32BigEndian(sigBytes);
+
+                    // "ZPIT" = 0x5A504954
+                    if(zpitSig == 0x5A504954)
+                    {
+                        byte fnLen = reader.ReadByte();
+
+                        if(fnLen > 0 && _stream.Position + fnLen <= nextExtra) reader.ReadBytes(fnLen); // skip filename
+
+                        if(_stream.Position + 8 <= nextExtra)
+                        {
+                            byte[] ftBytes = reader.ReadBytes(4);
+                            byte[] crBytes = reader.ReadBytes(4);
+
+                            if(ftBytes[0] != 0 || ftBytes[1] != 0 || ftBytes[2] != 0 || ftBytes[3] != 0)
+                                entry.MacFileType = Encoding.ASCII.GetString(ftBytes);
+
+                            if(crBytes[0] != 0 || crBytes[1] != 0 || crBytes[2] != 0 || crBytes[3] != 0)
+                                entry.MacCreator = Encoding.ASCII.GetString(crBytes);
+                        }
+                    }
+
+                    break;
+                }
+
+                case EXTRA_ZIPIT_MAC2 when extSize >= 12:
+                {
+                    byte[] sigBytes = reader.ReadBytes(4);
+                    uint   zpitSig  = BinaryPrimitives.ReadUInt32BigEndian(sigBytes);
+
+                    // "ZPIT" = 0x5A504954
+                    if(zpitSig == 0x5A504954)
+                    {
+                        byte[] ftBytes = reader.ReadBytes(4);
+                        byte[] crBytes = reader.ReadBytes(4);
+
+                        if(ftBytes[0] != 0 || ftBytes[1] != 0 || ftBytes[2] != 0 || ftBytes[3] != 0)
+                            entry.MacFileType = Encoding.ASCII.GetString(ftBytes);
+
+                        if(crBytes[0] != 0 || crBytes[1] != 0 || crBytes[2] != 0 || crBytes[3] != 0)
+                            entry.MacCreator = Encoding.ASCII.GetString(crBytes);
+                    }
+
+                    break;
+                }
+
+                case EXTRA_MAC_NEW when extSize >= 14:
+                {
+                    uint   bSize   = reader.ReadUInt32();
+                    ushort mFlags  = reader.ReadUInt16();
+                    byte[] ftBytes = reader.ReadBytes(4);
+                    byte[] crBytes = reader.ReadBytes(4);
+
+                    if(ftBytes[0] != 0 || ftBytes[1] != 0 || ftBytes[2] != 0 || ftBytes[3] != 0)
+                        entry.MacFileType = Encoding.ASCII.GetString(ftBytes);
+
+                    if(crBytes[0] != 0 || crBytes[1] != 0 || crBytes[2] != 0 || crBytes[3] != 0)
+                        entry.MacCreator = Encoding.ASCII.GetString(crBytes);
+
+                    // Parse local header attributes if present
+                    if(extSize > 14)
+                    {
+                        bool uncompressed = (mFlags & 0x04) != 0;
+
+                        byte[] attribData;
+
+                        if(uncompressed)
+                        {
+                            var attribLen = (int)(nextExtra - _stream.Position);
+
+                            if(attribLen > 0)
+                                attribData = reader.ReadBytes(attribLen);
+                            else
+                                attribData = null;
+                        }
+                        else if(_stream.Position + 6 <= nextExtra)
+                        {
+                            ushort cType     = reader.ReadUInt16();
+                            uint   attribCrc = reader.ReadUInt32();
+
+                            var compLen = (int)(nextExtra - _stream.Position);
+
+                            if(compLen > 0 && bSize > 0)
+                                attribData = DecompressExtraFieldData(reader.ReadBytes(compLen), bSize, cType);
+                            else
+                                attribData = null;
+                        }
+                        else
+                            attribData = null;
+
+                        if(attribData is not null && attribData.Length >= 30)
+                            ParseMac3Attributes(attribData, mFlags, ref entry);
+                    }
+
+                    break;
+                }
+
+                case EXTRA_SMARTZIP_MAC when extSize >= 64:
+                {
+                    byte[] sigBytes = reader.ReadBytes(4);
+                    uint   smartSig = BinaryPrimitives.ReadUInt32BigEndian(sigBytes);
+
+                    // "dZip" = 0x645A6970
+                    if(smartSig == 0x645A6970)
+                    {
+                        byte[] ftBytes = reader.ReadBytes(4);
+                        byte[] crBytes = reader.ReadBytes(4);
+
+                        if(ftBytes[0] != 0 || ftBytes[1] != 0 || ftBytes[2] != 0 || ftBytes[3] != 0)
+                            entry.MacFileType = Encoding.ASCII.GetString(ftBytes);
+
+                        if(crBytes[0] != 0 || crBytes[1] != 0 || crBytes[2] != 0 || crBytes[3] != 0)
+                            entry.MacCreator = Encoding.ASCII.GetString(crBytes);
+
+                        // Rest is big-endian finder flags, location, folder, timestamps, filename
+                        // Build partial FinderInfo from available data
+                        byte[] fdFlagsBytes = reader.ReadBytes(2);
+                        byte[] fdLocV       = reader.ReadBytes(2);
+                        byte[] fdLocH       = reader.ReadBytes(2);
+                        byte[] fdFldr       = reader.ReadBytes(2);
+
+                        byte[] crDatBytes = reader.ReadBytes(4);
+                        byte[] mdDatBytes = reader.ReadBytes(4);
+                        uint   crDat      = BinaryPrimitives.ReadUInt32BigEndian(crDatBytes);
+                        uint   mdDat      = BinaryPrimitives.ReadUInt32BigEndian(mdDatBytes);
+
+                        if(crDat != 0) entry.CreationTime  = _macEpoch.AddSeconds(crDat);
+                        if(mdDat != 0) entry.LastWriteTime = _macEpoch.AddSeconds(mdDat);
+
+                        // Build 32-byte FinderInfo: FInfo(16) + FXInfo(16)
+                        entry.FinderInfo = new byte[32];
+
+                        // FInfo: fdType(4) + fdCreator(4) + fdFlags(2) + fdLocation(4) + fdFldr(2)
+                        Array.Copy(ftBytes,      0, entry.FinderInfo, 0,  4);
+                        Array.Copy(crBytes,      0, entry.FinderInfo, 4,  4);
+                        Array.Copy(fdFlagsBytes, 0, entry.FinderInfo, 8,  2);
+                        Array.Copy(fdLocV,       0, entry.FinderInfo, 10, 2);
+                        Array.Copy(fdLocH,       0, entry.FinderInfo, 12, 2);
+                        Array.Copy(fdFldr,       0, entry.FinderInfo, 14, 2);
+                    }
+
+                    break;
+                }
+
+                case EXTRA_OS2_EA when extSize >= 10:
+                {
+                    uint   bSize   = reader.ReadUInt32();
+                    ushort cType   = reader.ReadUInt16();
+                    uint   eaCrc   = reader.ReadUInt32();
+                    var    compLen = (int)(nextExtra - _stream.Position);
+
+                    if(compLen > 0 && bSize > 0)
+                    {
+                        byte[] eaData = DecompressExtraFieldData(reader.ReadBytes(compLen), bSize, cType);
+
+                        if(eaData is not null) entry.Os2Eas = ParseFea2List(eaData);
+                    }
+
+                    break;
+                }
+
+                case EXTRA_OS2_ACL when extSize >= 10:
+                {
+                    uint   bSize   = reader.ReadUInt32();
+                    ushort cType   = reader.ReadUInt16();
+                    uint   aclCrc  = reader.ReadUInt32();
+                    var    compLen = (int)(nextExtra - _stream.Position);
+
+                    if(compLen > 0 && bSize > 0)
+                        entry.Os2Acl = DecompressExtraFieldData(reader.ReadBytes(compLen), bSize, cType);
+
+                    break;
+                }
+
+                case EXTRA_NTSD when extSize >= 11:
+                {
+                    uint   bSize   = reader.ReadUInt32();
+                    byte   version = reader.ReadByte();
+                    ushort cType   = reader.ReadUInt16();
+                    uint   sdCrc   = reader.ReadUInt32();
+                    var    compLen = (int)(nextExtra - _stream.Position);
+
+                    if(version == 0 && compLen > 0 && bSize > 0)
+                        entry.NtSecurityDescriptor = DecompressExtraFieldData(reader.ReadBytes(compLen), bSize, cType);
+
+                    break;
+                }
+
+                case EXTRA_BEOS when extSize >= 5:
+                {
+                    uint bSize = reader.ReadUInt32();
+                    byte flags = reader.ReadByte();
+
+                    byte[] attribData;
+
+                    if((flags & 1) != 0)
+                    {
+                        // Uncompressed
+                        var dataLen = (int)(nextExtra - _stream.Position);
+
+                        attribData = dataLen > 0 ? reader.ReadBytes(dataLen) : null;
+                    }
+                    else if(_stream.Position + 6 <= nextExtra)
+                    {
+                        ushort cType   = reader.ReadUInt16();
+                        uint   beCrc   = reader.ReadUInt32();
+                        var    compLen = (int)(nextExtra - _stream.Position);
+
+                        if(compLen > 0 && bSize > 0)
+                            attribData = DecompressExtraFieldData(reader.ReadBytes(compLen), bSize, cType);
+                        else
+                            attribData = null;
+                    }
+                    else
+                        attribData = null;
+
+                    if(attribData is not null) entry.BeOsAttributes = ParseBeOsAttributes(attribData);
+
+                    break;
+                }
+
+                case EXTRA_ACORN when extSize >= 16:
+                {
+                    byte[] sigBytes = reader.ReadBytes(4);
+
+                    // "ARC0" = 0x41524330
+                    if(sigBytes[0] == 0x41 && sigBytes[1] == 0x52 && sigBytes[2] == 0x43 && sigBytes[3] == 0x30)
+                    {
+                        entry.AcornLoadAddr = reader.ReadBytes(4);
+                        entry.AcornExecAddr = reader.ReadBytes(4);
+                        entry.AcornAttr     = reader.ReadBytes(4);
+
+                        // skip Zero field (4 bytes)
+                    }
+
+                    break;
+                }
+
+                case EXTRA_OPENVMS when extSize >= 4:
+                {
+                    entry.OpenVmsAttributes = reader.ReadBytes(extSize);
+
+                    break;
+                }
+
+                case EXTRA_FWKCS_MD5 when extSize >= 19:
+                {
+                    byte[] sig = reader.ReadBytes(3);
+
+                    // "MD5"
+                    if(sig[0] == 0x4D && sig[1] == 0x44 && sig[2] == 0x35) entry.Md5Hash = reader.ReadBytes(16);
+
+                    break;
+                }
+
+                case EXTRA_S390_UNCOMP when extSize > 0:
+                    entry.S390Attributes = reader.ReadBytes(extSize);
+
+                    break;
+
+                case EXTRA_S390_COMP when extSize > 0:
+                    entry.S390Attributes = reader.ReadBytes(extSize);
+
+                    break;
+
+                case EXTRA_VM_CMS when extSize > 0:
+                    entry.VmCmsAttributes = reader.ReadBytes(extSize);
+
+                    break;
+
+                case EXTRA_MVS when extSize > 0:
+                    entry.MvsAttributes = reader.ReadBytes(extSize);
+
+                    break;
+
+                case EXTRA_THEOS_OLD when extSize > 0:
+                    entry.TheosAttributes = reader.ReadBytes(extSize);
+
+                    break;
+
+                case EXTRA_THEOS when extSize > 0:
+                    entry.TheosAttributes = reader.ReadBytes(extSize);
+
+                    break;
+
+                case EXTRA_QDOS when extSize > 0:
+                    entry.QdosAttributes = reader.ReadBytes(extSize);
+
+                    break;
+
+                case EXTRA_TANDEM when extSize > 0:
+                    entry.TandemAttributes = reader.ReadBytes(extSize);
+
+                    break;
+
+                case EXTRA_AOS_VS when extSize > 0:
+                    entry.AosVsAttributes = reader.ReadBytes(extSize);
+
+                    break;
             }
 
             _stream.Position = nextExtra;
@@ -534,6 +1006,252 @@ public sealed partial class Zip
 
         _stream.Position = end;
     }
+
+    static byte[] DecompressExtraFieldData(byte[] compressedData, uint uncompressedSize, ushort compressionType)
+    {
+        if(compressedData is null || compressedData.Length == 0) return null;
+
+        if(compressionType == 0) return compressedData;
+
+        if(compressionType != 8) return null; // Only Deflate supported for extra field sub-compression
+
+        try
+        {
+            var output = new byte[uncompressedSize];
+
+            using(var ms = new MemoryStream(compressedData))
+            {
+                using(var deflate = new DeflateStream(ms, CompressionMode.Decompress))
+                {
+                    var totalRead = 0;
+
+                    while(totalRead < output.Length)
+                    {
+                        int bytesRead = deflate.Read(output, totalRead, output.Length - totalRead);
+
+                        if(bytesRead == 0) break;
+
+                        totalRead += bytesRead;
+                    }
+                }
+            }
+
+            return output;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    static Dictionary<string, byte[]> ParseFea2List(byte[] eaData)
+    {
+        if(eaData is null || eaData.Length < 4) return null;
+
+        Dictionary<string, byte[]> eas = new();
+
+        var pos = 4; // Skip cbList (4 bytes)
+
+        while(pos + 8 <= eaData.Length) // Minimum FEA2: oNextEntryOffset(4) + fEA(1) + cbName(1) + cbValue(2) = 8
+        {
+            var oNext = BitConverter.ToUInt32(eaData, pos);
+
+            int entryStart = pos;
+
+            pos += 4; // oNextEntryOffset
+            pos++;    // fEA (flags)
+
+            byte cbName = eaData[pos++];
+
+            var cbValue = BitConverter.ToUInt16(eaData, pos);
+            pos += 2;
+
+            if(pos + cbName >= eaData.Length) break;
+
+            string name = Encoding.ASCII.GetString(eaData, pos, cbName);
+            pos += cbName;
+            pos++; // null terminator
+
+            if(pos + cbValue > eaData.Length) break;
+
+            var data = new byte[cbValue];
+
+            if(cbValue > 0) Array.Copy(eaData, pos, data, 0, cbValue);
+
+            // OS/2 system attribute name normalization (consistent with FAT/HPFS plugins)
+            if(name.Length > 0 && name[0] == '.')
+                name = name == ".CLASSINFO" ? "com.ibm.os2.classinfo" : "com.microsoft.os2" + name.ToLower();
+
+            eas[name] = data;
+
+            // Navigate to next entry
+            if(oNext == 0) break; // Last entry
+
+            pos = entryStart + (int)oNext;
+        }
+
+        return eas.Count > 0 ? eas : null;
+    }
+
+    static Dictionary<string, byte[]> ParseBeOsAttributes(byte[] data)
+    {
+        if(data is null || data.Length < 1) return null;
+
+        Dictionary<string, byte[]> attrs = new();
+
+        var pos = 0;
+
+        while(pos < data.Length)
+        {
+            // Find null-terminated attribute name
+            int nameStart = pos;
+
+            while(pos < data.Length && data[pos] != 0) pos++;
+
+            if(pos >= data.Length) break;
+
+            string name = Encoding.UTF8.GetString(data, nameStart, pos - nameStart);
+            pos++; // skip null terminator
+
+            if(pos + 12 > data.Length) break; // Need at least Type(4) + Size(8)
+
+            // Type (4 bytes, big-endian) — stored but not used for naming
+            pos += 4;
+
+            // Size (8 bytes, big-endian)
+            ulong size = BinaryPrimitives.ReadUInt64BigEndian(data.AsSpan(pos));
+            pos += 8;
+
+            if(size > (ulong)(data.Length - pos)) break;
+
+            var attrData = new byte[size];
+
+            if(size > 0) Array.Copy(data, pos, attrData, 0, (int)size);
+
+            pos += (int)size;
+
+            if(name.Length > 0) attrs[name] = attrData;
+        }
+
+        return attrs.Count > 0 ? attrs : null;
+    }
+
+    void ParseMac3Attributes(byte[] data, ushort mFlags, ref Entry entry)
+    {
+        if(data is null || data.Length < 30) return;
+
+        var pos = 0;
+
+        // fdFlags (2 bytes LE)
+        var fdFlags = BitConverter.ToUInt16(data, pos);
+        pos += 2;
+
+        // fdLocation.v (2), fdLocation.h (2)
+        var fdLocV = new byte[2];
+        var fdLocH = new byte[2];
+        Array.Copy(data, pos, fdLocV, 0, 2);
+        pos += 2;
+        Array.Copy(data, pos, fdLocH, 0, 2);
+        pos += 2;
+
+        // fdFldr (2)
+        var fdFldr = new byte[2];
+        Array.Copy(data, pos, fdFldr, 0, 2);
+        pos += 2;
+
+        // FXInfo (16 bytes)
+        var fxInfo = new byte[16];
+        Array.Copy(data, pos, fxInfo, 0, 16);
+        pos += 16;
+
+        pos++; // FVersNum
+        pos++; // ACUser
+
+        // Timestamps (4 bytes each, Mac local time)
+        if(pos + 12 > data.Length) return;
+
+        var flCrDat = BitConverter.ToUInt32(data, pos);
+        pos += 4;
+        var flMdDat = BitConverter.ToUInt32(data, pos);
+        pos += 4;
+        var flBkDat = BitConverter.ToUInt32(data, pos);
+        pos += 4;
+
+        bool hasTimezones = (mFlags & 0x10) == 0;
+
+        int crGmtOff = 0, mdGmtOff = 0, bkGmtOff = 0;
+
+        if(hasTimezones && pos + 12 <= data.Length)
+        {
+            crGmtOff =  BitConverter.ToInt32(data, pos);
+            pos      += 4;
+            mdGmtOff =  BitConverter.ToInt32(data, pos);
+            pos      += 4;
+            bkGmtOff =  BitConverter.ToInt32(data, pos);
+            pos      += 4;
+        }
+
+        if(flCrDat != 0)
+        {
+            DateTime crLocal = _macEpoch.AddSeconds(flCrDat);
+            entry.CreationTime = hasTimezones ? crLocal.AddSeconds(-crGmtOff) : crLocal;
+        }
+
+        if(flMdDat != 0)
+        {
+            DateTime mdLocal = _macEpoch.AddSeconds(flMdDat);
+            entry.LastWriteTime = hasTimezones ? mdLocal.AddSeconds(-mdGmtOff) : mdLocal;
+        }
+
+        if(flBkDat != 0)
+        {
+            DateTime bkLocal = _macEpoch.AddSeconds(flBkDat);
+            entry.BackupTime = hasTimezones ? bkLocal.AddSeconds(-bkGmtOff) : bkLocal;
+        }
+
+        // Build 32-byte FinderInfo: FInfo(16) + FXInfo(16)
+        entry.FinderInfo = new byte[32];
+
+        // FInfo: fdType(4) + fdCreator(4) already in entry.MacFileType/MacCreator
+        if(entry.MacFileType is not null) Encoding.ASCII.GetBytes(entry.MacFileType, 0, 4, entry.FinderInfo, 0);
+
+        if(entry.MacCreator is not null) Encoding.ASCII.GetBytes(entry.MacCreator, 0, 4, entry.FinderInfo, 4);
+
+        // fdFlags at offset 8 in FInfo
+        entry.FinderInfo[8] = (byte)(fdFlags >> 8);
+        entry.FinderInfo[9] = (byte)(fdFlags & 0xFF);
+
+        // fdLocation at offset 10
+        Array.Copy(fdLocV, 0, entry.FinderInfo, 10, 2);
+        Array.Copy(fdLocH, 0, entry.FinderInfo, 12, 2);
+
+        // fdFldr at offset 14
+        Array.Copy(fdFldr, 0, entry.FinderInfo, 14, 2);
+
+        // FXInfo at offset 16
+        Array.Copy(fxInfo, 0, entry.FinderInfo, 16, 16);
+    }
+
+    static bool EntryHasXattrs(Entry entry) => entry.Comment is not null              ||
+                                               entry.UnicodeComment is not null       ||
+                                               entry.ResourceFork is not null         ||
+                                               entry.FinderInfo is not null           ||
+                                               entry.MacFileType is not null          ||
+                                               entry.MacCreator is not null           ||
+                                               entry.NtSecurityDescriptor is not null ||
+                                               entry.Os2Eas is not null               ||
+                                               entry.Os2Acl is not null               ||
+                                               entry.BeOsAttributes is not null       ||
+                                               entry.AcornLoadAddr is not null        ||
+                                               entry.OpenVmsAttributes is not null    ||
+                                               entry.Md5Hash is not null              ||
+                                               entry.S390Attributes is not null       ||
+                                               entry.VmCmsAttributes is not null      ||
+                                               entry.MvsAttributes is not null        ||
+                                               entry.TheosAttributes is not null      ||
+                                               entry.QdosAttributes is not null       ||
+                                               entry.TandemAttributes is not null     ||
+                                               entry.AosVsAttributes is not null;
 
     void FindDataDescriptor(BinaryReader reader, ref Entry entry)
     {
@@ -698,7 +1416,7 @@ public sealed partial class Zip
 
             if(entry.LastWriteTime != default(DateTime)) _features |= ArchiveSupportedFeature.HasEntryTimestamp;
 
-            if(entry.Comment is not null) _features |= ArchiveSupportedFeature.SupportsXAttrs;
+            if(EntryHasXattrs(entry)) _features |= ArchiveSupportedFeature.SupportsXAttrs;
 
             if(entry.IsEncrypted) _features |= ArchiveSupportedFeature.SupportsProtection;
         }

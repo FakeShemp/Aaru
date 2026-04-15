@@ -97,9 +97,22 @@ public sealed partial class Zip
 
         Entry entry = _entries[entryNumber];
 
+        FileAttributes attrs = entry.IsDirectory ? FileAttributes.Directory : FileAttributes.File;
+
+        if(entry.IsSymlink) attrs |= FileAttributes.Symlink;
+
+        if(entry.UnixPermissions != 0)
+        {
+            var fileType = (ushort)(entry.UnixPermissions & S_IFMT);
+
+            if(fileType == S_IFBLK) attrs |= FileAttributes.BlockDevice;
+
+            if(fileType == S_IFCHR) attrs |= FileAttributes.CharDevice;
+        }
+
         stat = new FileEntryInfo
         {
-            Attributes       = entry.IsDirectory ? FileAttributes.Directory : FileAttributes.File,
+            Attributes       = attrs,
             Blocks           = entry.UncompressedSize / 512,
             BlockSize        = 512,
             Length           = entry.UncompressedSize,
@@ -109,6 +122,16 @@ public sealed partial class Zip
         if(entry.LastAccessTime != default(DateTime)) stat.AccessTimeUtc = entry.LastAccessTime.ToUniversalTime();
 
         if(entry.CreationTime != default(DateTime)) stat.CreationTimeUtc = entry.CreationTime.ToUniversalTime();
+
+        if(entry.BackupTime != default(DateTime)) stat.BackupTimeUtc = entry.BackupTime.ToUniversalTime();
+
+        if(entry.Uid != 0) stat.UID = entry.Uid;
+
+        if(entry.Gid != 0) stat.GID = entry.Gid;
+
+        if(entry.UnixPermissions != 0) stat.Mode = entry.UnixPermissions;
+
+        if(entry.DeviceNo.HasValue) stat.DeviceNo = entry.DeviceNo.Value;
 
         if(entry.UncompressedSize % 512 != 0) stat.Blocks++;
 
