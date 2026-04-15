@@ -1,4 +1,4 @@
-// /***************************************************************************
+﻿// /***************************************************************************
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
@@ -80,6 +80,7 @@ partial class Dump
         var                containsFloppyPage = false;
         const ushort       sbcProfile = 0x0001;
         const uint         DvdLeadinSectors = 4096; // Usable Lead-in before LBA 0 per DVD spec (PSN 0x02F000–0x02FFFF)
+        const uint         BdFallbackNegativeSectors = 4832 * 32; // Usable lead-in clusters before LBA 0 per BD spec
         double             totalDuration = 0;
         double             currentSpeed = 0;
         double             maxSpeed = double.MinValue;
@@ -237,7 +238,7 @@ partial class Dump
                 break;
         }
 
-        if(scsiReader.FindReadCommand())
+        if(scsiReader.FindReadCommand(dskType))
         {
             AaruLogging.WriteLine(Localization.Core.ERROR_Cannot_find_correct_read_command_0, scsiReader.ErrorMessage);
             StoppingErrorMessage?.Invoke(Localization.Core.Unable_to_read_medium);
@@ -327,7 +328,7 @@ partial class Dump
                 scsiReader.otp = decodedPfi?.TrackPath ?? false;
 
                 if(scsiReader.HldtstReadRaw) blocksToRead    = 1;
-                if(scsiReader.OmniDriveReadRaw) blocksToRead = 31;
+                if(scsiReader.OmniDriveReadRaw) blocksToRead = scsiReader.OmniDriveReadRawBluray ? 7u : 31u;
 
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_raw_bytes_1_cooked_bytes_per_sector,
                                                    longBlockSize,
@@ -442,7 +443,8 @@ partial class Dump
                 mediaTags.TryGetValue(MediaTagType.BD_DI, out byte[] di);
                 DI.DiscInformation? decodedDi = DI.Decode(di);
 
-                if(decodedDi.HasValue) nominalNegativeSectors = decodedDi.Value.Units[0].FirstAun;
+                if(scsiReader.OmniDriveReadRawBluray)
+                    nominalNegativeSectors = BdFallbackNegativeSectors;
 
                 sense = _dev.ReadDiscInformation(out byte[] readBuffer,
                                                  out _,
@@ -871,35 +873,53 @@ partial class Dump
 
             if(scsiReader.HldtstReadRaw || scsiReader.ReadBuffer3CReadRaw || scsiReader.OmniDriveReadRaw)
             {
-                uint nominalForRawDvd  = 0;
-                uint overflowForRawDvd = 0;
+                uint nominalForRaw  = 0;
+                uint overflowForRaw = 0;
 
                 if(scsiReader.OmniDriveReadRaw && outputFormat is IWritableOpticalImage optImg)
                 {
                     if(optImg.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreNegativeSectors))
-                        nominalForRawDvd = nominalNegativeSectors;
+                        nominalForRaw = nominalNegativeSectors;
 
                     if(optImg.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreOverflowSectors))
-                        overflowForRawDvd = 100u;
+                        overflowForRaw = scsiReader.OmniDriveReadRawBluray ? 0x432u : 100u;
                 }
 
-                ReadRawDvdData(blocks,
-                               blocksToRead,
-                               blockSize,
-                               currentTry,
-                               extents,
-                               ref currentSpeed,
-                               ref minSpeed,
-                               ref maxSpeed,
-                               ref totalDuration,
-                               scsiReader,
-                               mhddLog,
-                               ibgLog,
-                               ref imageWriteDuration,
-                               ref newTrim,
-                               discKey ?? null,
-                               nominalForRawDvd,
-                               overflowForRawDvd);
+                if(scsiReader.OmniDriveReadRawBluray)
+                    ReadRawBdData(blocks,
+                                  blocksToRead,
+                                  blockSize,
+                                  currentTry,
+                                  extents,
+                                  ref currentSpeed,
+                                  ref minSpeed,
+                                  ref maxSpeed,
+                                  ref totalDuration,
+                                  scsiReader,
+                                  mhddLog,
+                                  ibgLog,
+                                  ref imageWriteDuration,
+                                  ref newTrim,
+                                  nominalForRaw,
+                                  overflowForRaw);
+                else
+                    ReadRawDvdData(blocks,
+                                   blocksToRead,
+                                   blockSize,
+                                   currentTry,
+                                   extents,
+                                   ref currentSpeed,
+                                   ref minSpeed,
+                                   ref maxSpeed,
+                                   ref totalDuration,
+                                   scsiReader,
+                                   mhddLog,
+                                   ibgLog,
+                                   ref imageWriteDuration,
+                                   ref newTrim,
+                                   discKey ?? null,
+                                   nominalForRaw,
+                                   overflowForRaw);
             }
             else
             {

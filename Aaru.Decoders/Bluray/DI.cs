@@ -118,6 +118,14 @@ public static class DI
     {
         if(DIResponse == null) return null;
 
+        // Handle if the size has been stripped from the DI
+        if(DIResponse.Length == 4096)
+        {
+            byte[] tmp2 = new byte[4100];
+            Array.Copy(DIResponse, 0, tmp2, 4, 4096);
+            DIResponse = tmp2;
+        }
+
         if(DIResponse.Length != 4100)
         {
             AaruLogging.Debug(MODULE_NAME,
