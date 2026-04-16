@@ -171,6 +171,7 @@ Supported archives
 * PMARC (.PMA)
 * RAR (.RAR)
 * Symbian Installation File (.SIS)
+* TAR (.TAR)
 * Xbox 360 Secure Transacted File System (STFS)
 * ZIP (.ZIP)
 * ZOO (.ZOO)
