@@ -365,6 +365,24 @@
     <data name="CisCopy_Name" xml:space="preserve">
     <value>Imagen de disco CisCopy (DC-File)</value>
   </data>
+    <data name="CrunchDisk_Name" xml:space="preserve">
+    <value>Imagen de disco CrunchDisk</value>
+  </data>
+    <data name="CrunchDisk_image_is_password_protected" xml:space="preserve">
+    <value>La imagen CrunchDisk está protegida con contraseña.</value>
+  </data>
+    <data name="CrunchDisk_unsupported_packer_type_0" xml:space="preserve">
+    <value>La imagen CrunchDisk usa un tipo de compresión no soportado {0}.</value>
+  </data>
+    <data name="CrunchDisk_0_cylinders_1_heads_2_sectors_per_track_3_bytes_per_sector" xml:space="preserve">
+    <value>Imagen CrunchDisk: {0} cilindros, {1} cabezas, {2} sectores por pista, {3} bytes por sector.</value>
+  </data>
+    <data name="CrunchDisk_unexpected_cylinder_magic_0" xml:space="preserve">
+    <value>La imagen CrunchDisk tiene un valor mágico de cilindro inesperado 0x{0:X8}.</value>
+  </data>
+    <data name="CrunchDisk_unknown_media_type" xml:space="preserve">
+    <value>La geometría de la imagen CrunchDisk no corresponde a un tipo de medio conocido.</value>
+  </data>
     <data name="CloneCd_Name" xml:space="preserve">
     <value>CloneCD</value>
   </data>

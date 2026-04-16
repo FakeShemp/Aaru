@@ -3669,6 +3669,42 @@ namespace Aaru.Images {
             }
         }
         
+        internal static string CrunchDisk_Name {
+            get {
+                return ResourceManager.GetString("CrunchDisk_Name", resourceCulture);
+            }
+        }
+        
+        internal static string CrunchDisk_image_is_password_protected {
+            get {
+                return ResourceManager.GetString("CrunchDisk_image_is_password_protected", resourceCulture);
+            }
+        }
+        
+        internal static string CrunchDisk_unsupported_packer_type_0 {
+            get {
+                return ResourceManager.GetString("CrunchDisk_unsupported_packer_type_0", resourceCulture);
+            }
+        }
+        
+        internal static string CrunchDisk_0_cylinders_1_heads_2_sectors_per_track_3_bytes_per_sector {
+            get {
+                return ResourceManager.GetString("CrunchDisk_0_cylinders_1_heads_2_sectors_per_track_3_bytes_per_sector", resourceCulture);
+            }
+        }
+        
+        internal static string CrunchDisk_unexpected_cylinder_magic_0 {
+            get {
+                return ResourceManager.GetString("CrunchDisk_unexpected_cylinder_magic_0", resourceCulture);
+            }
+        }
+        
+        internal static string CrunchDisk_unknown_media_type {
+            get {
+                return ResourceManager.GetString("CrunchDisk_unknown_media_type", resourceCulture);
+            }
+        }
+        
         internal static string Incorrect_disk_type_0 {
             get {
                 return ResourceManager.GetString("Incorrect_disk_type_0", resourceCulture);

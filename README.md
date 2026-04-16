@@ -94,6 +94,7 @@ Media image formats we can read
 * BlindWrite 5/6 TOC files (.B5T/.B5I and .B6T/.B6I)
 * CopyQM
 * CPCEMU Disk file and Extended Disk File
+* Crunchdisk
 * Dave Dunfield IMD
 * DiscJuggler images
 * Dreamcast GDI

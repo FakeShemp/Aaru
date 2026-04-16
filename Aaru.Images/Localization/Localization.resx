@@ -1845,6 +1845,24 @@
     <data name="CisCopy_Name" xml:space="preserve">
     <value>CisCopy Disk Image (DC-File)</value>
   </data>
+    <data name="CrunchDisk_Name" xml:space="preserve">
+    <value>CrunchDisk disk image</value>
+  </data>
+    <data name="CrunchDisk_image_is_password_protected" xml:space="preserve">
+    <value>CrunchDisk image is password protected.</value>
+  </data>
+    <data name="CrunchDisk_unsupported_packer_type_0" xml:space="preserve">
+    <value>CrunchDisk image uses unsupported packer type {0}.</value>
+  </data>
+    <data name="CrunchDisk_0_cylinders_1_heads_2_sectors_per_track_3_bytes_per_sector" xml:space="preserve">
+    <value>CrunchDisk image: {0} cylinders, {1} heads, {2} sectors per track, {3} bytes per sector.</value>
+  </data>
+    <data name="CrunchDisk_unexpected_cylinder_magic_0" xml:space="preserve">
+    <value>CrunchDisk image has unexpected cylinder magic 0x{0:X8}.</value>
+  </data>
+    <data name="CrunchDisk_unknown_media_type" xml:space="preserve">
+    <value>CrunchDisk image geometry does not correspond to a known media type.</value>
+  </data>
     <data name="Incorrect_disk_type_0" xml:space="preserve">
     <value>Incorrect disk type {0}</value>
   </data>
