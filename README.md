@@ -167,6 +167,7 @@ Supported archives
 * ARJZ (.ARZ)
 * Compact Pro (.CPT)
 * CPIO (.cpio)
+* DiskDoubler (.DD)
 * Expert Witness Format (EWF)
 * HA (.HA)
 * LARC (.LZS)

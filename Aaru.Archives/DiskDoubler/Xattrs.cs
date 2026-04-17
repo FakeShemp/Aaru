@@ -1,0 +1,127 @@
+using System.Collections.Generic;
+using Aaru.CommonTypes.Enums;
+
+namespace Aaru.Archives;
+
+public sealed partial class DiskDoubler
+{
+    byte[] DecompressResourceFork(Entry entry)
+    {
+        if(entry.ResourceUncompressedSize == 0) return null;
+
+        return DecompressFork(entry.ResourceOffset,
+                              entry.ResourceCompressedSize,
+                              entry.ResourceUncompressedSize,
+                              entry.ResourceMethod,
+                              entry.ResourceDelta,
+                              entry.Info1,
+                              entry.Info2);
+    }
+
+    static byte[] BuildFinderInfo(Entry entry)
+    {
+        // Classic Mac FinderInfo is 16 bytes: type(4) + creator(4) + flags(2) + location(4) + folder(2)
+        var info = new byte[16];
+        info[0] = (byte)(entry.FileType >> 24);
+        info[1] = (byte)(entry.FileType >> 16);
+        info[2] = (byte)(entry.FileType >> 8);
+        info[3] = (byte)entry.FileType;
+        info[4] = (byte)(entry.Creator >> 24);
+        info[5] = (byte)(entry.Creator >> 16);
+        info[6] = (byte)(entry.Creator >> 8);
+        info[7] = (byte)entry.Creator;
+        info[8] = (byte)(entry.FinderFlags >> 8);
+        info[9] = (byte)entry.FinderFlags;
+
+        return info;
+    }
+
+    static byte[] TypeCodeToBytes(uint code)
+    {
+        var bytes = new byte[4];
+        bytes[0] = (byte)(code >> 24);
+        bytes[1] = (byte)(code >> 16);
+        bytes[2] = (byte)(code >> 8);
+        bytes[3] = (byte)code;
+
+        return bytes;
+    }
+
+#region IArchive Members
+
+    /// <inheritdoc />
+    public ErrorNumber ListXAttr(int entryNumber, out List<string> xattrs)
+    {
+        xattrs = null;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _entries.Count) return ErrorNumber.OutOfRange;
+
+        xattrs = [];
+
+        Entry entry = _entries[entryNumber];
+
+        if(entry.IsDirectory) return ErrorNumber.NoError;
+
+        if(entry.ResourceUncompressedSize > 0) xattrs.Add(XATTR_APPLE_RESOURCE_FORK);
+
+        if(entry.FileType != 0 || entry.Creator != 0 || entry.FinderFlags != 0) xattrs.Add(XATTR_APPLE_FINDER_INFO);
+
+        if(entry.FileType != 0) xattrs.Add(XATTR_APPLE_HFS_TYPE);
+        if(entry.Creator  != 0) xattrs.Add(XATTR_APPLE_HFS_CREATOR);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetXattr(int entryNumber, string xattr, ref byte[] buffer)
+    {
+        buffer = null;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _entries.Count) return ErrorNumber.OutOfRange;
+
+        Entry entry = _entries[entryNumber];
+
+        switch(xattr)
+        {
+            case XATTR_APPLE_RESOURCE_FORK:
+                if(entry.IsDirectory || entry.ResourceUncompressedSize == 0) return ErrorNumber.NoSuchExtendedAttribute;
+
+                buffer = DecompressResourceFork(entry);
+
+                return buffer is null ? ErrorNumber.InOutError : ErrorNumber.NoError;
+
+            case XATTR_APPLE_FINDER_INFO:
+                if(entry.IsDirectory) return ErrorNumber.NoSuchExtendedAttribute;
+
+                if(entry.FileType == 0 && entry.Creator == 0 && entry.FinderFlags == 0)
+                    return ErrorNumber.NoSuchExtendedAttribute;
+
+                buffer = BuildFinderInfo(entry);
+
+                return ErrorNumber.NoError;
+
+            case XATTR_APPLE_HFS_TYPE:
+                if(entry.IsDirectory || entry.FileType == 0) return ErrorNumber.NoSuchExtendedAttribute;
+
+                buffer = TypeCodeToBytes(entry.FileType);
+
+                return ErrorNumber.NoError;
+
+            case XATTR_APPLE_HFS_CREATOR:
+                if(entry.IsDirectory || entry.Creator == 0) return ErrorNumber.NoSuchExtendedAttribute;
+
+                buffer = TypeCodeToBytes(entry.Creator);
+
+                return ErrorNumber.NoError;
+
+            default:
+                return ErrorNumber.NoSuchExtendedAttribute;
+        }
+    }
+
+#endregion
+}

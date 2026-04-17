@@ -884,5 +884,17 @@ namespace Aaru.Archives {
                 return ResourceManager.GetString("CompactPro_archive", resourceCulture);
             }
         }
+
+        internal static string DiskDoubler_Name {
+            get {
+                return ResourceManager.GetString("DiskDoubler_Name", resourceCulture);
+            }
+        }
+
+        internal static string DiskDoubler_archive {
+            get {
+                return ResourceManager.GetString("DiskDoubler_archive", resourceCulture);
+            }
+        }
     }
 }

@@ -443,4 +443,10 @@
     <data name="CompactPro_archive" xml:space="preserve">
         <value>[bold][blue]Compact Pro archive[/][/]</value>
     </data>
+    <data name="DiskDoubler_Name" xml:space="preserve">
+        <value>DiskDoubler</value>
+    </data>
+    <data name="DiskDoubler_archive" xml:space="preserve">
+        <value>[bold][blue]DiskDoubler archive[/][/]</value>
+    </data>
 </root>
