@@ -432,4 +432,7 @@
     <data name="ZIP_comment_0" xml:space="preserve">
         <value>[slateblue1]Comentario del archivo: [green]{0}[/][/]</value>
     </data>
+    <data name="CompactPro_archive" xml:space="preserve">
+        <value>[bold][blue]Archivo Compact Pro[/][/]</value>
+    </data>
 </root>

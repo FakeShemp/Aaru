@@ -878,5 +878,11 @@ namespace Aaru.Archives {
                 return ResourceManager.GetString("ZIP_comment_0", resourceCulture);
             }
         }
+
+        internal static string CompactPro_archive {
+            get {
+                return ResourceManager.GetString("CompactPro_archive", resourceCulture);
+            }
+        }
     }
 }
