@@ -48,6 +48,8 @@
     <Compile Include="ArjStream.cs"/>
     <Compile Include="ArjzStream.cs"/>
     <Compile Include="BZip2.cs"/>
+    <Compile Include="CompactPro\LzhStream.cs"/>
+    <Compile Include="CompactPro\RleStream.cs"/>
     <Compile Include="FLAC.cs"/>
     <Compile Include="HaStream.cs"/>
     <Compile Include="LarcStream.cs"/>
