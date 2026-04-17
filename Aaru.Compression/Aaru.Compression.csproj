@@ -75,6 +75,14 @@
     <Compile Include="Pak\DistillStream.cs"/>
     <Compile Include="PmarcStream.cs"/>
     <Compile Include="RarStream.cs"/>
+    <Compile Include="StuffIt\ArsenicStream.cs"/>
+    <Compile Include="StuffIt\CompressStream.cs"/>
+    <Compile Include="StuffIt\HuffmanStream.cs"/>
+    <Compile Include="StuffIt\LzahStream.cs"/>
+    <Compile Include="StuffIt\Method13Stream.cs"/>
+    <Compile Include="StuffIt\Method14Stream.cs"/>
+    <Compile Include="StuffIt\MWStream.cs"/>
+    <Compile Include="StuffIt\Rle90Stream.cs"/>
     <Compile Include="TeleDiskLzh.cs"/>
     <Compile Include="cuetools.net/CUETools.Codecs/*.cs"/>
     <Compile Include="cuetools.net/CUETools.Codecs/CommandLine/*.cs"/>
