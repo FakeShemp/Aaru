@@ -165,6 +165,7 @@ Supported archives
 * ARC (.ARC)
 * ARJ (.ARJ)
 * ARJZ (.ARZ)
+* CPIO (.cpio)
 * Expert Witness Format (EWF)
 * HA (.HA)
 * LARC (.LZS)
