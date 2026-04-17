@@ -12,7 +12,7 @@ public partial class BrimstoneStream : Stream
     readonly long   _length;
     long            _position;
 
-    public BrimstoneStream(Stream compressedStream, long decompressedLength)
+    public BrimstoneStream(Stream compressedStream, long decompressedLength, int maxOrder, int subAllocSize)
     {
         if(compressedStream == null) throw new ArgumentNullException(nameof(compressedStream));
         if(!compressedStream.CanRead) throw new ArgumentException("Stream must be readable", nameof(compressedStream));
@@ -28,7 +28,7 @@ public partial class BrimstoneStream : Stream
         var outLen = (nint)decompressedLength;
 
         // Call native decompressor
-        int err = AARU_stuffitx_brimstone_decode_buffer(_decoded, ref outLen, inBuf, inBuf.Length);
+        int err = AARU_stuffitx_brimstone_decode_buffer(_decoded, ref outLen, inBuf, inBuf.Length, maxOrder, subAllocSize);
 
         if(err != 0) throw new InvalidOperationException("Brimstone decompression failed");
 
@@ -50,7 +50,7 @@ public partial class BrimstoneStream : Stream
 
     [LibraryImport("libAaru.Compression.Native")]
     public static partial int AARU_stuffitx_brimstone_decode_buffer(byte[] dst_buffer, ref nint dst_size,
-                                                                    byte[] src_buffer, nint     src_size);
+                                                                    byte[] src_buffer, nint     src_size,int max_order, int sub_alloc_size);
 
     public override void Flush()
     {

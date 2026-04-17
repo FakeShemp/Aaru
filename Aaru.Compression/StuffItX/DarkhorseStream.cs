@@ -12,7 +12,7 @@ public partial class DarkhorseStream : Stream
     readonly long   _length;
     long            _position;
 
-    public DarkhorseStream(Stream compressedStream, long decompressedLength)
+    public DarkhorseStream(Stream compressedStream, long decompressedLength, int windowBits)
     {
         if(compressedStream == null) throw new ArgumentNullException(nameof(compressedStream));
         if(!compressedStream.CanRead) throw new ArgumentException("Stream must be readable", nameof(compressedStream));
@@ -28,7 +28,7 @@ public partial class DarkhorseStream : Stream
         var outLen = (nint)decompressedLength;
 
         // Call native decompressor
-        int err = AARU_stuffitx_darkhorse_decode_buffer(_decoded, ref outLen, inBuf, inBuf.Length);
+        int err = AARU_stuffitx_darkhorse_decode_buffer(_decoded, ref outLen, inBuf, inBuf.Length, windowBits);
 
         if(err != 0) throw new InvalidOperationException("Darkhorse decompression failed");
 
@@ -50,7 +50,7 @@ public partial class DarkhorseStream : Stream
 
     [LibraryImport("libAaru.Compression.Native")]
     public static partial int AARU_stuffitx_darkhorse_decode_buffer(byte[] dst_buffer, ref nint dst_size,
-                                                                    byte[] src_buffer, nint     src_size);
+                                                                    byte[] src_buffer, nint     src_size, int window_bits);
 
     public override void Flush()
     {
