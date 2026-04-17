@@ -44,6 +44,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Aaru.Checksums\Aaru.Checksums.csproj"/>
     <ProjectReference Include="..\Aaru.CommonTypes\Aaru.CommonTypes.csproj"/>
     <ProjectReference Include="..\Aaru.Compression\Aaru.Compression.csproj"/>
     <ProjectReference Include="..\Aaru.Logging\Aaru.Logging.csproj"/>

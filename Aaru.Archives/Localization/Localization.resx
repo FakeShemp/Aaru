@@ -449,4 +449,10 @@
     <data name="DiskDoubler_archive" xml:space="preserve">
         <value>[bold][blue]DiskDoubler archive[/][/]</value>
     </data>
+    <data name="StuffIt_archive" xml:space="preserve">
+        <value>[bold][blue]StuffIt archive[/][/]</value>
+    </data>
+    <data name="StuffIt5_archive" xml:space="preserve">
+        <value>[bold][blue]StuffIt 5 archive[/][/]</value>
+    </data>
 </root>

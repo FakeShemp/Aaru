@@ -896,5 +896,17 @@ namespace Aaru.Archives {
                 return ResourceManager.GetString("DiskDoubler_archive", resourceCulture);
             }
         }
+
+        internal static string StuffIt_archive {
+            get {
+                return ResourceManager.GetString("StuffIt_archive", resourceCulture);
+            }
+        }
+
+        internal static string StuffIt5_archive {
+            get {
+                return ResourceManager.GetString("StuffIt5_archive", resourceCulture);
+            }
+        }
     }
 }
