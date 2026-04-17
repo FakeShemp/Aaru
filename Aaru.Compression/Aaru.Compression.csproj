@@ -50,6 +50,12 @@
     <Compile Include="BZip2.cs"/>
     <Compile Include="CompactPro\LzhStream.cs"/>
     <Compile Include="CompactPro\RleStream.cs"/>
+    <Compile Include="DiskDoubler\AdnStream.cs"/>
+    <Compile Include="DiskDoubler\CompactProStream.cs"/>
+    <Compile Include="DiskDoubler\DdnStream.cs"/>
+    <Compile Include="DiskDoubler\LzwStream.cs"/>
+    <Compile Include="DiskDoubler\Method2Stream.cs"/>
+    <Compile Include="DiskDoubler\StacLzsStream.cs"/>
     <Compile Include="FLAC.cs"/>
     <Compile Include="HaStream.cs"/>
     <Compile Include="LarcStream.cs"/>
