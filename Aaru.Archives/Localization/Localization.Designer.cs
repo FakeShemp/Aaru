@@ -908,5 +908,11 @@ namespace Aaru.Archives {
                 return ResourceManager.GetString("StuffIt5_archive", resourceCulture);
             }
         }
+
+        internal static string StuffItX_archive {
+            get {
+                return ResourceManager.GetString("StuffItX_archive", resourceCulture);
+            }
+        }
     }
 }

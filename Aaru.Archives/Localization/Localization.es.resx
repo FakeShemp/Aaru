@@ -447,4 +447,7 @@
     <data name="StuffIt5_archive" xml:space="preserve">
         <value>[bold][blue]Archivo StuffIt 5[/][/]</value>
     </data>
+    <data name="StuffItX_archive" xml:space="preserve">
+        <value>[bold][blue]Archivo StuffIt X[/][/]</value>
+    </data>
 </root>

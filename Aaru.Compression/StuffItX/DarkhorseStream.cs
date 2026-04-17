@@ -50,7 +50,7 @@ public partial class DarkhorseStream : Stream
 
     [LibraryImport("libAaru.Compression.Native")]
     public static partial int AARU_stuffitx_darkhorse_decode_buffer(byte[] dst_buffer, ref nint dst_size,
-                                                                    byte[] src_buffer, nint     src_size, int window_bits);
+                                                                    byte[] src_buffer, nint src_size, int window_bits);
 
     public override void Flush()
     {

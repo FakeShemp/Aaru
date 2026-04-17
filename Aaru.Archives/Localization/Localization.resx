@@ -455,4 +455,7 @@
     <data name="StuffIt5_archive" xml:space="preserve">
         <value>[bold][blue]StuffIt 5 archive[/][/]</value>
     </data>
+    <data name="StuffItX_archive" xml:space="preserve">
+        <value>[bold][blue]StuffIt X archive[/][/]</value>
+    </data>
 </root>
