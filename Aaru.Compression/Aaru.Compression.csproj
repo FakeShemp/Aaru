@@ -75,6 +75,14 @@
     <Compile Include="Pak\DistillStream.cs"/>
     <Compile Include="PmarcStream.cs"/>
     <Compile Include="RarStream.cs"/>
+    <Compile Include="StuffItX\BlendStream.cs"/>
+    <Compile Include="StuffItX\BrimstoneStream.cs"/>
+    <Compile Include="StuffItX\CyanideStream.cs"/>
+    <Compile Include="StuffItX\DarkhorseStream.cs"/>
+    <Compile Include="StuffItX\DeflateStream.cs"/>
+    <Compile Include="StuffItX\EnglishStream.cs"/>
+    <Compile Include="StuffItX\IronStream.cs"/>
+    <Compile Include="StuffItX\X86Stream.cs"/>
     <Compile Include="StuffIt\ArsenicStream.cs"/>
     <Compile Include="StuffIt\CompressStream.cs"/>
     <Compile Include="StuffIt\HuffmanStream.cs"/>
