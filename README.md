@@ -161,6 +161,7 @@ Supported archives
 ==================
 
 * ACE (.ACE)
+* AR (.a)
 * ARC (.ARC)
 * ARJ (.ARJ)
 * ARJZ (.ARZ)
