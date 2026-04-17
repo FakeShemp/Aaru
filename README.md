@@ -175,6 +175,8 @@ Supported archives
 * PAK (.PAK)
 * PMARC (.PMA)
 * RAR (.RAR)
+* StuffIt (.SIT)
+* StuffIt X (.SITX)
 * Symbian Installation File (.SIS)
 * TAR (.TAR)
 * Xbox 360 Secure Transacted File System (STFS)
