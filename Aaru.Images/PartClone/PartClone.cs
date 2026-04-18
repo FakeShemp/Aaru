@@ -49,13 +49,27 @@ public sealed partial class PartClone : IMediaImage, IVerifiableImage
     byte[] _byteMap;
     /// <summary>Detected stride of the per-block CRC trailer (4 for normal images, 8 for x64-bug ones).</summary>
     int _crcSize;
-    long                      _dataOff;
-    ExtentsULong              _extents;
-    Dictionary<ulong, ulong>  _extentsOff;
-    ImageInfo                 _imageInfo;
-    Stream                    _imageStream;
+    long                     _dataOff;
+    ExtentsULong             _extents;
+    Dictionary<ulong, ulong> _extentsOff;
+    ImageInfo                _imageInfo;
+    Stream                   _imageStream;
+
+    /// <summary>Image format version detected at <see cref="Open" /> time (1 or 2).</summary>
+    int _imageVersion;
     Header                    _pHdr;
     Dictionary<ulong, byte[]> _sectorCache;
+    byte                      _v2BitmapMode;
+    uint                      _v2BlockSize;
+    uint                      _v2BlocksPerChecksum;
+    ushort                    _v2ChecksumMode;
+    ushort                    _v2ChecksumSize;
+    ulong                     _v2DeviceSize;
+    bool                      _v2ReseedChecksum;
+
+    // v0002-only state
+    ulong _v2TotalBlocks;
+    ulong _v2UsedBlocks;
 
     public PartClone() => _imageInfo = new ImageInfo
     {

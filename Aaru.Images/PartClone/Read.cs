@@ -30,10 +30,12 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
@@ -55,31 +57,48 @@ public sealed partial class PartClone
 
         if(stream.Length < 512) return ErrorNumber.InvalidArgument;
 
+        // Peek the version field (bytes 30..33), shared by both v0001 and v0002 layouts.
+        var versionBytes = new byte[4];
+        stream.Seek(30, SeekOrigin.Begin);
+
+        if(stream.EnsureRead(versionBytes, 0, 4) != 4) return ErrorNumber.InvalidArgument;
+
+        string version = Encoding.ASCII.GetString(versionBytes);
+
+        AaruLogging.Debug(MODULE_NAME, "Detected partclone image version '{0}'", version);
+
+        stream.Seek(0, SeekOrigin.Begin);
+
+        switch(version)
+        {
+            case VERSION_0001:
+                return OpenV1(imageFilter, stream);
+            case VERSION_0002:
+                return OpenV2(imageFilter, stream);
+            default:
+                AaruLogging.Error(MODULE_NAME,
+                                  "Unsupported partclone image version '{0}', only '0001' and '0002' are supported",
+                                  version);
+
+                return ErrorNumber.NotSupported;
+        }
+    }
+
+    ErrorNumber OpenV1(IFilter imageFilter, Stream stream)
+    {
+        _imageVersion = 1;
+
         var pHdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(pHdrB, 0, Marshal.SizeOf<Header>());
         _pHdr = Marshal.ByteArrayToStructureLittleEndian<Header>(pHdrB);
 
-        AaruLogging.Debug(MODULE_NAME, "pHdr.magic = {0}", StringHandlers.CToString(_pHdr.magic));
-
-        AaruLogging.Debug(MODULE_NAME, "pHdr.filesystem = {0}", StringHandlers.CToString(_pHdr.filesystem));
-
-        AaruLogging.Debug(MODULE_NAME, "pHdr.version = {0}", StringHandlers.CToString(_pHdr.version));
-
+        AaruLogging.Debug(MODULE_NAME, "pHdr.magic = {0}",       StringHandlers.CToString(_pHdr.magic));
+        AaruLogging.Debug(MODULE_NAME, "pHdr.filesystem = {0}",  StringHandlers.CToString(_pHdr.filesystem));
+        AaruLogging.Debug(MODULE_NAME, "pHdr.version = {0}",     StringHandlers.CToString(_pHdr.version));
         AaruLogging.Debug(MODULE_NAME, "pHdr.blockSize = {0}",   _pHdr.blockSize);
         AaruLogging.Debug(MODULE_NAME, "pHdr.deviceSize = {0}",  _pHdr.deviceSize);
         AaruLogging.Debug(MODULE_NAME, "pHdr.totalBlocks = {0}", _pHdr.totalBlocks);
         AaruLogging.Debug(MODULE_NAME, "pHdr.usedBlocks = {0}",  _pHdr.usedBlocks);
-
-        string version = StringHandlers.CToString(_pHdr.version);
-
-        if(version != SUPPORTED_VERSION)
-        {
-            AaruLogging.Error(MODULE_NAME,
-                              "Unsupported partclone image version '{0}', only '0001' is supported",
-                              version);
-
-            return ErrorNumber.NotSupported;
-        }
 
         _byteMap = new byte[_pHdr.totalBlocks];
         AaruLogging.Debug(MODULE_NAME, Localization.Reading_bytemap_0_bytes, _byteMap.Length);
@@ -129,44 +148,7 @@ public sealed partial class PartClone
             }
         }
 
-        AaruLogging.Debug(MODULE_NAME, Localization.Filling_extents);
-        var extentFillStopwatch = new Stopwatch();
-        extentFillStopwatch.Start();
-        _extents    = new ExtentsULong();
-        _extentsOff = new Dictionary<ulong, ulong>();
-        bool  current     = _byteMap[0] > 0;
-        ulong blockOff    = 0;
-        ulong extentStart = 0;
-
-        for(ulong i = 1; i < _pHdr.totalBlocks; i++)
-        {
-            bool next = _byteMap[i] > 0;
-
-            // Flux
-            if(next != current)
-            {
-                if(next)
-                {
-                    extentStart = i;
-                    _extentsOff.Add(i, ++blockOff);
-                }
-                else
-                {
-                    _extents.Add(extentStart, i);
-                    _extentsOff.TryGetValue(extentStart, out _);
-                }
-            }
-
-            if(next && current) blockOff++;
-
-            current = next;
-        }
-
-        extentFillStopwatch.Stop();
-
-        AaruLogging.Debug(MODULE_NAME,
-                          Localization.Took_0_seconds_to_fill_extents,
-                          extentFillStopwatch.Elapsed.TotalSeconds);
+        BuildExtentsFromByteMap(_pHdr.totalBlocks);
 
         _sectorCache = new Dictionary<ulong, byte[]>();
 
@@ -183,6 +165,281 @@ public sealed partial class PartClone
         return ErrorNumber.NoError;
     }
 
+    ErrorNumber OpenV2(IFilter imageFilter, Stream stream)
+    {
+        _imageVersion = 2;
+
+        int hdrSize = Marshal.SizeOf<HeaderV2>();
+        var hdrB    = new byte[hdrSize];
+
+        if(stream.EnsureRead(hdrB, 0, hdrSize) != hdrSize) return ErrorNumber.InvalidArgument;
+
+        // Validate the header CRC32 over everything but the trailing crc field.
+        uint computed = UpdateCrc32(CRC32_SEED, hdrB, 0, hdrSize - V2_HEADER_CRC_SIZE);
+        var  stored   = BitConverter.ToUInt32(hdrB, hdrSize      - V2_HEADER_CRC_SIZE);
+
+        if(computed != stored)
+        {
+            AaruLogging.Error(MODULE_NAME, Localization.PartClone_v2_invalid_header_checksum_0_1, stored, computed);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        HeaderV2 hdr = Marshal.ByteArrayToStructureLittleEndian<HeaderV2>(hdrB);
+
+        if(hdr.endianess != ENDIAN_MAGIC)
+        {
+            AaruLogging.Error(MODULE_NAME, Localization.PartClone_v2_unsupported_endianness_0, hdr.endianess);
+
+            return ErrorNumber.NotSupported;
+        }
+
+        string ptcVersion = StringHandlers.CToString(hdr.ptcVersion);
+        string fsName     = StringHandlers.CToString(hdr.filesystem);
+
+        AaruLogging.Debug(MODULE_NAME, "v2.ptcVersion          = {0}",      ptcVersion);
+        AaruLogging.Debug(MODULE_NAME, "v2.filesystem          = {0}",      fsName);
+        AaruLogging.Debug(MODULE_NAME, "v2.deviceSize          = {0}",      hdr.deviceSize);
+        AaruLogging.Debug(MODULE_NAME, "v2.totalBlocks         = {0}",      hdr.totalBlocks);
+        AaruLogging.Debug(MODULE_NAME, "v2.usedBlocks          = {0}",      hdr.usedBlocks);
+        AaruLogging.Debug(MODULE_NAME, "v2.superBlockUsed      = {0}",      hdr.superBlockUsedBlocks);
+        AaruLogging.Debug(MODULE_NAME, "v2.blockSize           = {0}",      hdr.blockSize);
+        AaruLogging.Debug(MODULE_NAME, "v2.featureSize         = {0}",      hdr.featureSize);
+        AaruLogging.Debug(MODULE_NAME, "v2.imageVersion        = 0x{0:X4}", hdr.imageVersion);
+        AaruLogging.Debug(MODULE_NAME, "v2.cpuBits             = {0}",      hdr.cpuBits);
+        AaruLogging.Debug(MODULE_NAME, "v2.checksumMode        = 0x{0:X2}", hdr.checksumMode);
+        AaruLogging.Debug(MODULE_NAME, "v2.checksumSize        = {0}",      hdr.checksumSize);
+        AaruLogging.Debug(MODULE_NAME, "v2.blocksPerChecksum   = {0}",      hdr.blocksPerChecksum);
+        AaruLogging.Debug(MODULE_NAME, "v2.reseedChecksum      = {0}",      hdr.reseedChecksum);
+        AaruLogging.Debug(MODULE_NAME, "v2.bitmapMode          = 0x{0:X2}", hdr.bitmapMode);
+
+        if(hdr.cpuBits != 32 && hdr.cpuBits != 64)
+        {
+            AaruLogging.Debug(MODULE_NAME, Localization.PartClone_v2_unexpected_cpu_bits_0, hdr.cpuBits);
+        }
+
+        if(hdr.blockSize == 0)
+        {
+            AaruLogging.Error(MODULE_NAME, Localization.PartClone_v2_invalid_block_size_0, hdr.blockSize);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        // Validate checksum mode + checksum size pair.
+        ushort expectedCsSize = hdr.checksumMode switch
+                                {
+                                    CSM_NONE       => 0,
+                                    CSM_CRC32      => 4,
+                                    CSM_CRC32_0001 => 4,
+                                    CSM_XXH64      => 8,
+                                    CSM_XXH128     => 16,
+                                    _              => ushort.MaxValue
+                                };
+
+        if(expectedCsSize == ushort.MaxValue)
+        {
+            AaruLogging.Error(MODULE_NAME, Localization.PartClone_v2_unknown_checksum_mode_0, hdr.checksumMode);
+
+            return ErrorNumber.NotSupported;
+        }
+
+        if(expectedCsSize != hdr.checksumSize)
+        {
+            AaruLogging.Error(MODULE_NAME,
+                              Localization.PartClone_v2_checksum_size_mismatch_0_1,
+                              hdr.checksumSize,
+                              hdr.checksumMode);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        if(hdr.checksumMode != CSM_NONE && hdr.blocksPerChecksum == 0)
+        {
+            AaruLogging.Error(MODULE_NAME, Localization.PartClone_v2_blocks_per_checksum_zero);
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        _v2TotalBlocks       = hdr.totalBlocks;
+        _v2UsedBlocks        = hdr.usedBlocks;
+        _v2BlockSize         = hdr.blockSize;
+        _v2DeviceSize        = hdr.deviceSize;
+        _v2ChecksumMode      = hdr.checksumMode;
+        _v2ChecksumSize      = hdr.checksumSize;
+        _v2BlocksPerChecksum = hdr.blocksPerChecksum;
+        _v2ReseedChecksum    = hdr.reseedChecksum != 0;
+        _v2BitmapMode        = hdr.bitmapMode;
+
+        // Read and validate the bitmap.
+        _byteMap = new byte[hdr.totalBlocks];
+
+        switch(hdr.bitmapMode)
+        {
+            case BM_NONE:
+                // All blocks present and contiguous.
+                for(ulong i = 0; i < hdr.totalBlocks; i++) _byteMap[i] = 1;
+
+                break;
+
+            case BM_BIT:
+            {
+                ulong bitmapBytes = (hdr.totalBlocks + 7) / 8;
+
+                if(bitmapBytes > int.MaxValue)
+                {
+                    AaruLogging.Error(MODULE_NAME, Localization.PartClone_v2_bitmap_too_large_0, bitmapBytes);
+
+                    return ErrorNumber.NotSupported;
+                }
+
+                var bitmap = new byte[bitmapBytes];
+
+                if(stream.EnsureRead(bitmap, 0, (int)bitmapBytes) != (int)bitmapBytes)
+                {
+                    AaruLogging.Error(MODULE_NAME, Localization.PartClone_v2_short_read_bitmap);
+
+                    return ErrorNumber.InvalidArgument;
+                }
+
+                var bitmapCrcBuf = new byte[V2_BITMAP_CRC_SIZE];
+
+                if(stream.EnsureRead(bitmapCrcBuf, 0, V2_BITMAP_CRC_SIZE) != V2_BITMAP_CRC_SIZE)
+                {
+                    AaruLogging.Error(MODULE_NAME, Localization.PartClone_v2_short_read_bitmap_crc);
+
+                    return ErrorNumber.InvalidArgument;
+                }
+
+                uint computedBitmapCrc = UpdateCrc32(CRC32_SEED, bitmap, 0, (int)bitmapBytes);
+                var  storedBitmapCrc   = BitConverter.ToUInt32(bitmapCrcBuf, 0);
+
+                if(computedBitmapCrc != storedBitmapCrc)
+                {
+                    AaruLogging.Error(MODULE_NAME,
+                                      Localization.PartClone_v2_bitmap_crc_mismatch_0_1,
+                                      storedBitmapCrc,
+                                      computedBitmapCrc);
+
+                    return ErrorNumber.InvalidArgument;
+                }
+
+                for(ulong i = 0; i < hdr.totalBlocks; i++)
+                {
+                    byte b = bitmap[i >> 3];
+
+                    if((b & 1 << (int)(i & 7)) != 0) _byteMap[i] = 1;
+                }
+
+                break;
+            }
+
+            case BM_BYTE:
+            {
+                if(hdr.totalBlocks > int.MaxValue)
+                {
+                    AaruLogging.Error(MODULE_NAME, Localization.PartClone_v2_bitmap_too_large_0, hdr.totalBlocks);
+
+                    return ErrorNumber.NotSupported;
+                }
+
+                if(stream.EnsureRead(_byteMap, 0, (int)hdr.totalBlocks) != (int)hdr.totalBlocks)
+                {
+                    AaruLogging.Error(MODULE_NAME, Localization.PartClone_v2_short_read_bitmap);
+
+                    return ErrorNumber.InvalidArgument;
+                }
+
+                var bitmagic = new byte[8];
+                stream.EnsureRead(bitmagic, 0, 8);
+
+                if(!_biTmAgIc.SequenceEqual(bitmagic))
+                {
+                    AaruLogging.Error(Localization.Could_not_find_partclone_BiTmAgIc_not_continuing);
+
+                    return ErrorNumber.InvalidArgument;
+                }
+
+                break;
+            }
+
+            default:
+                AaruLogging.Error(MODULE_NAME, Localization.PartClone_v2_unknown_bitmap_mode_0, hdr.bitmapMode);
+
+                return ErrorNumber.NotSupported;
+        }
+
+        _dataOff = stream.Position;
+        AaruLogging.Debug(MODULE_NAME, "v2.dataOff             = {0}", _dataOff);
+
+        BuildExtentsFromByteMap(hdr.totalBlocks);
+
+        _sectorCache = new Dictionary<ulong, byte[]>();
+
+        _imageInfo.CreationTime         = imageFilter.CreationTime;
+        _imageInfo.LastModificationTime = imageFilter.LastWriteTime;
+        _imageInfo.MediaTitle           = Path.GetFileNameWithoutExtension(imageFilter.Filename);
+        _imageInfo.Sectors              = hdr.totalBlocks;
+        _imageInfo.SectorSize           = hdr.blockSize;
+        _imageInfo.MetadataMediaType    = MetadataMediaType.BlockMedia;
+        _imageInfo.MediaType            = MediaType.GENERIC_HDD;
+        _imageInfo.ImageSize            = hdr.usedBlocks * hdr.blockSize;
+        _imageInfo.ApplicationVersion   = ptcVersion;
+        _imageStream                    = stream;
+
+        return ErrorNumber.NoError;
+    }
+
+    void BuildExtentsFromByteMap(ulong totalBlocks)
+    {
+        AaruLogging.Debug(MODULE_NAME, Localization.Filling_extents);
+        var extentFillStopwatch = new Stopwatch();
+        extentFillStopwatch.Start();
+        _extents    = new ExtentsULong();
+        _extentsOff = new Dictionary<ulong, ulong>();
+
+        if(totalBlocks == 0)
+        {
+            extentFillStopwatch.Stop();
+
+            return;
+        }
+
+        bool  current     = _byteMap[0] > 0;
+        ulong blockOff    = 0;
+        ulong extentStart = 0;
+
+        if(current) _extentsOff.Add(0, 0);
+
+        for(ulong i = 1; i < totalBlocks; i++)
+        {
+            bool next = _byteMap[i] > 0;
+
+            // Flux
+            if(next != current)
+            {
+                if(next)
+                {
+                    extentStart = i;
+                    _extentsOff.Add(i, ++blockOff);
+                }
+                else
+                    _extents.Add(extentStart, i);
+            }
+
+            if(next && current) blockOff++;
+
+            current = next;
+        }
+
+        if(current) _extents.Add(extentStart, totalBlocks);
+
+        extentFillStopwatch.Stop();
+
+        AaruLogging.Debug(MODULE_NAME,
+                          Localization.Took_0_seconds_to_fill_extents,
+                          extentFillStopwatch.Elapsed.TotalSeconds);
+    }
+
     /// <inheritdoc />
     public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
@@ -195,20 +452,22 @@ public sealed partial class PartClone
 
         sectorStatus = SectorStatus.Dumped;
 
+        uint blockSize = _imageVersion == 2 ? _v2BlockSize : _pHdr.blockSize;
+
         if(_byteMap[sectorAddress] == 0)
         {
-            buffer = new byte[_pHdr.blockSize];
+            buffer = new byte[blockSize];
 
             return ErrorNumber.NoError;
         }
 
         if(_sectorCache.TryGetValue(sectorAddress, out buffer)) return ErrorNumber.NoError;
 
-        long imageOff = _dataOff + (long)(BlockOffset(sectorAddress) * (_pHdr.blockSize + (uint)_crcSize));
+        long imageOff = BlockByteOffset(sectorAddress);
 
-        buffer = new byte[_pHdr.blockSize];
+        buffer = new byte[blockSize];
         _imageStream.Seek(imageOff, SeekOrigin.Begin);
-        _imageStream.EnsureRead(buffer, 0, (int)_pHdr.blockSize);
+        _imageStream.EnsureRead(buffer, 0, (int)blockSize);
 
         if(_sectorCache.Count > MAX_CACHED_SECTORS) _sectorCache.Clear();
 
@@ -230,6 +489,8 @@ public sealed partial class PartClone
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
+        uint blockSize = _imageVersion == 2 ? _v2BlockSize : _pHdr.blockSize;
+
         var ms = new MemoryStream();
         sectorStatus = Enumerable.Repeat(SectorStatus.Dumped, (int)length).ToArray();
 
@@ -246,7 +507,7 @@ public sealed partial class PartClone
 
         if(allEmpty)
         {
-            buffer = new byte[_pHdr.blockSize * length];
+            buffer = new byte[blockSize * length];
 
             return ErrorNumber.NoError;
         }

@@ -38,7 +38,7 @@ public sealed partial class PartClone
 {
 #region Nested type: Header
 
-    /// <summary>PartClone disk image header, little-endian</summary>
+    /// <summary>PartClone v0001 disk image header, little-endian</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     struct Header
     {
@@ -64,6 +64,61 @@ public sealed partial class PartClone
         /// <summary>Empty space</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4096)]
         public readonly byte[] buffer;
+    }
+
+#endregion
+
+#region Nested type: HeaderV2
+
+    /// <summary>PartClone v0002 image descriptor, little-endian. 110 bytes including trailing CRC-32.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct HeaderV2
+    {
+        /// <summary>Magic, NUL terminated. The first 15 bytes match <see cref="PartClone._partCloneMagic" />.</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public readonly byte[] magic;
+        /// <summary>partclone version that produced the image, e.g. "0.3.1".</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 14)]
+        public readonly byte[] ptcVersion;
+        /// <summary>Image format version, in text: "0002".</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public readonly byte[] version;
+        /// <summary>Endianness marker: <see cref="PartClone.ENDIAN_MAGIC" /> for little-endian.</summary>
+        public readonly ushort endianess;
+
+        /// <summary>File system magic name, NUL terminated.</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public readonly byte[] filesystem;
+        /// <summary>Source device size in bytes.</summary>
+        public readonly ulong deviceSize;
+        /// <summary>Total block count.</summary>
+        public readonly ulong totalBlocks;
+        /// <summary>Used block count as reported by the file system superblock.</summary>
+        public readonly ulong superBlockUsedBlocks;
+        /// <summary>Used block count as counted from the bitmap.</summary>
+        public readonly ulong usedBlocks;
+        /// <summary>Block size in bytes.</summary>
+        public readonly uint blockSize;
+
+        /// <summary>Size of this options section.</summary>
+        public readonly uint featureSize;
+        /// <summary>Image format version, in binary: 0x0002.</summary>
+        public readonly ushort imageVersion;
+        /// <summary>CPU width that produced the image (32 / 64).</summary>
+        public readonly ushort cpuBits;
+        /// <summary>Checksum algorithm (see CSM_* constants).</summary>
+        public readonly ushort checksumMode;
+        /// <summary>Checksum size in bytes.</summary>
+        public readonly ushort checksumSize;
+        /// <summary>Number of consecutive blocks that share one checksum.</summary>
+        public readonly uint blocksPerChecksum;
+        /// <summary>If non-zero, the checksum is reseeded after every strip.</summary>
+        public readonly byte reseedChecksum;
+        /// <summary>Bitmap layout (see BM_* constants).</summary>
+        public readonly byte bitmapMode;
+
+        /// <summary>CRC-32 over the previous bytes of this descriptor.</summary>
+        public readonly uint crc;
     }
 
 #endregion

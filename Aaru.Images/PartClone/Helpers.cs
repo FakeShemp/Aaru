@@ -88,11 +88,54 @@ public sealed partial class PartClone
         return crc;
     }
 
+    /// <summary>
+    ///     Reflected CRC-32 used by partclone v0002. Polynomial <see cref="CRC32_POLYNOMIAL" />, initial seed
+    ///     <see cref="CRC32_SEED" />, no final XOR. Used for the image descriptor CRC, the BM_BIT bitmap CRC and
+    ///     the per-strip data CRC when <see cref="CSM_CRC32" /> is selected.
+    /// </summary>
+    static uint UpdateCrc32(uint crc, byte[] buffer, int offset, int size)
+    {
+        if(size <= 0 || buffer is null) return crc;
+
+        int end = offset + size;
+
+        for(int i = offset; i < end; i++)
+        {
+            byte b   = buffer[i];
+            uint tmp = crc ^ b;
+            crc = crc >> 8 ^ _crc0001Table[tmp & 0xFF];
+        }
+
+        return crc;
+    }
+
+    /// <summary>Position of <paramref name="sectorAddress" /> within the dense list of stored blocks.</summary>
     ulong BlockOffset(ulong sectorAddress)
     {
         _extents.GetStart(sectorAddress, out ulong extentStart);
         _extentsOff.TryGetValue(extentStart, out ulong extentStartingOffset);
 
         return extentStartingOffset + (sectorAddress - extentStart);
+    }
+
+    /// <summary>
+    ///     Translates a sector address to the byte offset of its data inside <see cref="_imageStream" />, taking the
+    ///     interspersed v0002 strip checksums into account when present.
+    /// </summary>
+    long BlockByteOffset(ulong sectorAddress)
+    {
+        ulong storedIndex = BlockOffset(sectorAddress);
+
+        if(_imageVersion == 2)
+        {
+            var bytes = (long)(storedIndex * _v2BlockSize);
+
+            if(_v2BlocksPerChecksum > 0 && _v2ChecksumSize > 0)
+                bytes += (long)(storedIndex / _v2BlocksPerChecksum) * _v2ChecksumSize;
+
+            return _dataOff + bytes;
+        }
+
+        return _dataOff + (long)(storedIndex * (_pHdr.blockSize + (uint)_crcSize));
     }
 }

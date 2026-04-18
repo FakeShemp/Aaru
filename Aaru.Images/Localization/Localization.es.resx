@@ -1795,6 +1795,42 @@
     <data name="PartClone_Name" xml:space="preserve">
     <value>Imagen de disco de PartClone</value>
   </data>
+    <data name="PartClone_v2_invalid_header_checksum_0_1" xml:space="preserve">
+    <value>Suma de verificación de la cabecera partclone v0002 inválida: almacenada 0x{0:X8}, calculada 0x{1:X8}</value>
+  </data>
+    <data name="PartClone_v2_unsupported_endianness_0" xml:space="preserve">
+    <value>Marcador de endianidad de partclone v0002 no soportado: 0x{0:X4}</value>
+  </data>
+    <data name="PartClone_v2_unexpected_cpu_bits_0" xml:space="preserve">
+    <value>Valor inesperado de cpu_bits {0} en partclone v0002, continuando</value>
+  </data>
+    <data name="PartClone_v2_invalid_block_size_0" xml:space="preserve">
+    <value>Tamaño de bloque inválido en partclone v0002: {0}</value>
+  </data>
+    <data name="PartClone_v2_unknown_checksum_mode_0" xml:space="preserve">
+    <value>Modo de suma de verificación desconocido en partclone v0002: 0x{0:X2}</value>
+  </data>
+    <data name="PartClone_v2_checksum_size_mismatch_0_1" xml:space="preserve">
+    <value>El tamaño de la suma de verificación {0} no coincide con el modo 0x{1:X2} en partclone v0002</value>
+  </data>
+    <data name="PartClone_v2_blocks_per_checksum_zero" xml:space="preserve">
+    <value>blocks_per_checksum no puede ser cero cuando hay suma de verificación en partclone v0002</value>
+  </data>
+    <data name="PartClone_v2_unknown_bitmap_mode_0" xml:space="preserve">
+    <value>Modo de mapa de bits desconocido en partclone v0002: 0x{0:X2}</value>
+  </data>
+    <data name="PartClone_v2_bitmap_too_large_0" xml:space="preserve">
+    <value>El mapa de bits de partclone v0002 es demasiado grande: {0} bytes</value>
+  </data>
+    <data name="PartClone_v2_short_read_bitmap" xml:space="preserve">
+    <value>Lectura incompleta del mapa de bits de partclone v0002</value>
+  </data>
+    <data name="PartClone_v2_short_read_bitmap_crc" xml:space="preserve">
+    <value>Lectura incompleta de la suma de verificación del mapa de bits de partclone v0002</value>
+  </data>
+    <data name="PartClone_v2_bitmap_crc_mismatch_0_1" xml:space="preserve">
+    <value>Suma de verificación del mapa de bits de partclone v0002 no coincide: almacenada 0x{0:X8}, calculada 0x{1:X8}</value>
+  </data>
     <data name="Partimage_Name" xml:space="preserve">
     <value>Imagen de disco de Partimage</value>
   </data>

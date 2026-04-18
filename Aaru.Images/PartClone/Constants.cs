@@ -45,8 +45,29 @@ public sealed partial class PartClone
     const uint CRC32_POLYNOMIAL = 0xEDB88320;
     /// <summary>Initial seed used by partclone's <c>init_crc32()</c>.</summary>
     const uint CRC32_SEED = 0xFFFFFFFF;
-    /// <summary>Only partclone image format 0001 is supported.</summary>
-    const string SUPPORTED_VERSION = "0001";
+    /// <summary>partclone v0001 image format version string.</summary>
+    const string VERSION_0001 = "0001";
+    /// <summary>partclone v0002 image format version string.</summary>
+    const string VERSION_0002 = "0002";
+
+    /// <summary>Endianness marker stored in the v0002 header (little-endian).</summary>
+    const ushort ENDIAN_MAGIC = 0xC0DE;
+    /// <summary>Size of the trailing CRC-32 that protects the v0002 image descriptor.</summary>
+    const int V2_HEADER_CRC_SIZE = 4;
+    /// <summary>Size of the bitmap CRC-32 trailer used in v0002 BM_BIT bitmaps.</summary>
+    const int V2_BITMAP_CRC_SIZE = 4;
+
+    // Checksum modes (image_options_v2.checksum_mode)
+    const ushort CSM_NONE       = 0x00;
+    const ushort CSM_CRC32      = 0x20;
+    const ushort CSM_XXH64      = 0x30;
+    const ushort CSM_XXH128     = 0x31;
+    const ushort CSM_CRC32_0001 = 0xFF;
+
+    // Bitmap modes (image_options_v2.bitmap_mode)
+    const byte BM_NONE = 0x00;
+    const byte BM_BIT  = 0x01;
+    const byte BM_BYTE = 0x08;
 
     const    uint   MAX_CACHE_SIZE     = 16777216;
     const    uint   MAX_CACHED_SECTORS = MAX_CACHE_SIZE / 512;

@@ -2400,6 +2400,42 @@
     <data name="Took_0_seconds_to_fill_extents" xml:space="preserve">
     <value>Took {0} seconds to fill extents</value>
   </data>
+    <data name="PartClone_v2_invalid_header_checksum_0_1" xml:space="preserve">
+    <value>Invalid partclone v0002 header checksum: stored 0x{0:X8}, computed 0x{1:X8}</value>
+  </data>
+    <data name="PartClone_v2_unsupported_endianness_0" xml:space="preserve">
+    <value>Unsupported partclone v0002 endianness marker 0x{0:X4}</value>
+  </data>
+    <data name="PartClone_v2_unexpected_cpu_bits_0" xml:space="preserve">
+    <value>Unexpected partclone v0002 cpu_bits value {0}, continuing</value>
+  </data>
+    <data name="PartClone_v2_invalid_block_size_0" xml:space="preserve">
+    <value>Invalid partclone v0002 block size {0}</value>
+  </data>
+    <data name="PartClone_v2_unknown_checksum_mode_0" xml:space="preserve">
+    <value>Unknown partclone v0002 checksum mode 0x{0:X2}</value>
+  </data>
+    <data name="PartClone_v2_checksum_size_mismatch_0_1" xml:space="preserve">
+    <value>Partclone v0002 checksum size {0} does not match checksum mode 0x{1:X2}</value>
+  </data>
+    <data name="PartClone_v2_blocks_per_checksum_zero" xml:space="preserve">
+    <value>Partclone v0002 blocks_per_checksum cannot be zero when a checksum is enabled</value>
+  </data>
+    <data name="PartClone_v2_unknown_bitmap_mode_0" xml:space="preserve">
+    <value>Unknown partclone v0002 bitmap mode 0x{0:X2}</value>
+  </data>
+    <data name="PartClone_v2_bitmap_too_large_0" xml:space="preserve">
+    <value>Partclone v0002 bitmap too large to load: {0} bytes</value>
+  </data>
+    <data name="PartClone_v2_short_read_bitmap" xml:space="preserve">
+    <value>Short read while loading partclone v0002 bitmap</value>
+  </data>
+    <data name="PartClone_v2_short_read_bitmap_crc" xml:space="preserve">
+    <value>Short read while loading partclone v0002 bitmap CRC</value>
+  </data>
+    <data name="PartClone_v2_bitmap_crc_mismatch_0_1" xml:space="preserve">
+    <value>Partclone v0002 bitmap CRC mismatch: stored 0x{0:X8}, computed 0x{1:X8}</value>
+  </data>
     <data name="Partimage_Name" xml:space="preserve">
     <value>Partimage disk image</value>
   </data>
