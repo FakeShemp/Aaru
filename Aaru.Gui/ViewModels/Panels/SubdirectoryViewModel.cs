@@ -125,6 +125,7 @@ public sealed class SubdirectoryViewModel
         }
 
         model.Plugin.CloseDir(node);
+        model.Listed = true;
     }
 
     public ObservableCollection<FileModel> Entries             { get; }
