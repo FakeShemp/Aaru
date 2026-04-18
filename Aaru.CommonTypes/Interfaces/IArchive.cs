@@ -38,6 +38,7 @@ using System.Collections.Generic;
 using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
+using Aaru.Localization;
 
 namespace Aaru.CommonTypes.Interfaces;
 
@@ -46,28 +47,35 @@ namespace Aaru.CommonTypes.Interfaces;
 public enum ArchiveSupportedFeature : uint
 {
     /// <summary>The archive supports filenames for its entries. If this flag is not set, files can only be accessed by number.</summary>
+    [LocalizedDescription(nameof(UI.Archive_supports_filenames))]
     SupportsFilenames = 1 << 0,
     /// <summary>
     ///     The archive supports compression. If this flag is not set, compressed and uncompressed lengths are always the
     ///     same.
     /// </summary>
+    [LocalizedDescription(nameof(UI.Archive_supports_compression))]
     SupportsCompression = 1 << 1,
     /// <summary>
     ///     The archive supports subdirectories. If this flag is not set, all filenames are guaranteed to not contain any
     ///     "/" character.
     /// </summary>
+    [LocalizedDescription(nameof(UI.Archive_supports_subdirectories))]
     SupportsSubdirectories = 1 << 2,
     /// <summary>
     ///     The archive supports explicit entries for directories (like Zip, for example). If this flag is not set,
     ///     directories are implicit by the relative name of the files.
     /// </summary>
+    [LocalizedDescription(nameof(UI.Archive_has_explicit_directories))]
     HasExplicitDirectories = 1 << 3,
     /// <summary>The archive stores a timestamp with each entry if this flag is set.</summary>
+    [LocalizedDescription(nameof(UI.Archive_has_entry_timestamp))]
     HasEntryTimestamp = 1 << 4,
     /// <summary>If this flag is set, individual files or the whole archive might be encrypted or password-protected.</summary>
+    [LocalizedDescription(nameof(UI.Archive_supports_protection))]
     SupportsProtection = 1 << 5, // TODO: not implemented yet
 
     /// <summary>If this flag is set, the archive supports returning extended attributes (Xattrs) for each entry.</summary>
+    [LocalizedDescription(nameof(UI.Archive_supports_xattrs))]
     SupportsXAttrs = 1 << 6
 }
 

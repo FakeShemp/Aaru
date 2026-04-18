@@ -41,6 +41,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Interop;
+using Aaru.CommonTypes.Structs;
 using Aaru.Core;
 using Aaru.Database;
 using Aaru.Gui.Models;
@@ -67,6 +68,7 @@ using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
 using MsBox.Avalonia.Models;
 using Spectre.Console;
+using ArchiveInfo = Aaru.Gui.Views.Panels.ArchiveInfo;
 using Console = Aaru.Gui.Views.Dialogs.Console;
 using FileSystem = Aaru.CommonTypes.AaruMetadata.FileSystem;
 using ImageInfo = Aaru.Gui.Views.Panels.ImageInfo;
@@ -83,7 +85,10 @@ public partial class MainWindowViewModel : ViewModelBase
     readonly SvgImage _genericOpticalIcon;
     readonly SvgImage _genericTapeIcon;
     readonly Window   _view;
-    Console           _console;
+    ArchiveModel      _archive;
+    [ObservableProperty]
+    bool _archiveLoaded;
+    Console _console;
     [ObservableProperty]
     [CanBeNull]
     object _contentPanel;
@@ -107,13 +112,13 @@ public partial class MainWindowViewModel : ViewModelBase
         SettingsCommand             = new AsyncRelayCommand(SettingsAsync);
         ConsoleCommand              = new RelayCommand(Console);
         OpenCommand                 = new AsyncRelayCommand(OpenAsync);
-        CalculateEntropyCommand     = new RelayCommand(CalculateEntropy);
-        VerifyImageCommand          = new RelayCommand(VerifyImage);
-        ChecksumImageCommand        = new RelayCommand(ChecksumImage);
-        ConvertImageCommand         = new RelayCommand(ConvertImage);
-        CreateSidecarCommand        = new RelayCommand(CreateSidecar);
-        ViewImageSectorsCommand     = new RelayCommand(ViewImageSectors);
-        DecodeImageMediaTagsCommand = new RelayCommand(DecodeImageMediaTags);
+        CalculateEntropyCommand     = new RelayCommand(CalculateEntropy,     () => ImageLoaded);
+        VerifyImageCommand          = new RelayCommand(VerifyImage,          () => ImageLoaded);
+        ChecksumImageCommand        = new RelayCommand(ChecksumImage,        () => ImageLoaded);
+        ConvertImageCommand         = new RelayCommand(ConvertImage,         () => ImageLoaded);
+        CreateSidecarCommand        = new RelayCommand(CreateSidecar,        () => ImageLoaded);
+        ViewImageSectorsCommand     = new RelayCommand(ViewImageSectors,     () => ImageLoaded);
+        DecodeImageMediaTagsCommand = new RelayCommand(DecodeImageMediaTags, () => ImageLoaded);
         OpenMhddLogCommand          = new AsyncRelayCommand(OpenMhddLogAsync);
         OpenIbgLogCommand           = new AsyncRelayCommand(OpenIbgLogAsync);
         ConnectToRemoteCommand      = new AsyncRelayCommand(ConnectToRemoteAsync);
@@ -238,6 +243,20 @@ public partial class MainWindowViewModel : ViewModelBase
                     ContentPanel = new Subdirectory
                     {
                         DataContext = new SubdirectoryViewModel(subdirectoryModel, _view)
+                    };
+
+                    break;
+                case ArchiveModel archiveModel:
+                    ContentPanel = new ArchiveInfo
+                    {
+                        DataContext = archiveModel.ViewModel
+                    };
+
+                    break;
+                case ArchiveSubdirectoryModel archiveSubdirectoryModel:
+                    ContentPanel = new ArchiveSubdirectory
+                    {
+                        DataContext = new ArchiveSubdirectoryViewModel(archiveSubdirectoryModel, _view)
                     };
 
                     break;
@@ -388,7 +407,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // TODO: Extensions
         IReadOnlyList<IStorageFile> result = await _view.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title          = UI.Dialog_Choose_image_to_open,
+            Title          = UI.Dialog_Choose_file_to_open,
             AllowMultiple  = false,
             FileTypeFilter = [FilePickerFileTypes.All]
         });
@@ -417,12 +436,22 @@ public partial class MainWindowViewModel : ViewModelBase
             // Detect the image format of the selected file
             if(ImageFormat.Detect(inputFilter) is not IMediaImage imageFormat)
             {
-                IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
-                    UI.Image_format_not_identified,
-                    ButtonEnum.Ok,
-                    Icon.Error);
+                // Try archive format as fallback
+                IArchive archiveFormat = ArchiveFormat.Detect(inputFilter);
 
-                await msbox.ShowAsync();
+                if(archiveFormat is null)
+                {
+                    IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                        UI.Image_format_not_identified,
+                        ButtonEnum.Ok,
+                        Icon.Error);
+
+                    await msbox.ShowAsync();
+
+                    return;
+                }
+
+                await OpenArchiveAsync(archiveFormat, inputFilter, result[0].Path.LocalPath);
 
                 return;
             }
@@ -666,6 +695,11 @@ public partial class MainWindowViewModel : ViewModelBase
                 Statistics.AddMedia(imageFormat.Info.MediaType, false);
                 Statistics.AddFilter(inputFilter.Name);
 
+                // Close any previously opened archive before replacing the tree
+                _archive?.Archive?.Close();
+                _archive      = null;
+                ArchiveLoaded = false;
+
                 TreeRoot.Clear();
                 TreeRoot.Add(imageModel);
                 Title       = $"Aaru - {imageModel.FileName}";
@@ -700,6 +734,144 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         Statistics.AddCommand("image-info");
+    }
+
+    async Task OpenArchiveAsync(IArchive archiveFormat, IFilter inputFilter, string path)
+    {
+        AaruLogging.WriteLine(UI.Archive_format_identified_by_0_1, Markup.Escape(archiveFormat.Name), archiveFormat.Id);
+
+        try
+        {
+            ErrorNumber opened = archiveFormat.Open(inputFilter, null);
+
+            if(opened != ErrorNumber.NoError)
+            {
+                IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                    string.Format(UI.Error_0_opening_archive_format, opened),
+                    ButtonEnum.Ok,
+                    Icon.Error);
+
+                await msbox.ShowAsync();
+
+                AaruLogging.Error(UI.Unable_to_open_archive_format);
+                AaruLogging.Error(UI.No_error_given);
+
+                return;
+            }
+
+            var archiveModel = new ArchiveModel
+            {
+                Path      = path,
+                FileName  = Path.GetFileName(path),
+                Icon      = _genericFolderIcon,
+                Archive   = archiveFormat,
+                Filter    = inputFilter,
+                ViewModel = new ArchiveInfoViewModel(path, inputFilter, archiveFormat)
+            };
+
+            var rootDir = new ArchiveSubdirectoryModel
+            {
+                Name    = "/",
+                Path    = "",
+                Archive = archiveFormat
+            };
+
+            bool supportsSubdirs =
+                archiveFormat.ArchiveFeatures.HasFlag(ArchiveSupportedFeature.SupportsSubdirectories);
+
+            for(var entryNumber = 0; entryNumber < archiveFormat.NumberOfEntries; entryNumber++)
+            {
+                ErrorNumber nameErr = archiveFormat.GetFilename(entryNumber, out string entryName);
+
+                if(nameErr != ErrorNumber.NoError || string.IsNullOrEmpty(entryName)) continue;
+
+                archiveFormat.Stat(entryNumber, out FileEntryInfo stat);
+
+                if(!supportsSubdirs || !entryName.Contains('/'))
+                {
+                    rootDir.Entries.Add(new ArchiveFileModel
+                    {
+                        EntryNumber = entryNumber,
+                        Name        = entryName,
+                        Stat        = stat
+                    });
+
+                    continue;
+                }
+
+                string[]                 parts   = entryName.Split('/');
+                ArchiveSubdirectoryModel current = rootDir;
+
+                for(var i = 0; i < parts.Length - 1; i++)
+                {
+                    string part = parts[i];
+
+                    if(string.IsNullOrEmpty(part)) continue;
+
+                    ArchiveSubdirectoryModel child = current.Subdirectories.FirstOrDefault(s => s.Name == part);
+
+                    if(child == null)
+                    {
+                        child = new ArchiveSubdirectoryModel
+                        {
+                            Name    = part,
+                            Path    = string.Join('/', parts, 0, i + 1),
+                            Archive = archiveFormat
+                        };
+
+                        current.Subdirectories.Add(child);
+                    }
+
+                    current = child;
+                }
+
+                // If the entry itself is a directory (trailing slash) skip adding as a file
+                string leaf = parts[^1];
+
+                if(string.IsNullOrEmpty(leaf))
+                {
+                    // Entry represents a directory; ensure it's present as subdirectory
+                    continue;
+                }
+
+                current.Entries.Add(new ArchiveFileModel
+                {
+                    EntryNumber = entryNumber,
+                    Name        = leaf,
+                    Stat        = stat
+                });
+            }
+
+            archiveModel.Roots.Add(rootDir);
+
+            Statistics.AddFilter(inputFilter.Name);
+
+            // Close any previously opened archive before replacing the tree
+            _archive?.Archive?.Close();
+
+            TreeRoot.Clear();
+            TreeRoot.Add(archiveModel);
+            Title         = $"Aaru - {archiveModel.FileName}";
+            _image        = null;
+            ImageLoaded   = false;
+            _archive      = archiveModel;
+            ArchiveLoaded = true;
+
+            Statistics.AddCommand("archive-info");
+        }
+        catch(Exception ex)
+        {
+            IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                UI.Unable_to_open_archive_format,
+                ButtonEnum.Ok,
+                Icon.Error);
+
+            await msbox.ShowAsync();
+
+            AaruLogging.Error(UI.Unable_to_open_archive_format);
+            AaruLogging.Error(Aaru.Localization.Core.Error_0, ex.Message);
+            AaruLogging.Exception(ex, Aaru.Localization.Core.Error_0, ex.Message);
+        }
     }
 
     Task AboutAsync()
@@ -757,8 +929,24 @@ public partial class MainWindowViewModel : ViewModelBase
         return dialog.ShowDialog(_view);
     }
 
-    internal void Exit() =>
+    internal void Exit()
+    {
+        _archive?.Archive?.Close();
+        _archive = null;
+
         (Application.Current?.ApplicationLifetime as ClassicDesktopStyleApplicationLifetime)?.Shutdown();
+    }
+
+    partial void OnImageLoadedChanged(bool value)
+    {
+        (CalculateEntropyCommand as IRelayCommand)?.NotifyCanExecuteChanged();
+        (VerifyImageCommand as IRelayCommand)?.NotifyCanExecuteChanged();
+        (ChecksumImageCommand as IRelayCommand)?.NotifyCanExecuteChanged();
+        (ConvertImageCommand as IRelayCommand)?.NotifyCanExecuteChanged();
+        (CreateSidecarCommand as IRelayCommand)?.NotifyCanExecuteChanged();
+        (ViewImageSectorsCommand as IRelayCommand)?.NotifyCanExecuteChanged();
+        (DecodeImageMediaTagsCommand as IRelayCommand)?.NotifyCanExecuteChanged();
+    }
 
     void Console()
     {

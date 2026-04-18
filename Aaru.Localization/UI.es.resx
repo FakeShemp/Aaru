@@ -5623,4 +5623,49 @@ Probadores:
     <data name="Maximum_error_recovery_is_100" xml:space="preserve">
         <value>La recuperación de errores máxima es 100%</value>
     </data>
+    <data name="Dialog_Choose_file_to_open" xml:space="preserve">
+        <value>Elegir archivo a abrir</value>
+    </data>
+    <data name="Error_0_opening_archive_format" xml:space="preserve">
+        <value>Error {0} al abrir el formato de archivo.</value>
+    </data>
+    <data name="Title_Archive_information" xml:space="preserve">
+        <value>[bold][slateblue1]Información del archivo[/][/]</value>
+    </data>
+    <data name="Archive_plugin_0" xml:space="preserve">
+        <value>[slateblue1]Plugin:[/] [red]{0}[/]</value>
+    </data>
+    <data name="Archive_plugin_id_0" xml:space="preserve">
+        <value>[slateblue1]ID del plugin:[/] [purple]{0}[/]</value>
+    </data>
+    <data name="Archive_number_of_entries_0" xml:space="preserve">
+        <value>[slateblue1]Número de entradas:[/] [aqua]{0}[/]</value>
+    </data>
+    <data name="Archive_features_0" xml:space="preserve">
+        <value>[slateblue1]Características:[/] [orange3]{0}[/]</value>
+    </data>
+    <data name="Skipped_non_regular_archive_entry_0" xml:space="preserve">
+        <value>Se omitió la entrada de archivo no regular {0}.</value>
+    </data>
+    <data name="Archive_supports_filenames" xml:space="preserve">
+        <value>Soporta nombres de archivos</value>
+    </data>
+    <data name="Archive_supports_compression" xml:space="preserve">
+        <value>Soporta compresión</value>
+    </data>
+    <data name="Archive_supports_subdirectories" xml:space="preserve">
+        <value>Soporta subdirectorios</value>
+    </data>
+    <data name="Archive_has_explicit_directories" xml:space="preserve">
+        <value>Tiene subdirectories explícitos</value>
+    </data>
+    <data name="Archive_has_entry_timestamp" xml:space="preserve">
+        <value>Tiene marcas de tiempo</value>
+    </data>
+    <data name="Archive_supports_protection" xml:space="preserve">
+        <value>Soporta protección</value>
+    </data>
+    <data name="Archive_supports_xattrs" xml:space="preserve">
+        <value>Soporta atributos extendidos</value>
+    </data>
 </root>

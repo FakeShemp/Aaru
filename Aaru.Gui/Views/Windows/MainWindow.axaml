@@ -325,6 +325,28 @@
                                        VerticalAlignment="Center" />
                         </StackPanel>
                     </TreeDataTemplate>
+                    <TreeDataTemplate DataType="models:ArchiveModel"
+                                      ItemsSource="{Binding Roots, Mode=OneWay}">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="4">
+                            <Image Width="24"
+                                   Height="24"
+                                   Source="{Binding Icon, Mode=OneWay}" />
+                            <TextBlock Text="{Binding FileName, Mode=OneWay}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </TreeDataTemplate>
+                    <TreeDataTemplate DataType="models:ArchiveSubdirectoryModel"
+                                      ItemsSource="{Binding Subdirectories, Mode=OneWay}">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="4">
+                            <Svg Width="24"
+                                 Height="24"
+                                 Path="/Assets/Icons/oxygen/inode-directory.svg" />
+                            <TextBlock Text="{Binding Name, Mode=OneWay}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </TreeDataTemplate>
                     <DataTemplate DataType="models:RootModel">
                         <TextBlock Text="{Binding Name, Mode=OneWay}" />
                     </DataTemplate>
