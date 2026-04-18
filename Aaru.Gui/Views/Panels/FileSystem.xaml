@@ -114,15 +114,15 @@
                 BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                 CornerRadius="8"
                 IsVisible="{Binding !!InformationText, Mode=OneWay}">
-            <StackPanel Spacing="8"
-                        Margin="12">
-                <controls:SpectreTextBlock FontWeight="Bold"
-                                           Text="{x:Static localization:UI.Title_Details}" />
-                <ScrollViewer>
-                    <controls:SpectreTextBlock Text="{Binding InformationText, Mode=OneWay}"
-                                               TextWrapping="Wrap" />
-                </ScrollViewer>
-            </StackPanel>
+            <ScrollViewer>
+                <StackPanel Spacing="8"
+                                Margin="12">
+                    <controls:SpectreTextBlock FontWeight="Bold"
+                                               Text="{x:Static localization:UI.Title_Details}" />
+                        <controls:SpectreTextBlock Text="{Binding InformationText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
+                </StackPanel>
+            </ScrollViewer>
         </Border>
     </Grid>
 </UserControl>
