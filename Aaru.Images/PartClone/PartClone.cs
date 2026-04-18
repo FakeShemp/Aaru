@@ -46,7 +46,9 @@ public sealed partial class PartClone : IMediaImage, IVerifiableImage
 
     // The used block "bitmap" uses one byte per block
     // TODO: Convert on-image bytemap to on-memory bitmap
-    byte[]                    _byteMap;
+    byte[] _byteMap;
+    /// <summary>Detected stride of the per-block CRC trailer (4 for normal images, 8 for x64-bug ones).</summary>
+    int _crcSize;
     long                      _dataOff;
     ExtentsULong              _extents;
     Dictionary<ulong, ulong>  _extentsOff;

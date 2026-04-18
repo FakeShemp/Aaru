@@ -70,6 +70,17 @@ public sealed partial class PartClone
         AaruLogging.Debug(MODULE_NAME, "pHdr.totalBlocks = {0}", _pHdr.totalBlocks);
         AaruLogging.Debug(MODULE_NAME, "pHdr.usedBlocks = {0}",  _pHdr.usedBlocks);
 
+        string version = StringHandlers.CToString(_pHdr.version);
+
+        if(version != SUPPORTED_VERSION)
+        {
+            AaruLogging.Error(MODULE_NAME,
+                              "Unsupported partclone image version '{0}', only '0001' is supported",
+                              version);
+
+            return ErrorNumber.NotSupported;
+        }
+
         _byteMap = new byte[_pHdr.totalBlocks];
         AaruLogging.Debug(MODULE_NAME, Localization.Reading_bytemap_0_bytes, _byteMap.Length);
         stream.EnsureRead(_byteMap, 0, _byteMap.Length);
@@ -88,6 +99,35 @@ public sealed partial class PartClone
 
         _dataOff = stream.Position;
         AaruLogging.Debug(MODULE_NAME, "pHdr.dataOff = {0}", _dataOff);
+
+        // Autodetect the legacy x64 CRC bug: on 64-bit platforms old partclone versions serialized
+        // the 4-byte CRC using sizeof(unsigned long), writing 8 bytes per block instead of 4.
+        // Compare the trailing data region length against both possibilities to pick the right stride.
+        long trailing       = stream.Length - _dataOff;
+        var  expectedNormal = (long)(_pHdr.usedBlocks * (_pHdr.blockSize + CRC_SIZE_NORMAL));
+        var  expectedX64    = (long)(_pHdr.usedBlocks * (_pHdr.blockSize + CRC_SIZE_X64_BUG));
+
+        if(trailing == expectedX64 && trailing != expectedNormal)
+        {
+            _crcSize = CRC_SIZE_X64_BUG;
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "Detected partclone v0001 x64 CRC bug: using 8-byte CRC stride (trailing={0})",
+                              trailing);
+        }
+        else
+        {
+            _crcSize = CRC_SIZE_NORMAL;
+
+            if(trailing != expectedNormal && _pHdr.usedBlocks > 0)
+            {
+                AaruLogging.Debug(MODULE_NAME,
+                                  "Partclone data region size {0} does not match either layout (normal={1}, x64={2}); assuming 4-byte CRC stride",
+                                  trailing,
+                                  expectedNormal,
+                                  expectedX64);
+            }
+        }
 
         AaruLogging.Debug(MODULE_NAME, Localization.Filling_extents);
         var extentFillStopwatch = new Stopwatch();
@@ -164,7 +204,7 @@ public sealed partial class PartClone
 
         if(_sectorCache.TryGetValue(sectorAddress, out buffer)) return ErrorNumber.NoError;
 
-        long imageOff = _dataOff + (long)(BlockOffset(sectorAddress) * (_pHdr.blockSize + CRC_SIZE));
+        long imageOff = _dataOff + (long)(BlockOffset(sectorAddress) * (_pHdr.blockSize + (uint)_crcSize));
 
         buffer = new byte[_pHdr.blockSize];
         _imageStream.Seek(imageOff, SeekOrigin.Begin);
