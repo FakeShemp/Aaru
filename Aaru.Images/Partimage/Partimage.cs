@@ -56,6 +56,7 @@ public sealed partial class Partimage : IMediaImage, IVerifiableImage
     ImageInfo                 _imageInfo;
     Stream                    _imageStream;
     Dictionary<ulong, byte[]> _sectorCache;
+    ulong                     _usedBlocks;
 
     public Partimage() => _imageInfo = new ImageInfo
     {

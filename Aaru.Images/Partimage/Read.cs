@@ -303,7 +303,8 @@ public sealed partial class Partimage
             return ErrorNumber.InvalidArgument;
         }
 
-        _dataOff = stream.Position;
+        _dataOff    = stream.Position;
+        _usedBlocks = localHeader.qwUsedBlocks;
 
         AaruLogging.Debug(MODULE_NAME, "dataOff = {0}", _dataOff);
 
