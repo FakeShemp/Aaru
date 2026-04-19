@@ -325,6 +325,7 @@ Supported filters
 * LZip
 * MacBinary I, II, III
 * XZ
+* ZStandard
 
 Partially supported disk image formats
 ======================================
