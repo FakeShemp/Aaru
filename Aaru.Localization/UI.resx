@@ -5752,4 +5752,7 @@ Do you want to continue?</value>
     <data name="Archive_supports_xattrs" xml:space="preserve">
         <value>Supports extended attributes</value>
     </data>
+    <data name="Filesystem_contents_cannot_be_extracted" xml:space="preserve">
+        <value>[slateblue1]Filesystem contents cannot be extracted.[/]</value>
+    </data>
 </root>

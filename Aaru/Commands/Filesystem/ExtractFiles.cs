@@ -335,7 +335,12 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
                     {
                         plugins.ReadOnlyFilesystems.TryGetValue(idPlugins[0], out IReadOnlyFilesystem fs);
 
-                        if(fs is null) continue;
+                        if(fs is null)
+                        {
+                            AaruLogging.WriteLine(UI.Filesystem_contents_cannot_be_extracted);
+
+                            continue;
+                        }
 
                         if(settings.Volume.HasValue)
                         {

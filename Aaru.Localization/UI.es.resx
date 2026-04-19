@@ -5668,4 +5668,7 @@ Probadores:
     <data name="Archive_supports_xattrs" xml:space="preserve">
         <value>Soporta atributos extendidos</value>
     </data>
+    <data name="Filesystem_contents_cannot_be_extracted" xml:space="preserve">
+        <value>[slateblue1]El contenido del sistema de ficheros no puede ser extraído.[/]</value>
+    </data>
 </root>

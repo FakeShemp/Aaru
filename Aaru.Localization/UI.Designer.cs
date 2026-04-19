@@ -11345,5 +11345,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Archive_supports_xattrs", resourceCulture);
             }
         }
+        
+        public static string Filesystem_contents_cannot_be_extracted {
+            get {
+                return ResourceManager.GetString("Filesystem_contents_cannot_be_extracted", resourceCulture);
+            }
+        }
     }
 }
