@@ -3036,4 +3036,28 @@
     <data name="Ewf_Identify_Signature_0" xml:space="preserve">
         <value>Firma: {0}</value>
     </data>
+    <data name="MagicIso_disc_image" xml:space="preserve">
+        <value>Imagen de disco UIF de MagicISO</value>
+    </data>
+    <data name="MagicIso_bbis_signature_not_found" xml:space="preserve">
+        <value>No se encontró la firma del pie UIF de MagicISO.</value>
+    </data>
+    <data name="MagicIso_blhr_signature_not_found" xml:space="preserve">
+        <value>No se encontró la cabecera BLHR en la imagen UIF de MagicISO.</value>
+    </data>
+    <data name="MagicIso_password_protected_images_are_not_supported" xml:space="preserve">
+        <value>Las imágenes UIF de MagicISO protegidas con contraseña no están soportadas.</value>
+    </data>
+    <data name="MagicIso_unsupported_image_type_0" xml:space="preserve">
+        <value>El tipo de imagen UIF de MagicISO {0} no está soportado.</value>
+    </data>
+    <data name="MagicIso_unsupported_block_type_0" xml:space="preserve">
+        <value>El tipo de bloque UIF de MagicISO {0} no está soportado.</value>
+    </data>
+    <data name="MagicIso_NRG_trailer_not_found" xml:space="preserve">
+        <value>No se encontró el ancla NRG dentro de la imagen UIF de MagicISO.</value>
+    </data>
+    <data name="MagicIso_NRG_trailer_has_no_tracks" xml:space="preserve">
+        <value>El bloque NRG incrustado en la imagen UIF de MagicISO no contiene pistas.</value>
+    </data>
 </root>

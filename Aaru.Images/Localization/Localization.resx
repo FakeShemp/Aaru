@@ -3055,4 +3055,28 @@
     <data name="Ewf_Identify_Signature_0" xml:space="preserve">
         <value>Signature: {0}</value>
     </data>
+    <data name="MagicIso_disc_image" xml:space="preserve">
+        <value>MagicISO UIF disc image</value>
+    </data>
+    <data name="MagicIso_bbis_signature_not_found" xml:space="preserve">
+        <value>MagicISO UIF footer signature not found.</value>
+    </data>
+    <data name="MagicIso_blhr_signature_not_found" xml:space="preserve">
+        <value>MagicISO UIF BLHR block list header not found.</value>
+    </data>
+    <data name="MagicIso_password_protected_images_are_not_supported" xml:space="preserve">
+        <value>Password-protected MagicISO UIF images are not supported.</value>
+    </data>
+    <data name="MagicIso_unsupported_image_type_0" xml:space="preserve">
+        <value>MagicISO UIF image type {0} is not supported.</value>
+    </data>
+    <data name="MagicIso_unsupported_block_type_0" xml:space="preserve">
+        <value>MagicISO UIF block type {0} is not supported.</value>
+    </data>
+    <data name="MagicIso_NRG_trailer_not_found" xml:space="preserve">
+        <value>NRG trailer anchor was not found inside the MagicISO UIF image.</value>
+    </data>
+    <data name="MagicIso_NRG_trailer_has_no_tracks" xml:space="preserve">
+        <value>The NRG trailer embedded in the MagicISO UIF image has no tracks.</value>
+    </data>
 </root>

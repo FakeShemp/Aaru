@@ -102,6 +102,7 @@ Media image formats we can read
 * Expert Witness Format (EWF)
 * HD-Copy disk images
 * HxCStream
+* MagicISO (.UIF)
 * MAME Compressed Hunks of Data (CHD)
 * Microsoft VHDX
 * Nero Burning ROM (both image formats)

@@ -6087,5 +6087,53 @@ namespace Aaru.Images {
                 return ResourceManager.GetString("Ewf_Identify_Signature_0", resourceCulture);
             }
         }
+        
+        internal static string MagicIso_disc_image {
+            get {
+                return ResourceManager.GetString("MagicIso_disc_image", resourceCulture);
+            }
+        }
+        
+        internal static string MagicIso_bbis_signature_not_found {
+            get {
+                return ResourceManager.GetString("MagicIso_bbis_signature_not_found", resourceCulture);
+            }
+        }
+        
+        internal static string MagicIso_blhr_signature_not_found {
+            get {
+                return ResourceManager.GetString("MagicIso_blhr_signature_not_found", resourceCulture);
+            }
+        }
+        
+        internal static string MagicIso_password_protected_images_are_not_supported {
+            get {
+                return ResourceManager.GetString("MagicIso_password_protected_images_are_not_supported", resourceCulture);
+            }
+        }
+        
+        internal static string MagicIso_unsupported_image_type_0 {
+            get {
+                return ResourceManager.GetString("MagicIso_unsupported_image_type_0", resourceCulture);
+            }
+        }
+        
+        internal static string MagicIso_unsupported_block_type_0 {
+            get {
+                return ResourceManager.GetString("MagicIso_unsupported_block_type_0", resourceCulture);
+            }
+        }
+        
+        internal static string MagicIso_NRG_trailer_not_found {
+            get {
+                return ResourceManager.GetString("MagicIso_NRG_trailer_not_found", resourceCulture);
+            }
+        }
+        
+        internal static string MagicIso_NRG_trailer_has_no_tracks {
+            get {
+                return ResourceManager.GetString("MagicIso_NRG_trailer_has_no_tracks", resourceCulture);
+            }
+        }
     }
 }
