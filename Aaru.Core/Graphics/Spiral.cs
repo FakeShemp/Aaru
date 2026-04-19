@@ -31,6 +31,8 @@ using System.Collections.Generic;
 using System.IO;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.Decoders.Bluray;
+using Aaru.Decoders.DVD;
 using SkiaSharp;
 
 namespace Aaru.Core.Graphics;
@@ -83,39 +85,78 @@ public sealed class Spiral : IMediaGraph
         new(120, 15, 33, 46, 48, 116, 44, 46, 7864320, new SKColor(0xff, 0x91, 0x00));
     static readonly DiscParameters _hddvdRwParameters =
         new(120, 15, 33, 46, 48, 116, 44, 46, 7864320, new SKColor(0x30, 0x30, 0x30));
-    static readonly DiscParameters _umdParameters =
-        new(60, 11.025f, 16.2f, 28, 32, 56, 0, 0, 471872, new SKColor(0x6f, 0x0A, 0xCA));
-    static readonly DiscParameters _gdParameters = new(120, 15, 33, 46, 50, 116, 0, 0, 550000, SKColors.Silver);
+    static readonly DiscParameters _umdParameters = new(60, 11.025f, 16.2f, 28, 32, 56, 0, 0, 471872, SKColors.Silver);
+    static readonly DiscParameters _gdParameters  = new(120, 15, 33, 46, 50, 116, 0, 0, 550000, SKColors.Silver);
     static readonly DiscParameters _gdRecordableParameters =
         new(120, 15, 33, 46, 50, 116, 45, 46, 550000, new SKColor(0xBD, 0xA0, 0x00));
-    readonly SKCanvas      _canvas;
-    readonly float         _dataMaxRadius;
-    readonly float         _dataMinRadius;
-    readonly bool          _gdrom;
-    readonly List<SKPoint> _leadInPoints;
-    readonly float         _lowDensityMaxRadius;
-    readonly float         _lowDensityMinRadius;
-    readonly long          _maxSector;
-    readonly List<SKPoint> _points;
-    readonly List<SKPoint> _pointsLowDensity;
-    readonly List<SKPoint> _recordableInformationPoints;
+    readonly SKCanvas        _canvas;
+    readonly float[]         _dataMaxRadius;
+    readonly float[]         _dataMinRadius;
+    readonly bool            _gdrom;
+    readonly long            _layerBreak; // -1 when single-layer
+    readonly long[]          _layerMaxSector;
+    readonly List<SKPoint>[] _leadInPoints;
+    readonly int             _numLayers;
+    readonly List<SKPoint>[] _points;
+    readonly List<SKPoint>[] _recordableInformationPoints;
+    float                    _lowDensityMaxRadius;
+    float                    _lowDensityMinRadius;
+    List<SKPoint>            _pointsLowDensity;
 
     /// <summary>Initializes a spiral</summary>
-    /// <param name="width">Width in pixels for the underlying bitmap</param>
+    /// <param name="width">Width in pixels for the underlying bitmap (per disc; doubled internally when dual-layer)</param>
     /// <param name="height">Height in pixels for the underlying bitmap</param>
     /// <param name="parameters">Disc parameters</param>
     /// <param name="lastSector">Last sector that will be drawn into the spiral</param>
-    public Spiral(int width, int height, DiscParameters parameters, ulong lastSector)
+    /// <param name="layerBreak">
+    ///     When not <see langword="null" />, enables dual-layer mode: layer 0 holds sectors
+    ///     <c>0..layerBreak</c> and layer 1 holds <c>layerBreak+1..lastSector</c>. Each layer's full spiral spans
+    ///     <c>0..NominalMaxSectors</c>.
+    /// </param>
+    /// <param name="oppositeTrackPath">
+    ///     When <see langword="true" /> (default, OTP per ECMA-267), layer 1 is drawn outside-in
+    ///     (sector 0 at the outer radius). When <see langword="false" /> (PTP), layer 1 is drawn inside-out like layer 0.
+    /// </param>
+    public Spiral(int  width, int height, DiscParameters parameters, ulong lastSector, ulong? layerBreak = null,
+                  bool oppositeTrackPath = true)
     {
         if(parameters == _gdParameters || parameters == _gdRecordableParameters) _gdrom = true;
 
-        // GD-ROM LD area ends at 29mm, HD area starts at 30mm radius
+        // GD-ROM is physically single-layer; reject dual-layer combo
+        if(_gdrom) layerBreak = null;
 
-        Bitmap  = new SKBitmap(width, height);
+        _numLayers         = layerBreak is not null ? 2 : 1;
+        _layerBreak        = layerBreak is not null ? (long)(ulong)layerBreak : -1;
+
+        int bitmapWidth = _numLayers == 2 ? width * 2 : width;
+        Bitmap  = new SKBitmap(bitmapWidth, height);
         _canvas = new SKCanvas(Bitmap);
 
-        var center = new SKPoint(width / 2f, height / 2f);
+        _points                      = new List<SKPoint>[_numLayers];
+        _leadInPoints                = new List<SKPoint>[_numLayers];
+        _recordableInformationPoints = new List<SKPoint>[_numLayers];
+        _dataMinRadius               = new float[_numLayers];
+        _dataMaxRadius               = new float[_numLayers];
+        _layerMaxSector              = new long[_numLayers];
 
+        // Compute per-layer last sector (each layer's spiral spans 0..NominalMaxSectors)
+        long layer0Last = _numLayers == 2 ? Math.Min((long)lastSector, _layerBreak) : (long)lastSector;
+        long layer1Last = _numLayers == 2 ? (long)lastSector - _layerBreak - 1 : -1;
+
+        var leftCenter  = new SKPoint(width / 2f,         height / 2f);
+        var rightCenter = new SKPoint(width + width / 2f, height / 2f);
+
+        DrawLayer(0, leftCenter, width, height, parameters, layer0Last, false);
+
+        if(_numLayers == 2) DrawLayer(1, rightCenter, width, height, parameters, layer1Last, oppositeTrackPath);
+    }
+
+    public SKBitmap Bitmap { get; }
+
+    /// <summary>Draws the background, lead-in (layer 0 only), and undumped spiral for the specified layer.</summary>
+    void DrawLayer(int layerIdx, SKPoint center, int width, int height, DiscParameters parameters, long layerLastSector,
+                   bool reverse)
+    {
         int smallerDimension = Math.Min(width, height) - 8;
 
         // Get other diameters
@@ -134,18 +175,31 @@ public sealed class Spiral : IMediaGraph
         float recordableAreaEndDiameter =
             smallerDimension * parameters.RecordableInformationEnd / parameters.DiscDiameter;
 
-        _maxSector = parameters.NominalMaxSectors;
-        var lastSector1 = (long)lastSector;
+        long layerMaxSector = parameters.NominalMaxSectors;
 
-        // If the dumped media is overburnt
-        if(lastSector1 > _maxSector) _maxSector = lastSector1;
+        // Per-layer overburn
+        if(layerLastSector > layerMaxSector) layerMaxSector = layerLastSector;
+
+        _layerMaxSector[layerIdx] = layerMaxSector;
+
+        _canvas.Save();
+
+        // Clip drawing to this disc's half of the bitmap so the other layer is untouched
+        var halfRect = new SKRect(center.X - width  / 2f,
+                                  center.Y - height / 2f,
+                                  center.X + width  / 2f,
+                                  center.Y + height / 2f);
+
+        var halfClip = new SKPath();
+        halfClip.AddRect(halfRect);
+        _canvas.ClipPath(halfClip);
 
         // Ensure the disc hole is not painted over
         var clipPath = new SKPath();
         clipPath.AddCircle(center.X, center.Y, centerHoleDiameter / 2);
         _canvas.ClipPath(clipPath, SKClipOperation.Difference);
 
-        // Paint CD
+        // Paint disc body
         _canvas.DrawCircle(center,
                            smallerDimension / 2f,
                            new SKPaint
@@ -154,7 +208,7 @@ public sealed class Spiral : IMediaGraph
                                Color = parameters.DiscColor
                            });
 
-        // Draw out border of disc
+        // Draw outer border of disc
         _canvas.DrawCircle(center,
                            smallerDimension / 2f,
                            new SKPaint
@@ -191,66 +245,72 @@ public sealed class Spiral : IMediaGraph
         // (~3072 consecutive bad sectors) spans ~0.70 drawn revolutions = a visible ring.
         const float a = 0.53f;
 
-        // Draw the Lead-In
-        _leadInPoints = GetSpiralPoints(center,
-                                        informationAreaStartDiameter / 2,
-                                        leadInEndDiameter            / 2,
-                                        _gdrom ? a * 1.5f : a);
-
-        var path = new SKPath();
-
-        path.MoveTo(_leadInPoints[0]);
-
-        foreach(SKPoint point in _leadInPoints) path.LineTo(point);
-        _leadInPoints.Reverse();
-
-        _canvas.DrawPath(path,
-                         new SKPaint
-                         {
-                             Style       = SKPaintStyle.Stroke,
-                             Color       = SKColors.LightGray,
-                             StrokeWidth = 1
-                         });
-
-        // If there's a recordable information area, get its points
-        if(recordableAreaEndDiameter > 0 && recordableAreaStartDiameter > 0)
+        // Draw the Lead-In (layer 0 only)
+        if(layerIdx == 0)
         {
-            _recordableInformationPoints = GetSpiralPoints(center,
-                                                           recordableAreaStartDiameter / 2,
-                                                           recordableAreaEndDiameter   / 2,
-                                                           _gdrom ? a : a * 1.5f);
+            _leadInPoints[0] = GetSpiralPoints(center,
+                                               informationAreaStartDiameter / 2,
+                                               leadInEndDiameter            / 2,
+                                               _gdrom ? a * 1.5f : a);
+
+            var leadInPath = new SKPath();
+            leadInPath.MoveTo(_leadInPoints[0][0]);
+
+            foreach(SKPoint point in _leadInPoints[0]) leadInPath.LineTo(point);
+            _leadInPoints[0].Reverse();
+
+            _canvas.DrawPath(leadInPath,
+                             new SKPaint
+                             {
+                                 Style       = SKPaintStyle.Stroke,
+                                 Color       = SKColors.LightGray,
+                                 StrokeWidth = 1
+                             });
+
+            // If there's a recordable information area, get its points (layer 0 only)
+            if(recordableAreaEndDiameter > 0 && recordableAreaStartDiameter > 0)
+            {
+                _recordableInformationPoints[0] = GetSpiralPoints(center,
+                                                                  recordableAreaStartDiameter / 2,
+                                                                  recordableAreaEndDiameter   / 2,
+                                                                  _gdrom ? a : a * 1.5f);
+            }
         }
 
-        if(_gdrom)
+        if(_gdrom && layerIdx == 0)
         {
             float lowDensityEndDiameter    = smallerDimension * 29 * 2 / parameters.DiscDiameter;
             float highDensityStartDiameter = smallerDimension * 30 * 2 / parameters.DiscDiameter;
 
             _lowDensityMinRadius = leadInEndDiameter          / 2;
             _lowDensityMaxRadius = lowDensityEndDiameter      / 2;
-            _dataMinRadius       = highDensityStartDiameter   / 2;
-            _dataMaxRadius       = informationAreaEndDiameter / 2;
+            _dataMinRadius[0]    = highDensityStartDiameter   / 2;
+            _dataMaxRadius[0]    = informationAreaEndDiameter / 2;
 
             _pointsLowDensity = GetSpiralPoints(center, _lowDensityMinRadius, _lowDensityMaxRadius, a * 1.5f);
-            _points           = GetSpiralPoints(center, _dataMinRadius,       _dataMaxRadius,       a);
+            _points[0]        = GetSpiralPoints(center, _dataMinRadius[0],    _dataMaxRadius[0],    a);
         }
         else
         {
-            _dataMinRadius = leadInEndDiameter          / 2;
-            _dataMaxRadius = informationAreaEndDiameter / 2;
+            _dataMinRadius[layerIdx] = leadInEndDiameter          / 2;
+            _dataMaxRadius[layerIdx] = informationAreaEndDiameter / 2;
 
-            _points = GetSpiralPoints(center, _dataMinRadius, _dataMaxRadius, a);
+            _points[layerIdx] = GetSpiralPoints(center, _dataMinRadius[layerIdx], _dataMaxRadius[layerIdx], a);
+
+            // For OTP layer 1, reverse point list so index 0 sits at the outer radius
+            // (sector 0 of layer 1 lies at the outer radius where layer 0 ended)
+            if(reverse) _points[layerIdx].Reverse();
         }
 
-        path = new SKPath();
-
-        if(_gdrom && _pointsLowDensity is not null)
+        // Draw GD-ROM low-density undumped spiral (layer 0 only, single-layer mode)
+        if(_gdrom && layerIdx == 0 && _pointsLowDensity is not null)
         {
-            path.MoveTo(_pointsLowDensity[0]);
+            var ldPath = new SKPath();
+            ldPath.MoveTo(_pointsLowDensity[0]);
 
-            foreach(SKPoint point in _pointsLowDensity) path.LineTo(point);
+            foreach(SKPoint point in _pointsLowDensity) ldPath.LineTo(point);
 
-            _canvas.DrawPath(path,
+            _canvas.DrawPath(ldPath,
                              new SKPaint
                              {
                                  Style       = SKPaintStyle.Stroke,
@@ -259,30 +319,47 @@ public sealed class Spiral : IMediaGraph
                              });
         }
 
-        path.MoveTo(_points[0]);
+        // Draw undumped data spiral up to layerLastSector
+        long layerLast    = layerLastSector;
+        long effectiveMax = layerMaxSector;
 
-        if(_gdrom) lastSector1 -= 45000;
-
-        long effectiveMax = _gdrom ? _maxSector - 45000 : _maxSector;
-
-        long lastPoint = ClvSectorToPoint(lastSector1, effectiveMax, _points.Count, _dataMinRadius, _dataMaxRadius) + 1;
-
-        for(var index = 0; index < lastPoint; index++)
+        if(_gdrom)
         {
-            SKPoint point = _points[index];
-            path.LineTo(point);
+            layerLast    -= 45000;
+            effectiveMax -= 45000;
         }
 
-        _canvas.DrawPath(path,
-                         new SKPaint
-                         {
-                             Style       = SKPaintStyle.Stroke,
-                             Color       = SKColors.Gray,
-                             StrokeWidth = 1
-                         });
-    }
+        if(layerLast >= 0 && effectiveMax > 0 && _points[layerIdx].Count > 0)
+        {
+            long lastPoint = ClvSectorToPoint(layerLast,
+                                              effectiveMax,
+                                              _points[layerIdx].Count,
+                                              _dataMinRadius[layerIdx],
+                                              _dataMaxRadius[layerIdx]) +
+                             1;
 
-    public SKBitmap Bitmap { get; }
+            if(lastPoint > _points[layerIdx].Count) lastPoint = _points[layerIdx].Count;
+
+            var dataPath = new SKPath();
+            dataPath.MoveTo(_points[layerIdx][0]);
+
+            for(var index = 0; index < lastPoint; index++)
+            {
+                SKPoint point = _points[layerIdx][index];
+                dataPath.LineTo(point);
+            }
+
+            _canvas.DrawPath(dataPath,
+                             new SKPaint
+                             {
+                                 Style       = SKPaintStyle.Stroke,
+                                 Color       = SKColors.Gray,
+                                 StrokeWidth = 1
+                             });
+        }
+
+        _canvas.Restore();
+    }
 
     public static DiscParameters DiscParametersFromMediaType(MediaType mediaType, bool smallDisc = false) =>
         mediaType switch
@@ -365,6 +442,68 @@ public sealed class Spiral : IMediaGraph
             _                     => null
         };
 
+    /// <summary>
+    ///     Extracts the dual-layer layer-break and track-path from a DVD PFI structure. Returns
+    ///     <c>(null, true)</c> for single-layer discs. The track-path flag (PFI byte 6 bit 4, per
+    ///     ECMA-267 §13.2) distinguishes OTP (<c>TrackPath = 1</c>) from PTP (<c>TrackPath = 0</c>) and is mapped
+    ///     directly onto the returned <c>oppositeTrackPath</c> boolean.
+    /// </summary>
+    /// <param name="pfi">Decoded DVD PFI, or <see langword="null" /> if unavailable</param>
+    /// <returns>
+    ///     <c>layerBreak</c>: sector (relative to LBA 0) where layer 0 ends; layer 1 starts at
+    ///     <c>layerBreak + 1</c>. <c>oppositeTrackPath</c>: <see langword="true" /> when PFI reports OTP,
+    ///     <see langword="false" /> when PFI reports PTP.
+    /// </returns>
+    public static (ulong? layerBreak, bool oppositeTrackPath) LayerBreakFromPfi(PFI.PhysicalFormatInformation? pfi)
+    {
+        // Default for single-layer discs: no layer break, OTP assumed (unused when layerBreak is null)
+        if(pfi is null) return (null, true);
+
+        var decoded = (PFI.PhysicalFormatInformation)pfi;
+
+        // PFI.Layers encodes (NumberOfLayers - 1), so Layers == 1 means a dual-layer disc.
+        // Single- and triple-plus-layer discs are treated as single-layer by this visualization.
+        if(decoded.Layers != 1) return (null, decoded.TrackPath);
+
+        // Layer 0 end PSN and data area start PSN are physical sector numbers. Sector 0 of the image
+        // corresponds to DataAreaStartPSN; layer break in image LBAs is the number of sectors in layer 0 minus one.
+        if(decoded.Layer0EndPSN == 0 || decoded.Layer0EndPSN < decoded.DataAreaStartPSN)
+            return (null, decoded.TrackPath);
+
+        ulong layerBreak = decoded.Layer0EndPSN - decoded.DataAreaStartPSN;
+
+        // ECMA-267 §13.2: PFI TrackPath field — 1b = Opposite Track Path, 0b = Parallel Track Path.
+        bool oppositeTrackPath = decoded.TrackPath;
+
+        return (layerBreak, oppositeTrackPath);
+    }
+
+    /// <summary>
+    ///     Extracts the dual-layer layer-break from a Blu-ray DI structure. Blu-ray layered discs are always
+    ///     OTP-like from the reading head's perspective, so <c>oppositeTrackPath</c> is always <see langword="true" />.
+    /// </summary>
+    /// <param name="di">Decoded BD DI, or <see langword="null" /> if unavailable</param>
+    /// <param name="totalBlocks">Total blocks in the image; used to compute a midpoint layer-break fallback</param>
+    /// <returns>Layer break LBA and track path, or <c>(null, true)</c> for single-layer</returns>
+    public static (ulong? layerBreak, bool oppositeTrackPath) LayerBreakFromDi(
+        DI.DiscInformation? di, ulong totalBlocks)
+    {
+        if(di?.Units is null || ((DI.DiscInformation)di).Units.Length == 0) return (null, true);
+
+        byte layers = ((DI.DiscInformation)di).Units[0].Layers;
+
+        if(layers <= 1) return (null, true);
+
+        // BD DI does not expose per-layer sector count in an easily parsable way across BD-ROM/-R/-RE,
+        // so we split the total block count evenly between layers as a visualization approximation.
+        if(totalBlocks == 0) return (null, true);
+
+        ulong layerSize  = totalBlocks / layers;
+        ulong layerBreak = layerSize > 0 ? layerSize - 1 : 0;
+
+        return (layerBreak, true);
+    }
+
     void PaintSectors(ulong startingSector, uint length, SKColor color)
     {
         for(uint i = 0; i < length; i++) PaintSector(startingSector + i, color);
@@ -385,7 +524,27 @@ public sealed class Spiral : IMediaGraph
         long          effectiveMaxSector;
         double        effectiveSector;
 
-        if(_gdrom && sector <= 45000)
+        if(_numLayers == 2)
+        {
+            int layerIdx;
+
+            if((long)sector <= _layerBreak)
+            {
+                layerIdx        = 0;
+                effectiveSector = sector;
+            }
+            else
+            {
+                layerIdx        = 1;
+                effectiveSector = (double)sector - _layerBreak - 1;
+            }
+
+            points             = _points[layerIdx];
+            minRadius          = _dataMinRadius[layerIdx];
+            maxRadius          = _dataMaxRadius[layerIdx];
+            effectiveMaxSector = _layerMaxSector[layerIdx];
+        }
+        else if(_gdrom && sector <= 45000)
         {
             points             = _pointsLowDensity;
             minRadius          = _lowDensityMinRadius;
@@ -395,20 +554,22 @@ public sealed class Spiral : IMediaGraph
         }
         else if(_gdrom)
         {
-            points             = _points;
-            minRadius          = _dataMinRadius;
-            maxRadius          = _dataMaxRadius;
-            effectiveMaxSector = _maxSector - 45000;
-            effectiveSector    = sector     - 45000;
+            points             = _points[0];
+            minRadius          = _dataMinRadius[0];
+            maxRadius          = _dataMaxRadius[0];
+            effectiveMaxSector = _layerMaxSector[0] - 45000;
+            effectiveSector    = (double)sector     - 45000;
         }
         else
         {
-            points             = _points;
-            minRadius          = _dataMinRadius;
-            maxRadius          = _dataMaxRadius;
-            effectiveMaxSector = _maxSector;
+            points             = _points[0];
+            minRadius          = _dataMinRadius[0];
+            maxRadius          = _dataMaxRadius[0];
+            effectiveMaxSector = _layerMaxSector[0];
             effectiveSector    = sector;
         }
+
+        if(points is null || points.Count == 0) return;
 
         long firstPoint = ClvSectorToPoint(effectiveSector, effectiveMaxSector, points.Count, minRadius, maxRadius);
 
@@ -444,10 +605,15 @@ public sealed class Spiral : IMediaGraph
     /// <param name="leadInSize">Total size of the lead-in in sectors</param>
     public void PaintLeadInSector(ulong sector, SKColor color, int leadInSize)
     {
-        long pointsPerSector = _leadInPoints.Count / leadInSize;
-        long sectorsPerPoint = leadInSize          / _leadInPoints.Count;
+        // Lead-In is always painted on layer 0
+        List<SKPoint> leadIn = _leadInPoints[0];
 
-        if(leadInSize % _leadInPoints.Count > 0) sectorsPerPoint++;
+        if(leadIn is null || leadIn.Count == 0) return;
+
+        long pointsPerSector = leadIn.Count / leadInSize;
+        long sectorsPerPoint = leadInSize   / leadIn.Count;
+
+        if(leadInSize % leadIn.Count > 0) sectorsPerPoint++;
 
         var paint = new SKPaint
         {
@@ -461,13 +627,13 @@ public sealed class Spiral : IMediaGraph
         if(pointsPerSector > 0)
         {
             long firstPoint = (long)sector * pointsPerSector;
-            long lastPoint  = Math.Min(firstPoint + pointsPerSector, _leadInPoints.Count);
+            long lastPoint  = Math.Min(firstPoint + pointsPerSector, leadIn.Count);
 
-            if(firstPoint >= _leadInPoints.Count) return;
+            if(firstPoint >= leadIn.Count) return;
 
-            path.MoveTo(_leadInPoints[(int)firstPoint]);
+            path.MoveTo(leadIn[(int)firstPoint]);
 
-            for(var i = (int)firstPoint; i < lastPoint; i++) path.LineTo(_leadInPoints[i]);
+            for(var i = (int)firstPoint; i < lastPoint; i++) path.LineTo(leadIn[i]);
 
             _canvas.DrawPath(path, paint);
 
@@ -478,18 +644,18 @@ public sealed class Spiral : IMediaGraph
 
         if(point == 0)
         {
-            path.MoveTo(_leadInPoints[0]);
-            path.LineTo(_leadInPoints[1]);
+            path.MoveTo(leadIn[0]);
+            path.LineTo(leadIn[1]);
         }
-        else if(point >= _leadInPoints.Count - 1)
+        else if(point >= leadIn.Count - 1)
         {
-            path.MoveTo(_leadInPoints[^2]);
-            path.LineTo(_leadInPoints[^1]);
+            path.MoveTo(leadIn[^2]);
+            path.LineTo(leadIn[^1]);
         }
         else
         {
-            path.MoveTo(_leadInPoints[(int)point]);
-            path.LineTo(_leadInPoints[(int)point + 1]);
+            path.MoveTo(leadIn[(int)point]);
+            path.LineTo(leadIn[(int)point + 1]);
         }
 
         _canvas.DrawPath(path, paint);
@@ -663,13 +829,16 @@ public sealed class Spiral : IMediaGraph
     /// <summary>Paints the segment of the spiral that corresponds to the information specific to recordable discs in green</summary>
     public void PaintRecordableInformationGood()
     {
-        if(_recordableInformationPoints is null) return;
+        // Layer 0 only
+        List<SKPoint> recordable = _recordableInformationPoints[0];
+
+        if(recordable is null) return;
 
         var path = new SKPath();
 
-        path.MoveTo(_recordableInformationPoints[0]);
+        path.MoveTo(recordable[0]);
 
-        foreach(SKPoint point in _recordableInformationPoints) path.LineTo(point);
+        foreach(SKPoint point in recordable) path.LineTo(point);
 
         _canvas.DrawPath(path,
                          new SKPaint

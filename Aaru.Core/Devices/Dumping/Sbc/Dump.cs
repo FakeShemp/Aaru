@@ -768,16 +768,32 @@ partial class Dump
 
         if(_createGraph)
         {
-            bool discIs80Mm =
-                mediaTags?.TryGetValue(MediaTagType.DVD_PFI, out byte[] pfiBytes) == true &&
-                PFI.Decode(pfiBytes, dskType)?.DiscSize                           == DVDSize.Eighty ||
-                mediaTags?.TryGetValue(MediaTagType.BD_DI, out byte[] diBytes)              == true &&
-                DI.Decode(diBytes)?.Units?.Any(static s => s.DiscSize == DI.BluSize.Eighty) == true;
+            PFI.PhysicalFormatInformation? decodedPfi = null;
+            DI.DiscInformation?            decodedDi  = null;
+
+            if(mediaTags?.TryGetValue(MediaTagType.DVD_PFI, out byte[] pfiBytes) == true)
+                decodedPfi = PFI.Decode(pfiBytes, dskType);
+
+            if(mediaTags?.TryGetValue(MediaTagType.BD_DI, out byte[] diBytes) == true) decodedDi = DI.Decode(diBytes);
+
+            bool discIs80Mm = decodedPfi?.DiscSize                                               == DVDSize.Eighty ||
+                              decodedDi?.Units?.Any(static s => s.DiscSize == DI.BluSize.Eighty) == true;
 
             Spiral.DiscParameters discSpiralParameters = Spiral.DiscParametersFromMediaType(dskType, discIs80Mm);
 
+            (ulong? layerBreak, bool oppositeTrackPath) = decodedPfi is not null
+                                                              ? Spiral.LayerBreakFromPfi(decodedPfi)
+                                                              : Spiral.LayerBreakFromDi(decodedDi, blocks);
+
             if(discSpiralParameters is not null)
-                _mediaGraph = new Spiral((int)_dimensions, (int)_dimensions, discSpiralParameters, blocks);
+            {
+                _mediaGraph = new Spiral((int)_dimensions,
+                                         (int)_dimensions,
+                                         discSpiralParameters,
+                                         blocks,
+                                         layerBreak,
+                                         oppositeTrackPath);
+            }
             else
                 _mediaGraph = new BlockMap((int)_dimensions, (int)_dimensions, blocks);
 
