@@ -144,10 +144,6 @@ public sealed partial class Ndif
                         AaruLogging.Error(Localization.Chunks_compressed_with_KenCode_are_not_yet_supported);
 
                         return ErrorNumber.NotImplemented;
-                    case CHUNK_TYPE_LZH:
-                        AaruLogging.Error(Localization.Chunks_compressed_with_LZH_are_not_yet_supported);
-
-                        return ErrorNumber.NotImplemented;
                     case CHUNK_TYPE_STUFFIT:
                         AaruLogging.Error(Localization.Chunks_compressed_with_StuffIt_are_not_yet_supported);
 
@@ -351,6 +347,16 @@ public sealed partial class Ndif
                     {
                         var tmpBuffer = new byte[_bufferSize];
                         realSize = AppleRle.DecodeBuffer(cmpBuffer, tmpBuffer);
+                        data     = new byte[realSize];
+                        Array.Copy(tmpBuffer, 0, data, 0, realSize);
+
+                        break;
+                    }
+
+                    case CHUNK_TYPE_LZH:
+                    {
+                        var tmpBuffer = new byte[_bufferSize];
+                        realSize = AppleLzh.DecodeBuffer(cmpBuffer, tmpBuffer);
                         data     = new byte[realSize];
                         Array.Copy(tmpBuffer, 0, data, 0, realSize);
 
