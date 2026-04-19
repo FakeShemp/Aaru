@@ -299,6 +299,33 @@ public sealed partial class SysVfs
                 return ReadCoherentSuperblock(sbSector);
             }
 
+            // If pack is "nopack" and name is a valid UNIX name (that's a lot of possibilities yeah...)
+            if(sFpack    == COH_FPACK &&
+               sFname[0] >= 0x20      &&
+               sFname[0] <= 0x7E      &&
+               sFname[0] != 0x2F      &&
+               sFname[1] >= 0x20      &&
+               sFname[1] <= 0x7E      &&
+               sFname[1] != 0x2F      &&
+               sFname[2] >= 0x20      &&
+               sFname[2] <= 0x7E      &&
+               sFname[2] != 0x2F      &&
+               sFname[3] >= 0x20      &&
+               sFname[3] <= 0x7E      &&
+               sFname[3] != 0x2F      &&
+               sFname[4] >= 0x20      &&
+               sFname[4] <= 0x7E      &&
+               sFname[4] != 0x2F      &&
+               sFname[5] >= 0x20      &&
+               sFname[5] <= 0x7E      &&
+               sFname[5] != 0x2F)
+            {
+                _bytesex         = Bytesex.Pdp;
+                _superblockStart = i;
+
+                return ReadCoherentSuperblock(sbSector);
+            }
+
             // Check V7
             var sFsize  = BitConverter.ToUInt32(sbSector, 0x002);
             var sNfree  = BitConverter.ToUInt16(sbSector, 0x006);

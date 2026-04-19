@@ -121,6 +121,28 @@ public sealed partial class SysVfs
                s_fname == COH_XXXXS && s_fpack == COH_XXXXN)
                 return true;
 
+            // If pack is "nopack" and name is a valid UNIX name (that's a lot of possibilities yeah...)
+            if(s_fpack    == COH_FPACK &&
+               s_fname[0] >= 0x20      &&
+               s_fname[0] <= 0x7E      &&
+               s_fname[0] != 0x2F      &&
+               s_fname[1] >= 0x20      &&
+               s_fname[1] <= 0x7E      &&
+               s_fname[1] != 0x2F      &&
+               s_fname[2] >= 0x20      &&
+               s_fname[2] <= 0x7E      &&
+               s_fname[2] != 0x2F      &&
+               s_fname[3] >= 0x20      &&
+               s_fname[3] <= 0x7E      &&
+               s_fname[3] != 0x2F      &&
+               s_fname[4] >= 0x20      &&
+               s_fname[4] <= 0x7E      &&
+               s_fname[4] != 0x2F      &&
+               s_fname[5] >= 0x20      &&
+               s_fname[5] <= 0x7E      &&
+               s_fname[5] != 0x2F)
+                return true;
+
             // Now try to identify 7th edition
             // V7 superblock is always at block 1 (512-byte blocks), so for 512-byte sectors
             // it's at sector 1, which maps to offset 0 in our read buffer when i=1
@@ -326,6 +348,33 @@ public sealed partial class SysVfs
             if(s_fname == COH_FNAME && s_fpack == COH_FPACK ||
                s_fname == COH_XXXXX && s_fpack == COH_XXXXX ||
                s_fname == COH_XXXXS && s_fpack == COH_XXXXN)
+            {
+                coherent = true;
+                start    = i;
+
+                break;
+            }
+
+            // If pack is "nopack" and name is a valid UNIX name (that's a lot of possibilities yeah...)
+            if(s_fpack    == COH_FPACK &&
+               s_fname[0] >= 0x20      &&
+               s_fname[0] <= 0x7E      &&
+               s_fname[0] != 0x2F      &&
+               s_fname[1] >= 0x20      &&
+               s_fname[1] <= 0x7E      &&
+               s_fname[1] != 0x2F      &&
+               s_fname[2] >= 0x20      &&
+               s_fname[2] <= 0x7E      &&
+               s_fname[2] != 0x2F      &&
+               s_fname[3] >= 0x20      &&
+               s_fname[3] <= 0x7E      &&
+               s_fname[3] != 0x2F      &&
+               s_fname[4] >= 0x20      &&
+               s_fname[4] <= 0x7E      &&
+               s_fname[4] != 0x2F      &&
+               s_fname[5] >= 0x20      &&
+               s_fname[5] <= 0x7E      &&
+               s_fname[5] != 0x2F)
             {
                 coherent = true;
                 start    = i;
