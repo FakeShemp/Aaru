@@ -60,6 +60,19 @@ public sealed class ForcedSeekStream<T> : Stream where T : Stream
     }
 
     /// <summary>Initializes a new instance of the <see cref="T:Aaru.Helpers.IO.ForcedSeekStream`1" /> class.</summary>
+    /// <param name="stream">A pre-created stream instance.</param>
+    /// <inheritdoc />
+    public ForcedSeekStream(long length, T stream)
+    {
+        _streamLength = length;
+        _baseStream   = stream;
+        _backFile     = Path.GetTempFileName();
+        _backStream   = new FileStream(_backFile, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+
+        if(length == 0) CalculateLength();
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="T:Aaru.Helpers.IO.ForcedSeekStream`1" /> class.</summary>
     /// <param name="length">The real (uncompressed) length of the stream.</param>
     /// <param name="args">Parameters that are used to create the base stream.</param>
     /// <inheritdoc />
