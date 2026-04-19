@@ -123,11 +123,7 @@ public sealed partial class Dart
             var buffer = new byte[BUFFER_SIZE];
 
             if(l == -1)
-            {
                 stream.EnsureRead(buffer, 0, BUFFER_SIZE);
-                dataMs.Write(buffer, 0, DATA_SIZE);
-                tagMs.Write(buffer, DATA_SIZE, TAG_SIZE);
-            }
             else
             {
                 byte[] temp;
@@ -139,20 +135,19 @@ public sealed partial class Dart
                     buffer = new byte[BUFFER_SIZE];
 
                     AppleRle.DecodeBuffer(temp, buffer);
-
-                    dataMs.Write(buffer, 0, DATA_SIZE);
-                    tagMs.Write(buffer, DATA_SIZE, TAG_SIZE);
                 }
                 else
                 {
-                    temp = new byte[l];
+                    temp = new byte[l * 2];
                     stream.EnsureRead(temp, 0, temp.Length);
+                    buffer = new byte[BUFFER_SIZE];
 
-                    AaruLogging.Error(Localization.LZH_Compressed_images_not_yet_supported);
-
-                    return ErrorNumber.NotImplemented;
+                    AppleLzh.DecodeBuffer(temp, buffer);
                 }
             }
+
+            dataMs.Write(buffer, 0, DATA_SIZE);
+            tagMs.Write(buffer, DATA_SIZE, TAG_SIZE);
         }
 
         _dataCache = dataMs.ToArray();
