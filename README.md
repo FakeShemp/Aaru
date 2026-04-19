@@ -320,6 +320,7 @@ Supported filters
 * Apple PCExchange (FINDER.DAT & RESOURCE.FRK)
 * AppleDouble
 * AppleSingle
+* BinHex 4.0
 * BZip2
 * GZip
 * LZip

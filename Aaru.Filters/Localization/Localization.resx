@@ -26,6 +26,9 @@
     <data name="AppleDouble_Name" xml:space="preserve">
     <value>AppleDouble</value>
   </data>
+    <data name="BinHex_Name" xml:space="preserve">
+    <value>BinHex 4.0</value>
+  </data>
     <data name="AppleSingle_Name" xml:space="preserve">
     <value>AppleSingle</value>
   </data>
