@@ -400,10 +400,6 @@ public sealed partial class Udif
                         AaruLogging.Error(Localization.Chunks_compressed_with_KenCode_are_not_yet_supported);
 
                         return ErrorNumber.NotImplemented;
-                    case CHUNK_TYPE_LZH:
-                        AaruLogging.Error(Localization.Chunks_compressed_with_LZH_are_not_yet_supported);
-
-                        return ErrorNumber.NotImplemented;
                     case CHUNK_TYPE_LZFSE when !LZFSE.IsSupported:
                         AaruLogging.Error(Localization.Chunks_compressed_with_lzfse_are_not_yet_supported);
 
@@ -463,7 +459,7 @@ public sealed partial class Udif
 
         ulong chunkAddress = _chunkStartSectors.Last(chunkAd => sectorAddress >= chunkAd);
 
-        if(_chunks.TryGetValue(chunkAddress, out var value))
+        if(_chunks.TryGetValue(chunkAddress, out BlockChunk value))
         {
             readChunk        = value;
             chunkFound       = true;
@@ -495,6 +491,7 @@ public sealed partial class Udif
                     case CHUNK_TYPE_BZIP:
                     case CHUNK_TYPE_ADC:
                     case CHUNK_TYPE_RLE:
+                    case CHUNK_TYPE_LZH:
                     case CHUNK_TYPE_LZFSE:
                         break;
                     case CHUNK_TYPE_LZMA:
@@ -540,6 +537,13 @@ public sealed partial class Udif
                         case CHUNK_TYPE_RLE:
                             tmpBuffer = new byte[_buffersize];
                             realSize  = AppleRle.DecodeBuffer(cmpBuffer, tmpBuffer);
+                            data      = new byte[realSize];
+                            Array.Copy(tmpBuffer, 0, data, 0, realSize);
+
+                            break;
+                        case CHUNK_TYPE_LZH:
+                            tmpBuffer = new byte[_buffersize];
+                            realSize  = AppleLzh.DecodeBuffer(cmpBuffer, tmpBuffer);
                             data      = new byte[realSize];
                             Array.Copy(tmpBuffer, 0, data, 0, realSize);
 
