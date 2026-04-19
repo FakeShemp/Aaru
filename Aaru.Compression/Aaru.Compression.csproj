@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="AceStream.cs"/>
     <Compile Include="ADC.cs"/>
+    <Compile Include="AppleLzh.cs"/>
     <Compile Include="AppleRle.cs"/>
     <Compile Include="Arc\CrunchStream.cs"/>
     <Compile Include="Arc\LzwStream.cs"/>
