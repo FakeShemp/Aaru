@@ -38,6 +38,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Compression;
+using Aaru.Compression.StuffIt;
 using Aaru.Helpers;
 using Aaru.Logging;
 using Claunia.Encoding;
@@ -144,13 +145,8 @@ public sealed partial class Ndif
                         AaruLogging.Error(Localization.Chunks_compressed_with_KenCode_are_not_yet_supported);
 
                         return ErrorNumber.NotImplemented;
-                    case CHUNK_TYPE_STUFFIT:
-                        AaruLogging.Error(Localization.Chunks_compressed_with_StuffIt_are_not_yet_supported);
-
-                        return ErrorNumber.NotImplemented;
                 }
 
-                // TODO: Handle compressed chunks
                 if(bChnk.type is > CHUNK_TYPE_COPY and < CHUNK_TYPE_KENCODE
                               or > CHUNK_TYPE_ADC and < CHUNK_TYPE_STUFFIT
                               or > CHUNK_TYPE_STUFFIT and < CHUNK_TYPE_END
@@ -357,6 +353,16 @@ public sealed partial class Ndif
                     {
                         var tmpBuffer = new byte[_bufferSize];
                         realSize = AppleLzh.DecodeBuffer(cmpBuffer, tmpBuffer);
+                        data     = new byte[realSize];
+                        Array.Copy(tmpBuffer, 0, data, 0, realSize);
+
+                        break;
+                    }
+
+                    case CHUNK_TYPE_STUFFIT:
+                    {
+                        var tmpBuffer = new byte[_bufferSize];
+                        realSize = ShrinkWrap.DecodeBuffer(cmpBuffer, tmpBuffer);
                         data     = new byte[realSize];
                         Array.Copy(tmpBuffer, 0, data, 0, realSize);
 

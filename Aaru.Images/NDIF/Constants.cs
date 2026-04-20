@@ -48,7 +48,7 @@ public sealed partial class Ndif
     const byte CHUNK_TYPE_RLE     = 0x81;
     const byte CHUNK_TYPE_LZH     = 0x82;
     const byte CHUNK_TYPE_ADC     = 0x83;
-    /// <summary>Created by ShrinkWrap 3.5, dunno which version of the StuffIt algorithm it is using</summary>
+    /// <summary>Created by ShrinkWrap 3.5, customized StuffIt algorithm variation</summary>
     const byte CHUNK_TYPE_STUFFIT = 0xF0;
     const byte CHUNK_TYPE_END             = 0xFF;
     const byte CHUNK_TYPE_COMPRESSED_MASK = 0x80;
