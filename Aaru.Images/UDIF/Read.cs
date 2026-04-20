@@ -397,11 +397,6 @@ public sealed partial class Udif
                     case CHUNK_TYPE_COMMNT:
                         continue;
 
-                    // TODO: Handle compressed chunks
-                    case CHUNK_TYPE_KENCODE:
-                        AaruLogging.Error(Localization.Chunks_compressed_with_KenCode_are_not_yet_supported);
-
-                        return ErrorNumber.NotImplemented;
                     case CHUNK_TYPE_LZFSE when !LZFSE.IsSupported:
                         AaruLogging.Error(Localization.Chunks_compressed_with_lzfse_are_not_yet_supported);
 
@@ -494,6 +489,7 @@ public sealed partial class Udif
                     case CHUNK_TYPE_ADC:
                     case CHUNK_TYPE_RLE:
                     case CHUNK_TYPE_LZH:
+                    case CHUNK_TYPE_KENCODE:
                     case CHUNK_TYPE_LZFSE:
                         break;
                     case CHUNK_TYPE_LZMA:
@@ -546,6 +542,13 @@ public sealed partial class Udif
                         case CHUNK_TYPE_LZH:
                             tmpBuffer = new byte[_buffersize];
                             realSize  = Lzh.DecodeBuffer(cmpBuffer, tmpBuffer);
+                            data      = new byte[realSize];
+                            Array.Copy(tmpBuffer, 0, data, 0, realSize);
+
+                            break;
+                        case CHUNK_TYPE_KENCODE:
+                            tmpBuffer = new byte[_buffersize];
+                            realSize  = KenCode.DecodeBuffer(cmpBuffer, tmpBuffer);
                             data      = new byte[realSize];
                             Array.Copy(tmpBuffer, 0, data, 0, realSize);
 
