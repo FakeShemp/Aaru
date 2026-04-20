@@ -139,15 +139,6 @@ public sealed partial class Ndif
                 bChnk.offset += _header.dataOffset;
                 bChnk.sector += (uint)_imageInfo.Sectors;
 
-                // TODO: Handle compressed chunks
-                switch(bChnk.type)
-                {
-                    case CHUNK_TYPE_KENCODE:
-                        AaruLogging.Error(Localization.Chunks_compressed_with_KenCode_are_not_yet_supported);
-
-                        return ErrorNumber.NotImplemented;
-                }
-
                 if(bChnk.type is > CHUNK_TYPE_COPY and < CHUNK_TYPE_KENCODE
                               or > CHUNK_TYPE_ADC and < CHUNK_TYPE_STUFFIT
                               or > CHUNK_TYPE_STUFFIT and < CHUNK_TYPE_END
@@ -354,6 +345,16 @@ public sealed partial class Ndif
                     {
                         var tmpBuffer = new byte[_bufferSize];
                         realSize = Lzh.DecodeBuffer(cmpBuffer, tmpBuffer);
+                        data     = new byte[realSize];
+                        Array.Copy(tmpBuffer, 0, data, 0, realSize);
+
+                        break;
+                    }
+
+                    case CHUNK_TYPE_KENCODE:
+                    {
+                        var tmpBuffer = new byte[_bufferSize];
+                        realSize = KenCode.DecodeBuffer(cmpBuffer, tmpBuffer);
                         data     = new byte[realSize];
                         Array.Copy(tmpBuffer, 0, data, 0, realSize);
 
