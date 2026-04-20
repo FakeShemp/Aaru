@@ -84,6 +84,7 @@
     <Compile Include="StuffItX\EnglishStream.cs"/>
     <Compile Include="StuffItX\IronStream.cs"/>
     <Compile Include="StuffItX\X86Stream.cs"/>
+    <Compile Include="StuffIt\ShrinkWrap.cs"/>
     <Compile Include="StuffIt\ArsenicStream.cs"/>
     <Compile Include="StuffIt\CompressStream.cs"/>
     <Compile Include="StuffIt\HuffmanStream.cs"/>
