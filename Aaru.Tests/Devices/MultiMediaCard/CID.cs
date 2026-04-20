@@ -1,6 +1,7 @@
 // ReSharper disable InconsistentNaming
 
 using Aaru.Helpers;
+using FluentAssertions;
 using FluentAssertions.Execution;
 using NUnit.Framework;
 
@@ -37,39 +38,25 @@ public class CID
         {
             using(new AssertionScope())
             {
-                Assert.Multiple(() =>
-                {
-                    int count = Marshal.ConvertFromHexAscii(cids[i], out byte[] response);
-                    Assert.That(count, Is.EqualTo(16), string.Format(Localization.Size_0, cards[i]));
-                    Decoders.MMC.CID cid = Decoders.MMC.Decoders.DecodeCID(response);
-                    Assert.That(cid, Is.Not.Null, string.Format(Localization.Decoded_0, cards[i]));
+                int count = Marshal.ConvertFromHexAscii(cids[i], out byte[] response);
+                count.Should().Be(16, string.Format(Localization.Size_0, cards[i]));
+                Decoders.MMC.CID cid = Decoders.MMC.Decoders.DecodeCID(response);
+                cid.Should().NotBeNull(Localization.Decoded_0, cards[i]);
 
-                    Assert.That(cid.Manufacturer,
-                                Is.EqualTo(manufacturers[i]),
-                                string.Format(Localization.Manufacturer_0, cards[i]));
+                cid.Manufacturer.Should().Be(manufacturers[i], string.Format(Localization.Manufacturer_0, cards[i]));
 
-                    Assert.That(cid.ApplicationID,
-                                Is.EqualTo(applications[i]),
-                                string.Format(Localization.Application_ID_0, cards[i]));
+                cid.ApplicationID.Should()
+                   .Be((byte)applications[i], string.Format(Localization.Application_ID_0, cards[i]));
 
-                    Assert.That(cid.ProductName,
-                                Is.EqualTo(names[i]),
-                                string.Format(Localization.Product_name_0, cards[i]));
+                cid.ProductName.Should().Be(names[i], string.Format(Localization.Product_name_0, cards[i]));
 
-                    Assert.That(cid.ProductRevision,
-                                Is.EqualTo(revisions[i]),
-                                string.Format(Localization.Product_revision_0, cards[i]));
+                cid.ProductRevision.Should().Be(revisions[i], string.Format(Localization.Product_revision_0, cards[i]));
 
-                    Assert.That(cid.ProductSerialNumber,
-                                Is.EqualTo(serials[i]),
-                                string.Format(Localization.Serial_number_0, cards[i]));
+                cid.ProductSerialNumber.Should().Be(serials[i], string.Format(Localization.Serial_number_0, cards[i]));
 
-                    Assert.That(cid.ManufacturingDate,
-                                Is.EqualTo(dates[i]),
-                                string.Format(Localization.Manufacturing_date_0, cards[i]));
+                cid.ManufacturingDate.Should().Be(dates[i], string.Format(Localization.Manufacturing_date_0, cards[i]));
 
-                    Assert.That(cid.CRC, Is.EqualTo(crcs[i]), string.Format(Localization.CRC_0, cards[i]));
-                });
+                cid.CRC.Should().Be(crcs[i], string.Format(Localization.CRC_0, cards[i]));
             }
         }
     }

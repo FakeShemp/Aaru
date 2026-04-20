@@ -2,6 +2,7 @@
 
 using Aaru.Decoders.SecureDigital;
 using Aaru.Helpers;
+using FluentAssertions;
 using FluentAssertions.Execution;
 using NUnit.Framework;
 
@@ -64,50 +65,37 @@ public class SCR
         {
             using(new AssertionScope())
             {
-                Assert.Multiple(() =>
-                {
-                    int count = Marshal.ConvertFromHexAscii(scrs[i], out byte[] response);
-                    Assert.That(count, Is.EqualTo(8), string.Format(Localization.Size_0, cards[i]));
-                    Decoders.SecureDigital.SCR scr = Decoders.SecureDigital.Decoders.DecodeSCR(response);
-                    Assert.That(scr, Is.Not.Null, string.Format(Localization.Decoded_0, cards[i]));
+                int count = Marshal.ConvertFromHexAscii(scrs[i], out byte[] response);
+                count.Should().Be(8, string.Format(Localization.Size_0, cards[i]));
+                Decoders.SecureDigital.SCR scr = Decoders.SecureDigital.Decoders.DecodeSCR(response);
+                scr.Should().NotBeNull(Localization.Decoded_0, cards[i]);
 
-                    Assert.That(scr.Structure,
-                                Is.EqualTo(structure_version[i]),
-                                string.Format(Localization.Version_0, cards[i]));
+                scr.Structure.Should().Be(structure_version[i], string.Format(Localization.Version_0, cards[i]));
 
-                    Assert.That(scr.Spec,
-                                Is.EqualTo(specification_version[i]),
-                                string.Format(Localization.Specification_version_0, cards[i]));
+                scr.Spec.Should()
+                   .Be(specification_version[i], string.Format(Localization.Specification_version_0, cards[i]));
 
-                    Assert.That(scr.DataStatusAfterErase,
-                                Is.EqualTo(data_stat_after_erase[i]),
-                                string.Format(Localization.Data_stat_after_erase_0, cards[i]));
+                scr.DataStatusAfterErase.Should()
+                   .Be(data_stat_after_erase[i], string.Format(Localization.Data_stat_after_erase_0, cards[i]));
 
-                    Assert.That(scr.Security,
-                                Is.EqualTo(sd_security[i]),
-                                string.Format(Localization.Security_0, cards[i]));
+                scr.Security.Should().Be(sd_security[i], string.Format(Localization.Security_0, cards[i]));
 
-                    Assert.That(scr.BusWidth,
-                                Is.EqualTo((BusWidth)sd_bus_widths[i]),
-                                string.Format(Localization.Bus_widths_0, cards[i]));
+                scr.BusWidth.Should()
+                   .Be((BusWidth)sd_bus_widths[i], string.Format(Localization.Bus_widths_0, cards[i]));
 
-                    Assert.That(scr.Spec3, Is.EqualTo(sd_spec3[i]), string.Format(Localization.Spec_3_0, cards[i]));
+                scr.Spec3.Should().Be(sd_spec3[i], string.Format(Localization.Spec_3_0, cards[i]));
 
-                    Assert.That(scr.ExtendedSecurity,
-                                Is.EqualTo(ex_security[i]),
-                                string.Format(Localization.Extended_security_0, cards[i]));
+                scr.ExtendedSecurity.Should()
+                   .Be(ex_security[i], string.Format(Localization.Extended_security_0, cards[i]));
 
-                    Assert.That(scr.Spec4, Is.EqualTo(sd_spec4[i]), string.Format(Localization.Spec_4_0, cards[i]));
-                    Assert.That(scr.SpecX, Is.EqualTo(sd_specx[i]), string.Format(Localization.Spec_X_0, cards[i]));
+                scr.Spec4.Should().Be(sd_spec4[i], string.Format(Localization.Spec_4_0, cards[i]));
+                scr.SpecX.Should().Be(sd_specx[i], string.Format(Localization.Spec_X_0, cards[i]));
 
-                    Assert.That(scr.CommandSupport,
-                                Is.EqualTo((CommandSupport)cmd_support[i]),
-                                string.Format(Localization.Command_support_0, cards[i]));
+                scr.CommandSupport.Should()
+                   .Be((CommandSupport)cmd_support[i], string.Format(Localization.Command_support_0, cards[i]));
 
-                    Assert.That(scr.ManufacturerReserved,
-                                Is.EqualTo(mfg[i]),
-                                string.Format(Localization.Manufacturer_reserved_0, cards[i]));
-                });
+                scr.ManufacturerReserved.Should()
+                   .BeEqualTo(mfg[i], string.Format(Localization.Manufacturer_reserved_0, cards[i]));
             }
         }
     }

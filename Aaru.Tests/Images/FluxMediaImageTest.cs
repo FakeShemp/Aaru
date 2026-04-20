@@ -29,13 +29,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Core;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using NUnit.Framework;
 
 namespace Aaru.Tests.Images;
@@ -52,14 +52,14 @@ public abstract class FluxMediaImageTest : BaseMediaImageTest
     {
         Environment.CurrentDirectory = DataFolder;
 
-        Assert.Multiple(() =>
+        using(new AssertionScope())
         {
             foreach(FluxImageTestExpected test in Tests)
             {
                 string testFile = test.TestFile;
 
                 bool exists = File.Exists(testFile);
-                Assert.That(exists, string.Format(Localization._0_not_found, testFile));
+                exists.Should().BeTrue(Localization._0_not_found, testFile);
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 // It arrives here...
@@ -70,29 +70,25 @@ public abstract class FluxMediaImageTest : BaseMediaImageTest
 
                 var image = Activator.CreateInstance(Plugin.GetType()) as IMediaImage;
 
-                Assert.That(image,
-                            Is.Not.Null,
-                            string.Format(Localization.Could_not_instantiate_filesystem_for_0, testFile));
+                image.Should().NotBeNull(Localization.Could_not_instantiate_filesystem_for_0, testFile);
 
                 ErrorNumber opened = image.Open(filter);
-                Assert.That(opened, Is.EqualTo(ErrorNumber.NoError), string.Format(Localization.Open_0, testFile));
+                opened.Should().Be(ErrorNumber.NoError, string.Format(Localization.Open_0, testFile));
 
                 if(opened != ErrorNumber.NoError) continue;
 
-                if(image is not IFluxImage fluxImage)
-                {
-                    Assert.Fail($"Image {testFile} does not implement IFluxImage");
-                    continue;
-                }
+                image.Should().BeAssignableTo<IFluxImage>($"Image {testFile} should implement IFluxImage");
+
+                var fluxImage = (IFluxImage)image;
 
                 ErrorNumber error = fluxImage.GetAllFluxCaptures(out List<FluxCapture> captures);
 
-                Assert.That(error, Is.EqualTo(ErrorNumber.NoError), $"GetAllFluxCaptures failed with {error}");
-                Assert.That(captures, Is.Not.Null, "GetAllFluxCaptures returned null");
-                Assert.That(captures, Is.Not.Empty, "GetAllFluxCaptures returned empty list");
+                error.Should().Be(ErrorNumber.NoError, $"GetAllFluxCaptures failed with {error}");
+                captures.Should().NotBeNull("GetAllFluxCaptures returned null");
+                captures.Should().NotBeEmpty("GetAllFluxCaptures returned empty list");
 
-                Assert.That(captures.Count,
-                            Is.EqualTo(test.FluxCaptureCount),
+                captures.Count.Should()
+                        .Be((int)test.FluxCaptureCount,
                             $"Expected {test.FluxCaptureCount} flux captures, got {captures.Count}");
 
                 captures.Should().NotBeEmpty("Flux captures list should not be empty");
@@ -104,7 +100,7 @@ public abstract class FluxMediaImageTest : BaseMediaImageTest
                     capture.DataResolution.Should().BeGreaterThan(0, "DataResolution should be greater than 0");
                 }
             }
-        });
+        }
     }
 
     [Test]
@@ -112,14 +108,14 @@ public abstract class FluxMediaImageTest : BaseMediaImageTest
     {
         Environment.CurrentDirectory = DataFolder;
 
-        Assert.Multiple(() =>
+        using(new AssertionScope())
         {
             foreach(FluxImageTestExpected test in Tests)
             {
                 string testFile = test.TestFile;
 
                 bool exists = File.Exists(testFile);
-                Assert.That(exists, string.Format(Localization._0_not_found, testFile));
+                exists.Should().BeTrue(Localization._0_not_found, testFile);
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 // It arrives here...
@@ -130,59 +126,54 @@ public abstract class FluxMediaImageTest : BaseMediaImageTest
 
                 var image = Activator.CreateInstance(Plugin.GetType()) as IMediaImage;
 
-                Assert.That(image,
-                            Is.Not.Null,
-                            string.Format(Localization.Could_not_instantiate_filesystem_for_0, testFile));
+                image.Should().NotBeNull(Localization.Could_not_instantiate_filesystem_for_0, testFile);
 
                 ErrorNumber opened = image.Open(filter);
-                Assert.That(opened, Is.EqualTo(ErrorNumber.NoError), string.Format(Localization.Open_0, testFile));
+                opened.Should().Be(ErrorNumber.NoError, string.Format(Localization.Open_0, testFile));
 
                 if(opened != ErrorNumber.NoError) continue;
 
-                if(image is not IFluxImage fluxImage)
-                {
-                    Assert.Fail($"Image {testFile} does not implement IFluxImage");
-                    continue;
-                }
+                image.Should().BeAssignableTo<IFluxImage>($"Image {testFile} should implement IFluxImage");
+
+                var fluxImage = (IFluxImage)image;
 
                 ErrorNumber error = fluxImage.GetAllFluxCaptures(out List<FluxCapture> captures);
 
-                Assert.That(error, Is.EqualTo(ErrorNumber.NoError), "GetAllFluxCaptures should succeed");
-                Assert.That(captures, Is.Not.Null.And.Not.Empty, "Should have at least one flux capture");
-                Assert.That(captures.Count,
-                            Is.EqualTo(test.FluxCaptureCount),
+                error.Should().Be(ErrorNumber.NoError, "GetAllFluxCaptures should succeed");
+                captures.Should().NotBeNull().And.NotBeEmpty("Should have at least one flux capture");
+
+                captures.Count.Should()
+                        .Be((int)test.FluxCaptureCount,
                             $"Expected {test.FluxCaptureCount} flux captures, got {captures.Count}");
 
                 // If FluxCaptures array is provided, validate those captures
-                if(test.FluxCaptures != null && test.FluxCaptures.Length > 0)
+                if(test.FluxCaptures is not { Length: > 0 }) continue;
+
+                captures.Count.Should()
+                        .BeGreaterThanOrEqualTo(test.FluxCaptures.Length,
+                                                $"Image has {captures.Count} captures, but {test.FluxCaptures.Length} expected captures specified");
+
+                foreach(FluxCaptureTestExpected expectedCapture in test.FluxCaptures)
                 {
-                    Assert.That(captures.Count,
-                                Is.GreaterThanOrEqualTo(test.FluxCaptures.Length),
-                                $"Image has {captures.Count} captures, but {test.FluxCaptures.Length} expected captures specified");
+                    FluxCapture actualCapture = captures.Find(c => c.Head         == expectedCapture.Head     &&
+                                                                   c.Track        == expectedCapture.Track    &&
+                                                                   c.SubTrack     == expectedCapture.SubTrack &&
+                                                                   c.CaptureIndex == expectedCapture.CaptureIndex);
 
-                    foreach(FluxCaptureTestExpected expectedCapture in test.FluxCaptures)
-                    {
-                        FluxCapture actualCapture = captures.Find(c => c.Head == expectedCapture.Head &&
-                                                                       c.Track == expectedCapture.Track &&
-                                                                       c.SubTrack == expectedCapture.SubTrack &&
-                                                                       c.CaptureIndex == expectedCapture.CaptureIndex);
+                    actualCapture.Should()
+                                 .NotBeNull($"Flux capture not found: head={expectedCapture.Head}, track={expectedCapture.Track}, subTrack={expectedCapture.SubTrack}, captureIndex={expectedCapture.CaptureIndex}");
 
-                        Assert.That(actualCapture,
-                                    Is.Not.Null,
-                                    $"Flux capture not found: head={expectedCapture.Head}, track={expectedCapture.Track}, subTrack={expectedCapture.SubTrack}, captureIndex={expectedCapture.CaptureIndex}");
+                    if(actualCapture == null) continue;
 
-                        if(actualCapture != null)
-                        {
-                            Assert.That(actualCapture.IndexResolution,
-                                        Is.EqualTo(expectedCapture.IndexResolution),
-                                        $"IndexResolution mismatch for head={expectedCapture.Head}, track={expectedCapture.Track}, subTrack={expectedCapture.SubTrack}, captureIndex={expectedCapture.CaptureIndex}");
-                            Assert.That(actualCapture.DataResolution,
-                                        Is.EqualTo(expectedCapture.DataResolution),
-                                        $"DataResolution mismatch for head={expectedCapture.Head}, track={expectedCapture.Track}, subTrack={expectedCapture.SubTrack}, captureIndex={expectedCapture.CaptureIndex}");
-                        }
-                    }
+                    actualCapture.IndexResolution.Should()
+                                 .Be(expectedCapture.IndexResolution,
+                                     $"IndexResolution mismatch for head={expectedCapture.Head}, track={expectedCapture.Track}, subTrack={expectedCapture.SubTrack}, captureIndex={expectedCapture.CaptureIndex}");
+
+                    actualCapture.DataResolution.Should()
+                                 .Be(expectedCapture.DataResolution,
+                                     $"DataResolution mismatch for head={expectedCapture.Head}, track={expectedCapture.Track}, subTrack={expectedCapture.SubTrack}, captureIndex={expectedCapture.CaptureIndex}");
                 }
             }
-        });
+        }
     }
 }

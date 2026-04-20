@@ -1,3 +1,4 @@
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Aaru.Tests.Helpers;
@@ -23,9 +24,9 @@ public class Marshal
         {
             int count = Aaru.Helpers.Marshal.ConvertFromHexAscii(_testStrings[i], out byte[] buf);
 
-            Assert.That(buf,   Has.Length.EqualTo(_resultBytes[i].Length));
-            Assert.That(count, Is.EqualTo(_resultBytes[i].Length));
-            Assert.That(buf,   Is.EqualTo(_resultBytes[i]));
+            buf.Length.Should().Be(_resultBytes[i].Length);
+            count.Should().Be(_resultBytes[i].Length);
+            buf.Should().Equal(_resultBytes[i]);
         }
     }
 }

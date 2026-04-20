@@ -32,6 +32,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Filters;
 using Aaru.Helpers;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Aaru.Tests.Filters;
@@ -39,18 +40,12 @@ namespace Aaru.Tests.Filters;
 [TestFixture]
 public class AppleDoubleUnix
 {
-    const    string EXPECTED_FILE     = "c2be571406cf6353269faa59a4a8c0a4";
-    const    string EXPECTED_SIDECAR  = "7b0c25bf8cb70f6fb1a15eca31585250";
+    const    string EXPECTED_FILE = "c2be571406cf6353269faa59a4a8c0a4";
+    const    string EXPECTED_SIDECAR = "7b0c25bf8cb70f6fb1a15eca31585250";
     const    string EXPECTED_CONTENTS = "c2be571406cf6353269faa59a4a8c0a4";
     const    string EXPECTED_RESOURCE = "c689c58945169065483d94e39583d416";
-    readonly string _location;
-    readonly string _sidecar;
-
-    public AppleDoubleUnix()
-    {
-        _location = Path.Combine(Consts.TestFilesRoot, "Filters", "AppleDouble", "unix", "DOS_720.dmg");
-        _sidecar  = Path.Combine(Consts.TestFilesRoot, "Filters", "AppleDouble", "unix", "%DOS_720.dmg");
-    }
+    readonly string _location = Path.Combine(Consts.TestFilesRoot, "Filters", "AppleDouble", "unix", "DOS_720.dmg");
+    readonly string _sidecar = Path.Combine(Consts.TestFilesRoot, "Filters", "AppleDouble", "unix", "%DOS_720.dmg");
 
     [Test]
     public void CheckContents()
@@ -64,24 +59,24 @@ public class AppleDoubleUnix
         str.Dispose();
         filter.Close();
         string result = Md5Context.Data(data, out _);
-        Assert.That(result, Is.EqualTo(EXPECTED_CONTENTS));
+        result.Should().Be(EXPECTED_CONTENTS);
     }
 
     [Test]
     public void CheckCorrectFile()
     {
         string result = Md5Context.File(_location, out _);
-        Assert.That(result, Is.EqualTo(EXPECTED_FILE));
+        result.Should().Be(EXPECTED_FILE);
 
         result = Md5Context.File(_sidecar, out _);
-        Assert.That(result, Is.EqualTo(EXPECTED_SIDECAR));
+        result.Should().Be(EXPECTED_SIDECAR);
     }
 
     [Test]
     public void CheckFilterId()
     {
         IFilter filter = new AppleDouble();
-        Assert.That(filter.Identify(_location), Is.True);
+        filter.Identify(_location).Should().BeTrue();
     }
 
     [Test]
@@ -96,19 +91,19 @@ public class AppleDoubleUnix
         str.Dispose();
         filter.Close();
         string result = Md5Context.Data(data, out _);
-        Assert.That(result, Is.EqualTo(EXPECTED_RESOURCE));
+        result.Should().Be(EXPECTED_RESOURCE);
     }
 
     [Test]
     public void Test()
     {
         IFilter filter = new AppleDouble();
-        Assert.That(filter.Open(_location),         Is.EqualTo(ErrorNumber.NoError));
-        Assert.That(filter.DataForkLength,          Is.EqualTo(737280));
-        Assert.That(filter.GetDataForkStream(),     Is.Not.Null);
-        Assert.That(filter.ResourceForkLength,      Is.EqualTo(286));
-        Assert.That(filter.GetResourceForkStream(), Is.Not.Null);
-        Assert.That(filter.HasResourceFork,         Is.True);
+        filter.Open(_location).Should().Be(ErrorNumber.NoError);
+        filter.DataForkLength.Should().Be(737280);
+        filter.GetDataForkStream().Should().NotBeNull();
+        filter.ResourceForkLength.Should().Be(286);
+        filter.GetResourceForkStream().Should().NotBeNull();
+        filter.HasResourceFork.Should().BeTrue();
         filter.Close();
     }
 }

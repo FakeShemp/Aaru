@@ -5,6 +5,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Core;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Aaru.Tests.Issues;
@@ -25,19 +26,17 @@ public abstract class ImageReadIssueTest
         Environment.CurrentDirectory = DataFolder;
 
         bool exists = File.Exists(TestFile);
-        Assert.That(exists, Localization.Test_file_not_found);
+        exists.Should().BeTrue(Localization.Test_file_not_found);
 
         IFilter inputFilter = PluginRegister.Singleton.GetFilter(TestFile);
 
-        Assert.That(inputFilter, Is.Not.Null, Localization.Filter_for_test_file_is_not_detected);
+        inputFilter.Should().NotBeNull(Localization.Filter_for_test_file_is_not_detected);
 
         var image = ImageFormat.Detect(inputFilter) as IMediaImage;
 
-        Assert.That(image, Is.Not.Null, Localization.Image_format_for_test_file_is_not_detected);
+        image.Should().NotBeNull(Localization.Image_format_for_test_file_is_not_detected);
 
-        Assert.That(image.Open(inputFilter),
-                    Is.EqualTo(ErrorNumber.NoError),
-                    Localization.Cannot_open_image_for_test_file);
+        image.Open(inputFilter).Should().Be(ErrorNumber.NoError, Localization.Cannot_open_image_for_test_file);
 
         ulong doneSectors = 0;
         var   ctx         = new Crc32Context();
@@ -64,7 +63,7 @@ public abstract class ImageReadIssueTest
                 doneSectors += image.Info.Sectors - doneSectors;
             }
 
-            Assert.That(errno, Is.EqualTo(ErrorNumber.NoError));
+            errno.Should().Be(ErrorNumber.NoError);
 
             ctx.Update(sector);
         }

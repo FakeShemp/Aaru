@@ -31,6 +31,7 @@ using Aaru.Checksums;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Aaru.Tests.Filters;
@@ -46,9 +47,7 @@ public class BZip2
     [
         0x18, 0x90, 0x5a, 0xf9, 0x83, 0xd8, 0x2b, 0xdd, 0x1a, 0xcc, 0x69, 0x75, 0x4f, 0x0f, 0x81, 0x5e
     ];
-    readonly string _location;
-
-    public BZip2() => _location = Path.Combine(Consts.TestFilesRoot, "Filters", "bzip2.bz2");
+    readonly string _location = Path.Combine(Consts.TestFilesRoot, "Filters", "bzip2.bz2");
 
     [Test]
     public void CheckContents()
@@ -62,33 +61,33 @@ public class BZip2
         str.Dispose();
         filter.Close();
         Md5Context.Data(data, out byte[] result);
-        Assert.That(result, Is.EqualTo(_expectedContents));
+        result.Should().BeEqualTo(_expectedContents);
     }
 
     [Test]
     public void CheckCorrectFile()
     {
         byte[] result = Md5Context.File(_location);
-        Assert.That(result, Is.EqualTo(_expectedFile));
+        result.Should().BeEqualTo(_expectedFile);
     }
 
     [Test]
     public void CheckFilterId()
     {
         IFilter filter = new Aaru.Filters.BZip2();
-        Assert.That(filter.Identify(_location), Is.True);
+        filter.Identify(_location).Should().BeTrue();
     }
 
     [Test]
     public void Test()
     {
         IFilter filter = new Aaru.Filters.BZip2();
-        Assert.That(filter.Open(_location),         Is.EqualTo(ErrorNumber.NoError));
-        Assert.That(filter.DataForkLength,          Is.EqualTo(1048576));
-        Assert.That(filter.GetDataForkStream(),     Is.Not.Null);
-        Assert.That(filter.ResourceForkLength,      Is.EqualTo(0));
-        Assert.That(filter.GetResourceForkStream(), Is.EqualTo(null));
-        Assert.That(filter.HasResourceFork,         Is.EqualTo(false));
+        filter.Open(_location).Should().Be(ErrorNumber.NoError);
+        filter.DataForkLength.Should().Be(1048576);
+        filter.GetDataForkStream().Should().NotBeNull();
+        filter.ResourceForkLength.Should().Be(0);
+        filter.GetResourceForkStream().Should().BeNull();
+        filter.HasResourceFork.Should().BeFalse();
         filter.Close();
     }
 }

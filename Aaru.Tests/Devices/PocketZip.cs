@@ -32,6 +32,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.Filters;
 using Aaru.Images;
+using FluentAssertions;
 using FluentAssertions.Execution;
 using NUnit.Framework;
 
@@ -55,7 +56,7 @@ public class PocketZip
     {
         Environment.CurrentDirectory = _dataFolder;
 
-        Assert.Multiple(() =>
+        using(new AssertionScope())
         {
             for(var i = 0; i < _testFiles.Length; i++)
             {
@@ -65,28 +66,21 @@ public class PocketZip
                 var         image  = new ZZZRawImage();
                 ErrorNumber opened = image.Open(filter);
 
-                Assert.That(opened, Is.EqualTo(ErrorNumber.NoError), string.Format(Localization.Open_0, _testFiles[i]));
+                opened.Should().Be(ErrorNumber.NoError, string.Format(Localization.Open_0, _testFiles[i]));
 
                 if(opened != ErrorNumber.NoError) continue;
 
                 using(new AssertionScope())
                 {
-                    Assert.Multiple(() =>
-                    {
-                        Assert.That(image.Info.Sectors,
-                                    Is.EqualTo(_sectors[i]),
-                                    string.Format(Localization.Sectors_0, _testFiles[i]));
+                    image.Info.Sectors.Should().Be(_sectors[i], string.Format(Localization.Sectors_0, _testFiles[i]));
 
-                        Assert.That(image.Info.SectorSize,
-                                    Is.EqualTo(_sectorSize[i]),
-                                    string.Format(Localization.Sector_size_0, _testFiles[i]));
+                    image.Info.SectorSize.Should()
+                         .Be(_sectorSize[i], string.Format(Localization.Sector_size_0, _testFiles[i]));
 
-                        Assert.That(image.Info.MediaType,
-                                    Is.EqualTo(_mediaTypes[i]),
-                                    string.Format(Localization.Media_type_0, _testFiles[i]));
-                    });
+                    image.Info.MediaType.Should()
+                         .Be(_mediaTypes[i], string.Format(Localization.Media_type_0, _testFiles[i]));
                 }
             }
-        });
+        }
     }
 }

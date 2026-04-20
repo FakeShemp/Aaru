@@ -31,6 +31,7 @@ using Aaru.Checksums;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Aaru.Tests.Filters;
@@ -41,9 +42,7 @@ public class AppleSingle
     const    string EXPECTED_FILE     = "7497a3b156dcd0c1046a1ab12e188ab7";
     const    string EXPECTED_CONTENTS = "c2be571406cf6353269faa59a4a8c0a4";
     const    string EXPECTED_RESOURCE = "c689c58945169065483d94e39583d416";
-    readonly string _location;
-
-    public AppleSingle() => _location = Path.Combine(Consts.TestFilesRoot, "Filters", "AppleSingle", "DOS_720.ASF");
+    readonly string _location         = Path.Combine(Consts.TestFilesRoot, "Filters", "AppleSingle", "DOS_720.ASF");
 
     [Test]
     public void CheckContents()
@@ -57,21 +56,21 @@ public class AppleSingle
         str.Dispose();
         filter.Close();
         string result = Md5Context.Data(data, out _);
-        Assert.That(result, Is.EqualTo(EXPECTED_CONTENTS));
+        result.Should().Be(EXPECTED_CONTENTS);
     }
 
     [Test]
     public void CheckCorrectFile()
     {
         string result = Md5Context.File(_location, out _);
-        Assert.That(result, Is.EqualTo(EXPECTED_FILE));
+        result.Should().Be(EXPECTED_FILE);
     }
 
     [Test]
     public void CheckFilterId()
     {
         IFilter filter = new Aaru.Filters.AppleSingle();
-        Assert.That(filter.Identify(_location), Is.True);
+        filter.Identify(_location).Should().BeTrue();
     }
 
     [Test]
@@ -86,19 +85,19 @@ public class AppleSingle
         str.Dispose();
         filter.Close();
         string result = Md5Context.Data(data, out _);
-        Assert.That(result, Is.EqualTo(EXPECTED_RESOURCE));
+        result.Should().Be(EXPECTED_RESOURCE);
     }
 
     [Test]
     public void Test()
     {
         IFilter filter = new Aaru.Filters.AppleSingle();
-        Assert.That(filter.Open(_location),         Is.EqualTo(ErrorNumber.NoError));
-        Assert.That(filter.DataForkLength,          Is.EqualTo(737280));
-        Assert.That(filter.GetDataForkStream(),     Is.Not.Null);
-        Assert.That(filter.ResourceForkLength,      Is.EqualTo(286));
-        Assert.That(filter.GetResourceForkStream(), Is.Not.Null);
-        Assert.That(filter.HasResourceFork,         Is.True);
+        filter.Open(_location).Should().Be(ErrorNumber.NoError);
+        filter.DataForkLength.Should().Be(737280);
+        filter.GetDataForkStream().Should().NotBeNull();
+        filter.ResourceForkLength.Should().Be(286);
+        filter.GetResourceForkStream().Should().NotBeNull();
+        filter.HasResourceFork.Should().BeTrue();
         filter.Close();
     }
 }

@@ -6,6 +6,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Core;
+using FluentAssertions;
 using NUnit.Framework;
 using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
@@ -36,7 +37,7 @@ public abstract class FsExtractIssueTest
         Dictionary<string, string> options = ParsedOptions;
         options["debug"] = Debug.ToString();
 
-        Assert.That(inputFilter, Is.Not.Null, Localization.Cannot_open_specified_file);
+        inputFilter.Should().NotBeNull(Localization.Cannot_open_specified_file);
 
         Encoding encodingClass = null;
 
@@ -46,17 +47,15 @@ public abstract class FsExtractIssueTest
 
         var imageFormat = ImageFormat.Detect(inputFilter) as IMediaImage;
 
-        Assert.That(imageFormat, Is.Not.Null, Localization.Image_format_not_identified_not_proceeding_with_analysis);
+        imageFormat.Should().NotBeNull(Localization.Image_format_not_identified_not_proceeding_with_analysis);
 
-        Assert.That(imageFormat.Open(inputFilter),
-                    Is.EqualTo(ErrorNumber.NoError),
-                    Localization.Unable_to_open_image_format);
+        imageFormat.Open(inputFilter).Should().Be(ErrorNumber.NoError, Localization.Unable_to_open_image_format);
 
         List<Partition> partitions = Core.Partitions.GetAll(imageFormat);
 
         if(partitions.Count == 0)
         {
-            Assert.That(ExpectPartitions, Is.False, Localization.No_partitions_found);
+            ExpectPartitions.Should().BeFalse(Localization.No_partitions_found);
 
             partitions.Add(new Partition
             {
@@ -85,17 +84,15 @@ public abstract class FsExtractIssueTest
                 {
                     if(!plugins.ReadOnlyFilesystems.TryGetValue(pluginName, out IReadOnlyFilesystem fs)) continue;
 
-                    Assert.That(fs,
-                                Is.Not.Null,
-                                string.Format(Localization.Could_not_instantiate_filesystem_0, pluginName));
+                    fs.Should().NotBeNull(Localization.Could_not_instantiate_filesystem_0, pluginName);
 
                     filesystemFound = true;
 
                     error = fs.Mount(imageFormat, partitions[i], encodingClass, options, Namespace);
 
-                    Assert.That(error,
-                                Is.EqualTo(ErrorNumber.NoError),
-                                string.Format(Localization.Could_not_mount_0_in_partition_1, pluginName, i));
+                    error.Should()
+                         .Be(ErrorNumber.NoError,
+                             string.Format(Localization.Could_not_mount_0_in_partition_1, pluginName, i));
 
                     ExtractFilesInDir("/", fs, Xattrs);
                 }
@@ -104,21 +101,20 @@ public abstract class FsExtractIssueTest
             {
                 plugins.ReadOnlyFilesystems.TryGetValue(idPlugins[0], out IReadOnlyFilesystem fs);
 
-                Assert.That(fs, Is.Not.Null, string.Format(Localization.Could_not_instantiate_filesystem_0, fs?.Name));
+                fs.Should().NotBeNull(Localization.Could_not_instantiate_filesystem_0, fs?.Name);
 
                 filesystemFound = true;
 
                 error = fs.Mount(imageFormat, partitions[i], encodingClass, options, Namespace);
 
-                Assert.That(error,
-                            Is.EqualTo(ErrorNumber.NoError),
-                            string.Format(Localization.Could_not_mount_0_in_partition_1, fs.Name, i));
+                error.Should()
+                     .Be(ErrorNumber.NoError, string.Format(Localization.Could_not_mount_0_in_partition_1, fs.Name, i));
 
                 ExtractFilesInDir("/", fs, Xattrs);
             }
         }
 
-        Assert.That(filesystemFound, Localization.No_filesystems_found);
+        filesystemFound.Should().BeTrue(Localization.No_filesystems_found);
     }
 
     static void ExtractFilesInDir(string path, IReadOnlyFilesystem fs, bool doXattrs)
@@ -127,17 +123,14 @@ public abstract class FsExtractIssueTest
 
         ErrorNumber error = fs.OpenDir(path, out IDirNode node);
 
-        Assert.That(error,
-                    Is.EqualTo(ErrorNumber.NoError),
-                    string.Format(Localization.Error_0_reading_root_directory, error.ToString()));
+        error.Should()
+             .Be(ErrorNumber.NoError, string.Format(Localization.Error_0_reading_root_directory, error.ToString()));
 
         while(fs.ReadDir(node, out string entry) == ErrorNumber.NoError && entry is not null)
         {
             error = fs.Stat(path + "/" + entry, out FileEntryInfo stat);
 
-            Assert.That(error,
-                        Is.EqualTo(ErrorNumber.NoError),
-                        string.Format(Localization.Error_getting_stat_for_entry_0, entry));
+            error.Should().Be(ErrorNumber.NoError, string.Format(Localization.Error_getting_stat_for_entry_0, entry));
 
             if(stat.Attributes.HasFlag(FileAttributes.Directory))
             {
@@ -150,11 +143,11 @@ public abstract class FsExtractIssueTest
             {
                 error = fs.ListXAttr(path + "/" + entry, out List<string> xattrs);
 
-                Assert.That(error,
-                            Is.EqualTo(ErrorNumber.NoError),
-                            string.Format(Localization.Error_0_getting_extended_attributes_for_entry_1,
-                                          error,
-                                          path + "/" + entry));
+                error.Should()
+                     .Be(ErrorNumber.NoError,
+                         string.Format(Localization.Error_0_getting_extended_attributes_for_entry_1,
+                                       error,
+                                       path + "/" + entry));
 
                 if(error == ErrorNumber.NoError)
                 {
@@ -163,11 +156,11 @@ public abstract class FsExtractIssueTest
                         byte[] xattrBuf = [];
                         error = fs.GetXattr(path + "/" + entry, xattr, ref xattrBuf);
 
-                        Assert.That(error,
-                                    Is.EqualTo(ErrorNumber.NoError),
-                                    string.Format(Localization.Error_0_reading_extended_attributes_for_entry_1,
-                                                  error,
-                                                  path + "/" + entry));
+                        error.Should()
+                             .Be(ErrorNumber.NoError,
+                                 string.Format(Localization.Error_0_reading_extended_attributes_for_entry_1,
+                                               error,
+                                               path + "/" + entry));
                     }
                 }
             }
@@ -175,19 +168,20 @@ public abstract class FsExtractIssueTest
             var         buffer = new byte[stat.Length];
             ErrorNumber ret    = fs.OpenFile(path + "/" + entry, out IFileNode fileNode);
 
-            Assert.That(ret,
-                        Is.EqualTo(ErrorNumber.NoError),
-                        string.Format(Localization.Error_0_reading_file_1, ret, path + "/" + entry));
+            ret.Should()
+               .Be(ErrorNumber.NoError, string.Format(Localization.Error_0_reading_file_1, ret, path + "/" + entry));
 
             ret = fs.ReadFile(fileNode, stat.Length, buffer, out long readBytes);
 
-            Assert.That(ret,
-                        Is.EqualTo(ErrorNumber.NoError),
-                        string.Format(Localization.Error_0_reading_file_1, ret, path + "/" + entry));
+            ret.Should()
+               .Be(ErrorNumber.NoError, string.Format(Localization.Error_0_reading_file_1, ret, path + "/" + entry));
 
-            Assert.That(readBytes,
-                        Is.EqualTo(stat.Length),
-                        string.Format(Localization.Error_0_reading_file_1, readBytes, stat.Length, path + "/" + entry));
+            readBytes.Should()
+                     .Be(stat.Length,
+                         string.Format(Localization.Error_0_reading_file_1,
+                                       readBytes,
+                                       stat.Length,
+                                       path + "/" + entry));
         }
 
         fs.CloseDir(node);

@@ -13,6 +13,7 @@ using Aaru.Core;
 using Aaru.Core.Media;
 using Aaru.Devices;
 using Aaru.Logging;
+using FluentAssertions;
 using NUnit.Framework;
 using File = System.IO.File;
 using ImageInfo = Aaru.CommonTypes.Structs.ImageInfo;
@@ -52,44 +53,42 @@ public abstract class OpticalImageConvertIssueTest
 
         IFilter inputFilter = PluginRegister.Singleton.GetFilter(InputPath);
 
-        Assert.That(inputFilter, Is.Not.Null, Localization.Cannot_open_specified_file);
+        inputFilter.Should().NotBeNull(Localization.Cannot_open_specified_file);
 
         string outputPath = Path.Combine(Path.GetTempPath(), SuggestedOutputFilename);
 
-        Assert.That(File.Exists(outputPath), Is.False, Localization.Output_file_already_exists_not_continuing);
+        File.Exists(outputPath).Should().BeFalse(Localization.Output_file_already_exists_not_continuing);
 
         var inputFormat = ImageFormat.Detect(inputFilter) as IMediaImage;
 
-        Assert.That(inputFormat,
-                    Is.Not.Null,
-                    Localization.Input_image_format_not_identified_not_proceeding_with_conversion);
+        inputFormat.Should().NotBeNull(Localization.Input_image_format_not_identified_not_proceeding_with_conversion);
 
-        Assert.That(inputFormat.Open(inputFilter),
-                    Is.EqualTo(ErrorNumber.NoError),
-                    Localization.Unable_to_open_image_format);
+        inputFormat.Open(inputFilter).Should().Be(ErrorNumber.NoError, Localization.Unable_to_open_image_format);
 
-        Assert.That(OutputFormat.SupportedMediaTypes,
-                    Does.Contain(inputFormat.Info.MediaType),
-                    Localization.Output_format_does_not_support_media_type_cannot_continue);
+        OutputFormat.SupportedMediaTypes.Should()
+                    .Contain(inputFormat.Info.MediaType,
+                             Localization.Output_format_does_not_support_media_type_cannot_continue);
 
         if(inputFormat.Info.ReadableSectorTags.Count == 0)
-            Assert.That(UseLong, Is.False, Localization.Input_image_does_not_support_long_sectors);
+            UseLong.Should().BeFalse(Localization.Input_image_does_not_support_long_sectors);
 
         var inputOptical  = inputFormat as IOpticalMediaImage;
         var outputOptical = OutputFormat as IWritableOpticalImage;
 
-        Assert.That(inputOptical,        Is.Not.Null, Localization.Could_not_treat_existing_image_as_optical_disc);
-        Assert.That(outputOptical,       Is.Not.Null, Localization.Could_not_treat_new_image_as_optical_disc);
-        Assert.That(inputOptical.Tracks, Is.Not.Null, Localization.Existing_image_contains_no_tracks);
+        inputOptical.Should().NotBeNull(Localization.Could_not_treat_existing_image_as_optical_disc);
+        outputOptical.Should().NotBeNull(Localization.Could_not_treat_new_image_as_optical_disc);
+        inputOptical.Tracks.Should().NotBeNull(Localization.Existing_image_contains_no_tracks);
 
-        Assert.That(outputOptical.Create(outputPath,
-                                         inputFormat.Info.MediaType,
-                                         ParsedOptions,
-                                         inputFormat.Info.Sectors,
-                                         0,
-                                         0,
-                                         inputFormat.Info.SectorSize),
-                    string.Format(Localization.Error_0_creating_output_image, outputOptical.ErrorMessage));
+        outputOptical
+           .Create(outputPath,
+                   inputFormat.Info.MediaType,
+                   ParsedOptions,
+                   inputFormat.Info.Sectors,
+                   0,
+                   0,
+                   inputFormat.Info.SectorSize)
+           .Should()
+           .BeTrue(Localization.Error_0_creating_output_image, outputOptical.ErrorMessage);
 
         var metadata = new ImageInfo
         {
@@ -111,8 +110,9 @@ public abstract class OpticalImageConvertIssueTest
             MediaTitle            = inputFormat.Info.MediaTitle
         };
 
-        Assert.That(outputOptical.SetImageInfo(metadata),
-                    string.Format(Localization.Error_0_setting_metadata, outputOptical.ErrorMessage));
+        outputOptical.SetImageInfo(metadata)
+                     .Should()
+                     .BeTrue(Localization.Error_0_setting_metadata, outputOptical.ErrorMessage);
 
         Metadata           aaruMetadata = inputFormat.AaruMetadata;
         List<DumpHardware> dumpHardware = inputFormat.DumpHardware;
@@ -123,16 +123,16 @@ public abstract class OpticalImageConvertIssueTest
             AaruLogging.WriteLine(Localization.Converting_media_tag_0, mediaTag);
             errno = inputFormat.ReadMediaTag(mediaTag, out byte[] tag);
 
-            Assert.That(errno, Is.EqualTo(ErrorNumber.NoError));
-            Assert.That(outputOptical.WriteMediaTag(tag, mediaTag));
+            errno.Should().Be(ErrorNumber.NoError);
+            outputOptical.WriteMediaTag(tag, mediaTag).Should().BeTrue();
         }
 
         AaruLogging.WriteLine(Localization._0_sectors_to_convert, inputFormat.Info.Sectors);
         ulong doneSectors;
 
-        Assert.That(outputOptical.SetTracks(inputOptical.Tracks),
-                    string.Format(Localization.Error_0_sending_tracks_list_to_output_image,
-                                  outputOptical.ErrorMessage));
+        outputOptical.SetTracks(inputOptical.Tracks)
+                     .Should()
+                     .BeTrue(Localization.Error_0_sending_tracks_list_to_output_image, outputOptical.ErrorMessage);
 
         foreach(Track track in inputOptical.Tracks)
         {
@@ -200,7 +200,7 @@ public abstract class OpticalImageConvertIssueTest
                                                           out sector,
                                                           out sectorStatuses);
 
-                    Assert.That(errno, Is.EqualTo(ErrorNumber.NoError));
+                    errno.Should().Be(ErrorNumber.NoError);
 
                     result = sectorsToDo == 1
                                  ? outputOptical.WriteSector(sector,
@@ -214,10 +214,10 @@ public abstract class OpticalImageConvertIssueTest
                                                               sectorStatuses);
                 }
 
-                Assert.That(result,
-                            string.Format(Localization.Error_0_writing_sector_1_not_continuing,
-                                          outputOptical.ErrorMessage,
-                                          doneSectors + track.StartSector));
+                result.Should()
+                      .BeTrue(Localization.Error_0_writing_sector_1_not_continuing,
+                              outputOptical.ErrorMessage,
+                              doneSectors + track.StartSector);
 
                 doneSectors += sectorsToDo;
             }
@@ -321,15 +321,14 @@ public abstract class OpticalImageConvertIssueTest
 
                         if(errno == ErrorNumber.NoData) continue;
 
-                        Assert.That(errno,
-                                    Is.EqualTo(ErrorNumber.NoError),
-                                    string.Format(Localization.Error_0_reading_tag_not_continuing, errno));
+                        errno.Should()
+                             .Be(ErrorNumber.NoError,
+                                 string.Format(Localization.Error_0_reading_tag_not_continuing, errno));
 
                         result = outputOptical.WriteSectorTag(sector, track.Sequence, false, tag);
 
-                        Assert.That(result,
-                                    string.Format(Localization.Error_0_writing_tag_not_continuing,
-                                                  outputOptical.ErrorMessage));
+                        result.Should()
+                              .BeTrue(Localization.Error_0_writing_tag_not_continuing, outputOptical.ErrorMessage);
 
                         continue;
                 }
@@ -347,9 +346,9 @@ public abstract class OpticalImageConvertIssueTest
                     {
                         errno = inputFormat.ReadSectorTag(doneSectors + track.StartSector, false, tag, out sector);
 
-                        Assert.That(errno,
-                                    Is.EqualTo(ErrorNumber.NoError),
-                                    string.Format(Localization.Error_0_reading_tag_not_continuing, errno));
+                        errno.Should()
+                             .Be(ErrorNumber.NoError,
+                                 string.Format(Localization.Error_0_reading_tag_not_continuing, errno));
 
                         if(tag == SectorTagType.CdSectorSubchannel)
                         {
@@ -388,9 +387,9 @@ public abstract class OpticalImageConvertIssueTest
                                                            tag,
                                                            out sector);
 
-                        Assert.That(errno,
-                                    Is.EqualTo(ErrorNumber.NoError),
-                                    string.Format(Localization.Error_0_reading_tag_not_continuing, errno));
+                        errno.Should()
+                             .Be(ErrorNumber.NoError,
+                                 string.Format(Localization.Error_0_reading_tag_not_continuing, errno));
 
                         if(tag == SectorTagType.CdSectorSubchannel)
                         {
@@ -428,10 +427,10 @@ public abstract class OpticalImageConvertIssueTest
                         }
                     }
 
-                    Assert.That(result,
-                                string.Format(Localization.Error_0_writing_tag_for_sector_1_not_continuing,
-                                              outputOptical.ErrorMessage,
-                                              doneSectors + track.StartSector));
+                    result.Should()
+                          .BeTrue(Localization.Error_0_writing_tag_for_sector_1_not_continuing,
+                                  outputOptical.ErrorMessage,
+                                  doneSectors + track.StartSector);
 
                     doneSectors += sectorsToDo;
                 }
@@ -468,16 +467,17 @@ public abstract class OpticalImageConvertIssueTest
             else if(aaruMetadata != null) outputOptical.SetMetadata(aaruMetadata);
         }
 
-        Assert.That(outputOptical.Close(),
-                    string.Format(Localization.Error_0_closing_output_image_Contents_are_not_correct,
-                                  outputOptical.ErrorMessage));
+        outputOptical.Close()
+                     .Should()
+                     .BeTrue(Localization.Error_0_closing_output_image_Contents_are_not_correct,
+                             outputOptical.ErrorMessage);
 
         // Some images will never generate the same
         if(Md5 != null)
         {
             string md5 = Md5Context.File(outputPath, out _);
 
-            Assert.That(md5, Is.EqualTo(Md5), Localization.Hashes_are_different);
+            md5.Should().Be(Md5, Localization.Hashes_are_different);
         }
 
         File.Delete(outputPath);
