@@ -28,11 +28,11 @@
 
 using System.Runtime.InteropServices;
 
-namespace Aaru.Compression;
+namespace Aaru.Compression.Apple;
 
 // ReSharper disable once InconsistentNaming
 /// <summary>Implements the Apple LZH compression algorithm</summary>
-public partial class AppleLzh
+public partial class Lzh
 {
     /// <summary>Set to <c>true</c> if this algorithm is supported, <c>false</c> otherwise.</summary>
     public static bool IsSupported => Native.IsSupported;
@@ -41,7 +41,7 @@ public partial class AppleLzh
     private static partial int AARU_apple_lzh_decode_buffer(byte[] dst_buffer, ref nint dst_size, byte[] src_buffer,
                                                             nint   src_size);
 
-    /// <summary>Decodes a buffer compressed with LZ4</summary>
+    /// <summary>Decodes a buffer compressed with Apple's LZH</summary>
     /// <param name="source">Encoded buffer</param>
     /// <param name="destination">Buffer where to write the decoded data</param>
     /// <returns>The number of decoded bytes</returns>

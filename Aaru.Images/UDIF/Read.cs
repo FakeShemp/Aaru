@@ -38,6 +38,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Compression;
+using Aaru.Compression.Apple;
 using Aaru.Helpers;
 using Aaru.Logging;
 using Claunia.PropertyList;
@@ -45,6 +46,7 @@ using Claunia.RsrcFork;
 using SharpCompress.Compressors;
 using SharpCompress.Compressors.Deflate;
 using SharpCompress.Compressors.Xz;
+using ADC = Aaru.Compression.Apple.ADC;
 using Version = Resources.Version;
 
 #pragma warning disable 612
@@ -536,14 +538,14 @@ public sealed partial class Udif
                             break;
                         case CHUNK_TYPE_RLE:
                             tmpBuffer = new byte[_buffersize];
-                            realSize  = AppleRle.DecodeBuffer(cmpBuffer, tmpBuffer);
+                            realSize  = Rle.DecodeBuffer(cmpBuffer, tmpBuffer);
                             data      = new byte[realSize];
                             Array.Copy(tmpBuffer, 0, data, 0, realSize);
 
                             break;
                         case CHUNK_TYPE_LZH:
                             tmpBuffer = new byte[_buffersize];
-                            realSize  = AppleLzh.DecodeBuffer(cmpBuffer, tmpBuffer);
+                            realSize  = Lzh.DecodeBuffer(cmpBuffer, tmpBuffer);
                             data      = new byte[realSize];
                             Array.Copy(tmpBuffer, 0, data, 0, realSize);
 

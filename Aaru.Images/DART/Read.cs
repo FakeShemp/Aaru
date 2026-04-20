@@ -36,7 +36,7 @@ using System.Text.RegularExpressions;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Compression;
+using Aaru.Compression.Apple;
 using Aaru.Helpers;
 using Aaru.Logging;
 using Claunia.Encoding;
@@ -134,7 +134,7 @@ public sealed partial class Dart
                     stream.EnsureRead(temp, 0, temp.Length);
                     buffer = new byte[BUFFER_SIZE];
 
-                    AppleRle.DecodeBuffer(temp, buffer);
+                    Rle.DecodeBuffer(temp, buffer);
                 }
                 else
                 {
@@ -142,7 +142,7 @@ public sealed partial class Dart
                     stream.EnsureRead(temp, 0, temp.Length);
                     buffer = new byte[BUFFER_SIZE];
 
-                    AppleLzh.DecodeBuffer(temp, buffer);
+                    Lzh.DecodeBuffer(temp, buffer);
                 }
             }
 

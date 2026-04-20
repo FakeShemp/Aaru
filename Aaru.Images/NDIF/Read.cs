@@ -37,12 +37,13 @@ using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Compression;
+using Aaru.Compression.Apple;
 using Aaru.Compression.StuffIt;
 using Aaru.Helpers;
 using Aaru.Logging;
 using Claunia.Encoding;
 using Claunia.RsrcFork;
+using ADC = Aaru.Compression.Apple.ADC;
 using Version = Resources.Version;
 
 namespace Aaru.Images;
@@ -342,7 +343,7 @@ public sealed partial class Ndif
                     case CHUNK_TYPE_RLE:
                     {
                         var tmpBuffer = new byte[_bufferSize];
-                        realSize = AppleRle.DecodeBuffer(cmpBuffer, tmpBuffer);
+                        realSize = Rle.DecodeBuffer(cmpBuffer, tmpBuffer);
                         data     = new byte[realSize];
                         Array.Copy(tmpBuffer, 0, data, 0, realSize);
 
@@ -352,7 +353,7 @@ public sealed partial class Ndif
                     case CHUNK_TYPE_LZH:
                     {
                         var tmpBuffer = new byte[_bufferSize];
-                        realSize = AppleLzh.DecodeBuffer(cmpBuffer, tmpBuffer);
+                        realSize = Lzh.DecodeBuffer(cmpBuffer, tmpBuffer);
                         data     = new byte[realSize];
                         Array.Copy(tmpBuffer, 0, data, 0, realSize);
 

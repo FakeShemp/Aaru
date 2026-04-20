@@ -33,10 +33,10 @@
 
 using System.Runtime.InteropServices;
 
-namespace Aaru.Compression;
+namespace Aaru.Compression.Apple;
 
 /// <summary>Implements the Apple version of RLE</summary>
-public static partial class AppleRle
+public static partial class Rle
 {
     const uint DART_CHUNK = 20960;
 

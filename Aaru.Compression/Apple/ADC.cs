@@ -39,7 +39,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Aaru.Compression;
+namespace Aaru.Compression.Apple;
 
 /// <summary>Implements the Apple version of RLE</summary>
 
