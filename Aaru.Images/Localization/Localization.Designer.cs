@@ -6135,5 +6135,17 @@ namespace Aaru.Images {
                 return ResourceManager.GetString("MagicIso_NRG_trailer_has_no_tracks", resourceCulture);
             }
         }
+        
+        internal static string Verifying_NDIF_image_CRC {
+            get {
+                return ResourceManager.GetString("Verifying_NDIF_image_CRC", resourceCulture);
+            }
+        }
+        
+        internal static string NDIF_CRC_mismatch_expected_0_got_1 {
+            get {
+                return ResourceManager.GetString("NDIF_CRC_mismatch_expected_0_got_1", resourceCulture);
+            }
+        }
     }
 }

@@ -38,12 +38,10 @@ using Aaru.CommonTypes.Structs;
 namespace Aaru.Images;
 
 // TODO: Detect OS X encrypted images
-// TODO: Check checksum
 // TODO: Implement segments
-// TODO: Implement compression
-/// <inheritdoc />
+/// <inheritdoc cref="IMediaImage" />
 /// <summary>Implements reading Apple New Disk Image Format disk images</summary>
-public sealed partial class Ndif : IMediaImage
+public sealed partial class Ndif : IMediaImage, IVerifiableImage
 {
     const string                  MODULE_NAME = "NDIF plugin";
     uint                          _bufferSize;

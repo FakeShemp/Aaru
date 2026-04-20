@@ -3060,4 +3060,10 @@
     <data name="MagicIso_NRG_trailer_has_no_tracks" xml:space="preserve">
         <value>El bloque NRG incrustado en la imagen UIF de MagicISO no contiene pistas.</value>
     </data>
+    <data name="Verifying_NDIF_image_CRC" xml:space="preserve">
+        <value>[slateblue1]Verificando el CRC de la imagen NDIF…[/]</value>
+    </data>
+    <data name="NDIF_CRC_mismatch_expected_0_got_1" xml:space="preserve">
+        <value>CRC de la imagen NDIF no coincide: se esperaba 0x{0:X7}, se obtuvo 0x{1:X7}</value>
+    </data>
 </root>
