@@ -461,6 +461,33 @@
     <data name="CopyQm_Name" xml:space="preserve">
     <value>Sydex CopyQM</value>
   </data>
+    <data name="Dxp_Name" xml:space="preserve">
+    <value>Disk eXPress</value>
+  </data>
+    <data name="Dxp_header_CRC_does_not_match_any_known_seed" xml:space="preserve">
+    <value>El CRC de la cabecera DXP no coincide con ninguna semilla conocida; la imagen puede estar dañada.</value>
+  </data>
+    <data name="Dxp_image_is_password_protected_and_unsupported" xml:space="preserve">
+    <value>La imagen DXP está protegida por contraseña; el descifrado no está soportado.</value>
+  </data>
+    <data name="Dxp_invalid_track_count" xml:space="preserve">
+    <value>La imagen DXP indica un número de pistas inválido.</value>
+  </data>
+    <data name="Dxp_unknown_compression_type_0" xml:space="preserve">
+    <value>La imagen DXP usa un tipo de compresión desconocido {0}.</value>
+  </data>
+    <data name="Dxp_track_decompression_failed_0" xml:space="preserve">
+    <value>Falló la descompresión de la pista DXP {0}.</value>
+  </data>
+    <data name="Dxp_invalid_compressed_track_length_0" xml:space="preserve">
+    <value>La pista DXP tiene una longitud comprimida inválida {0}.</value>
+  </data>
+    <data name="Dxp_image_contains_a_disk_of_type_0" xml:space="preserve">
+    <value>La imagen DXP contiene un disco de tipo {0}</value>
+  </data>
+    <data name="Dxp_comments_0" xml:space="preserve">
+    <value>Comentarios DXP: {0}</value>
+  </data>
     <data name="Copyright_string_0" xml:space="preserve">
     <value>Texto de copyright: {0}</value>
   </data>

@@ -3933,6 +3933,60 @@ namespace Aaru.Images {
             }
         }
         
+        internal static string Dxp_Name {
+            get {
+                return ResourceManager.GetString("Dxp_Name", resourceCulture);
+            }
+        }
+        
+        internal static string Dxp_header_CRC_does_not_match_any_known_seed {
+            get {
+                return ResourceManager.GetString("Dxp_header_CRC_does_not_match_any_known_seed", resourceCulture);
+            }
+        }
+        
+        internal static string Dxp_image_is_password_protected_and_unsupported {
+            get {
+                return ResourceManager.GetString("Dxp_image_is_password_protected_and_unsupported", resourceCulture);
+            }
+        }
+        
+        internal static string Dxp_invalid_track_count {
+            get {
+                return ResourceManager.GetString("Dxp_invalid_track_count", resourceCulture);
+            }
+        }
+        
+        internal static string Dxp_unknown_compression_type_0 {
+            get {
+                return ResourceManager.GetString("Dxp_unknown_compression_type_0", resourceCulture);
+            }
+        }
+        
+        internal static string Dxp_track_decompression_failed_0 {
+            get {
+                return ResourceManager.GetString("Dxp_track_decompression_failed_0", resourceCulture);
+            }
+        }
+        
+        internal static string Dxp_invalid_compressed_track_length_0 {
+            get {
+                return ResourceManager.GetString("Dxp_invalid_compressed_track_length_0", resourceCulture);
+            }
+        }
+        
+        internal static string Dxp_image_contains_a_disk_of_type_0 {
+            get {
+                return ResourceManager.GetString("Dxp_image_contains_a_disk_of_type_0", resourceCulture);
+            }
+        }
+        
+        internal static string Dxp_comments_0 {
+            get {
+                return ResourceManager.GetString("Dxp_comments_0", resourceCulture);
+            }
+        }
+        
         internal static string Calculated_header_checksum_equals_0_X2_1 {
             get {
                 return ResourceManager.GetString("Calculated_header_checksum_equals_0_X2_1", resourceCulture);

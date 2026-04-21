@@ -1977,6 +1977,33 @@
     <data name="CopyQm_Name" xml:space="preserve">
     <value>Sydex CopyQM</value>
   </data>
+    <data name="Dxp_Name" xml:space="preserve">
+    <value>Disk eXPress</value>
+  </data>
+    <data name="Dxp_header_CRC_does_not_match_any_known_seed" xml:space="preserve">
+    <value>DXP header CRC does not match any known seed; image may be corrupt.</value>
+  </data>
+    <data name="Dxp_image_is_password_protected_and_unsupported" xml:space="preserve">
+    <value>DXP image is password protected; decryption is not supported.</value>
+  </data>
+    <data name="Dxp_invalid_track_count" xml:space="preserve">
+    <value>DXP image reports an invalid track count.</value>
+  </data>
+    <data name="Dxp_unknown_compression_type_0" xml:space="preserve">
+    <value>DXP image uses unknown compression type {0}.</value>
+  </data>
+    <data name="Dxp_track_decompression_failed_0" xml:space="preserve">
+    <value>Decompression failed for DXP track {0}.</value>
+  </data>
+    <data name="Dxp_invalid_compressed_track_length_0" xml:space="preserve">
+    <value>DXP track has invalid compressed length {0}.</value>
+  </data>
+    <data name="Dxp_image_contains_a_disk_of_type_0" xml:space="preserve">
+    <value>DXP image contains a disk of type {0}</value>
+  </data>
+    <data name="Dxp_comments_0" xml:space="preserve">
+    <value>DXP comments: {0}</value>
+  </data>
     <data name="Calculated_header_checksum_equals_0_X2_1" xml:space="preserve">
     <value>Calculated header checksum = 0x{0:X2}, {1}</value>
   </data>

@@ -97,6 +97,7 @@ Media image formats we can read
 * Crunchdisk
 * Dave Dunfield IMD
 * DiscJuggler images
+* Disk eXPress (DXP)
 * Dreamcast GDI
 * Easy CD Creator images (.CIF)
 * Expert Witness Format (EWF)
