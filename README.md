@@ -114,6 +114,7 @@ Media image formats we can read
 * Software Pirates SNATCH-IT / Central Point COPY II-PC (.CP2)
 * Spectrum floppy disk image (.FDI)
 * SuperCardPro
+* Sydex CopyQM+ Self-eXtracting Disk (.SXD)
 * TeleDisk
 * UltraISO (.ISZ)
 * WinOnCD (.C2D)

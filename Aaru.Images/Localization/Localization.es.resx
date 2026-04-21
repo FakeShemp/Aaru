@@ -488,6 +488,39 @@
     <data name="Dxp_comments_0" xml:space="preserve">
     <value>Comentarios DXP: {0}</value>
   </data>
+    <data name="Sxd_Name" xml:space="preserve">
+    <value>Disco Auto-extraíble Sydex CopyQM+</value>
+  </data>
+    <data name="Sxd_header_CRC_mismatch" xml:space="preserve">
+    <value>El CRC de la cabecera SXD no coincide; la imagen está dañada o no es SXD.</value>
+  </data>
+    <data name="Sxd_image_is_password_protected_and_unsupported" xml:space="preserve">
+    <value>La imagen SXD está protegida por contraseña; el descifrado no está soportado.</value>
+  </data>
+    <data name="Sxd_image_has_invalid_geometry" xml:space="preserve">
+    <value>La imagen SXD indica una geometría de disco inválida.</value>
+  </data>
+    <data name="Sxd_inconsistent_track_length" xml:space="preserve">
+    <value>La longitud de pista de la cabecera SXD es inconsistente con los sectores por pista.</value>
+  </data>
+    <data name="Sxd_comment_CRC_mismatch_discarded" xml:space="preserve">
+    <value>El CRC del comentario SXD no coincide; comentario descartado.</value>
+  </data>
+    <data name="Sxd_track_decompression_failed_0" xml:space="preserve">
+    <value>Falló la descompresión de la pista SXD {0}.</value>
+  </data>
+    <data name="Sxd_track_compressed_length_out_of_range_0" xml:space="preserve">
+    <value>La pista SXD tiene una longitud comprimida fuera de rango {0}.</value>
+  </data>
+    <data name="Sxd_image_contains_a_disk_of_type_0" xml:space="preserve">
+    <value>La imagen SXD contiene un disco de tipo {0}</value>
+  </data>
+    <data name="Sxd_comments_0" xml:space="preserve">
+    <value>Comentarios SXD: {0}</value>
+  </data>
+    <data name="Sxd_all_track_CRCs_match_0" xml:space="preserve">
+    <value>CRCs de todas las pistas SXD validados = {0}</value>
+  </data>
     <data name="Copyright_string_0" xml:space="preserve">
     <value>Texto de copyright: {0}</value>
   </data>

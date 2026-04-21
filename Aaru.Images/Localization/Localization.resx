@@ -2004,6 +2004,39 @@
     <data name="Dxp_comments_0" xml:space="preserve">
     <value>DXP comments: {0}</value>
   </data>
+    <data name="Sxd_Name" xml:space="preserve">
+    <value>Sydex CopyQM+ Self-eXtracting Disk</value>
+  </data>
+    <data name="Sxd_header_CRC_mismatch" xml:space="preserve">
+    <value>SXD header CRC does not match; image is corrupt or not an SXD image.</value>
+  </data>
+    <data name="Sxd_image_is_password_protected_and_unsupported" xml:space="preserve">
+    <value>SXD image is password protected; decryption is not supported.</value>
+  </data>
+    <data name="Sxd_image_has_invalid_geometry" xml:space="preserve">
+    <value>SXD image reports invalid disk geometry.</value>
+  </data>
+    <data name="Sxd_inconsistent_track_length" xml:space="preserve">
+    <value>SXD header track length is inconsistent with sectors per track.</value>
+  </data>
+    <data name="Sxd_comment_CRC_mismatch_discarded" xml:space="preserve">
+    <value>SXD comment CRC mismatch; comment discarded.</value>
+  </data>
+    <data name="Sxd_track_decompression_failed_0" xml:space="preserve">
+    <value>Decompression failed for SXD track {0}.</value>
+  </data>
+    <data name="Sxd_track_compressed_length_out_of_range_0" xml:space="preserve">
+    <value>SXD track has out-of-range compressed length {0}.</value>
+  </data>
+    <data name="Sxd_image_contains_a_disk_of_type_0" xml:space="preserve">
+    <value>SXD image contains a disk of type {0}</value>
+  </data>
+    <data name="Sxd_comments_0" xml:space="preserve">
+    <value>SXD comments: {0}</value>
+  </data>
+    <data name="Sxd_all_track_CRCs_match_0" xml:space="preserve">
+    <value>All SXD track CRCs validated = {0}</value>
+  </data>
     <data name="Calculated_header_checksum_equals_0_X2_1" xml:space="preserve">
     <value>Calculated header checksum = 0x{0:X2}, {1}</value>
   </data>

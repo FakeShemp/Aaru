@@ -3987,6 +3987,72 @@ namespace Aaru.Images {
             }
         }
         
+        internal static string Sxd_Name {
+            get {
+                return ResourceManager.GetString("Sxd_Name", resourceCulture);
+            }
+        }
+        
+        internal static string Sxd_header_CRC_mismatch {
+            get {
+                return ResourceManager.GetString("Sxd_header_CRC_mismatch", resourceCulture);
+            }
+        }
+        
+        internal static string Sxd_image_is_password_protected_and_unsupported {
+            get {
+                return ResourceManager.GetString("Sxd_image_is_password_protected_and_unsupported", resourceCulture);
+            }
+        }
+        
+        internal static string Sxd_image_has_invalid_geometry {
+            get {
+                return ResourceManager.GetString("Sxd_image_has_invalid_geometry", resourceCulture);
+            }
+        }
+        
+        internal static string Sxd_inconsistent_track_length {
+            get {
+                return ResourceManager.GetString("Sxd_inconsistent_track_length", resourceCulture);
+            }
+        }
+        
+        internal static string Sxd_comment_CRC_mismatch_discarded {
+            get {
+                return ResourceManager.GetString("Sxd_comment_CRC_mismatch_discarded", resourceCulture);
+            }
+        }
+        
+        internal static string Sxd_track_decompression_failed_0 {
+            get {
+                return ResourceManager.GetString("Sxd_track_decompression_failed_0", resourceCulture);
+            }
+        }
+        
+        internal static string Sxd_track_compressed_length_out_of_range_0 {
+            get {
+                return ResourceManager.GetString("Sxd_track_compressed_length_out_of_range_0", resourceCulture);
+            }
+        }
+        
+        internal static string Sxd_image_contains_a_disk_of_type_0 {
+            get {
+                return ResourceManager.GetString("Sxd_image_contains_a_disk_of_type_0", resourceCulture);
+            }
+        }
+        
+        internal static string Sxd_comments_0 {
+            get {
+                return ResourceManager.GetString("Sxd_comments_0", resourceCulture);
+            }
+        }
+        
+        internal static string Sxd_all_track_CRCs_match_0 {
+            get {
+                return ResourceManager.GetString("Sxd_all_track_CRCs_match_0", resourceCulture);
+            }
+        }
+        
         internal static string Calculated_header_checksum_equals_0_X2_1 {
             get {
                 return ResourceManager.GetString("Calculated_header_checksum_equals_0_X2_1", resourceCulture);
