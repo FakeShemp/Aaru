@@ -63,14 +63,6 @@ public sealed partial class Qrst
 
         if(!hdr.signature.SequenceEqual(_signature)) return ErrorNumber.InvalidArgument;
 
-        // V5 (PKWARE-compressed) images are not supported.
-        if(hdr.type != 0)
-        {
-            AaruLogging.Error(MODULE_NAME, Localization.Qrst_V5_images_are_not_supported);
-
-            return ErrorNumber.NotSupported;
-        }
-
         if(hdr.disk_fmt == 0 || hdr.disk_fmt >= _dskDesc.Length) return ErrorNumber.InvalidArgument;
 
         (byte cyls, byte heads, byte spt) = _dskDesc[hdr.disk_fmt];
@@ -81,59 +73,29 @@ public sealed partial class Qrst
         _trackLen = spt * SECTOR_SIZE;
         _header   = hdr;
 
-        int totalTracks = _cyls * _heads;
+        int  totalTracks = _cyls             * _heads;
+        long totalBytes  = (long)totalTracks * _trackLen;
 
-        // Walk the track headers to build a lookup table of file offsets.
-        long curOfs    = headerSize;
-        var  trkHdrBuf = new byte[Marshal.SizeOf<QrstTrackHeader>()];
-        var  blkLenBuf = new byte[sizeof(ushort)];
-
-        for(var i = 0; i < totalTracks; i++)
+        switch(hdr.type)
         {
-            stream.Seek(curOfs, SeekOrigin.Begin);
+            case 0:
+                // Pre-V5: walk the track headers to build a lookup table of file offsets.
+                ErrorNumber walkErr = WalkPreV5Tracks(stream, headerSize, totalTracks);
 
-            if(stream.EnsureRead(trkHdrBuf, 0, trkHdrBuf.Length) != trkHdrBuf.Length)
+                if(walkErr != ErrorNumber.NoError) return walkErr;
+
+                break;
+            case 2:
+                // V5: the remainder of the file is a single PKWARE DCL Implode stream that
+                // decompresses to a raw, sector-sequential flat disk image.
+                ErrorNumber v5Err = DecompressV5(stream, headerSize, totalBytes);
+
+                if(v5Err != ErrorNumber.NoError) return v5Err;
+
+                break;
+            default:
                 return ErrorNumber.InvalidArgument;
-
-            QrstTrackHeader trkHdr = Marshal.ByteArrayToStructureLittleEndian<QrstTrackHeader>(trkHdrBuf);
-
-            if(trkHdr.cyl > _cyls || trkHdr.head > _heads || trkHdr.type > TRK_CMPRSD)
-                return ErrorNumber.InvalidArgument;
-
-            int trkIdx = trkHdr.cyl * _heads + trkHdr.head;
-
-            // Reject duplicates.
-            if(_trackOffset.ContainsKey(trkIdx)) return ErrorNumber.InvalidArgument;
-
-            _trackOffset[trkIdx] =  curOfs;
-            curOfs               += trkHdrBuf.Length;
-
-            switch(trkHdr.type)
-            {
-                case TRK_NORMAL:
-                    curOfs += _trackLen;
-
-                    break;
-                case TRK_BLANK:
-                    curOfs += 1;
-
-                    break;
-                case TRK_CMPRSD:
-                    if(stream.EnsureRead(blkLenBuf, 0, blkLenBuf.Length) != blkLenBuf.Length)
-                        return ErrorNumber.InvalidArgument;
-
-                    var blkLen = BitConverter.ToUInt16(blkLenBuf, 0);
-                    curOfs += blkLenBuf.Length + blkLen;
-
-                    break;
-                default:
-                    return ErrorNumber.InvalidArgument;
-            }
         }
-
-        if(stream.Length < curOfs) return ErrorNumber.InvalidArgument;
-
-        if(_trackOffset.Count != totalTracks) return ErrorNumber.InvalidArgument;
 
         _imageInfo.Cylinders       = _cyls;
         _imageInfo.Heads           = _heads;
@@ -170,6 +132,16 @@ public sealed partial class Qrst
 
         if(sectorAddress >= _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
+        buffer = new byte[SECTOR_SIZE];
+
+        if(_flatImage != null)
+        {
+            Array.Copy(_flatImage, (long)sectorAddress * SECTOR_SIZE, buffer, 0, SECTOR_SIZE);
+            sectorStatus = SectorStatus.Dumped;
+
+            return ErrorNumber.NoError;
+        }
+
         var trackNum    = (int)(sectorAddress / _spt);
         var sectorInTrk = (int)(sectorAddress % _spt);
 
@@ -182,7 +154,6 @@ public sealed partial class Qrst
             trackData = _trackCache[trackNum];
         }
 
-        buffer = new byte[SECTOR_SIZE];
         Array.Copy(trackData, sectorInTrk * SECTOR_SIZE, buffer, 0, SECTOR_SIZE);
 
         sectorStatus = SectorStatus.Dumped;

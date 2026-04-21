@@ -3172,6 +3172,12 @@
     <data name="Qrst_V5_images_are_not_supported" xml:space="preserve">
         <value>QRST V5 (PKWARE-compressed) images are not supported.</value>
     </data>
+    <data name="Qrst_V5_requires_native_decompressor" xml:space="preserve">
+        <value>QRST V5 (PKWARE-compressed) images require the native decompression library.</value>
+    </data>
+    <data name="Qrst_V5_decompression_yielded_incomplete_data" xml:space="preserve">
+        <value>QRST V5 decompression yielded incomplete data.</value>
+    </data>
     <data name="Qrst_track_decompression_yielded_incomplete_data" xml:space="preserve">
         <value>QRST track decompression yielded incomplete data.</value>
     </data>

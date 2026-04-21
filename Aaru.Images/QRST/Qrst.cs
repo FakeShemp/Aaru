@@ -37,7 +37,8 @@
  * original (pre-V5) version and version 5 (V5).
  *
  * QRST V5 contains a disk image compressed with the PKWARE Data Compression
- * Library and is not supported.
+ * Library (DCL) Implode algorithm, stored as a single compressed stream after
+ * the header that decompresses to a flat sector-sequential raw disk image.
  *
  * QRST pre-V5 contains a collection of tracks. Each track may be uncompressed,
  * blank (with a filler byte), or run-length encoded. Only standard DOS disk
@@ -64,6 +65,9 @@ public sealed partial class Qrst : IMediaImage
     /// <summary>File offset of each track's header, keyed by linear track index.</summary>
     readonly Dictionary<int, long> _trackOffset = new();
     byte _cyls;
+
+    /// <summary>When non-null, the image is a V5 (PKWARE-compressed) QRST and this holds the decompressed flat disk image.</summary>
+    byte[] _flatImage;
 
     QrstHeader _header;
     byte       _heads;

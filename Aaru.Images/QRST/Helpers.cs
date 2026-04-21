@@ -35,6 +35,7 @@
 using System;
 using System.IO;
 using Aaru.CommonTypes.Enums;
+using Aaru.Compression.Zip;
 using Aaru.Helpers;
 using Aaru.Logging;
 
@@ -42,6 +43,94 @@ namespace Aaru.Images;
 
 public sealed partial class Qrst
 {
+    ErrorNumber WalkPreV5Tracks(Stream stream, int headerSize, int totalTracks)
+    {
+        long curOfs    = headerSize;
+        var  trkHdrBuf = new byte[Marshal.SizeOf<QrstTrackHeader>()];
+        var  blkLenBuf = new byte[sizeof(ushort)];
+
+        for(var i = 0; i < totalTracks; i++)
+        {
+            stream.Seek(curOfs, SeekOrigin.Begin);
+
+            if(stream.EnsureRead(trkHdrBuf, 0, trkHdrBuf.Length) != trkHdrBuf.Length)
+                return ErrorNumber.InvalidArgument;
+
+            QrstTrackHeader trkHdr = Marshal.ByteArrayToStructureLittleEndian<QrstTrackHeader>(trkHdrBuf);
+
+            if(trkHdr.cyl > _cyls || trkHdr.head > _heads || trkHdr.type > TRK_CMPRSD)
+                return ErrorNumber.InvalidArgument;
+
+            int trkIdx = trkHdr.cyl * _heads + trkHdr.head;
+
+            if(_trackOffset.ContainsKey(trkIdx)) return ErrorNumber.InvalidArgument;
+
+            _trackOffset[trkIdx] =  curOfs;
+            curOfs               += trkHdrBuf.Length;
+
+            switch(trkHdr.type)
+            {
+                case TRK_NORMAL:
+                    curOfs += _trackLen;
+
+                    break;
+                case TRK_BLANK:
+                    curOfs += 1;
+
+                    break;
+                case TRK_CMPRSD:
+                    if(stream.EnsureRead(blkLenBuf, 0, blkLenBuf.Length) != blkLenBuf.Length)
+                        return ErrorNumber.InvalidArgument;
+
+                    var blkLen = BitConverter.ToUInt16(blkLenBuf, 0);
+                    curOfs += blkLenBuf.Length + blkLen;
+
+                    break;
+                default:
+                    return ErrorNumber.InvalidArgument;
+            }
+        }
+
+        if(stream.Length < curOfs) return ErrorNumber.InvalidArgument;
+
+        if(_trackOffset.Count != totalTracks) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
+
+    ErrorNumber DecompressV5(Stream stream, int headerSize, long totalBytes)
+    {
+        if(!Blast.IsSupported)
+        {
+            AaruLogging.Error(MODULE_NAME, Localization.Qrst_V5_requires_native_decompressor);
+
+            return ErrorNumber.NotSupported;
+        }
+
+        long payloadLen = stream.Length - headerSize;
+
+        if(payloadLen <= 0 || payloadLen > int.MaxValue) return ErrorNumber.InvalidArgument;
+
+        var compressed = new byte[payloadLen];
+        stream.Seek(headerSize, SeekOrigin.Begin);
+
+        if(stream.EnsureRead(compressed, 0, compressed.Length) != compressed.Length) return ErrorNumber.InOutError;
+
+        var decompressed = new byte[totalBytes];
+        int actual       = Blast.DecodeBuffer(compressed, decompressed);
+
+        if(actual != totalBytes)
+        {
+            AaruLogging.Error(MODULE_NAME, Localization.Qrst_V5_decompression_yielded_incomplete_data);
+
+            return ErrorNumber.InOutError;
+        }
+
+        _flatImage = decompressed;
+
+        return ErrorNumber.NoError;
+    }
+
     ErrorNumber ReadTrackIntoCache(Stream stream, int trackNum)
     {
         if(!_trackOffset.TryGetValue(trackNum, out long offset)) return ErrorNumber.SectorNotFound;

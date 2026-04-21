@@ -3153,6 +3153,12 @@
     <data name="Qrst_V5_images_are_not_supported" xml:space="preserve">
         <value>Las imágenes QRST V5 (comprimidas con PKWARE) no están soportadas.</value>
     </data>
+    <data name="Qrst_V5_requires_native_decompressor" xml:space="preserve">
+        <value>Las imágenes QRST V5 (comprimidas con PKWARE) requieren la biblioteca nativa de descompresión.</value>
+    </data>
+    <data name="Qrst_V5_decompression_yielded_incomplete_data" xml:space="preserve">
+        <value>La descompresión de la imagen QRST V5 produjo datos incompletos.</value>
+    </data>
     <data name="Qrst_track_decompression_yielded_incomplete_data" xml:space="preserve">
         <value>La descompresión de la pista QRST produjo datos incompletos.</value>
     </data>
