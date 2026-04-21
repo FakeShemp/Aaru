@@ -3151,4 +3151,16 @@
     <data name="NDIF_CRC_mismatch_expected_0_got_1" xml:space="preserve">
         <value>NDIF image CRC mismatch: expected 0x{0:X7}, got 0x{1:X7}</value>
     </data>
+    <data name="TheDuplicator_Name" xml:space="preserve">
+        <value>The Duplicator disk image</value>
+    </data>
+    <data name="Detected_TheDuplicator_image_with_CHS_equals_0_1_2" xml:space="preserve">
+        <value>Detected The Duplicator image with C/H/S = {0}/{1}/{2}.</value>
+    </data>
+    <data name="TheDuplicator_header_version_0_media_1_unknown_2" xml:space="preserve">
+        <value>The Duplicator header: version={0}, media={1}, unknown={2}.</value>
+    </data>
+    <data name="TheDuplicator_cylinder_0_flags_1_start_2_cksum_3_filler_4" xml:space="preserve">
+        <value>The Duplicator cylinder {0}: flags=0x{1:X4}, start=0x{2:X4}, cksum=0x{3:X4}, filler=0x{4:X2}.</value>
+    </data>
 </root>

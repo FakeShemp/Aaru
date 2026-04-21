@@ -6279,5 +6279,29 @@ namespace Aaru.Images {
                 return ResourceManager.GetString("NDIF_CRC_mismatch_expected_0_got_1", resourceCulture);
             }
         }
+        
+        internal static string TheDuplicator_Name {
+            get {
+                return ResourceManager.GetString("TheDuplicator_Name", resourceCulture);
+            }
+        }
+        
+        internal static string Detected_TheDuplicator_image_with_CHS_equals_0_1_2 {
+            get {
+                return ResourceManager.GetString("Detected_TheDuplicator_image_with_CHS_equals_0_1_2", resourceCulture);
+            }
+        }
+        
+        internal static string TheDuplicator_header_version_0_media_1_unknown_2 {
+            get {
+                return ResourceManager.GetString("TheDuplicator_header_version_0_media_1_unknown_2", resourceCulture);
+            }
+        }
+        
+        internal static string TheDuplicator_cylinder_0_flags_1_start_2_cksum_3_filler_4 {
+            get {
+                return ResourceManager.GetString("TheDuplicator_cylinder_0_flags_1_start_2_cksum_3_filler_4", resourceCulture);
+            }
+        }
     }
 }

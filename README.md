@@ -116,6 +116,7 @@ Media image formats we can read
 * SuperCardPro
 * Sydex CopyQM+ Self-eXtracting Disk (.SXD)
 * TeleDisk
+* The Duplicator
 * UltraISO (.ISZ)
 * WinOnCD (.C2D)
 * WUX
