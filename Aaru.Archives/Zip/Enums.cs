@@ -24,6 +24,8 @@ public sealed partial class Zip
         Deflate = 8,
         /// <summary>Deflate64 / Enhanced Deflate (64KB window)</summary>
         Deflate64 = 9,
+        /// <summary>PKWARE Data Compression Library Imploding</summary>
+        Blast = 10,
         /// <summary>BZip2</summary>
         BZip2 = 12,
         /// <summary>LZMA</summary>

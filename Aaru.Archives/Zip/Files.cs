@@ -220,6 +220,11 @@ public sealed partial class Zip
 
                     break;
 
+                case CompressionMethod.Blast:
+                    stream = new BlastStream(compressedStream, entry.UncompressedSize);
+
+                    break;
+
                 case CompressionMethod.BZip2:
                 {
                     var compressedData  = new byte[entry.CompressedSize];
