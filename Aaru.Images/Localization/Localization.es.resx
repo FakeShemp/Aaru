@@ -3144,4 +3144,16 @@
     <data name="TheDuplicator_cylinder_0_flags_1_start_2_cksum_3_filler_4" xml:space="preserve">
         <value>Cilindro {0} de The Duplicator: flags=0x{1:X4}, inicio=0x{2:X4}, cksum=0x{3:X4}, relleno=0x{4:X2}.</value>
     </data>
+    <data name="Qrst_Name" xml:space="preserve">
+        <value>Imagen de disco Quick Release Sector Transfer</value>
+    </data>
+    <data name="Detected_QRST_image_with_CHS_equals_0_1_2" xml:space="preserve">
+        <value>Detectada imagen QRST con C/H/S = {0}/{1}/{2}.</value>
+    </data>
+    <data name="Qrst_V5_images_are_not_supported" xml:space="preserve">
+        <value>Las imágenes QRST V5 (comprimidas con PKWARE) no están soportadas.</value>
+    </data>
+    <data name="Qrst_track_decompression_yielded_incomplete_data" xml:space="preserve">
+        <value>La descompresión de la pista QRST produjo datos incompletos.</value>
+    </data>
 </root>

@@ -6303,5 +6303,29 @@ namespace Aaru.Images {
                 return ResourceManager.GetString("TheDuplicator_cylinder_0_flags_1_start_2_cksum_3_filler_4", resourceCulture);
             }
         }
+        
+        internal static string Qrst_Name {
+            get {
+                return ResourceManager.GetString("Qrst_Name", resourceCulture);
+            }
+        }
+        
+        internal static string Detected_QRST_image_with_CHS_equals_0_1_2 {
+            get {
+                return ResourceManager.GetString("Detected_QRST_image_with_CHS_equals_0_1_2", resourceCulture);
+            }
+        }
+        
+        internal static string Qrst_V5_images_are_not_supported {
+            get {
+                return ResourceManager.GetString("Qrst_V5_images_are_not_supported", resourceCulture);
+            }
+        }
+        
+        internal static string Qrst_track_decompression_yielded_incomplete_data {
+            get {
+                return ResourceManager.GetString("Qrst_track_decompression_yielded_incomplete_data", resourceCulture);
+            }
+        }
     }
 }
