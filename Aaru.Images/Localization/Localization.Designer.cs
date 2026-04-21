@@ -5061,6 +5061,18 @@ namespace Aaru.Images {
             }
         }
         
+        internal static string SnatchIt_Name {
+            get {
+                return ResourceManager.GetString("SnatchIt_Name", resourceCulture);
+            }
+        }
+        
+        internal static string SnatchIt_image_contains_a_disk_of_type_0 {
+            get {
+                return ResourceManager.GetString("SnatchIt_image_contains_a_disk_of_type_0", resourceCulture);
+            }
+        }
+        
         internal static string SuperCardPro_Name {
             get {
                 return ResourceManager.GetString("SuperCardPro_Name", resourceCulture);

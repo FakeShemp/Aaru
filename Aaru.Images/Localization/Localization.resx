@@ -2541,6 +2541,12 @@
     <data name="Compressed_SaveDskF_images_are_not_supported" xml:space="preserve">
     <value>Compressed SaveDskF images are not supported.</value>
   </data>
+    <data name="SnatchIt_Name" xml:space="preserve">
+    <value>Software Pirates SNATCH-IT</value>
+  </data>
+    <data name="SnatchIt_image_contains_a_disk_of_type_0" xml:space="preserve">
+    <value>SNATCH-IT image contains a disk of type {0}</value>
+  </data>
     <data name="SuperCardPro_Name" xml:space="preserve">
     <value>SuperCardPro</value>
   </data>

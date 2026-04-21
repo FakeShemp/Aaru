@@ -2288,6 +2288,12 @@
           xml:space="preserve">
     <value>Guardar sólo sectores únicos. Esta opción consume más memoria y es más lenta, pero está activada por defecto.</value>
   </data>
+    <data name="SnatchIt_Name" xml:space="preserve">
+    <value>Software Pirates SNATCH-IT</value>
+  </data>
+    <data name="SnatchIt_image_contains_a_disk_of_type_0" xml:space="preserve">
+    <value>La imagen SNATCH-IT contiene un disco de tipo {0}</value>
+  </data>
     <data name="SuperCardPro_Name" xml:space="preserve">
     <value>SuperCardPro</value>
   </data>

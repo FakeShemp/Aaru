@@ -110,6 +110,7 @@ Media image formats we can read
 * Partimage disk images
 * PowerISO (.DAA/.GBI)
 * Quasi88 disk images (.D77/.D88)
+* Software Pirates SNATCH-IT / Central Point COPY II-PC (.CP2)
 * Spectrum floppy disk image (.FDI)
 * SuperCardPro
 * TeleDisk
