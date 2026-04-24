@@ -34,6 +34,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
@@ -71,6 +72,17 @@ public sealed partial class UDF
             Icb                      = default(LongAllocationDescriptor),
             PartitionReferenceNumber = partitionReferenceNumber
         };
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "OpenFile: path={0} informationLength={1} logicalBlocksRecorded={2} lenEA={3} lenAD={4} adType={5} isExtended={6} partRef={7}",
+                          path,
+                          fileEntryInfo.InformationLength,
+                          fileEntryInfo.LogicalBlocksRecorded,
+                          fileEntryInfo.LengthOfExtendedAttributes,
+                          fileEntryInfo.LengthOfAllocationDescriptors,
+                          (ushort)fileEntryInfo.IcbTag.flags & 0x07,
+                          fileEntryInfo.IsExtended,
+                          partitionReferenceNumber);
 
         return ErrorNumber.NoError;
     }

@@ -28,11 +28,8 @@
 // Copyright © 2026 Rebecca Wallander
 // ****************************************************************************/
 
-using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
-using Aaru.Helpers;
-using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
 
@@ -44,7 +41,8 @@ public sealed partial class UDF
     /// <param name="path">Absolute filesystem path.</param>
     /// <param name="extents">Physical extents as (startSector, sectorCount).</param>
     /// <returns>Error number.</returns>
-    public ErrorNumber GetFilePhysicalSectorExtents(string path, out List<(ulong startSector, uint sectorCount)> extents)
+    public ErrorNumber GetFilePhysicalSectorExtents(string                                          path,
+                                                    out List<(ulong startSector, uint sectorCount)> extents)
     {
         extents = [];
 
@@ -60,96 +58,39 @@ public sealed partial class UDF
 
         var adType = (byte)((ushort)info.IcbTag.flags & 0x07);
 
+        // Embedded data and unsupported extended allocation descriptors have no physical extents
+        if(adType == 3) return ErrorNumber.NoError;
+        if(adType == 2) return ErrorNumber.NotSupported;
+        if(adType != 0 && adType != 1) return ErrorNumber.InvalidArgument;
+
         int fixedSize = info.IsExtended ? 216 : 176;
         int adOffset  = fixedSize + (int)info.LengthOfExtendedAttributes;
-        int adLength  = (int)info.LengthOfAllocationDescriptors;
+        var adLength  = (int)info.LengthOfAllocationDescriptors;
 
-        return adType switch
-               {
-                   0 => CollectShortAdExtents(feBuffer,
-                                              adOffset,
-                                              adLength,
-                                              partitionReferenceNumber,
-                                              extents),
-                   1 => CollectLongAdExtents(feBuffer, adOffset, adLength, extents),
-                   2 => ErrorNumber.NotSupported,
-                   3 => ErrorNumber.NoError,
-                   _ => ErrorNumber.InvalidArgument
-               };
-    }
+        // Walk the allocation descriptor chain, following any type-3 continuation pointers.
+        errno = CollectAllocationDescriptors(feBuffer,
+                                             adOffset,
+                                             adLength,
+                                             adType,
+                                             partitionReferenceNumber,
+                                             out List<UdfExtent> adExtents);
 
-    /// <summary>
-    ///     Collects short allocation descriptor extents.
-    /// </summary>
-    /// <param name="feBuffer">File entry buffer.</param>
-    /// <param name="adOffset">Allocation descriptor offset.</param>
-    /// <param name="adLength">Allocation descriptor length.</param>
-    /// <param name="partitionReferenceNumber">Partition reference number.</param>
-    /// <param name="extents">Physical extents as (startSector, sectorCount).</param>
-    /// <returns>Error number.</returns>
-    ErrorNumber CollectShortAdExtents(byte[] feBuffer, int adOffset, int adLength, ushort partitionReferenceNumber,
-                                      List<(ulong startSector, uint sectorCount)> extents)
-    {
-        int sadSize = System.Runtime.InteropServices.Marshal.SizeOf<ShortAllocationDescriptor>();
-        int adPos   = adOffset;
+        if(errno != ErrorNumber.NoError) return errno;
 
-        while(adPos + sadSize <= adOffset + adLength)
+        foreach(UdfExtent extent in adExtents)
         {
-            ShortAllocationDescriptor sad =
-                Marshal.ByteArrayToStructureLittleEndian<ShortAllocationDescriptor>(feBuffer, adPos, sadSize);
+            // Sparse extents (types 1 and 2) have no recorded physical sectors to surface here.
+            if(extent.Type != 0) continue;
 
-            uint extentLength = sad.extentLength & 0x3FFFFFFF;
+            uint sectorCount = (extent.Length + _sectorSize - 1) / _sectorSize;
 
-            if(extentLength == 0) break;
+            if(sectorCount == 0) continue;
 
-            uint sectorCount = (extentLength + _sectorSize - 1) / _sectorSize;
+            ulong start = TranslateLogicalBlock(extent.LogicalBlock,
+                                                extent.PartitionReferenceNumber,
+                                                _partitionStartingLocation);
 
-            if(sectorCount > 0)
-            {
-                ulong start = TranslateLogicalBlock(sad.extentLocation, partitionReferenceNumber, _partitionStartingLocation);
-                extents.Add((start, sectorCount));
-            }
-
-            adPos += sadSize;
-        }
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <summary>
-    ///     Collects long allocation descriptor extents.
-    /// </summary>
-    /// <param name="feBuffer">File entry buffer.</param>
-    /// <param name="adOffset">Allocation descriptor offset.</param>
-    /// <param name="adLength">Allocation descriptor length.</param>
-    /// <param name="extents">Physical extents as (startSector, sectorCount).</param>
-    /// <returns>Error number.</returns>
-    ErrorNumber CollectLongAdExtents(byte[] feBuffer, int adOffset, int adLength,
-                                     List<(ulong startSector, uint sectorCount)> extents)
-    {
-        int ladSize = System.Runtime.InteropServices.Marshal.SizeOf<LongAllocationDescriptor>();
-        int adPos   = adOffset;
-
-        while(adPos + ladSize <= adOffset + adLength)
-        {
-            LongAllocationDescriptor lad =
-                Marshal.ByteArrayToStructureLittleEndian<LongAllocationDescriptor>(feBuffer, adPos, ladSize);
-
-            uint extentLength = lad.extentLength & 0x3FFFFFFF;
-
-            if(extentLength == 0) break;
-
-            uint sectorCount = (extentLength + _sectorSize - 1) / _sectorSize;
-
-            if(sectorCount > 0)
-            {
-                ulong start = TranslateLogicalBlock(lad.extentLocation.logicalBlockNumber,
-                                                    lad.extentLocation.partitionReferenceNumber,
-                                                    _partitionStartingLocation);
-                extents.Add((start, sectorCount));
-            }
-
-            adPos += ladSize;
+            extents.Add((start, sectorCount));
         }
 
         return ErrorNumber.NoError;

@@ -6334,7 +6334,6 @@ namespace Aaru.Images {
             }
         }
 
-
         internal static string Qrst_track_decompression_yielded_incomplete_data {
             get {
                 return ResourceManager.GetString("Qrst_track_decompression_yielded_incomplete_data", resourceCulture);

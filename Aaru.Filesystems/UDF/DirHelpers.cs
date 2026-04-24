@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
@@ -203,41 +204,16 @@ public sealed partial class UDF
         if(dataLength > 1073741824) // 1GB
             return ErrorNumber.InvalidArgument;
 
-        data = new byte[dataLength];
-
-        var dataOffset = 0;
-        int adPos      = adOffset;
-        int sadSize    = System.Runtime.InteropServices.Marshal.SizeOf<ShortAllocationDescriptor>();
-
-        while(adPos < adOffset + adLength && dataOffset < dataLength)
-        {
-            ShortAllocationDescriptor sad =
-                Marshal.ByteArrayToStructureLittleEndian<ShortAllocationDescriptor>(feBuffer, adPos, sadSize);
-
-            // Extract length (lower 30 bits) and type (upper 2 bits)
-            uint extentLength = sad.extentLength & 0x3FFFFFFF;
-
-            if(extentLength == 0) break;
-
-            // Short ADs don't have partition reference, use the partition from the containing ICB
-            uint sectorsToRead = (extentLength + _sectorSize - 1) / _sectorSize;
-
-            ErrorNumber errno = ReadSectorsFromPartition(sad.extentLocation,
+        ErrorNumber errno = CollectAllocationDescriptors(feBuffer,
+                                                         adOffset,
+                                                         adLength,
+                                                         0,
                                                          partitionReferenceNumber,
-                                                         _partitionStartingLocation,
-                                                         sectorsToRead,
-                                                         out byte[] extentData);
+                                                         out List<UdfExtent> extents);
 
-            if(errno != ErrorNumber.NoError) return errno;
+        if(errno != ErrorNumber.NoError) return errno;
 
-            var bytesToCopy = (int)Math.Min(extentLength, dataLength - dataOffset);
-            Array.Copy(extentData, 0, data, dataOffset, bytesToCopy);
-            dataOffset += bytesToCopy;
-
-            adPos += sadSize; // ShortAllocationDescriptor size
-        }
-
-        return ErrorNumber.NoError;
+        return ReadExtentsFull(extents, dataLength, out data);
     }
 
     /// <summary>
@@ -257,40 +233,18 @@ public sealed partial class UDF
         if(dataLength > 1073741824) // 1GB
             return ErrorNumber.InvalidArgument;
 
-        data = new byte[dataLength];
+        // Long ADs carry their own partition reference; the "default" value only applies to short ADs,
+        // so we pass 0 here (unused for adType==1).
+        ErrorNumber errno = CollectAllocationDescriptors(feBuffer,
+                                                         adOffset,
+                                                         adLength,
+                                                         1,
+                                                         0,
+                                                         out List<UdfExtent> extents);
 
-        var dataOffset = 0;
-        int adPos      = adOffset;
-        int ladSize    = System.Runtime.InteropServices.Marshal.SizeOf<LongAllocationDescriptor>();
+        if(errno != ErrorNumber.NoError) return errno;
 
-        while(adPos < adOffset + adLength && dataOffset < dataLength)
-        {
-            LongAllocationDescriptor lad =
-                Marshal.ByteArrayToStructureLittleEndian<LongAllocationDescriptor>(feBuffer, adPos, ladSize);
-
-            // Extract length (lower 30 bits) and type (upper 2 bits)
-            uint extentLength = lad.extentLength & 0x3FFFFFFF;
-
-            if(extentLength == 0) break;
-
-            uint sectorsToRead = (extentLength + _sectorSize - 1) / _sectorSize;
-
-            ErrorNumber errno = ReadSectorsFromPartition(lad.extentLocation.logicalBlockNumber,
-                                                         lad.extentLocation.partitionReferenceNumber,
-                                                         _partitionStartingLocation,
-                                                         sectorsToRead,
-                                                         out byte[] extentData);
-
-            if(errno != ErrorNumber.NoError) return errno;
-
-            var bytesToCopy = (int)Math.Min(extentLength, dataLength - dataOffset);
-            Array.Copy(extentData, 0, data, dataOffset, bytesToCopy);
-            dataOffset += bytesToCopy;
-
-            adPos += ladSize; // LongAllocationDescriptor size
-        }
-
-        return ErrorNumber.NoError;
+        return ReadExtentsFull(extents, dataLength, out data);
     }
 
     /// <summary>
@@ -503,101 +457,23 @@ public sealed partial class UDF
                                          byte[] buffer,   ushort partitionReferenceNumber, out long bytesRead)
     {
         bytesRead = 0;
-        long currentOffset = 0;
-        var  bufferOffset  = 0;
-        int  adPos         = adOffset;
-        int  sadSize       = System.Runtime.InteropServices.Marshal.SizeOf<ShortAllocationDescriptor>();
 
-        // Fast path: skip to the approximate starting position ONLY if reading from a high offset
-        if(fileOffset > 0 && adLength > sadSize * 16)
-        {
-            long scannedOffset = 0;
-            int  scanPos       = adOffset;
+        ErrorNumber errno = CollectAllocationDescriptors(feBuffer,
+                                                         adOffset,
+                                                         adLength,
+                                                         0,
+                                                         partitionReferenceNumber,
+                                                         out List<UdfExtent> extents);
 
-            while(scanPos < adOffset + adLength && scannedOffset < fileOffset)
-            {
-                ShortAllocationDescriptor sadScan =
-                    Marshal.ByteArrayToStructureLittleEndian<ShortAllocationDescriptor>(feBuffer, scanPos, sadSize);
+        if(errno != ErrorNumber.NoError) return errno;
 
-                uint extentLength = sadScan.extentLength & 0x3FFFFFFF;
+        AaruLogging.Debug(MODULE_NAME,
+                          "ReadDataFromShortAdRange: collected {0} extents, fileOffset={1}, readLength={2}",
+                          extents.Count,
+                          fileOffset,
+                          readLength);
 
-                if(extentLength == 0) break;
-
-                scannedOffset += extentLength;
-                scanPos       += sadSize;
-
-                if(scannedOffset >= fileOffset)
-                {
-                    scanPos       -= sadSize;
-                    scannedOffset -= extentLength;
-
-                    break;
-                }
-            }
-
-            adPos         = scanPos;
-            currentOffset = scannedOffset;
-        }
-
-        long targetEnd = fileOffset + readLength;
-
-        while(adPos < adOffset + adLength && bytesRead < readLength)
-        {
-            ShortAllocationDescriptor sad =
-                Marshal.ByteArrayToStructureLittleEndian<ShortAllocationDescriptor>(feBuffer, adPos, sadSize);
-
-            uint extentLength = sad.extentLength & 0x3FFFFFFF;
-
-            if(extentLength == 0) break;
-
-            long extentEnd = currentOffset + extentLength;
-
-            // Early exit: if we've read everything we need, stop
-            if(currentOffset >= targetEnd) break;
-
-            // Check if this extent overlaps with the range we need
-            if(extentEnd > fileOffset)
-            {
-                // Calculate the offset within this extent to start reading
-                long offsetInExtent = currentOffset < fileOffset ? fileOffset - currentOffset : 0;
-
-                // Calculate how much to read from this extent
-                long toRead = extentLength - offsetInExtent;
-
-                if(currentOffset + offsetInExtent + toRead > targetEnd)
-                    toRead = targetEnd - (currentOffset + offsetInExtent);
-
-                if(toRead > 0)
-                {
-                    // Optimization: calculate exact sector range to read
-                    // Don't read entire extent if we only need part of it
-                    long sectorOffset = offsetInExtent / _sectorSize;
-                    long byteOffsetInFirstSector = offsetInExtent % _sectorSize;
-                    var  sectorsToRead = (uint)((byteOffsetInFirstSector + toRead + _sectorSize - 1) / _sectorSize);
-
-                    // Read from the correct starting sector of the extent
-                    ErrorNumber errno = ReadSectorsFromPartition((uint)(sad.extentLocation + sectorOffset),
-                                                                 partitionReferenceNumber,
-                                                                 _partitionStartingLocation,
-                                                                 sectorsToRead,
-                                                                 out byte[] extentData);
-
-                    if(errno != ErrorNumber.NoError) return errno;
-
-                    // Copy from the byte offset in the first sector
-                    int copyLen = Math.Min((int)toRead, buffer.Length - bufferOffset);
-                    Array.Copy(extentData, (int)byteOffsetInFirstSector, buffer, bufferOffset, copyLen);
-
-                    bytesRead    += copyLen;
-                    bufferOffset += copyLen;
-                }
-            }
-
-            currentOffset += extentLength;
-            adPos         += sadSize;
-        }
-
-        return ErrorNumber.NoError;
+        return ReadExtentsRange(extents, fileOffset, readLength, buffer, out bytesRead);
     }
 
     /// <summary>
@@ -608,99 +484,326 @@ public sealed partial class UDF
                                         byte[] buffer,   out long bytesRead)
     {
         bytesRead = 0;
-        long currentOffset = 0;
-        var  bufferOffset  = 0;
-        int  adPos         = adOffset;
-        int  ladSize       = System.Runtime.InteropServices.Marshal.SizeOf<LongAllocationDescriptor>();
 
-        // Fast path: skip to the approximate starting position ONLY if reading from a high offset
-        if(fileOffset > 0 && adLength > ladSize * 16)
+        ErrorNumber errno = CollectAllocationDescriptors(feBuffer,
+                                                         adOffset,
+                                                         adLength,
+                                                         1,
+                                                         0,
+                                                         out List<UdfExtent> extents);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        return ReadExtentsRange(extents, fileOffset, readLength, buffer, out bytesRead);
+    }
+
+    /// <summary>
+    ///     Walks the chain of allocation descriptors starting at the given offset inside the file entry buffer,
+    ///     transparently following any type-3 <c>EXT_NEXT_EXTENT_ALLOCDESCS</c> continuation pointers,
+    ///     and returns a flat list of data extents (types 0, 1, and 2).
+    /// </summary>
+    /// <param name="feBuffer">Buffer currently holding allocation descriptors (initially the file entry sector)</param>
+    /// <param name="adOffset">Offset within <paramref name="feBuffer" /> where allocation descriptors start</param>
+    /// <param name="adLength">Length in bytes of the allocation descriptor area</param>
+    /// <param name="adType">Allocation descriptor type (0 = short, 1 = long)</param>
+    /// <param name="defaultPartitionReference">Default partition reference (used for short descriptors)</param>
+    /// <param name="extents">Resulting flat list of data extents</param>
+    /// <returns>Error number</returns>
+    ErrorNumber CollectAllocationDescriptors(byte[] feBuffer,                  int adOffset, int adLength, byte adType,
+                                             ushort defaultPartitionReference, out List<UdfExtent> extents)
+    {
+        extents = [];
+
+        if(adType != 0 && adType != 1) return ErrorNumber.NotSupported;
+
+        int sadSize   = System.Runtime.InteropServices.Marshal.SizeOf<ShortAllocationDescriptor>();
+        int ladSize   = System.Runtime.InteropServices.Marshal.SizeOf<LongAllocationDescriptor>();
+        int entrySize = adType == 0 ? sadSize : ladSize;
+
+        // Size of the Allocation Extent Descriptor header (ECMA-167 4/14.5):
+        // DescriptorTag (16) + previousAllocExtLocation (4) + lengthAllocDescs (4) = 24 bytes
+        const int aedHeaderSize = 24;
+
+        // Guard against runaway continuation chains (matches Linux UDF_MAX_INDIR_EXTS semantics)
+        const int maxIndirections = 1024;
+        var       indirections    = 0;
+
+        byte[] curBuffer       = feBuffer;
+        int    curOffset       = adOffset;
+        int    curLength       = adLength;
+        ushort curPartitionRef = defaultPartitionReference;
+
+        while(true)
         {
-            long scannedOffset = 0;
-            int  scanPos       = adOffset;
+            int adPos = curOffset;
+            int adEnd = curOffset + curLength;
 
-            while(scanPos < adOffset + adLength && scannedOffset < fileOffset)
+            if(adEnd > curBuffer.Length) adEnd = curBuffer.Length;
+
+            var followedContinuation = false;
+
+            while(adPos + entrySize <= adEnd)
             {
-                LongAllocationDescriptor ladScan =
-                    Marshal.ByteArrayToStructureLittleEndian<LongAllocationDescriptor>(feBuffer, scanPos, ladSize);
+                uint   rawLength;
+                uint   block;
+                ushort partRef;
 
-                uint extentLength = ladScan.extentLength & 0x3FFFFFFF;
-
-                if(extentLength == 0) break;
-
-                scannedOffset += extentLength;
-                scanPos       += ladSize;
-
-                if(scannedOffset >= fileOffset)
+                if(adType == 0)
                 {
-                    scanPos       -= ladSize;
-                    scannedOffset -= extentLength;
+                    ShortAllocationDescriptor sad =
+                        Marshal.ByteArrayToStructureLittleEndian<ShortAllocationDescriptor>(curBuffer, adPos, sadSize);
 
-                    break;
+                    rawLength = sad.extentLength;
+                    block     = sad.extentLocation;
+                    partRef   = curPartitionRef;
                 }
+                else
+                {
+                    LongAllocationDescriptor lad =
+                        Marshal.ByteArrayToStructureLittleEndian<LongAllocationDescriptor>(curBuffer, adPos, ladSize);
+
+                    rawLength = lad.extentLength;
+                    block     = lad.extentLocation.logicalBlockNumber;
+                    partRef   = lad.extentLocation.partitionReferenceNumber;
+                }
+
+                // Skip entries with rawLength == 0 (zero-length spacers may appear in
+                // the middle of the AD area on some PS2 bridge discs). Linux stops here,
+                // but Linux also can't read these discs at all. As a preservation tool we
+                // walk the full lengthAllocDescs range and skip zero entries.
+                if(rawLength == 0)
+                {
+                    adPos += entrySize;
+
+                    continue;
+                }
+
+                uint length = rawLength & 0x3FFFFFFF;
+                var  type   = (byte)(rawLength >> 30);
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  "  AD@{0}: rawLen=0x{1:X8} type={2} len={3} block={4} partRef={5}",
+                                  adPos,
+                                  rawLength,
+                                  type,
+                                  length,
+                                  block,
+                                  partRef);
+
+                if(type == 3)
+                {
+                    // Continuation pointer: stop processing this AD block and jump to the referenced one.
+                    // On ANY failure following the continuation (I/O error, malformed AED header, runaway
+                    // chain) fall back gracefully and return the extents collected so far with NoError.
+                    // Linux's udf_next_aext is similarly forgiving: it does not validate the AED tag.
+                    // Returning an error here would cause the whole extraction to bail out with a 0-byte
+                    // output file for files with continuation chains, which is strictly worse than
+                    // returning partial data.
+                    if(++indirections > maxIndirections)
+                    {
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "    DIAG: maxIndirections exceeded ({0}), returning {1} extents",
+                                          indirections,
+                                          extents.Count);
+
+                        return ErrorNumber.NoError;
+                    }
+
+                    // Read one sector first to get the AED header and determine the actual
+                    // AD area size from lengthAllocDescs.
+                    ErrorNumber errno = ReadSectorFromPartition(block,
+                                                                partRef,
+                                                                _partitionStartingLocation,
+                                                                out byte[] contBuffer);
+
+                    if(errno != ErrorNumber.NoError) return ErrorNumber.NoError;
+
+                    if(contBuffer == null || contBuffer.Length < aedHeaderSize) return ErrorNumber.NoError;
+
+                    // lengthAllocDescs lives at offset 20 of the Allocation Extent Descriptor
+                    // (16-byte DescriptorTag + 4-byte previousAllocExtLocation). We intentionally do NOT
+                    // validate the descriptor tag, matching Linux's udf_next_aext behavior.
+                    long lengthAllocDescs = BitConverter.ToUInt32(contBuffer, 20);
+
+                    // If the AED says 0 bytes of allocation descriptors, nothing more to walk.
+                    if(lengthAllocDescs <= 0) return ErrorNumber.NoError;
+
+                    // Clamp lengthAllocDescs to the type-3 extent length as a corruption guard.
+                    // Per ECMA-167, the extent length should be >= aedHeaderSize + lengthAllocDescs.
+                    if(length > 0 && lengthAllocDescs > length - aedHeaderSize)
+                        lengthAllocDescs = length              - aedHeaderSize;
+
+                    // If the AD area fits in the sector already read (Linux-style single-block),
+                    // use it directly. Otherwise, read exactly the sectors needed for the AED.
+                    // Some discs (PS2 bridge) have multi-block AED extents that are valid per
+                    // ECMA-167 but don't use per-block daisy-chain type-3 pointers.
+                    if(aedHeaderSize + lengthAllocDescs > contBuffer.Length)
+                    {
+                        var  totalAedBytes = (uint)(aedHeaderSize         + lengthAllocDescs);
+                        uint aedSectors    = (totalAedBytes + _sectorSize - 1) / _sectorSize;
+
+                        errno = ReadSectorsFromPartition(block,
+                                                         partRef,
+                                                         _partitionStartingLocation,
+                                                         aedSectors,
+                                                         out contBuffer);
+
+                        if(errno != ErrorNumber.NoError) return ErrorNumber.NoError;
+
+                        if(contBuffer == null || contBuffer.Length < aedHeaderSize) return ErrorNumber.NoError;
+                    }
+
+                    // Final clamp to actual buffer size.
+                    long maxLengthAllocDescs = contBuffer.Length - aedHeaderSize;
+
+                    if(lengthAllocDescs > maxLengthAllocDescs) lengthAllocDescs = maxLengthAllocDescs;
+
+                    curBuffer       = contBuffer;
+                    curOffset       = aedHeaderSize;
+                    curLength       = (int)lengthAllocDescs;
+                    curPartitionRef = partRef;
+
+                    followedContinuation = true;
+
+                    break; // restart outer loop with new buffer
+                }
+
+                extents.Add(new UdfExtent(block, partRef, length, type));
+
+                adPos += entrySize;
             }
 
-            adPos         = scanPos;
-            currentOffset = scannedOffset;
+            if(!followedContinuation)
+            {
+                long totalExtentBytes = 0;
+
+                foreach(UdfExtent e in extents) totalExtentBytes += e.Length;
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  "CollectAllocationDescriptors: done, collected {0} extents, totalBytes={1}, indirections={2}",
+                                  extents.Count,
+                                  totalExtentBytes,
+                                  indirections);
+
+                return ErrorNumber.NoError;
+            }
         }
+    }
 
-        long targetEnd = fileOffset + readLength;
+    /// <summary>
+    ///     Reads all of <paramref name="dataLength" /> bytes from the flat extent list into a newly allocated buffer.
+    ///     Sparse extents (types 1 and 2) are materialized as zeros.
+    /// </summary>
+    ErrorNumber ReadExtentsFull(List<UdfExtent> extents, long dataLength, out byte[] data)
+    {
+        data = new byte[dataLength];
 
-        while(adPos < adOffset + adLength && bytesRead < readLength)
+        if(dataLength == 0) return ErrorNumber.NoError;
+
+        return ReadExtentsRange(extents, 0, dataLength, data, out _);
+    }
+
+    /// <summary>
+    ///     Reads a byte range from the flat extent list into <paramref name="buffer" />.
+    ///     Sparse extents (types 1 and 2) contribute zeros to the output.
+    /// </summary>
+    ErrorNumber ReadExtentsRange(List<UdfExtent> extents, long fileOffset, long readLength, byte[] buffer,
+                                 out long        bytesRead)
+    {
+        bytesRead = 0;
+
+        if(readLength <= 0) return ErrorNumber.NoError;
+
+        long currentOffset = 0;
+        var  bufferOffset  = 0;
+        long targetEnd     = fileOffset + readLength;
+
+        foreach(UdfExtent extent in extents)
         {
-            LongAllocationDescriptor lad =
-                Marshal.ByteArrayToStructureLittleEndian<LongAllocationDescriptor>(feBuffer, adPos, ladSize);
+            if(bytesRead >= readLength) break;
 
-            uint extentLength = lad.extentLength & 0x3FFFFFFF;
+            uint extentLength = extent.Length;
 
-            if(extentLength == 0) break;
+            if(extentLength == 0) continue;
 
             long extentEnd = currentOffset + extentLength;
 
-            // Early exit: if we've read everything we need, stop
             if(currentOffset >= targetEnd) break;
 
-            // Check if this extent overlaps with the range we need
             if(extentEnd > fileOffset)
             {
-                // Calculate the offset within this extent to start reading
                 long offsetInExtent = currentOffset < fileOffset ? fileOffset - currentOffset : 0;
-
-                // Calculate how much to read from this extent
-                long toRead = extentLength - offsetInExtent;
+                long toRead         = extentLength - offsetInExtent;
 
                 if(currentOffset + offsetInExtent + toRead > targetEnd)
                     toRead = targetEnd - (currentOffset + offsetInExtent);
 
                 if(toRead > 0)
                 {
-                    // Optimization: calculate exact sector range to read
-                    // Don't read entire extent if we only need part of it
-                    long sectorOffset = offsetInExtent / _sectorSize;
-                    long byteOffsetInFirstSector = offsetInExtent % _sectorSize;
-                    var  sectorsToRead = (uint)((byteOffsetInFirstSector + toRead + _sectorSize - 1) / _sectorSize);
+                    var copyLen = (int)Math.Min(toRead, buffer.Length - bufferOffset);
 
-                    // Read from the correct starting sector of the extent
-                    ErrorNumber errno =
-                        ReadSectorsFromPartition((uint)(lad.extentLocation.logicalBlockNumber + sectorOffset),
-                                                 lad.extentLocation.partitionReferenceNumber,
-                                                 _partitionStartingLocation,
-                                                 sectorsToRead,
-                                                 out byte[] extentData);
+                    if(copyLen > 0)
+                    {
+                        if(extent.Type == 0)
+                        {
+                            // Recorded and allocated: read from disk
+                            long sectorOffset            = offsetInExtent / _sectorSize;
+                            long byteOffsetInFirstSector = offsetInExtent % _sectorSize;
 
-                    if(errno != ErrorNumber.NoError) return errno;
+                            var sectorsToRead =
+                                (uint)((byteOffsetInFirstSector + copyLen + _sectorSize - 1) / _sectorSize);
 
-                    // Copy from the byte offset in the first sector
-                    int copyLen = Math.Min((int)toRead, buffer.Length - bufferOffset);
-                    Array.Copy(extentData, (int)byteOffsetInFirstSector, buffer, bufferOffset, copyLen);
+                            ErrorNumber errno = ReadSectorsFromPartition((uint)(extent.LogicalBlock + sectorOffset),
+                                                                         extent.PartitionReferenceNumber,
+                                                                         _partitionStartingLocation,
+                                                                         sectorsToRead,
+                                                                         out byte[] extentData);
 
-                    bytesRead    += copyLen;
-                    bufferOffset += copyLen;
+                            if(errno != ErrorNumber.NoError)
+                            {
+                                // On out-of-range or I/O error, zero-fill this region instead
+                                // of aborting. PS2 bridge discs with non-standard multi-block
+                                // AEDs may include some bogus extent entries mixed with valid
+                                // ones. Returning partial zeros is better than truncating the
+                                // entire file.
+                                Array.Clear(buffer, bufferOffset, copyLen);
+                                bytesRead    += copyLen;
+                                bufferOffset += copyLen;
+
+                                continue;
+                            }
+
+                            Array.Copy(extentData, (int)byteOffsetInFirstSector, buffer, bufferOffset, copyLen);
+                        }
+                        else
+                        {
+                            // Sparse (type 1: not recorded but allocated, type 2: not recorded and not allocated):
+                            // data is defined to be all zeros.
+                            Array.Clear(buffer, bufferOffset, copyLen);
+                        }
+
+                        bytesRead    += copyLen;
+                        bufferOffset += copyLen;
+                    }
                 }
             }
 
             currentOffset += extentLength;
-            adPos         += ladSize;
+        }
+
+        // If the extent list doesn't cover the requested range (sparse file whose allocation descriptors
+        // describe fewer bytes than informationLength), the tail is implicitly a hole of zeros. Zero-fill
+        // the remainder of the requested range. Linux's UDF driver does the same by returning a zero
+        // page for any logical offset that maps beyond the last recorded extent.
+        if(bytesRead < readLength && bufferOffset < buffer.Length)
+        {
+            long toZero = Math.Min(readLength - bytesRead, buffer.Length - bufferOffset);
+
+            if(toZero > 0)
+            {
+                Array.Clear(buffer, bufferOffset, (int)toZero);
+                bytesRead += toZero;
+            }
         }
 
         return ErrorNumber.NoError;

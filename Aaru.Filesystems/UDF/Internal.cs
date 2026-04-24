@@ -77,6 +77,41 @@ public sealed partial class UDF
 
 #endregion
 
+#region Nested type: UdfExtent
+
+    /// <summary>
+    ///     Unified representation of a single UDF allocation descriptor (short or long)
+    ///     after following any type-3 <c>EXT_NEXT_EXTENT_ALLOCDESCS</c> continuation chains.
+    ///     Only contains data extents (types 0, 1, 2); continuation extents are consumed internally.
+    /// </summary>
+    readonly struct UdfExtent
+    {
+        /// <summary>Logical block number of the extent within its partition.</summary>
+        public readonly uint LogicalBlock;
+
+        /// <summary>Partition reference number the extent is located in.</summary>
+        public readonly ushort PartitionReferenceNumber;
+
+        /// <summary>Length of the extent in bytes (masked, without type bits).</summary>
+        public readonly uint Length;
+
+        /// <summary>
+        ///     Extent type: 0 = recorded and allocated, 1 = not recorded but allocated (zeros),
+        ///     2 = not recorded and not allocated (zeros).
+        /// </summary>
+        public readonly byte Type;
+
+        public UdfExtent(uint logicalBlock, ushort partitionReferenceNumber, uint length, byte type)
+        {
+            LogicalBlock             = logicalBlock;
+            PartitionReferenceNumber = partitionReferenceNumber;
+            Length                   = length;
+            Type                     = type;
+        }
+    }
+
+#endregion
+
 #region Nested type: UdfFileEntryInfo
 
     /// <summary>

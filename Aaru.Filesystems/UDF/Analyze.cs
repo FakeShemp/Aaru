@@ -194,17 +194,15 @@ public sealed partial class UDF
         switch(adType)
         {
             case 0:
-                CollectShortAllocationOverlaps(feBuffer,
-                                               adOffset,
-                                               adLength,
-                                               partitionReferenceNumber,
-                                               remainingBytes,
-                                               sectorExtents,
-                                               overlaps);
-
-                break;
             case 1:
-                CollectLongAllocationOverlaps(feBuffer, adOffset, adLength, remainingBytes, sectorExtents, overlaps);
+                CollectAllocationDescriptorOverlaps(feBuffer,
+                                                    adOffset,
+                                                    adLength,
+                                                    adType,
+                                                    partitionReferenceNumber,
+                                                    remainingBytes,
+                                                    sectorExtents,
+                                                    overlaps);
 
                 break;
             case 2:
@@ -239,75 +237,52 @@ public sealed partial class UDF
         return NormalizeAnalyzeExtents(overlaps);
     }
 
-    void CollectShortAllocationOverlaps(byte[] feBuffer, int adOffset, int adLength, ushort partitionReferenceNumber,
-                                        long remainingBytes, IReadOnlyList<(ulong Start, ulong End)> sectorExtents,
-                                        List<(ulong Start, ulong End)> overlaps)
+    /// <summary>
+    ///     Collects affected-sector overlaps from a Short or Long allocation descriptor chain,
+    ///     transparently following type-3 continuation pointers and skipping sparse (types 1/2) extents
+    ///     which have no on-disk sectors backing them.
+    /// </summary>
+    void CollectAllocationDescriptorOverlaps(byte[] feBuffer, int adOffset, int adLength, byte adType,
+                                             ushort partitionReferenceNumber, long remainingBytes,
+                                             IReadOnlyList<(ulong Start, ulong End)> sectorExtents,
+                                             List<(ulong Start, ulong End)> overlaps)
     {
-        int adPos   = adOffset;
-        int sadSize = System.Runtime.InteropServices.Marshal.SizeOf<ShortAllocationDescriptor>();
+        ErrorNumber errno = CollectAllocationDescriptors(feBuffer,
+                                                         adOffset,
+                                                         adLength,
+                                                         adType,
+                                                         partitionReferenceNumber,
+                                                         out List<UdfExtent> extents);
 
-        while(adPos + sadSize <= feBuffer.Length && adPos < adOffset + adLength && remainingBytes > 0)
+        if(errno != ErrorNumber.NoError) return;
+
+        foreach(UdfExtent extent in extents)
         {
-            ShortAllocationDescriptor sad =
-                Marshal.ByteArrayToStructureLittleEndian<ShortAllocationDescriptor>(feBuffer, adPos, sadSize);
+            if(remainingBytes <= 0) break;
 
-            uint extentLength = sad.extentLength & 0x3FFFFFFF;
+            if(extent.Length == 0) continue;
 
-            if(extentLength == 0) break;
+            long bytesInExtent = Math.Min(extent.Length, remainingBytes);
 
-            long bytesInExtent = Math.Min(extentLength, remainingBytes);
-
-            if(bytesInExtent > 0)
+            // Sparse extents (types 1 and 2) don't occupy any physical sectors, but they still
+            // consume logical file space — so advance remainingBytes without emitting an overlap.
+            if(extent.Type != 0)
             {
-                ulong startSector = TranslateLogicalBlock(sad.extentLocation,
-                                                          partitionReferenceNumber,
-                                                          _partitionStartingLocation);
-
-                var sectorsInExtent = (ulong)((bytesInExtent + _sectorSize - 1) / _sectorSize);
-
-                if(sectorsInExtent == 0) sectorsInExtent = 1;
-
-                AddExtentOverlaps(startSector, startSector + sectorsInExtent - 1, sectorExtents, overlaps);
                 remainingBytes -= bytesInExtent;
+
+                continue;
             }
 
-            adPos += sadSize;
-        }
-    }
+            ulong startSector = TranslateLogicalBlock(extent.LogicalBlock,
+                                                      extent.PartitionReferenceNumber,
+                                                      _partitionStartingLocation);
 
-    void CollectLongAllocationOverlaps(byte[] feBuffer, int adOffset, int adLength, long remainingBytes,
-                                       IReadOnlyList<(ulong Start, ulong End)> sectorExtents,
-                                       List<(ulong Start, ulong End)> overlaps)
-    {
-        int adPos   = adOffset;
-        int ladSize = System.Runtime.InteropServices.Marshal.SizeOf<LongAllocationDescriptor>();
+            var sectorsInExtent = (ulong)((bytesInExtent + _sectorSize - 1) / _sectorSize);
 
-        while(adPos + ladSize <= feBuffer.Length && adPos < adOffset + adLength && remainingBytes > 0)
-        {
-            LongAllocationDescriptor lad =
-                Marshal.ByteArrayToStructureLittleEndian<LongAllocationDescriptor>(feBuffer, adPos, ladSize);
+            if(sectorsInExtent == 0) sectorsInExtent = 1;
 
-            uint extentLength = lad.extentLength & 0x3FFFFFFF;
-
-            if(extentLength == 0) break;
-
-            long bytesInExtent = Math.Min(extentLength, remainingBytes);
-
-            if(bytesInExtent > 0)
-            {
-                ulong startSector = TranslateLogicalBlock(lad.extentLocation.logicalBlockNumber,
-                                                          lad.extentLocation.partitionReferenceNumber,
-                                                          _partitionStartingLocation);
-
-                var sectorsInExtent = (ulong)((bytesInExtent + _sectorSize - 1) / _sectorSize);
-
-                if(sectorsInExtent == 0) sectorsInExtent = 1;
-
-                AddExtentOverlaps(startSector, startSector + sectorsInExtent - 1, sectorExtents, overlaps);
-                remainingBytes -= bytesInExtent;
-            }
-
-            adPos += ladSize;
+            AddExtentOverlaps(startSector, startSector + sectorsInExtent - 1, sectorExtents, overlaps);
+            remainingBytes -= bytesInExtent;
         }
     }
 
@@ -325,7 +300,12 @@ public sealed partial class UDF
 
             uint extentLength = ead.extentLength & 0x3FFFFFFF;
 
-            if(extentLength == 0) break;
+            if(extentLength == 0)
+            {
+                adPos += eadSize;
+
+                continue;
+            }
 
             long bytesInExtent = Math.Min(extentLength, remainingBytes);
 
