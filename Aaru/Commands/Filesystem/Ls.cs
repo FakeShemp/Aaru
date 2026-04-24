@@ -236,87 +236,67 @@ sealed class LsCommand : Command<LsCommand.Settings>
                 {
                     ErrorNumber error = ErrorNumber.InvalidArgument;
 
-                    // Check if any identified plugin is a readable filesystem
-                    var hasReadOnlyFs = false;
+                    // Enumerate all readable filesystem plugins identified on this partition. Each one
+                    // counts as a distinct volume for the purposes of --volume selection. This is needed
+                    // for images where a single partition hosts multiple overlapping filesystems
+                    // (e.g. an ISO9660 + UDF bridge disc, HFS wrapper over HFS+, etc.).
+                    var readablePlugins = new List<(string Name, IReadOnlyFilesystem Fs)>();
 
                     foreach(string pluginName in idPlugins)
                     {
-                        if(plugins.ReadOnlyFilesystems.ContainsKey(pluginName))
-                        {
-                            hasReadOnlyFs = true;
-
-                            break;
-                        }
-                    }
-
-                    // Count this as a volume if it has a readable filesystem
-                    // If targeting a specific volume and this isn't it, skip entirely
-                    if(hasReadOnlyFs)
-                    {
-                        if(settings.Volume.HasValue && settings.Volume.Value != volumeCounter)
-                        {
-                            volumeCounter++;
-
-                            continue;
-                        }
-
-                        volumeCounter++;
-                    }
-
-                    if(!settings.Volume.HasValue)
-                    {
-                        AaruLogging.WriteLine();
-                        AaruLogging.WriteLine($"[bold]{string.Format(UI.Partition_0, partitions[i].Sequence)}[/]");
-                    }
-
-                    if(idPlugins.Count > 1)
-                    {
-                        AaruLogging.WriteLine($"[italic]{string.Format(UI.Identified_by_0_plugins, idPlugins.Count)
-                        }[/]");
-
-                        foreach(string pluginName in idPlugins)
-                        {
-                            if(!plugins.ReadOnlyFilesystems.TryGetValue(pluginName, out IReadOnlyFilesystem fs))
-                                continue;
-
-                            if(fs is null) continue;
-
-                            AaruLogging.WriteLine($"[bold]{string.Format(UI.As_identified_by_0, fs.Name)}[/]");
-
-                            Core.Spectre.ProgressSingleSpinner(ctx =>
-                            {
-                                ctx.AddTask(UI.Mounting_filesystem).IsIndeterminate();
-
-                                error = fs.Mount(imageFormat,
-                                                 partitions[i],
-                                                 encodingClass,
-                                                 parsedOptions,
-                                                 settings.Namespace);
-                            });
-
-                            if(error == ErrorNumber.NoError)
-                            {
-                                ListFilesInDir("/", fs);
-
-                                Statistics.AddFilesystem(fs.Metadata.Type);
-                            }
-                            else
-                                AaruLogging.Error(UI.Unable_to_mount_volume_error_0, error.ToString());
-                        }
-                    }
-                    else
-                    {
-                        plugins.ReadOnlyFilesystems.TryGetValue(idPlugins[0], out IReadOnlyFilesystem fs);
-
+                        if(!plugins.ReadOnlyFilesystems.TryGetValue(pluginName, out IReadOnlyFilesystem fs)) continue;
                         if(fs is null) continue;
 
-                        if(settings.Volume.HasValue)
+                        readablePlugins.Add((pluginName, fs));
+                    }
+
+                    if(readablePlugins.Count == 0)
+                    {
+                        if(!settings.Volume.HasValue)
                         {
                             AaruLogging.WriteLine();
                             AaruLogging.WriteLine($"[bold]{string.Format(UI.Partition_0, partitions[i].Sequence)}[/]");
+
+                            if(idPlugins.Count > 1)
+                            {
+                                AaruLogging.WriteLine($"[italic]{
+                                    string.Format(UI.Identified_by_0_plugins, idPlugins.Count)}[/]");
+                            }
+                            else
+                                AaruLogging.WriteLine($"[bold]{string.Format(UI.Identified_by_0, idPlugins[0])}[/]");
                         }
 
-                        AaruLogging.WriteLine($"[bold]{string.Format(UI.Identified_by_0, fs.Name)}[/]");
+                        continue;
+                    }
+
+                    var printedPartitionHeader = false;
+
+                    foreach((_, IReadOnlyFilesystem fs) in readablePlugins)
+                    {
+                        int currentVolume = volumeCounter;
+
+                        // Advance the counter so each readable filesystem occupies its own volume slot.
+                        volumeCounter++;
+
+                        if(settings.Volume.HasValue && settings.Volume.Value != currentVolume) continue;
+
+                        if(!printedPartitionHeader)
+                        {
+                            AaruLogging.WriteLine();
+                            AaruLogging.WriteLine($"[bold]{string.Format(UI.Partition_0, partitions[i].Sequence)}[/]");
+
+                            if(readablePlugins.Count > 1)
+                            {
+                                AaruLogging.WriteLine($"[italic]{
+                                    string.Format(UI.Identified_by_0_plugins, readablePlugins.Count)}[/]");
+                            }
+
+                            printedPartitionHeader = true;
+                        }
+
+                        AaruLogging.WriteLine(readablePlugins.Count > 1
+                                                  ? $"[bold]{string.Format(UI.As_identified_by_0, fs.Name)}[/]"
+                                                  : $"[bold]{string.Format(UI.Identified_by_0,    fs.Name)}[/]");
 
                         Core.Spectre.ProgressSingleSpinner(ctx =>
                         {
@@ -337,6 +317,9 @@ sealed class LsCommand : Command<LsCommand.Settings>
                         }
                         else
                             AaruLogging.Error(UI.Unable_to_mount_volume_error_0, error.ToString());
+
+                        // Targeting a single volume: stop once it has been processed.
+                        if(settings.Volume.HasValue) break;
                     }
                 }
             }
