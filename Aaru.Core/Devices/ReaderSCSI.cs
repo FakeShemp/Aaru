@@ -592,7 +592,13 @@ sealed partial class Reader
                 if(_dev.IsOmniDriveFirmware())
                 {
                     bool omniStandardOk = !_dev.OmniDriveReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _, true, true);
-                    bool omniNintendoOk = !_dev.OmniDriveReadNintendoDvd(out _,
+                    if(omniStandardOk)
+                    {
+                        OmniDriveReadRaw = true;
+                    }
+                    else
+                    {
+                        OmniDriveReadRaw = !_dev.OmniDriveReadNintendoDvd(out _,
                                                                           out senseBuf,
                                                                           0,
                                                                           1,
@@ -603,7 +609,7 @@ sealed partial class Reader
                                                                           null,
                                                                           false,
                                                                           0);
-                    OmniDriveReadRaw    = omniStandardOk || omniNintendoOk;
+                    }
                 }
 
                 if(HldtstReadRaw || _plextorReadRaw || ReadBuffer3CReadRaw || OmniDriveReadRaw)
@@ -709,7 +715,10 @@ sealed partial class Reader
             if(HldtstReadRaw || ReadBuffer3CReadRaw)
                 BlocksToRead = 1;
             else if(OmniDriveReadRaw)
+            {
                 BlocksToRead = (uint)Math.Min(31, startWithBlocks);
+                return false;
+            }
             else if(_read6)
             {
                 _dev.Read6(out _, out _, 0, LogicalBlockSize, (byte)BlocksToRead, _timeout, out _);
