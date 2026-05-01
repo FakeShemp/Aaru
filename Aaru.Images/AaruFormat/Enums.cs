@@ -221,7 +221,32 @@ public sealed partial class AaruFormat
         ///     Requested flux data not present in image.
         ///     &lt;remarks&gt;AARUF_ERROR_FLUX_DATA_NOT_FOUND&lt;/remarks&gt;
         /// </summary>
-        FluxDataNotFound = -32
+        FluxDataNotFound = -32,
+        /// <summary>
+        ///     Image requires features not supported by this library.
+        ///     &lt;remarks&gt;AARUF_ERROR_INCOMPATIBLE_FEATURES&lt;/remarks&gt;
+        /// </summary>
+        IncompatibleFeatures = -33,
+        /// <summary>
+        ///     AES sector encryption failed.
+        ///     &lt;remarks&gt;AARUF_ERROR_CANNOT_ENCRYPT_SECTOR&lt;/remarks&gt;
+        /// </summary>
+        CannotEncryptSector = -34,
+        /// <summary>
+        ///     AES sector decryption failed.
+        ///     &lt;remarks&gt;AARUF_ERROR_CANNOT_DECRYPT_SECTOR&lt;/remarks&gt;
+        /// </summary>
+        CannotDecryptSector = -35,
+        /// <summary>
+        ///     Required encryption key not present in media tags.
+        ///     &lt;remarks&gt;AARUF_ERROR_MISSING_ENCRYPTION_KEY&lt;/remarks&gt;
+        /// </summary>
+        MissingEncryptionKey = -36,
+        /// <summary>
+        ///     Image has no user-data DDT (e.g. flux-only image); sector data is unavailable.
+        ///     &lt;remarks&gt;AARUF_ERROR_USER_DATA_NOT_PRESENT&lt;/remarks&gt;
+        /// </summary>
+        UserDataNotPresent = -37,
     }
 
 #endregion
