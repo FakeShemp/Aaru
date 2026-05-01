@@ -592,24 +592,20 @@ sealed partial class Reader
                 if(_dev.IsOmniDriveFirmware())
                 {
                     bool omniStandardOk = !_dev.OmniDriveReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _, true, true);
-                    if(omniStandardOk)
-                    {
-                        OmniDriveReadRaw = true;
-                    }
-                    else
-                    {
-                        OmniDriveReadRaw = !_dev.OmniDriveReadNintendoDvd(out _,
-                                                                          out senseBuf,
-                                                                          0,
-                                                                          1,
-                                                                          _timeout,
-                                                                          out _,
-                                                                          true,
-                                                                          true,
-                                                                          null,
-                                                                          false,
-                                                                          0);
-                    }
+
+                    OmniDriveReadRaw = omniStandardOk
+                                           ? true
+                                           : !_dev.OmniDriveReadNintendoDvd(out _,
+                                                                            out senseBuf,
+                                                                            0,
+                                                                            1,
+                                                                            _timeout,
+                                                                            out _,
+                                                                            true,
+                                                                            true,
+                                                                            null,
+                                                                            false,
+                                                                            0);
                 }
 
                 if(HldtstReadRaw || _plextorReadRaw || ReadBuffer3CReadRaw || OmniDriveReadRaw)
