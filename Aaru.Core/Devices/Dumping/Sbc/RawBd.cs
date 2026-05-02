@@ -237,7 +237,7 @@ partial class Dump
 
             if(elapsed <= 0) continue;
 
-            currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed);
+            currentSpeed     = (double)sectorSpeedStart * blockSize / (1048576 * elapsed);
             sectorSpeedStart = 0;
             _speedStopwatch.Restart();
         }
