@@ -5,6 +5,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Decryption.Aacs;
+using System.Linq;
 
 namespace Aaru.Core.Image;
 
@@ -319,12 +320,9 @@ public static class AacsKeyResolver
 
         foreach(Partition partition in Partitions.GetAll(image))
         {
-            foreach(IFilesystem fs in plugins.Filesystems.Values)
+            foreach(IReadOnlyFilesystem rofs in plugins.Filesystems.Values.OfType<IReadOnlyFilesystem>())
             {
-                if(fs is not IReadOnlyFilesystem rofs)
-                    continue;
-
-                if(!fs.Identify(image, partition))
+                if(!rofs.Identify(image, partition))
                     continue;
 
                 if(rofs.Mount(image, partition, encoding, null, null) != ErrorNumber.NoError)

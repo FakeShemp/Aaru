@@ -7,6 +7,7 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Filesystems;
 using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
+using System.Linq;
 
 namespace Aaru.Core.Image;
 
@@ -28,11 +29,8 @@ internal static class AacsHddvdExtentResolver
         IReadOnlyFilesystem udfRo = null;
         UDF                 udf   = null;
 
-        foreach(IFilesystem fs in plugins.Filesystems.Values)
+        foreach(UDF udfPlugin in plugins.Filesystems.Values.OfType<UDF>())
         {
-            if(fs is not UDF udfPlugin)
-                continue;
-
             Partition wholeImage = new()
             {
                 Start    = 0,
@@ -165,11 +163,8 @@ internal static class AacsHddvdExtentResolver
                 if(errno != ErrorNumber.NoError)
                     return errno;
 
-                foreach((ulong startSector, uint sectorCount) extent in extents)
+                foreach((ulong startSector, uint sectorCount) extent in extents.Where(e => e.sectorCount != 0))
                 {
-                    if(extent.sectorCount == 0)
-                        continue;
-
                     ranges.Add(new LbaRange
                     {
                         Start = extent.startSector,
