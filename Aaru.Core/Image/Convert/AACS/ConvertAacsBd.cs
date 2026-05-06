@@ -6,6 +6,7 @@ using Aaru.Localization;
 
 namespace Aaru.Core.Image;
 
+/// <summary>Blu-ray AACS conversion.</summary>
 public partial class Convert
 {
     /// <summary>Blu-ray AACS: sector-aligned CPS units, staging, and per-sector <see cref="SectorStatus" />.</summary>
@@ -33,7 +34,7 @@ public partial class Convert
                                          outputOptical,
                                          _count,
                                          _force,
-                                         ref _aborted,
+                                         in _aborted,
                                          _aacsDecryptedCpsUnitKeys,
                                          allowDecryptLba,
                                          new AacsBdOpticalPipeline.Ui

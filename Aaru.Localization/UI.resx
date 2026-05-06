@@ -5755,4 +5755,10 @@ Do you want to continue?</value>
     <data name="Filesystem_contents_cannot_be_extracted" xml:space="preserve">
         <value>[slateblue1]Filesystem contents cannot be extracted.[/]</value>
     </data>
+    <data name="AacsHostKeyFile_help" xml:space="preserve">
+        <value>Path to a libaacs KEYDB.cfg file (format 1.0) containing an HC entry (HOST_PRIV_KEY and HOST_CERT). Used to authenticate to the drive and read AACS tags when dumping HD DVD-ROM or BD-ROM media.</value>
+    </data>
+    <data name="AacsDeviceKeysFile_help" xml:space="preserve">
+        <value>Path to a libaacs KEYDB.cfg file (format 1.0) containing DK entries. Used by image convert to derive the Media Key from the full MKB and optionally the Volume Unique Key when a Volume Identifier tag exists; independent of --decrypt.</value>
+    </data>
 </root>

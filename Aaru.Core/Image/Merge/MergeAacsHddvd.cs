@@ -33,7 +33,7 @@ public sealed partial class Merger
                                             outputOptical,
                                             (uint)count,
                                             false,
-                                            ref _aborted,
+                                            in _aborted,
                                             _aacsDecryptedCpsUnitKeys,
                                             allowDecryptLba,
                                             new AacsHddvdOpticalPipeline.Ui

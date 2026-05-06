@@ -71,6 +71,7 @@ public partial class Dump
     const           string                     PREGAP_MODULE_NAME = "Pregap calculator";
     const           string                     MODULE_NAME        = "Media dumping";
     static readonly TimeSpan                   _oneSecond         = 1.Seconds();
+    readonly        string                     _aacsHostKeyFile;
     readonly        bool                       _bypassWiiDecryption;
     readonly        bool                       _createGraph;
     readonly        bool                       _cureParanoia;
@@ -176,6 +177,7 @@ public partial class Dump
     /// <param name="cureParanoia">Try to fix sectors integrity</param>
     /// <param name="bypassWiiDecryption">When dumping Wii (WOD), skip partition AES decryption and store encrypted data</param>
     /// <param name="startReverse">Start error retrying in reverse</param>
+    /// <param name="aacsHostKeyFile">Optional path to an AACS host private key + certificate file</param>
     public Dump(bool doResume, Device dev, string devicePath, IBaseWritableImage outputPlugin, ushort retryPasses,
                 bool force, bool dumpRaw, bool persistent, bool stopOnError, Resume resume, Encoding encoding,
                 string outputPrefix, string outputPath, Dictionary<string, string> formatOptions, Metadata preSidecar,
@@ -184,7 +186,8 @@ public partial class Dump
                 bool fixSubchannel, bool fixSubchannelCrc, bool skipCdireadyHole, ErrorLog errorLog,
                 bool generateSubchannels, uint maximumReadable, bool useBufferedReads, bool storeEncrypted,
                 bool titleKeys, uint ignoreCdrRunOuts, bool createGraph, uint dimensions, bool paranoia,
-                bool cureParanoia, bool bypassWiiDecryption, bool startReverse, int errorRecovery)
+                bool cureParanoia, bool bypassWiiDecryption, bool startReverse, int errorRecovery,
+                string aacsHostKeyFile = null)
     {
         _doResume              = doResume;
         _dev                   = dev;
@@ -231,6 +234,7 @@ public partial class Dump
         _bypassWiiDecryption   = bypassWiiDecryption;
         _startReverse          = startReverse;
         _errorRecovery         = errorRecovery;
+        _aacsHostKeyFile       = aacsHostKeyFile;
         _dumpStopwatch         = new Stopwatch();
         _sidecarStopwatch      = new Stopwatch();
         _speedStopwatch        = new Stopwatch();

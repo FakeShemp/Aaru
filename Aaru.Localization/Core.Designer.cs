@@ -7096,5 +7096,155 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Aacs_hddvd_no_title_key_for_pack_at_lba_0_continuing", resourceCulture);
             }
         }
+
+        public static string AACS_no_host_key_file_supplied {
+            get {
+                return ResourceManager.GetString("AACS_no_host_key_file_supplied", resourceCulture);
+            }
+        }
+
+        public static string AACS_host_key_file_invalid_0 {
+            get {
+                return ResourceManager.GetString("AACS_host_key_file_invalid_0", resourceCulture);
+            }
+        }
+
+        public static string AACS_feature_not_active_on_drive {
+            get {
+                return ResourceManager.GetString("AACS_feature_not_active_on_drive", resourceCulture);
+            }
+        }
+
+        public static string Authenticating_AACS_session_with_drive {
+            get {
+                return ResourceManager.GetString("Authenticating_AACS_session_with_drive", resourceCulture);
+            }
+        }
+
+        public static string AACS_authentication_succeeded {
+            get {
+                return ResourceManager.GetString("AACS_authentication_succeeded", resourceCulture);
+            }
+        }
+
+        public static string AACS_authentication_failed_0 {
+            get {
+                return ResourceManager.GetString("AACS_authentication_failed_0", resourceCulture);
+            }
+        }
+
+        public static string AACS_volume_id_read {
+            get {
+                return ResourceManager.GetString("AACS_volume_id_read", resourceCulture);
+            }
+        }
+
+        public static string AACS_volume_id_read_failed {
+            get {
+                return ResourceManager.GetString("AACS_volume_id_read_failed", resourceCulture);
+            }
+        }
+
+        public static string AACS_media_key_block_read {
+            get {
+                return ResourceManager.GetString("AACS_media_key_block_read", resourceCulture);
+            }
+        }
+
+        public static string AACS_media_key_block_read_failed {
+            get {
+                return ResourceManager.GetString("AACS_media_key_block_read_failed", resourceCulture);
+            }
+        }
+
+        public static string AACS_prerecorded_media_serial_number_read {
+            get {
+                return ResourceManager.GetString("AACS_prerecorded_media_serial_number_read", resourceCulture);
+            }
+        }
+
+        public static string AACS_prerecorded_media_serial_number_read_failed {
+            get {
+                return ResourceManager.GetString("AACS_prerecorded_media_serial_number_read_failed", resourceCulture);
+            }
+        }
+
+        public static string AACS_media_identifier_read {
+            get {
+                return ResourceManager.GetString("AACS_media_identifier_read", resourceCulture);
+            }
+        }
+
+        public static string AACS_media_identifier_read_failed {
+            get {
+                return ResourceManager.GetString("AACS_media_identifier_read_failed", resourceCulture);
+            }
+        }
+
+        public static string AACS_device_keys_file_invalid_0 {
+            get {
+                return ResourceManager.GetString("AACS_device_keys_file_invalid_0", resourceCulture);
+            }
+        }
+
+        public static string AACS_media_key_derived {
+            get {
+                return ResourceManager.GetString("AACS_media_key_derived", resourceCulture);
+            }
+        }
+
+        public static string AACS_volume_unique_key_derived {
+            get {
+                return ResourceManager.GetString("AACS_volume_unique_key_derived", resourceCulture);
+            }
+        }
+
+        public static string AACS_media_key_derivation_failed_0 {
+            get {
+                return ResourceManager.GetString("AACS_media_key_derivation_failed_0", resourceCulture);
+            }
+        }
+
+        public static string AACS_full_mkb_loaded {
+            get {
+                return ResourceManager.GetString("AACS_full_mkb_loaded", resourceCulture);
+            }
+        }
+
+        public static string AACS_full_mkb_load_failed_0 {
+            get {
+                return ResourceManager.GetString("AACS_full_mkb_load_failed_0", resourceCulture);
+            }
+        }
+
+        public static string AACS_full_mkb_udf_mount_failed {
+            get {
+                return ResourceManager.GetString("AACS_full_mkb_udf_mount_failed", resourceCulture);
+            }
+        }
+
+        public static string AACS_full_mkb_not_found_for_kind_0 {
+            get {
+                return ResourceManager.GetString("AACS_full_mkb_not_found_for_kind_0", resourceCulture);
+            }
+        }
+
+        public static string AACS_convert_volume_identifier_missing_skipping_vuk {
+            get {
+                return ResourceManager.GetString("AACS_convert_volume_identifier_missing_skipping_vuk", resourceCulture);
+            }
+        }
+
+        public static string AACS_convert_failed_writing_mk_tag_0 {
+            get {
+                return ResourceManager.GetString("AACS_convert_failed_writing_mk_tag_0", resourceCulture);
+            }
+        }
+
+        public static string AACS_convert_failed_writing_vuk_tag_0 {
+            get {
+                return ResourceManager.GetString("AACS_convert_failed_writing_vuk_tag_0", resourceCulture);
+            }
+        }
     }
 }

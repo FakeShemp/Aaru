@@ -293,7 +293,8 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     settings.BypassWiiuDecryption,
                                     settings.BypassWiiDecryption,
                                     settings.InputPath,
-                                    settings.ErrorRecovery);
+                                    settings.ErrorRecovery,
+                                    settings.AacsDeviceKeysFile);
 
         ErrorNumber errno = ErrorNumber.NoError;
 
@@ -573,6 +574,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--fix-subchannel-crc={0}", fixSubchannelCrc);
         AaruLogging.Debug(MODULE_NAME, "--generate-subchannels={0}", settings.GenerateSubchannels);
         AaruLogging.Debug(MODULE_NAME, "--decrypt={0}", settings.Decrypt);
+        AaruLogging.Debug(MODULE_NAME, "--aacs-keydb-file={0}", Markup.Escape(settings.AacsDeviceKeysFile ?? ""));
         AaruLogging.Debug(MODULE_NAME, "--bypass-ps3-decryption={0}", settings.BypassPs3Decryption);
         AaruLogging.Debug(MODULE_NAME, "--bypass-wiiu-decryption={0}", settings.BypassWiiuDecryption);
         AaruLogging.Debug(MODULE_NAME, "--bypass-wii-decryption={0}", settings.BypassWiiDecryption);
@@ -764,6 +766,10 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         [DefaultValue(null)]
         [CommandOption("-m|--aaru-metadata")]
         public string AaruMetadata { get; init; }
+        [LocalizedDescription(nameof(UI.AacsDeviceKeysFile_help))]
+        [DefaultValue(null)]
+        [CommandOption("--aacs-keydb-file")]
+        public string AacsDeviceKeysFile { get; init; }
         [LocalizedDescription(nameof(UI.Input_image_path))]
         [CommandArgument(0, "<input-image>")]
         public string InputPath { get; init; }

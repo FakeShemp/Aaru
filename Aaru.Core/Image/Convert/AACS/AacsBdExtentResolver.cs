@@ -77,7 +77,7 @@ internal static class AacsBdExtentResolver
 
         try
         {
-            ErrorNumber errno = AddDirectoryExtents(udfRo, udf, "/BDMV/STREAM", ".M2TS", ref ranges);
+            ErrorNumber errno = AddDirectoryExtents(udfRo, udf, "/BDMV/STREAM", ".M2TS", ranges);
 
             if(errno != ErrorNumber.NoError)
             {
@@ -86,7 +86,7 @@ internal static class AacsBdExtentResolver
                 return errno;
             }
 
-            errno = AddDirectoryExtents(udfRo, udf, "/BDMV/STREAM/SSIF", ".SSIF", ref ranges);
+            errno = AddDirectoryExtents(udfRo, udf, "/BDMV/STREAM/SSIF", ".SSIF", ranges);
 
             if(errno != ErrorNumber.NoError && errno != ErrorNumber.NoSuchFile)
             {
@@ -147,7 +147,7 @@ internal static class AacsBdExtentResolver
     /// <param name="ranges">List of stream file extents.</param>
     /// <returns>Error number.</returns>
     static ErrorNumber AddDirectoryExtents(IReadOnlyFilesystem roFs, UDF udf, string dirPath, string extension,
-                                           ref List<LbaRange> ranges)
+                                           List<LbaRange> ranges)
     {
         ErrorNumber errno = roFs.OpenDir(dirPath, out IDirNode dirNode);
 

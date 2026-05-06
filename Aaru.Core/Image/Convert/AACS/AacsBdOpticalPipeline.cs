@@ -34,8 +34,8 @@ internal static class AacsBdOpticalPipeline
     /// <param name="ui">UI.</param>
     /// <returns>Error number.</returns>
     internal static ErrorNumber Run(IOpticalMediaImage inputOptical, IWritableOpticalImage outputOptical, uint batchCount,
-                                    bool force, ref bool aborted, byte[][] decryptedCpsUnitKeys,
-                                    Func<ulong, bool> allowDecryptLba, Ui ui)
+                                    bool force, in bool aborted, byte[][] decryptedCpsUnitKeys,
+                                    Func<ulong, bool> allowDecryptLba, in Ui ui)
     {
         ui.OnInitProgress?.Invoke();
         ui.OnInitProgress2?.Invoke();
@@ -79,8 +79,8 @@ internal static class AacsBdOpticalPipeline
                 {
                     if(force)
                     {
-                        ErrorNumber pend = FlushPendingOnReadSkip(outputOptical, ref pending, ref pendingLba,
-                            ref pendingSt, force, ui);
+                        ErrorNumber pend = FlushPendingOnReadSkip(outputOptical, pending, pendingLba,
+                            pendingSt, force, in ui);
 
                         if(pend != ErrorNumber.NoError) return pend;
 
@@ -136,11 +136,11 @@ internal static class AacsBdOpticalPipeline
                                                             lba,
                                                             allowDecrypt,
                                                             st,
-                                                            ref pending,
-                                                            ref pendingLba,
-                                                            ref pendingSt,
+                                                            pending,
+                                                            pendingLba,
+                                                            pendingSt,
                                                             force,
-                                                            ui);
+                                                            in ui);
 
                     if(step != ErrorNumber.NoError) return step;
                 }
@@ -149,11 +149,11 @@ internal static class AacsBdOpticalPipeline
             }
 
             ErrorNumber flushErr = FlushPendingAtTrackEnd(outputOptical,
-                                                          ref pending,
-                                                          ref pendingLba,
-                                                          ref pendingSt,
+                                                          pending,
+                                                          pendingLba,
+                                                          pendingSt,
                                                           force,
-                                                          ui);
+                                                          in ui);
 
             if(flushErr != ErrorNumber.NoError) return flushErr;
 
@@ -174,9 +174,9 @@ internal static class AacsBdOpticalPipeline
     /// <param name="force">Force flag.</param>
     /// <param name="ui">UI.</param>
     /// <returns>Error number.</returns>
-    static ErrorNumber FlushPendingOnReadSkip(IWritableOpticalImage outputOptical, ref List<byte[]> pending,
-                                              ref List<ulong> pendingLba, ref List<SectorStatus> pendingSt, bool force,
-                                              Ui ui)
+    static ErrorNumber FlushPendingOnReadSkip(IWritableOpticalImage outputOptical, List<byte[]> pending,
+                                              List<ulong> pendingLba, List<SectorStatus> pendingSt, bool force,
+                                              in Ui ui)
     {
         if(pending.Count == 0) return ErrorNumber.NoError;
 
@@ -186,7 +186,7 @@ internal static class AacsBdOpticalPipeline
 
         for(int i = 0; i < pending.Count; i++)
         {
-            ErrorNumber step = WriteOne(outputOptical, pendingLba[i], pending[i], SectorStatus.Dumped, force, ui);
+            ErrorNumber step = WriteOne(outputOptical, pendingLba[i], pending[i], SectorStatus.Dumped, force, in ui);
 
             if(step != ErrorNumber.NoError) return step;
         }
@@ -213,23 +213,23 @@ internal static class AacsBdOpticalPipeline
     /// <returns>Error number.</returns>
     static ErrorNumber ProcessOneUserSector(IWritableOpticalImage outputOptical, byte[][] decryptedCpsUnitKeys,
                                             byte[] sector, ulong lba, bool allowDecrypt, SectorStatus readStatus,
-                                            ref List<byte[]> pending,
-                                            ref List<ulong> pendingLba, ref List<SectorStatus> pendingSt, bool force,
-                                            Ui ui)
+                                            List<byte[]> pending,
+                                            List<ulong> pendingLba, List<SectorStatus> pendingSt, bool force,
+                                            in Ui ui)
     {
         if(!allowDecrypt)
         {
-            ErrorNumber flush = FlushPendingAsDumped(outputOptical, ref pending, ref pendingLba, ref pendingSt, force, ui);
+            ErrorNumber flush = FlushPendingAsDumped(outputOptical, pending, pendingLba, pendingSt, force, in ui);
 
             if(flush != ErrorNumber.NoError) return flush;
 
-            return WriteOne(outputOptical, lba, sector, SectorStatus.Dumped, force, ui);
+            return WriteOne(outputOptical, lba, sector, SectorStatus.Dumped, force, in ui);
         }
 
         if(pending.Count == 0)
         {
             if((sector[0] & 0xc0) == 0)
-                return WriteOne(outputOptical, lba, sector, SectorStatus.Dumped, force, ui);
+                return WriteOne(outputOptical, lba, sector, SectorStatus.Dumped, force, in ui);
 
             pending.Add(sector);
             pendingLba.Add(lba);
@@ -246,11 +246,11 @@ internal static class AacsBdOpticalPipeline
 
         return FlushCompleteUnit(outputOptical,
                                  decryptedCpsUnitKeys,
-                                 ref pending,
-                                 ref pendingLba,
-                                 ref pendingSt,
+                                 pending,
+                                 pendingLba,
+                                 pendingSt,
                                  force,
-                                 ui);
+                                 in ui);
     }
 
     /// <summary>Flushes a complete unit.</summary>
@@ -263,8 +263,8 @@ internal static class AacsBdOpticalPipeline
     /// <param name="ui">UI.</param>
     /// <returns>Error number.</returns>
     static ErrorNumber FlushCompleteUnit(IWritableOpticalImage outputOptical, byte[][] decryptedCpsUnitKeys,
-                                         ref List<byte[]> pending, ref List<ulong> pendingLba,
-                                         ref List<SectorStatus> pendingSt, bool force, Ui ui)
+                                         List<byte[]> pending, List<ulong> pendingLba,
+                                         List<SectorStatus> pendingSt, bool force, in Ui ui)
     {
         byte[] unit = new byte[AacsStreamDecrypt.AlignedUnitLen];
         Buffer.BlockCopy(pending[0], 0, unit, 0, AacsStreamDecrypt.SectorLen);
@@ -293,7 +293,7 @@ internal static class AacsBdOpticalPipeline
                                        pendingSt[1],
                                        pendingSt[2],
                                        force,
-                                       ui);
+                                       in ui);
 
             pending.Clear();
             pendingLba.Clear();
@@ -303,7 +303,7 @@ internal static class AacsBdOpticalPipeline
         }
 
         SectorStatus[] ok = [SectorStatus.Unencrypted, SectorStatus.Unencrypted, SectorStatus.Unencrypted];
-        ErrorNumber    e  = WriteSectorsFromBuffer(outputOptical, unit, pendingLba[0], ok, force, ui);
+        ErrorNumber    e  = WriteSectorsFromBuffer(outputOptical, unit, pendingLba[0], ok, force, in ui);
 
         pending.Clear();
         pendingLba.Clear();
@@ -321,7 +321,7 @@ internal static class AacsBdOpticalPipeline
     /// <param name="ui">UI.</param>
     /// <returns>Error number.</returns>
     static ErrorNumber WriteSectorsFromBuffer(IWritableOpticalImage outputOptical, byte[] unit, ulong firstLba,
-                                              SectorStatus[] threeStatuses, bool force, Ui ui)
+                                              SectorStatus[] threeStatuses, bool force, in Ui ui)
     {
         bool result = outputOptical.WriteSectors(unit, firstLba, false, 3, threeStatuses);
 
@@ -354,13 +354,13 @@ internal static class AacsBdOpticalPipeline
     /// <param name="force">Force flag.</param>
     /// <param name="ui">UI.</param>
     /// <returns>Error number.</returns>
-    static ErrorNumber FlushPendingAsDumped(IWritableOpticalImage outputOptical, ref List<byte[]> pending,
-                                            ref List<ulong> pendingLba, ref List<SectorStatus> pendingSt, bool force,
-                                            Ui ui)
+    static ErrorNumber FlushPendingAsDumped(IWritableOpticalImage outputOptical, List<byte[]> pending,
+                                            List<ulong> pendingLba, List<SectorStatus> pendingSt, bool force,
+                                            in Ui ui)
     {
         for(int i = 0; i < pending.Count; i++)
         {
-            ErrorNumber step = WriteOne(outputOptical, pendingLba[i], pending[i], SectorStatus.Dumped, force, ui);
+            ErrorNumber step = WriteOne(outputOptical, pendingLba[i], pending[i], SectorStatus.Dumped, force, in ui);
 
             if(step != ErrorNumber.NoError) return step;
         }
@@ -378,12 +378,14 @@ internal static class AacsBdOpticalPipeline
     /// <param name="b">Second sector data.</param>
     /// <param name="c">Third sector data.</param>
     /// <param name="firstLba">First LBA of the sectors.</param>
-    /// <param name="threeStatuses">Statuses of the sectors.</param>
+    /// <param name="sa">Status of the first sector.</param>
+    /// <param name="sb">Status of the second sector.</param>
+    /// <param name="sc">Status of the third sector.</param>
     /// <param name="force">Force flag.</param>
     /// <param name="ui">UI.</param>
     /// <returns>Error number.</returns>
     static ErrorNumber WriteThree(IWritableOpticalImage outputOptical, byte[] a, byte[] b, byte[] c, ulong firstLba,
-                                  SectorStatus sa, SectorStatus sb, SectorStatus sc, bool force, Ui ui)
+                                  SectorStatus sa, SectorStatus sb, SectorStatus sc, bool force, in Ui ui)
     {
         byte[] buf = new byte[AacsStreamDecrypt.AlignedUnitLen];
         Buffer.BlockCopy(a, 0, buf, 0, AacsStreamDecrypt.SectorLen);
@@ -392,7 +394,7 @@ internal static class AacsBdOpticalPipeline
 
         SectorStatus[] sts = [sa, sb, sc];
 
-        return WriteSectorsFromBuffer(outputOptical, buf, firstLba, sts, force, ui);
+        return WriteSectorsFromBuffer(outputOptical, buf, firstLba, sts, force, in ui);
     }
 
     /// <summary>Writes one sector.</summary>
@@ -404,7 +406,7 @@ internal static class AacsBdOpticalPipeline
     /// <param name="ui">UI.</param>
     /// <returns>Error number.</returns>
     static ErrorNumber WriteOne(IWritableOpticalImage outputOptical, ulong lba, byte[] sector, SectorStatus status,
-                                bool force, Ui ui)
+                                bool force, in Ui ui)
     {
         bool result = outputOptical.WriteSector(sector, lba, false, status);
 
@@ -437,9 +439,9 @@ internal static class AacsBdOpticalPipeline
     /// <param name="force">Force flag.</param>
     /// <param name="ui">UI.</param>
     /// <returns>Error number.</returns>
-    static ErrorNumber FlushPendingAtTrackEnd(IWritableOpticalImage outputOptical, ref List<byte[]> pending,
-                                              ref List<ulong> pendingLba, ref List<SectorStatus> pendingSt, bool force,
-                                              Ui ui)
+    static ErrorNumber FlushPendingAtTrackEnd(IWritableOpticalImage outputOptical, List<byte[]> pending,
+                                              List<ulong> pendingLba, List<SectorStatus> pendingSt, bool force,
+                                              in Ui ui)
     {
         if(pending.Count == 0) return ErrorNumber.NoError;
 
@@ -458,7 +460,7 @@ internal static class AacsBdOpticalPipeline
 
         for(int i = 0; i < pending.Count; i++)
         {
-            ErrorNumber step = WriteOne(outputOptical, pendingLba[i], pending[i], SectorStatus.Dumped, force, ui);
+            ErrorNumber step = WriteOne(outputOptical, pendingLba[i], pending[i], SectorStatus.Dumped, force, in ui);
 
             if(step != ErrorNumber.NoError) return step;
         }

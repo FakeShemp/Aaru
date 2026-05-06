@@ -5671,4 +5671,10 @@ Probadores:
     <data name="Filesystem_contents_cannot_be_extracted" xml:space="preserve">
         <value>[slateblue1]El contenido del sistema de ficheros no puede ser extraído.[/]</value>
     </data>
+    <data name="AacsHostKeyFile_help" xml:space="preserve">
+        <value>Ruta a un archivo libaacs KEYDB.cfg (formato 1.0) que contiene una entrada HC (HOST_PRIV_KEY y HOST_CERT). Se utiliza para autenticar la unidad y leer etiquetas AACS al volcar discos HD DVD-ROM o BD-ROM.</value>
+    </data>
+    <data name="AacsDeviceKeysFile_help" xml:space="preserve">
+        <value>Ruta a un archivo libaacs KEYDB.cfg (formato 1.0) que contiene entradas DK. La conversión de imágenes lo usa para derivar la Media Key desde el MKB completo y, si existe la etiqueta de identificador de volumen, la Volume Unique Key; es independiente de --decrypt.</value>
+    </data>
 </root>

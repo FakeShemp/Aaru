@@ -33,7 +33,7 @@ public partial class Convert
                                             outputOptical,
                                             _count,
                                             _force,
-                                            ref _aborted,
+                                            in _aborted,
                                             _aacsDecryptedCpsUnitKeys,
                                             allowDecryptLba,
                                             new AacsHddvdOpticalPipeline.Ui

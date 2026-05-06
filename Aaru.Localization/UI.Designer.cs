@@ -11351,5 +11351,17 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Filesystem_contents_cannot_be_extracted", resourceCulture);
             }
         }
+
+        public static string AacsHostKeyFile_help {
+            get {
+                return ResourceManager.GetString("AacsHostKeyFile_help", resourceCulture);
+            }
+        }
+
+        public static string AacsDeviceKeysFile_help {
+            get {
+                return ResourceManager.GetString("AacsDeviceKeysFile_help", resourceCulture);
+            }
+        }
     }
 }

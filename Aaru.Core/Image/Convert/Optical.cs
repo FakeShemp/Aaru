@@ -156,12 +156,14 @@ public partial class Convert
 
         if(_decrypt)
         {
-            if(IsHdDvdAacsMedia(inputOptical.Info.MediaType))
+            if(AacsKeyResolver.IsHdDvdAacsMedia(inputOptical.Info.MediaType))
             {
                 _aacsDecryptedCpsUnitKeys = AacsKeyResolver.TryGetDecryptedCpsUnitKeysHddvd(inputOptical,
                     _plugins,
                     Encoding.UTF8,
-                    out string hddvdErr);
+                    out string hddvdErr,
+                    _derivedAacsMediaKeyForDecrypt,
+                    _derivedAacsVolumeUniqueKeyForDecrypt);
 
                 if(_aacsDecryptedCpsUnitKeys == null)
                 {
@@ -173,12 +175,14 @@ public partial class Convert
                 return ConvertAacsHddvdOpticalSectors(inputOptical, outputOptical);
             }
 
-            if(IsBluRayAacsMedia(inputOptical.Info.MediaType))
+            if(AacsKeyResolver.IsBluRayAacsMedia(inputOptical.Info.MediaType))
             {
                 _aacsDecryptedCpsUnitKeys = AacsKeyResolver.TryGetDecryptedCpsUnitKeys(inputOptical,
                     _plugins,
                     Encoding.UTF8,
-                    out string aacsErr);
+                    out string aacsErr,
+                    _derivedAacsMediaKeyForDecrypt,
+                    _derivedAacsVolumeUniqueKeyForDecrypt);
 
                 if(_aacsDecryptedCpsUnitKeys == null)
                 {
@@ -653,36 +657,6 @@ public partial class Convert
 
         return ErrorNumber.NoError;
     }
-
-    /// <summary>
-    ///     Checks if media type is a Blu-ray.
-    ///     Includes media that may be encrypted with AACS (as well as some that cannot,
-    ///     in case of misidentifications (e.g. BDR)).
-    /// </summary>
-    /// <param name="mediaType">Media type to check.</param>
-    /// <returns>True if media type is a Blu-ray, false otherwise.</returns>
-    static bool IsBluRayAacsMedia(MediaType mediaType) =>
-        mediaType is MediaType.BDROM
-                  or MediaType.BDR
-                  or MediaType.BDRE
-                  or MediaType.BDRXL
-                  or MediaType.BDREXL
-                  or MediaType.UHDBD;
-
-    /// <summary>
-    ///     Checks if media type is any variant of HD DVD (ROM, RAM, R, RW, RDL, PR, PRDL).
-    ///     Includes media that may be encrypted with AACS (as well as some that cannot,
-    ///     in case of misidentifications (e.g. HDDVDR)).
-    /// </summary>
-    /// <param name="mediaType">Media type to check.</param>
-    /// <returns>True if media type is any variant of HD DVD, false otherwise.</returns>
-    static bool IsHdDvdAacsMedia(MediaType mediaType) =>
-        mediaType is MediaType.HDDVDROM
-                  or MediaType.HDDVDRAM
-                  or MediaType.HDDVDR
-                  or MediaType.HDDVDRW
-                  or MediaType.HDDVDRDL
-                  or MediaType.HDDVDRWDL;
 
     private bool IsCompactDiscMedia(MediaType mediaType) =>
 

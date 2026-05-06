@@ -23,8 +23,8 @@ internal static class AacsHddvdOpticalPipeline
     }
 
     internal static ErrorNumber Run(IOpticalMediaImage inputOptical, IWritableOpticalImage outputOptical, uint batchCount,
-                                    bool force, ref bool aborted, byte[][] decryptedTitleKeys,
-                                    Func<ulong, bool> allowDecryptLba, Ui ui)
+                                    bool force, in bool aborted, byte[][] decryptedTitleKeys,
+                                    Func<ulong, bool> allowDecryptLba, in Ui ui)
     {
         ui.OnInitProgress?.Invoke();
         ui.OnInitProgress2?.Invoke();
@@ -125,7 +125,7 @@ internal static class AacsHddvdOpticalPipeline
                                                                currentKeyPtr,
                                                                lba,
                                                                force,
-                                                               ui,
+                                                               in ui,
                                                                out bool decrypted);
 
                             if(dec != ErrorNumber.NoError)
@@ -170,7 +170,7 @@ internal static class AacsHddvdOpticalPipeline
     }
 
     static ErrorNumber TryDecryptSector(byte[] sector, byte[][] decryptedTitleKeys, byte[] currentCpi,
-                                        int currentKeyPtr, ulong lba, bool force, Ui ui, out bool decrypted)
+                                        int currentKeyPtr, ulong lba, bool force, in Ui ui, out bool decrypted)
     {
         decrypted = false;
 

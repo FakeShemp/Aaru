@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aaru.CommonTypes;
@@ -53,9 +54,11 @@ public partial class Convert
     readonly PluginRegister                              _plugins;
     readonly Resume                                      _resume;
     readonly Metadata                                    _sidecar;
+    readonly string                                      _aacsDeviceKeysFile;
+    byte[]?                                              _derivedAacsMediaKeyForDecrypt;
+    byte[]?                                              _derivedAacsVolumeUniqueKeyForDecrypt;
     bool                                                 _aborted;
 
-    // TODO: Abort
     public Convert(IMediaImage inputImage, IWritableImage outputImage, MediaType mediaType, bool force,
                    string outputPath, Dictionary<string, string> parsedOptions, uint negativeSectors,
                    uint overflowSectors, string comments, string creator, string driveFirmwareRevision,
@@ -65,7 +68,7 @@ public partial class Convert
                    PluginRegister plugins, bool fixSubchannelPosition, bool fixSubchannel, bool fixSubchannelCrc,
                    bool generateSubchannels, (uint cylinders, uint heads, uint sectors)? geometryValues, Resume resume,
                    Metadata sidecar, bool bypassPs3Decryption, bool bypassWiiuDecryption, bool bypassWiiDecryption,
-                   string inputPath, int errorRecovery)
+                   string inputPath, int errorRecovery, string aacsDeviceKeysFile = null)
     {
         _inputImage            = inputImage;
         _outputImage           = outputImage;
@@ -104,6 +107,7 @@ public partial class Convert
         _bypassWiiDecryption   = bypassWiiDecryption;
         _inputPath             = inputPath;
         _errorRecovery         = errorRecovery;
+        _aacsDeviceKeysFile    = aacsDeviceKeysFile;
     }
 
     public ErrorNumber Start()
@@ -221,6 +225,9 @@ public partial class Convert
         errno = ConvertMediaTags();
 
         if(errno != ErrorNumber.NoError && !_force) return errno;
+
+        // This step is intentionally independent from --decrypt so MK/VUK tags persist in output images.
+        TryDeriveAndPersistAacsMediaKeysFromDeviceKeys();
 
         UpdateStatus?.Invoke(string.Format(UI._0_sectors_to_convert, _inputImage.Info.Sectors));
 
