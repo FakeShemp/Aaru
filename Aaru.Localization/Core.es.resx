@@ -3518,7 +3518,7 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[red]La etiqueta del medio {0} presente en la imagen primaria se perderá en el formato de salida. No se continuará...[/]</value>
     </data>
     <data name="AACS_no_host_key_file_supplied" xml:space="preserve">
-        <value>Disco protegido por AACS detectado pero no se ha suministrado un archivo de claves de host; se omitirá la extracción de claves desde la unidad.</value>
+        <value>Disco protegido por AACS detectado pero no se ha suministrado un archivo de claves de host; se intentará leer de forma opcional el identificador de volumen y el bloque de claves de soporte desde la unidad sin autenticación.</value>
     </data>
     <data name="AACS_host_key_file_invalid_0" xml:space="preserve">
         <value>No se ha podido cargar el archivo de claves de host AACS: {0}</value>
@@ -3537,6 +3537,12 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     </data>
     <data name="AACS_volume_id_read" xml:space="preserve">
         <value>El identificador de volumen AACS se ha leído y su CMAC se ha verificado.</value>
+    </data>
+    <data name="AACS_volume_id_read_without_host_authentication" xml:space="preserve">
+        <value>El identificador de volumen AACS se ha leído desde la unidad sin autenticación de host (CMAC no verificado).</value>
+    </data>
+    <data name="AACS_volume_identifier_read_via_libredrive_read_buffer" xml:space="preserve">
+        <value>Identificador de volumen AACS leído mediante READ BUFFER de LibreDrive.</value>
     </data>
     <data name="AACS_volume_id_read_failed" xml:space="preserve">
         <value>No se ha podido leer ni verificar el identificador de volumen AACS desde la unidad.</value>

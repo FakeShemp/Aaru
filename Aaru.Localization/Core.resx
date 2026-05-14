@@ -3632,7 +3632,7 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
         <value>HD DVD AACS: no valid title key for pack at LBA {0} — writing encrypted sector.</value>
     </data>
     <data name="AACS_no_host_key_file_supplied" xml:space="preserve">
-        <value>AACS protected disc detected but no host key file was supplied; skipping drive-side key extraction.</value>
+        <value>AACS protected disc detected but no host key file was supplied; attempting optional drive-side Volume Identifier and Media Key Block reads without authentication.</value>
     </data>
     <data name="AACS_host_key_file_invalid_0" xml:space="preserve">
         <value>AACS host key file could not be loaded: {0}</value>
@@ -3651,6 +3651,12 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     </data>
     <data name="AACS_volume_id_read" xml:space="preserve">
         <value>AACS Volume Identifier was read and CMAC-verified.</value>
+    </data>
+    <data name="AACS_volume_id_read_without_host_authentication" xml:space="preserve">
+        <value>AACS Volume Identifier was read from the drive without host authentication (CMAC not verified).</value>
+    </data>
+    <data name="AACS_volume_identifier_read_via_libredrive_read_buffer" xml:space="preserve">
+        <value>AACS Volume Identifier read via LibreDrive READ BUFFER.</value>
     </data>
     <data name="AACS_volume_id_read_failed" xml:space="preserve">
         <value>Could not read or verify the AACS Volume Identifier from the drive.</value>

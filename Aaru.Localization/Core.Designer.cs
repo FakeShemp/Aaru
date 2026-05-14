@@ -7139,6 +7139,18 @@ namespace Aaru.Localization {
             }
         }
 
+        public static string AACS_volume_id_read_without_host_authentication {
+            get {
+                return ResourceManager.GetString("AACS_volume_id_read_without_host_authentication", resourceCulture);
+            }
+        }
+
+        public static string AACS_volume_identifier_read_via_libredrive_read_buffer {
+            get {
+                return ResourceManager.GetString("AACS_volume_identifier_read_via_libredrive_read_buffer", resourceCulture);
+            }
+        }
+
         public static string AACS_volume_id_read_failed {
             get {
                 return ResourceManager.GetString("AACS_volume_id_read_failed", resourceCulture);

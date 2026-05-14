@@ -1027,6 +1027,10 @@ partial class Dump
     ///     and read the Volume Identifier, Media Key Block, and optional serial/medium identifiers
     ///     from the drive, storing them as media tags. Full MKB processing and MK/VUK derivation
     ///     are performed at <c>aaru image convert</c> time when <c>--aacs-keydb-file</c> is used.
+    ///     When no host key file is supplied, attempts a best-effort read of the Media Key Block
+    ///     without host authentication. On BD-ROM-class media, when the drive reports AACS capability,
+    ///     a LibreDrive-patched firmware may expose the Volume Identifier via READ BUFFER after
+    ///     external unlock (e.g. MakeMKV); that path is used for the VID.
     /// </summary>
     void ReadAacsKeysFromDrive(MediaType dskType, Dictionary<MediaTagType, byte[]> mediaTags)
     {
@@ -1050,83 +1054,112 @@ partial class Dump
                 return;
         }
 
-        if(string.IsNullOrEmpty(_aacsHostKeyFile))
+        if(!string.IsNullOrEmpty(_aacsHostKeyFile))
         {
-            AaruLogging.WriteLine(Localization.Core.AACS_no_host_key_file_supplied);
+            if(!Settings.Settings.Current.EnableDecryption)
+            {
+                UpdateStatus?.Invoke(Localization.Core.Drive_reports_the_disc_uses_copy_protection_The_dump_will_be_incorrect_unless_decryption_is_enabled);
+
+                return;
+            }
+
+            if(!AacsHostCredentials.TryLoad(_aacsHostKeyFile, out AacsHostCredentials credentials, out string credErr))
+            {
+                ErrorMessage?.Invoke(string.Format(Localization.Core.AACS_host_key_file_invalid_0, credErr));
+
+                return;
+            }
+
+            AacsAuth aacs = new AacsAuth(_dev);
+
+            if(!aacs.CheckAacsFeature(_dev.Timeout))
+            {
+                AaruLogging.WriteLine(Localization.Core.AACS_feature_not_active_on_drive);
+
+                return;
+            }
+
+            UpdateStatus?.Invoke(Localization.Core.Authenticating_AACS_session_with_drive);
+
+            AacsAuthResult authResult = aacs.Authenticate(credentials, _dev.Timeout);
+
+            if(authResult != AacsAuthResult.Success)
+            {
+                ErrorMessage?.Invoke(string.Format(Localization.Core.AACS_authentication_failed_0, authResult));
+                aacs.InvalidateAgid(_dev.Timeout);
+
+                return;
+            }
+
+            UpdateStatus?.Invoke(Localization.Core.AACS_authentication_succeeded);
+
+            if(aacs.ReadVolumeId(kind, _dev.Timeout) && aacs.VolumeIdentifier is not null)
+            {
+                mediaTags[MediaTagType.AACS_VolumeIdentifier] = aacs.VolumeIdentifier;
+                UpdateStatus?.Invoke(Localization.Core.AACS_volume_id_read);
+            }
+            else
+                ErrorMessage?.Invoke(Localization.Core.AACS_volume_id_read_failed);
+
+            if(aacs.ReadPrerecordedMediaSerialNumber(kind, _dev.Timeout) && aacs.PrerecordedMediaSerialNumber is not null)
+            {
+                mediaTags[MediaTagType.AACS_SerialNumber] = aacs.PrerecordedMediaSerialNumber;
+                UpdateStatus?.Invoke(Localization.Core.AACS_prerecorded_media_serial_number_read);
+            }
+            else
+                AaruLogging.WriteLine(Localization.Core.AACS_prerecorded_media_serial_number_read_failed);
+
+            if(aacs.ReadMediaIdentifier(kind, _dev.Timeout) && aacs.MediaIdentifier is not null)
+            {
+                mediaTags[MediaTagType.AACS_MediaIdentifier] = aacs.MediaIdentifier;
+                UpdateStatus?.Invoke(Localization.Core.AACS_media_identifier_read);
+            }
+            else
+                AaruLogging.WriteLine(Localization.Core.AACS_media_identifier_read_failed);
+
+            if(aacs.ReadMediaKeyBlock(kind, _dev.Timeout) && aacs.MediaKeyBlock is not null)
+            {
+                mediaTags[MediaTagType.AACS_MKB] = aacs.MediaKeyBlock;
+                UpdateStatus?.Invoke(Localization.Core.AACS_media_key_block_read);
+            }
+            else
+                AaruLogging.WriteLine(Localization.Core.AACS_media_key_block_read_failed);
+
+            aacs.InvalidateAgid(_dev.Timeout);
 
             return;
         }
+
+        AaruLogging.WriteLine(Localization.Core.AACS_no_host_key_file_supplied);
 
         if(!Settings.Settings.Current.EnableDecryption)
-        {
             UpdateStatus?.Invoke(Localization.Core.Drive_reports_the_disc_uses_copy_protection_The_dump_will_be_incorrect_unless_decryption_is_enabled);
 
-            return;
-        }
+        AacsAuth aacsOpportunistic = new AacsAuth(_dev);
 
-        if(!AacsHostCredentials.TryLoad(_aacsHostKeyFile, out AacsHostCredentials credentials, out string credErr))
-        {
-            ErrorMessage?.Invoke(string.Format(Localization.Core.AACS_host_key_file_invalid_0, credErr));
-
-            return;
-        }
-
-        var aacs = new AacsAuth(_dev);
-
-        if(!aacs.CheckAacsFeature(_dev.Timeout))
+        if(!aacsOpportunistic.CheckAacsFeature(_dev.Timeout))
         {
             AaruLogging.WriteLine(Localization.Core.AACS_feature_not_active_on_drive);
 
             return;
         }
 
-        UpdateStatus?.Invoke(Localization.Core.Authenticating_AACS_session_with_drive);
-
-        AacsAuthResult authResult = aacs.Authenticate(credentials, _dev.Timeout);
-
-        if(authResult != AacsAuthResult.Success)
+        if(kind == AacsMediaKind.BluRay && LibreDriveAacsReadBuffer.TryProbeLibreDrivePatched(_dev, _dev.Timeout) &&
+           LibreDriveAacsReadBuffer.TryReadVolumeIdentifierViaLibreDriveReadBuffer(_dev, kind, _dev.Timeout,
+               out byte[]? libreVid) && libreVid is not null)
         {
-            ErrorMessage?.Invoke(string.Format(Localization.Core.AACS_authentication_failed_0, authResult));
-            aacs.InvalidateAgid(_dev.Timeout);
-
-            return;
+            mediaTags[MediaTagType.AACS_VolumeIdentifier] = libreVid;
+            UpdateStatus?.Invoke(Localization.Core.AACS_volume_identifier_read_via_libredrive_read_buffer);
         }
 
-        UpdateStatus?.Invoke(Localization.Core.AACS_authentication_succeeded);
-
-        if(aacs.ReadVolumeId(kind, _dev.Timeout) && aacs.VolumeIdentifier is not null)
+        if(aacsOpportunistic.TryReadMediaKeyBlockWithoutAuthentication(kind, _dev.Timeout) &&
+           aacsOpportunistic.MediaKeyBlock is not null)
         {
-            mediaTags[MediaTagType.AACS_VolumeIdentifier] = aacs.VolumeIdentifier;
-            UpdateStatus?.Invoke(Localization.Core.AACS_volume_id_read);
-        }
-        else
-            ErrorMessage?.Invoke(Localization.Core.AACS_volume_id_read_failed);
-
-        if(aacs.ReadPrerecordedMediaSerialNumber(kind, _dev.Timeout) && aacs.PrerecordedMediaSerialNumber is not null)
-        {
-            mediaTags[MediaTagType.AACS_SerialNumber] = aacs.PrerecordedMediaSerialNumber;
-            UpdateStatus?.Invoke(Localization.Core.AACS_prerecorded_media_serial_number_read);
-        }
-        else
-            AaruLogging.WriteLine(Localization.Core.AACS_prerecorded_media_serial_number_read_failed);
-
-        if(aacs.ReadMediaIdentifier(kind, _dev.Timeout) && aacs.MediaIdentifier is not null)
-        {
-            mediaTags[MediaTagType.AACS_MediaIdentifier] = aacs.MediaIdentifier;
-            UpdateStatus?.Invoke(Localization.Core.AACS_media_identifier_read);
-        }
-        else
-            AaruLogging.WriteLine(Localization.Core.AACS_media_identifier_read_failed);
-
-        if(aacs.ReadMediaKeyBlock(kind, _dev.Timeout) && aacs.MediaKeyBlock is not null)
-        {
-            mediaTags[MediaTagType.AACS_MKB] = aacs.MediaKeyBlock;
+            mediaTags[MediaTagType.AACS_MKB] = aacsOpportunistic.MediaKeyBlock;
             UpdateStatus?.Invoke(Localization.Core.AACS_media_key_block_read);
         }
         else
-            AaruLogging.WriteLine(Localization.Core.AACS_media_key_block_read_failed);
-
-        aacs.InvalidateAgid(_dev.Timeout);
+            AaruLogging.Debug("MMC", "Opportunistic AACS Media Key Block read failed or unavailable.");
     }
 
     // TODO: Move somewhere else

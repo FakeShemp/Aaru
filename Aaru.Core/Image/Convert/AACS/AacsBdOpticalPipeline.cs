@@ -281,8 +281,8 @@ internal static class AacsBdOpticalPipeline
                 return ErrorNumber.WriteError;
             }
 
-            ui.ErrorMessage?.Invoke(string.Format(Aaru.Localization.Core.Aacs_could_not_decrypt_cps_unit_starting_at_0_continuing,
-                                                    pendingLba[0]));
+            // ui.ErrorMessage?.Invoke(string.Format(Aaru.Localization.Core.Aacs_could_not_decrypt_cps_unit_starting_at_0_continuing,
+            //                                         pendingLba[0]));
 
             ErrorNumber w = WriteThree(outputOptical,
                                        pending[0],

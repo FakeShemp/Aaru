@@ -339,6 +339,49 @@ public sealed class AacsAuth(Device dev)
     }
 
     /// <summary>
+    ///     Allocates an AGID and reads the Media Key Block via READ DISC STRUCTURE format 0x83 without
+    ///     host authentication. Intended for unlocked or permissive drives. Always releases the AGID
+    ///     before returning.
+    /// </summary>
+    /// <param name="kind">HD DVD or BD.</param>
+    /// <param name="timeout">SCSI timeout in seconds.</param>
+    /// <returns>
+    ///     <c>true</c> if at least the first MKB pack was read; <see cref="MediaKeyBlock" /> is populated
+    ///     on success.
+    /// </returns>
+    public bool TryReadMediaKeyBlockWithoutAuthentication(AacsMediaKind kind, uint timeout)
+    {
+        try
+        {
+            InvalidateAllAgids(timeout);
+
+            if(!ReportAgid(timeout, out byte agid))
+            {
+                AaruLogging.Debug(MODULE_NAME, "Opportunistic MKB: failed to obtain AGID.");
+
+                return false;
+            }
+
+            Agid = agid;
+
+            if(!ReadMediaKeyBlock(kind, timeout))
+            {
+                AaruLogging.Debug(MODULE_NAME, "Opportunistic MKB: READ DISC STRUCTURE failed.");
+
+                return false;
+            }
+
+            AaruLogging.Debug(MODULE_NAME, "Opportunistic MKB: read completed without host authentication.");
+
+            return MediaKeyBlock is not null;
+        }
+        finally
+        {
+            InvalidateAgid(timeout);
+        }
+    }
+
+    /// <summary>
     ///     Read all packs of the Media Key Block from the drive via READ DISC STRUCTURE format 0x83.
     ///     Concatenates the packs and stores the result in <see cref="MediaKeyBlock" />.
     /// </summary>
