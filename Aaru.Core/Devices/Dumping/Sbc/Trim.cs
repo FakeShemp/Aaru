@@ -110,6 +110,14 @@ partial class Dump
                 }
                 else
                 {
+                    if(scsiReader.OmniDriveReadRawBluray)
+                    {
+                        _resume.BadBlocks.Remove(badSector);
+                        outputFormat.WriteSectorLong(buffer, badSector, false, SectorStatus.Dumped);
+
+                        continue;
+                    }
+
                     var cmi = new byte[1];
 
                     byte[] key = buffer.Skip(7).Take(5).ToArray();

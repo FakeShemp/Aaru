@@ -28,11 +28,12 @@ using Aaru.Decoders.Bluray;
 
 namespace Aaru.Decoders.Bluray;
 
-/// <summary>Blu-ray DataFrame: 2048 bytes main_data + 4 bytes EDC (redumper raw .sbram).</summary>
+/// <summary>Blu-ray DataFrame: 2048 bytes main_data + 4 bytes EDC.</summary>
 public static class DataFrame
 {
-    /// <summary>Total size of one BD DataFrame in a Redumper .sbram file.</summary>
+    /// <summary>Total size of one BD DataFrame.</summary>
     public const int Size = 2048 + 4;
+    public const int UserControlDataSize = 18;
 
     /// <summary>Descrambles a 2052-byte frame in place (ISO/IEC 30190 LFSR XOR).</summary>
     public static void Descramble(Span<byte> frame, int lba, bool nintendo)

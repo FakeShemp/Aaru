@@ -37,12 +37,16 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Logging;
 using Aaru.Decoders.DVD;
+using BlurayDataFrame = Aaru.Decoders.Bluray.DataFrame;
 using NintendoSector = Aaru.Decoders.Nintendo.Sector;
 
 namespace Aaru.Devices;
 
 public partial class Device
 {
+    const int OMNIDRIVE_BD_DATA_FRAME_SIZE  = BlurayDataFrame.Size;
+    const int OMNIDRIVE_BD_TRANSFER_PER_LBA = OMNIDRIVE_BD_DATA_FRAME_SIZE + BlurayDataFrame.UserControlDataSize;
+
     readonly NintendoSector _nintendoSectorDecoder = new NintendoSector();
     readonly Sector         _dvdSectorDecoder      = new Sector();
     enum OmniDriveDiscType
@@ -67,7 +71,7 @@ public partial class Device
         return (byte)(d | (r << 2) | (f << 3) | (s << 4));
     }
 
-    static void FillOmniDriveReadDvdCdb(Span<byte> cdb, uint lba, uint transferLength, byte cdbByte1)
+    static void FillOmniDriveReadCdb(Span<byte> cdb, uint lba, uint transferLength, byte cdbByte1)
     {
         cdb.Clear();
         cdb[0] = (byte)ScsiCommands.ReadOmniDrive;
@@ -129,7 +133,7 @@ public partial class Device
         Span<byte> cdb = CdbBuffer[..12];
         buffer = new byte[2064 * transferLength];
 
-        FillOmniDriveReadDvdCdb(cdb,
+        FillOmniDriveReadCdb(cdb,
                                 lba,
                                 transferLength,
                                 EncodeOmniDriveReadCdb1(OmniDriveDiscType.DVD, false, fua, descramble));
@@ -145,6 +149,54 @@ public partial class Device
         AaruLogging.Debug(SCSI_MODULE_NAME, "OmniDrive READ RAW DVD took {0} ms", duration);
 
         return sense;
+    }
+
+    /// <summary>Reads raw Blu-ray sectors (2052-byte DataFrame) directly by LBA on OmniDrive firmware.</summary>
+    /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
+    /// <param name="buffer">Buffer where the raw Blu-ray DataFrame response will be stored.</param>
+    /// <param name="senseBuffer">Sense buffer.</param>
+    /// <param name="lba">Start block address (LBA).</param>
+    /// <param name="transferLength">Number of 2052-byte sectors to read.</param>
+    /// <param name="timeout">Timeout in seconds.</param>
+    /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
+    /// <param name="fua">Set to <c>true</c> if the command should use FUA.</param>
+    /// <param name="descramble">Set to <c>true</c> if the data should be descrambled by the device.</param>
+    public bool OmniDriveReadRawBd(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba, uint transferLength,
+                                   uint timeout, out double duration, bool fua = false, bool descramble = true)
+    {
+        senseBuffer = SenseBuffer;
+        Span<byte> cdb = CdbBuffer[..12];
+        byte[] deviceBuffer = new byte[OMNIDRIVE_BD_TRANSFER_PER_LBA * transferLength];
+        buffer = new byte[OMNIDRIVE_BD_DATA_FRAME_SIZE * transferLength];
+
+        FillOmniDriveReadCdb(cdb,
+                             lba,
+                             transferLength,
+                             EncodeOmniDriveReadCdb1(OmniDriveDiscType.BD, false, fua, descramble));
+
+        LastError = SendScsiCommand(cdb, ref deviceBuffer, timeout, ScsiDirection.In, out duration, out bool sense);
+
+        if(sense)
+        {
+            Error = LastError != 0;
+
+            return true;
+        }
+
+        for(uint i = 0; i < transferLength; i++)
+        {
+            int deviceOffset = (int)(i * OMNIDRIVE_BD_TRANSFER_PER_LBA);
+            int dataOffset   = (int)(i * OMNIDRIVE_BD_DATA_FRAME_SIZE);
+            Array.Copy(deviceBuffer, deviceOffset, buffer, dataOffset, OMNIDRIVE_BD_DATA_FRAME_SIZE);
+
+            if(descramble && !Decoders.Bluray.Sector.CheckEdc(buffer.AsSpan(dataOffset, OMNIDRIVE_BD_DATA_FRAME_SIZE).ToArray())) return true;
+        }
+
+        Error = LastError != 0;
+
+        AaruLogging.Debug(SCSI_MODULE_NAME, "OmniDrive READ RAW BD took {0} ms", duration);
+
+        return false;
     }
 
     /// <summary>
@@ -171,10 +223,10 @@ public partial class Device
         Span<byte> cdb = CdbBuffer[..12];
         buffer = new byte[2064 * transferLength];
 
-        FillOmniDriveReadDvdCdb(cdb,
-                                lba,
-                                transferLength,
-                                EncodeOmniDriveReadCdb1(OmniDriveDiscType.DVD, false, fua, false));
+        FillOmniDriveReadCdb(cdb,
+                             lba,
+                             transferLength,
+                             EncodeOmniDriveReadCdb1(OmniDriveDiscType.DVD, false, fua, false));
 
         LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 

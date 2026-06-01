@@ -6857,6 +6857,12 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string Using_OmniDrive_raw_BD_reading {
+            get {
+                return ResourceManager.GetString("Using_OmniDrive_raw_BD_reading", resourceCulture);
+            }
+        }
+        
         public static string Using_ReadBuffer_3C_raw_DVD_reading {
             get {
                 return ResourceManager.GetString("Using_ReadBuffer_3C_raw_DVD_reading", resourceCulture);
