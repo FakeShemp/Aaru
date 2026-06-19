@@ -56,7 +56,7 @@ public sealed partial class LIF
         if(imagePlugin.Info.SectorSize < 256) return ErrorNumber.InvalidArgument;
 
         // Read the system block (record 0)
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, false, out byte[] sector, out _);
+        ErrorNumber errno = ReadLogicalRecords(imagePlugin, partition, 0, 1, out byte[] sector);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -70,11 +70,11 @@ public sealed partial class LIF
         if(_systemBlock.directoryStart == 0 || _systemBlock.directorySize == 0) return ErrorNumber.InvalidArgument;
 
         // Read the directory area
-        errno = imagePlugin.ReadSectors(partition.Start + _systemBlock.directoryStart,
-                                        false,
-                                        _systemBlock.directorySize,
-                                        out byte[] directoryData,
-                                        out _);
+        errno = ReadLogicalRecords(imagePlugin,
+                                   partition,
+                                   _systemBlock.directoryStart,
+                                   _systemBlock.directorySize,
+                                   out byte[] directoryData);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -99,7 +99,7 @@ public sealed partial class LIF
 
         _statFs = new FileSystemInfo
         {
-            Blocks         = partition.Size / 256,
+            Blocks         = partition.Size / LIF_RECORD_SIZE,
             FilenameLength = 10,
             Files          = (ulong)_rootDirectoryCache.Count,
             PluginId       = Id,
@@ -109,7 +109,7 @@ public sealed partial class LIF
         Metadata = new FileSystem
         {
             Type         = FS_TYPE,
-            ClusterSize  = 256,
+            ClusterSize  = LIF_RECORD_SIZE,
             Clusters     = _statFs.Blocks,
             Files        = _statFs.Files,
             CreationDate = DateHandlers.LifToDateTime(_systemBlock.creationDate),

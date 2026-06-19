@@ -48,7 +48,7 @@ public sealed partial class LIF
             stat = new FileEntryInfo
             {
                 Attributes   = FileAttributes.Directory,
-                BlockSize    = 256,
+                BlockSize    = LIF_RECORD_SIZE,
                 CreationTime = DateHandlers.LifToDateTime(_systemBlock.creationDate)
             };
 
@@ -70,9 +70,9 @@ public sealed partial class LIF
             stat = new FileEntryInfo
             {
                 Attributes   = FileAttributes.File,
-                BlockSize    = 256,
+                BlockSize    = LIF_RECORD_SIZE,
                 Blocks       = entry.fileLength,
-                Length       = entry.fileLength * 256,
+                Length       = entry.fileLength * LIF_RECORD_SIZE,
                 CreationTime = DateHandlers.LifToDateTime(entry.creationDate),
                 Links        = 1
             };
@@ -108,9 +108,9 @@ public sealed partial class LIF
             node = new LifFileNode
             {
                 Path        = path,
-                Length      = entry.fileLength * 256,
+                Length      = entry.fileLength * LIF_RECORD_SIZE,
                 Offset      = 0,
-                StartSector = entry.fileStart
+                StartRecord = entry.fileStart
             };
 
             return ErrorNumber.NoError;
@@ -144,30 +144,18 @@ public sealed partial class LIF
 
         if(length + lifNode.Offset > lifNode.Length) length = lifNode.Length - lifNode.Offset;
 
-        ulong currentSector  = lifNode.StartSector + (ulong)(lifNode.Offset / 256);
-        var   offsetInSector = (int)(lifNode.Offset % 256);
-        long  bytesRemaining = length;
-        var   bufferOffset   = 0;
+        ErrorNumber error = ReadLogicalBytes(_imagePlugin,
+                                             _partition,
+                                             (ulong)lifNode.StartRecord * LIF_RECORD_SIZE + (ulong)lifNode.Offset,
+                                             (uint)length,
+                                             out byte[] data);
 
-        while(bytesRemaining > 0)
-        {
-            ErrorNumber errno =
-                _imagePlugin.ReadSector(_partition.Start + currentSector, false, out byte[] sectorData, out _);
+        if(error != ErrorNumber.NoError) return error;
 
-            if(errno != ErrorNumber.NoError) return errno;
+        Array.Copy(data, 0, buffer, 0, data.Length);
 
-            var bytesToCopy = (int)Math.Min(bytesRemaining, 256 - offsetInSector);
-
-            Array.Copy(sectorData, offsetInSector, buffer, bufferOffset, bytesToCopy);
-
-            bufferOffset   += bytesToCopy;
-            bytesRemaining -= bytesToCopy;
-            lifNode.Offset += bytesToCopy;
-            currentSector++;
-            offsetInSector = 0;
-        }
-
-        read = bufferOffset;
+        read           =  data.Length;
+        lifNode.Offset += data.Length;
 
         return ErrorNumber.NoError;
     }
