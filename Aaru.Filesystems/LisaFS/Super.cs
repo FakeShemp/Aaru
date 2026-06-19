@@ -230,6 +230,8 @@ public sealed partial class LisaFS
 
                 if(_debug) _printedExtents = [];
 
+                InitializeTwiggyBadBlockMap();
+
                 // Read the S-Records file
                 ErrorNumber error = ReadSRecords();
 
@@ -356,6 +358,7 @@ public sealed partial class LisaFS
         _fileSizeCache   = null;
         _printedExtents  = null;
         _mddf            = new MDDF();
+        _twiggyBadBlockMap = null;
         _volumePrefix    = 0;
         _devTagSize      = 0;
         _srecords        = null;

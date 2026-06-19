@@ -57,11 +57,16 @@ public sealed partial class LisaFS
 
         ulong ptr = _srecords[fileId].extent_ptr;
 
-        // An invalid pointer denotes file does not exist
-        if(ptr is 0xFFFFFFFF or 0x00000000) return ErrorNumber.NoSuchFile;
+        var searchExtentByTag = false;
 
         // Pointers are relative to MDDF
-        ptr += _mddf.mddf_block + _volumePrefix;
+        if(ptr is not 0xFFFFFFFF and not 0x00000000) ptr += _mddf.mddf_block + _volumePrefix;
+        else
+        {
+            if(_srecords[fileId].filesize == 0) return ErrorNumber.NoSuchFile;
+
+            searchExtentByTag = true;
+        }
 
         LisaTag.PriamTag extTag;
         byte[]           tag;
@@ -69,19 +74,19 @@ public sealed partial class LisaFS
         // This happens on some disks.
         // This is a filesystem corruption that makes LisaOS crash on scavenge.
         // This code just allow to ignore that corruption by searching the Extents File using sector tags
-        if(ptr >= _device.Info.Sectors)
+        if(searchExtentByTag || ptr >= _device.Info.Sectors)
         {
             var found = false;
 
             for(ulong i = 0; i < _device.Info.Sectors; i++)
             {
-                errno = _device.ReadSectorTag(i, false, SectorTagType.AppleSonyTag, out tag);
+                errno = ReadLisaSectorTag(i, out tag);
 
                 if(errno != ErrorNumber.NoError) continue;
 
                 DecodeTag(tag, out extTag);
 
-                if(extTag.FileId != fileId * -1) continue;
+                if(extTag.FileId != fileId * -1 || extTag.RelPage != 0) continue;
 
                 ptr   = i;
                 found = true;
@@ -93,17 +98,36 @@ public sealed partial class LisaFS
         }
 
         // Checks that the sector tag indicates its the Extents File we are searching for
-        errno = _device.ReadSectorTag(ptr, false, SectorTagType.AppleSonyTag, out tag);
+        errno = ReadLisaSectorTag(ptr, out tag);
 
         if(errno != ErrorNumber.NoError) return errno;
 
         DecodeTag(tag, out extTag);
 
-        if(extTag.FileId != (short)(-1 * fileId)) return ErrorNumber.NoSuchFile;
+        if(extTag.FileId != (short)(-1 * fileId) || extTag.RelPage != 0)
+        {
+            var found = false;
 
-        errno = _mddf.fsversion == LISA_V1
-                    ? _device.ReadSectors(ptr, false, 2, out byte[] sector, out _)
-                    : _device.ReadSector(ptr, false, out sector, out _);
+            for(ulong i = 0; i < _device.Info.Sectors; i++)
+            {
+                errno = ReadLisaSectorTag(i, out tag);
+
+                if(errno != ErrorNumber.NoError) continue;
+
+                DecodeTag(tag, out extTag);
+
+                if(extTag.FileId != fileId * -1 || extTag.RelPage != 0) continue;
+
+                ptr   = i;
+                found = true;
+
+                break;
+            }
+
+            if(!found) return ErrorNumber.NoSuchFile;
+        }
+
+        errno = _mddf.fsversion == LISA_V1 ? ReadLisaSectors(ptr, 2, out byte[] sector) : ReadLisaSector(ptr, out sector);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -306,11 +330,8 @@ public sealed partial class LisaFS
         if(!_mounted) return ErrorNumber.AccessDenied;
 
         // Searches the S-Records place using MDDF pointers
-        ErrorNumber errno = _device.ReadSectors(_mddf.srec_ptr + _mddf.mddf_block + _volumePrefix,
-                                                false,
-                                                _mddf.srec_len,
-                                                out byte[] sectors,
-                                                out _);
+        ErrorNumber errno =
+            ReadLisaSectors(_mddf.srec_ptr + _mddf.mddf_block + _volumePrefix, _mddf.srec_len, out byte[] sectors);
 
         if(errno != ErrorNumber.NoError) return errno;
 
