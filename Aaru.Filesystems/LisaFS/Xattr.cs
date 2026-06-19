@@ -78,7 +78,7 @@ public sealed partial class LisaFS
             xattrs = [];
 
             // Password field is never emptied, check if valid
-            if(file.password_valid > 0) xattrs.Add(Xattrs.XATTR_APPLE_LISA_PASSWORD);
+            if(file.password_length > 0) xattrs.Add(Xattrs.XATTR_APPLE_LISA_PASSWORD);
 
             // Check for a valid copy-protection serial number
             if(file.serial > 0) xattrs.Add(Xattrs.XATTR_APPLE_LISA_SERIAL);
@@ -135,7 +135,7 @@ public sealed partial class LisaFS
 
         switch(xattr)
         {
-            case Xattrs.XATTR_APPLE_LISA_PASSWORD when file.password_valid > 0:
+            case Xattrs.XATTR_APPLE_LISA_PASSWORD when file.password_length > 0:
                 buf = new byte[8];
                 Array.Copy(file.password, 0, buf, 0, 8);
 

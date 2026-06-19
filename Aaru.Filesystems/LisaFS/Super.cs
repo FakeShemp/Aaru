@@ -103,15 +103,15 @@ public sealed partial class LisaFS
                 _mddf.volid     = BigEndianBitConverter.ToUInt64(sector, 0x02);
                 _mddf.volnum    = BigEndianBitConverter.ToUInt16(sector, 0x0A);
                 Array.Copy(sector, 0x0C, pString, 0, 33);
-                _mddf.volname  = StringHandlers.PascalToString(pString, _encoding);
-                _mddf.unknown1 = sector[0x2D];
+                _mddf.volname     = StringHandlers.PascalToString(pString, _encoding);
+                _mddf.volname_pad = sector[0x2D];
                 Array.Copy(sector, 0x2E, pString, 0, 33);
 
                 // Prevent garbage
-                _mddf.password       = pString[0] <= 32 ? StringHandlers.PascalToString(pString, _encoding) : "";
-                _mddf.unknown2       = sector[0x4F];
-                _mddf.machine_id     = BigEndianBitConverter.ToUInt32(sector, 0x50);
-                _mddf.master_copy_id = BigEndianBitConverter.ToUInt32(sector, 0x54);
+                _mddf.password          = pString[0] <= 32 ? StringHandlers.PascalToString(pString, _encoding) : "";
+                _mddf.password_pad      = sector[0x4F];
+                _mddf.machine_id        = BigEndianBitConverter.ToUInt32(sector, 0x50);
+                _mddf.master_machine_id = BigEndianBitConverter.ToUInt32(sector, 0x54);
                 var lisaTime = BigEndianBitConverter.ToUInt32(sector, 0x58);
                 _mddf.dtvc                         = DateHandlers.LisaToDateTime(lisaTime);
                 lisaTime                           = BigEndianBitConverter.ToUInt32(sector, 0x5C);
@@ -120,7 +120,7 @@ public sealed partial class LisaFS
                 _mddf.dtvb                         = DateHandlers.LisaToDateTime(lisaTime);
                 lisaTime                           = BigEndianBitConverter.ToUInt32(sector, 0x64);
                 _mddf.dtvs                         = DateHandlers.LisaToDateTime(lisaTime);
-                _mddf.unknown3                     = BigEndianBitConverter.ToUInt32(sector, 0x68);
+                _mddf.copy_thread                  = BigEndianBitConverter.ToUInt32(sector, 0x68);
                 _mddf.mddf_block                   = BigEndianBitConverter.ToUInt32(sector, 0x6C);
                 _mddf.volsize_minus_one            = BigEndianBitConverter.ToUInt32(sector, 0x70);
                 _mddf.volsize_minus_mddf_minus_one = BigEndianBitConverter.ToUInt32(sector, 0x74);
@@ -134,50 +134,48 @@ public sealed partial class LisaFS
                 _mddf.fs_size                      = BigEndianBitConverter.ToUInt32(sector, 0x8C);
                 _mddf.unknown7                     = BigEndianBitConverter.ToUInt32(sector, 0x90);
                 _mddf.srec_ptr                     = BigEndianBitConverter.ToUInt32(sector, 0x94);
-                _mddf.unknown9                     = BigEndianBitConverter.ToUInt16(sector, 0x98);
+                _mddf.slist_packing                = BigEndianBitConverter.ToUInt16(sector, 0x98);
                 _mddf.srec_len                     = BigEndianBitConverter.ToUInt16(sector, 0x9A);
-                _mddf.unknown10                    = BigEndianBitConverter.ToUInt32(sector, 0x9C);
-                _mddf.unknown11                    = BigEndianBitConverter.ToUInt32(sector, 0xA0);
-                _mddf.unknown12                    = BigEndianBitConverter.ToUInt32(sector, 0xA4);
-                _mddf.unknown13                    = BigEndianBitConverter.ToUInt32(sector, 0xA8);
-                _mddf.unknown14                    = BigEndianBitConverter.ToUInt32(sector, 0xAC);
+                _mddf.first_file                   = BigEndianBitConverter.ToUInt16(sector, 0x9C);
+                _mddf.empty_file                   = BigEndianBitConverter.ToUInt16(sector, 0x9E);
+                _mddf.maxfiles                     = BigEndianBitConverter.ToUInt16(sector, 0xA0);
+                _mddf.hintsize                     = BigEndianBitConverter.ToUInt16(sector, 0xA2);
+                _mddf.leader_offset                = BigEndianBitConverter.ToUInt16(sector, 0xA4);
+                _mddf.leader_pages                 = BigEndianBitConverter.ToUInt16(sector, 0xA6);
+                _mddf.flabel_offset                = BigEndianBitConverter.ToUInt16(sector, 0xA8);
+                _mddf.unusedi1                     = BigEndianBitConverter.ToUInt16(sector, 0xAA);
+                _mddf.map_offset                   = BigEndianBitConverter.ToUInt16(sector, 0xAC);
+                _mddf.map_size                     = BigEndianBitConverter.ToUInt16(sector, 0xAE);
                 _mddf.filecount                    = BigEndianBitConverter.ToUInt16(sector, 0xB0);
-                _mddf.unknown15                    = BigEndianBitConverter.ToUInt32(sector, 0xB2);
-                _mddf.unknown16                    = BigEndianBitConverter.ToUInt32(sector, 0xB6);
+                _mddf.unusedl1                     = BigEndianBitConverter.ToUInt32(sector, 0xB2);
+                _mddf.freestart                    = BigEndianBitConverter.ToUInt32(sector, 0xB6);
                 _mddf.freecount                    = BigEndianBitConverter.ToUInt32(sector, 0xBA);
-                _mddf.unknown17                    = BigEndianBitConverter.ToUInt16(sector, 0xBE);
-                _mddf.unknown18                    = BigEndianBitConverter.ToUInt32(sector, 0xC0);
+                _mddf.rootmaxentries               = BigEndianBitConverter.ToUInt16(sector, 0xBE);
+                _mddf.mountinfo                    = BigEndianBitConverter.ToUInt32(sector, 0xC0);
                 _mddf.overmount_stamp              = BigEndianBitConverter.ToUInt64(sector, 0xC4);
-                _mddf.serialization                = BigEndianBitConverter.ToUInt32(sector, 0xCC);
-                _mddf.unknown19                    = BigEndianBitConverter.ToUInt32(sector, 0xD0);
-                _mddf.unknown_timestamp            = BigEndianBitConverter.ToUInt32(sector, 0xD4);
-                _mddf.unknown20                    = BigEndianBitConverter.ToUInt32(sector, 0xD8);
-                _mddf.unknown21                    = BigEndianBitConverter.ToUInt32(sector, 0xDC);
-                _mddf.unknown22                    = BigEndianBitConverter.ToUInt32(sector, 0xE0);
-                _mddf.unknown23                    = BigEndianBitConverter.ToUInt32(sector, 0xE4);
-                _mddf.unknown24                    = BigEndianBitConverter.ToUInt32(sector, 0xE8);
-                _mddf.unknown25                    = BigEndianBitConverter.ToUInt32(sector, 0xEC);
-                _mddf.unknown26                    = BigEndianBitConverter.ToUInt32(sector, 0xF0);
-                _mddf.unknown27                    = BigEndianBitConverter.ToUInt32(sector, 0xF4);
-                _mddf.unknown28                    = BigEndianBitConverter.ToUInt32(sector, 0xF8);
-                _mddf.unknown29                    = BigEndianBitConverter.ToUInt32(sector, 0xFC);
-                _mddf.unknown30                    = BigEndianBitConverter.ToUInt32(sector, 0x100);
-                _mddf.unknown31                    = BigEndianBitConverter.ToUInt32(sector, 0x104);
-                _mddf.unknown32                    = BigEndianBitConverter.ToUInt32(sector, 0x108);
-                _mddf.unknown33                    = BigEndianBitConverter.ToUInt32(sector, 0x10C);
-                _mddf.unknown34                    = BigEndianBitConverter.ToUInt32(sector, 0x110);
-                _mddf.unknown35                    = BigEndianBitConverter.ToUInt32(sector, 0x114);
-                _mddf.backup_volid                 = BigEndianBitConverter.ToUInt64(sector, 0x118);
-                _mddf.label_size                   = BigEndianBitConverter.ToUInt16(sector, 0x120);
-                _mddf.fs_overhead                  = BigEndianBitConverter.ToUInt16(sector, 0x122);
-                _mddf.result_scavenge              = BigEndianBitConverter.ToUInt16(sector, 0x124);
-                _mddf.boot_code                    = BigEndianBitConverter.ToUInt16(sector, 0x126);
-                _mddf.boot_environ                 = BigEndianBitConverter.ToUInt16(sector, 0x6C);
-                _mddf.unknown36                    = BigEndianBitConverter.ToUInt32(sector, 0x12A);
-                _mddf.unknown37                    = BigEndianBitConverter.ToUInt32(sector, 0x12E);
-                _mddf.unknown38                    = BigEndianBitConverter.ToUInt32(sector, 0x132);
-                _mddf.vol_sequence                 = BigEndianBitConverter.ToUInt16(sector, 0x136);
-                _mddf.vol_left_mounted             = sector[0x138];
+                _mddf.pmem_id                      = BigEndianBitConverter.ToUInt32(sector, 0xCC);
+                _mddf.pmem_alarm_ref               = BigEndianBitConverter.ToUInt16(sector, 0xD0);
+                _mddf.pmem_parm_mem                = new ushort[32];
+
+                for(var j = 0; j < _mddf.pmem_parm_mem.Length; j++)
+                    _mddf.pmem_parm_mem[j] = BigEndianBitConverter.ToUInt16(sector, 0xD2 + j * 2);
+
+                _mddf.vol_scavenged   = sector[0x112];
+                _mddf.tbt_copied      = sector[0x113];
+                _mddf.backup_volid    = BigEndianBitConverter.ToUInt64(sector, 0x114);
+                _mddf.result_scavenge = BigEndianBitConverter.ToUInt16(sector, 0x11C);
+                _mddf.smallmap_offset = BigEndianBitConverter.ToUInt16(sector, 0x11E);
+                _mddf.hentry_offset   = BigEndianBitConverter.ToUInt16(sector, 0x120);
+                _mddf.boot_code       = BigEndianBitConverter.ToUInt16(sector, 0x122);
+                _mddf.boot_environ    = BigEndianBitConverter.ToUInt16(sector, 0x124);
+                _mddf.flabel_size     = BigEndianBitConverter.ToUInt16(sector, 0x126);
+                _mddf.fs_overhead     = BigEndianBitConverter.ToUInt16(sector, 0x128);
+                _mddf.oem_id          = BigEndianBitConverter.ToUInt32(sector, 0x12A);
+                _mddf.root_page       = BigEndianBitConverter.ToUInt32(sector, 0x12E);
+                _mddf.tree_depth      = BigEndianBitConverter.ToUInt16(sector, 0x132);
+                _mddf.node_id         = BigEndianBitConverter.ToUInt16(sector, 0x134);
+                _mddf.vol_seq_no      = BigEndianBitConverter.ToUInt16(sector, 0x136);
+                _mddf.vol_mounted     = sector[0x138];
 
                 // Check that the MDDF is correct
                 if(_mddf.mddf_block       != i - _volumePrefix                                  ||
@@ -325,7 +323,7 @@ public sealed partial class LisaFS
 
                 if(DateTime.Compare(_mddf.dtvc, DateHandlers.LisaToDateTime(0)) > 0) Metadata.CreationDate = _mddf.dtvc;
 
-                Metadata.Dirty        = _mddf.vol_left_mounted != 0;
+                Metadata.Dirty        = _mddf.vol_mounted != 0;
                 Metadata.Files        = _mddf.filecount;
                 Metadata.FreeClusters = _mddf.freecount;
                 Metadata.Type         = FS_TYPE;
@@ -350,18 +348,18 @@ public sealed partial class LisaFS
     /// <inheritdoc />
     public ErrorNumber Unmount()
     {
-        _mounted         = false;
-        _extentCache     = null;
-        _systemFileCache = null;
-        _fileCache       = null;
-        _catalogCache    = null;
-        _fileSizeCache   = null;
-        _printedExtents  = null;
-        _mddf            = new MDDF();
+        _mounted           = false;
+        _extentCache       = null;
+        _systemFileCache   = null;
+        _fileCache         = null;
+        _catalogCache      = null;
+        _fileSizeCache     = null;
+        _printedExtents    = null;
+        _mddf              = new MDDF();
         _twiggyBadBlockMap = null;
-        _volumePrefix    = 0;
-        _devTagSize      = 0;
-        _srecords        = null;
+        _volumePrefix      = 0;
+        _devTagSize        = 0;
+        _srecords          = null;
 
         return ErrorNumber.NoError;
     }
