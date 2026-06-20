@@ -1024,6 +1024,21 @@ In you are unsure, please press N to not continue.</value>
     <data name="PS3_no_disc_key_found" xml:space="preserve">
     <value>[red]PS3 conversion requires a disc key. Provide a .disc_key, .data1, or .ird sidecar file.[/]</value>
   </data>
+    <data name="PS3_extracting_drive_keys" xml:space="preserve">
+    <value>[slateblue1]Extracting PS3 disc keys from Sony PS-SYSTEM drive...[/]</value>
+  </data>
+    <data name="PS3_drive_keys_extracted" xml:space="preserve">
+    <value>[green]PS3 disc keys extracted from drive successfully.[/]</value>
+  </data>
+    <data name="PS3_drive_key_extraction_failed" xml:space="preserve">
+    <value>[red]Failed to extract PS3 disc keys from Sony PS-SYSTEM drive.[/]</value>
+  </data>
+    <data name="PS3_drive_keys_data1_0" xml:space="preserve">
+    <value>[slateblue1]PS3 Data1: [aqua]{0}[/][/]</value>
+  </data>
+    <data name="PS3_drive_keys_data2_0" xml:space="preserve">
+    <value>[slateblue1]PS3 Data2: [aqua]{0}[/][/]</value>
+  </data>
     <data name="PS3_encryption_map_0_regions" xml:space="preserve">
     <value>[slateblue1]PS3 encryption map: [green]{0}[/] plaintext region(s).[/]</value>
   </data>

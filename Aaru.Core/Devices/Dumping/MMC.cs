@@ -1018,6 +1018,8 @@ partial class Dump
             return;
         }
 
+        TryExtractPs3DriveKeys(ref dskType, mediaTags);
+
         Sbc(mediaTags, dskType, true, dvdDecrypt);
     }
 

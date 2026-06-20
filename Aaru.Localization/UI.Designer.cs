@@ -2025,6 +2025,36 @@ namespace Aaru.Localization {
             }
         }
         
+        public static string PS3_extracting_drive_keys {
+            get {
+                return ResourceManager.GetString("PS3_extracting_drive_keys", resourceCulture);
+            }
+        }
+        
+        public static string PS3_drive_keys_extracted {
+            get {
+                return ResourceManager.GetString("PS3_drive_keys_extracted", resourceCulture);
+            }
+        }
+        
+        public static string PS3_drive_key_extraction_failed {
+            get {
+                return ResourceManager.GetString("PS3_drive_key_extraction_failed", resourceCulture);
+            }
+        }
+        
+        public static string PS3_drive_keys_data1_0 {
+            get {
+                return ResourceManager.GetString("PS3_drive_keys_data1_0", resourceCulture);
+            }
+        }
+        
+        public static string PS3_drive_keys_data2_0 {
+            get {
+                return ResourceManager.GetString("PS3_drive_keys_data2_0", resourceCulture);
+            }
+        }
+        
         public static string PS3_encryption_map_0_regions {
             get {
                 return ResourceManager.GetString("PS3_encryption_map_0_regions", resourceCulture);

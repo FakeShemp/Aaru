@@ -1892,6 +1892,16 @@ public enum ScsiCommands : byte
 
 #endregion OmniDrive vendor commands
 
+#region PlayStation 3 vendor commands
+
+    /// <summary>Receives PS3 drive authentication response (Sony PS-SYSTEM optical drives)</summary>
+    PlayStation3VendorE0 = 0xE0,
+
+    /// <summary>Sends PS3 drive authentication payload (Sony PS-SYSTEM optical drives)</summary>
+    PlayStation3VendorE1 = 0xE1,
+
+#endregion PlayStation 3 vendor commands
+
 #region NEC vendor commands
 
     /// <summary>Reads CD-DA data</summary>
