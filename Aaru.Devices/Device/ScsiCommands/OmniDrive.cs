@@ -89,8 +89,12 @@ public partial class Device
     ///     matching redumper's is_omnidrive_firmware behaviour.
     /// </summary>
     /// <returns><c>true</c> if Reserved5 starts with "OmniDrive" and has at least 11 bytes (8 + 3 for version).</returns>
-    public bool IsOmniDriveFirmware()
+    public bool IsOmniDriveFirmware(out byte major, out byte minor, out byte revision)
     {
+        major    = 0;
+        minor    = 0;
+        revision = 0;
+
         bool sense = ScsiInquiry(out byte[] buffer, out _, Timeout, out _);
 
         if (sense || buffer == null) return false;
@@ -108,6 +112,10 @@ public partial class Device
         for (int i = 0; i < omnidrive.Length; i++)
             if (reserved5[i] != omnidrive[i])
                 return false;
+
+        major    = reserved5[9];
+        minor    = reserved5[10];
+        revision = reserved5[11];
 
         return true;
     }
@@ -163,7 +171,7 @@ public partial class Device
     /// </param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
     public bool OmniDriveReadNintendoDvd(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba, uint transferLength,
-                                        uint timeout, out double duration, bool fua = false, bool descramble = true, 
+                                        uint timeout, out double duration, bool fua = false, bool descramble = true,
                                         byte? derivedDiscKey = null, bool negativeAddressing = false,
                                         ulong regularDataEndExclusive = 0)
     {

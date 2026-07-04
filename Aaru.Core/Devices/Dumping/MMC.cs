@@ -298,6 +298,11 @@ partial class Dump
             return;
         }
 
+        _omnidrive = _dev.IsOmniDriveFirmware(out byte odMajor, out byte odMinor, out byte odRevision);
+
+        if(_omnidrive)
+            AaruLogging.WriteLine($"[slateblue1]Detected [/][#FFFFFF]O[/][#FFAFC8]m[/][#74D7EE]n[/][#E40303]i[/][#FF8C00]D[/][#FFED00]r[/][#008026]i[/][#004DFF]v[/][#750787]e[/][#613915]![/][000000]![/] [slateblue1]version[/] [purple]{odMajor}.{odMinor}.{odRevision}[/]");
+
         if(compactDisc)
         {
             _speedMultiplier *= 177;
@@ -347,9 +352,7 @@ partial class Dump
                     PFI.PhysicalFormatInformation? nintendoPfi = PFI.Decode(cmdBuf, dskType);
 
                     if(nintendoPfi is { DiskCategory: DiskCategory.Nintendo, PartVersion: 15 })
-                    {
                         dskType = nintendoPfi.Value.DiscSize == DVDSize.Eighty ? MediaType.GOD : MediaType.WOD;
-                    }
                 }
 
                 break;

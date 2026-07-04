@@ -121,6 +121,7 @@ public partial class Dump
     IMediaGraph                                _mediaGraph;
     bool                                       _missingTitleKeysDirty;
     HashSet<ulong>                             _missingTitleKeysLookup;
+    bool                                       _omnidrive;
     Resume                                     _resume;
     Sidecar                                    _sidecarClass;
     uint                                       _skip;

@@ -99,7 +99,7 @@ partial class Dump
         }
 
         AaruLogging.WriteLine(Localization.Core.Initializing_reader);
-        var   scsiReader = new Reader(_dev, _dev.Timeout, null, _errorLog, _dumpRaw);
+        var   scsiReader = new Reader(_dev, _dev.Timeout, null, _errorLog, _dumpRaw, _omnidrive);
         ulong blocks     = scsiReader.GetDeviceBlocks();
         uint  blockSize  = scsiReader.LogicalBlockSize;
 
