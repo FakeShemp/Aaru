@@ -36,7 +36,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
@@ -145,7 +144,16 @@ partial class Dump
                     }
                 }
 
-                if(readcd)
+                if(_omnidrive)
+                {
+                    sense = _dev.OmniDriveReadCd(out cmdBuf,
+                                                 out senseBuf,
+                                                 firstSectorToRead,
+                                                 blocksToRead,
+                                                 _dev.Timeout,
+                                                 out cmdDuration);
+                }
+                else if(readcd)
                 {
                     sense = _dev.ReadCd(out cmdBuf,
                                         out senseBuf,
@@ -243,16 +251,16 @@ partial class Dump
 
                     mhddLog.Write(i, cmdDuration);
                     ibgLog.Write(i, currentSpeed * 1024);
-                    extents.Add(i, _maximumReadable, true);
+                    extents.Add(i, blocksToRead, true);
                     leadOutExtents.Remove(i);
                     _writeStopwatch.Restart();
 
                     if(supportedSubchannel != MmcSubchannel.None)
                     {
-                        var data = new byte[sectorSize * _maximumReadable];
-                        var sub  = new byte[subSize    * _maximumReadable];
+                        var data = new byte[sectorSize * blocksToRead];
+                        var sub  = new byte[subSize    * blocksToRead];
 
-                        for(var b = 0; b < _maximumReadable; b++)
+                        for(var b = 0; b < blocksToRead; b++)
                         {
                             Array.Copy(cmdBuf, (int)(0 + b * blockSize), data, sectorSize * b, sectorSize);
 
@@ -262,15 +270,14 @@ partial class Dump
                         outputOptical.WriteSectorsLong(data,
                                                        i,
                                                        false,
-                                                       _maximumReadable,
-                                                       Enumerable.Repeat(SectorStatus.Dumped, (int)_maximumReadable)
-                                                                 .ToArray());
+                                                       blocksToRead,
+                                                       [.. Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)]);
 
                         bool indexesChanged = Media.CompactDisc.WriteSubchannelToImage(supportedSubchannel,
                             desiredSubchannel,
                             sub,
                             i,
-                            _maximumReadable,
+                            blocksToRead,
                             subLog,
                             isrcs,
                             0xAA,
@@ -289,7 +296,7 @@ partial class Dump
                         // Set tracks and go back
                         if(indexesChanged)
                         {
-                            outputOptical.SetTracks(tracks.ToList());
+                            outputOptical.SetTracks([.. tracks]);
                             i--;
 
                             continue;
@@ -300,41 +307,16 @@ partial class Dump
                         outputOptical.WriteSectors(cmdBuf,
                                                    i,
                                                    false,
-                                                   _maximumReadable,
-                                                   Enumerable.Repeat(SectorStatus.Dumped, (int)_maximumReadable)
-                                                             .ToArray());
+                                                   blocksToRead,
+                                                   [.. Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)]);
                     }
 
                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                 }
                 else
                 {
-                    _errorLog?.WriteLine(i, _dev.Error, _dev.LastError, senseBuf.ToArray());
-
-                    // TODO: Reset device after X errors
-                    if(_stopOnError) return; // TODO: Return more cleanly
-
-                    // Write empty data
-                    _writeStopwatch.Restart();
-
-                    if(supportedSubchannel != MmcSubchannel.None)
-                    {
-                        outputOptical.WriteSectorsLong(new byte[sectorSize * _skip], i, false, 1, new SectorStatus[1]);
-
-                        outputOptical.WriteSectorsTag(new byte[subSize * _skip],
-                                                      i,
-                                                      false,
-                                                      1,
-                                                      SectorTagType.CdSectorSubchannel);
-                    }
-                    else
-                        outputOptical.WriteSectors(new byte[blockSize * _skip], i, false, 1, new SectorStatus[1]);
-
-                    imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
-
-                    mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
-
-                    ibgLog.Write(i, 0);
+                    // It's not going to get more lead-out sectors if it already failed.
+                    break;
                 }
 
                 _writeStopwatch.Stop();

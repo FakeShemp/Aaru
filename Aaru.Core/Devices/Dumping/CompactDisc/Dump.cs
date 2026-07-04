@@ -1052,13 +1052,38 @@ sealed partial class Dump
                        smallestPregapLbaPerTrack);
         }
 
-        // TODO: Enable when underlying images support lead-outs
-        /*
-        DumpCdLeadOuts(blocks, blockSize, ref currentSpeed, currentTry, extents, ibgLog, ref imageWriteDuration,
-                       leadOutExtents, ref maxSpeed, mhddLog, ref minSpeed, read6, read10, read12, read16, readcd,
-                       supportedSubchannel, subSize, ref totalDuration, subLog, desiredSubchannel, isrcs, ref mcn, tracks,
-                       smallestPregapLbaPerTrack);
-        */
+        if(_omnidrive && outputOptical.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreOverflowSectors))
+        {
+            leadOutExtents.Add((ulong)(lastSector + 1), (ulong)(lastSector + 2749));
+
+            DumpCdLeadOuts(blockSize,
+                           ref currentSpeed,
+                           currentTry,
+                           extents,
+                           ibgLog,
+                           ref imageWriteDuration,
+                           leadOutExtents,
+                           ref maxSpeed,
+                           mhddLog,
+                           ref minSpeed,
+                           read6,
+                           read10,
+                           read12,
+                           read16,
+                           readcd,
+                           supportedSubchannel,
+                           subSize,
+                           ref totalDuration,
+                           subLog,
+                           desiredSubchannel,
+                           isrcs,
+                           ref mcn,
+                           tracks,
+                           subchannelExtents,
+                           smallestPregapLbaPerTrack,
+                           offsetBytes,
+                           sectorsForOffset);
+        }
 
         _dumpStopwatch.Stop();
         mhddLog.Close();
