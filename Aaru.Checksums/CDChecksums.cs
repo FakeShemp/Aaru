@@ -38,6 +38,19 @@ using Aaru.Logging;
 
 namespace Aaru.Checksums;
 
+/// <summary>Result of a <see cref="CdChecksums.FixSector" /> operation.</summary>
+public enum SectorFixResult
+{
+    /// <summary>Input is invalid or the sector type has no repairable ECC.</summary>
+    NotApplicable,
+    /// <summary>Sector had no errors — no correction was needed.</summary>
+    Correct,
+    /// <summary>Sector had correctable errors — correction was applied.</summary>
+    Fixed,
+    /// <summary>Sector had uncorrectable errors.</summary>
+    CouldNotFix
+}
+
 /// <summary>Implements ReedSolomon and CRC32 algorithms as used by CD-ROM</summary>
 public static class CdChecksums
 {
@@ -473,12 +486,14 @@ public static class CdChecksums
     /// </summary>
     /// <param name="buffer">Raw 2352-byte sector.</param>
     /// <returns>
-    ///     <c>true</c> if the sector was already correct or could be corrected, <c>false</c> if it could not be corrected,
-    ///     and <c>null</c> if the input is invalid or the sector type has no repairable ECC.
+    ///     <see cref="SectorFixResult.Correct" /> if the sector was already correct,
+    ///     <see cref="SectorFixResult.Fixed" /> if it had errors that were successfully corrected,
+    ///     <see cref="SectorFixResult.CouldNotFix" /> if it had uncorrectable errors, and
+    ///     <see cref="SectorFixResult.NotApplicable" /> if the input is invalid or the sector type has no repairable ECC.
     /// </returns>
-    public static bool? FixSector(byte[] buffer)
+    public static SectorFixResult FixSector(byte[] buffer)
     {
-        if(buffer is not { Length: 2352 }) return null;
+        if(buffer is not { Length: 2352 }) return SectorFixResult.NotApplicable;
 
         EccInit();
 
@@ -494,22 +509,22 @@ public static class CdChecksums
            buffer[0x009] != 0xFF ||
            buffer[0x00A] != 0xFF ||
            buffer[0x00B] != 0x00)
-            return null;
+            return SectorFixResult.NotApplicable;
 
         return (buffer[0x00F] & 0x03) switch
                {
                    0x01                                     => FixMode1Sector(buffer),
-                   0x02 when (buffer[0x012] & 0x20) == 0x20 => null,
+                   0x02 when (buffer[0x012] & 0x20) == 0x20 => SectorFixResult.NotApplicable,
                    0x02                                     => FixMode2Form1Sector(buffer),
-                   _                                        => null
+                   _                                        => SectorFixResult.NotApplicable
                };
     }
 
-    static bool FixMode1Sector(byte[] sector)
+    static SectorFixResult FixMode1Sector(byte[] sector)
     {
         bool? status = CheckCdSectorChannel(sector, out bool? correctEccP, out bool? correctEccQ, out bool? _);
 
-        if(status == true) return true;
+        if(status == true) return SectorFixResult.Correct;
 
         for(var i = 0x814; i < 0x81C; i++) sector[i] = 0;
 
@@ -517,7 +532,9 @@ public static class CdChecksums
         {
             UpdateEdc(sector, 0, 0x810, 0x810);
 
-            return CheckCdSectorChannel(sector, out _, out _, out _) == true;
+            return CheckCdSectorChannel(sector, out _, out _, out _) == true
+                       ? SectorFixResult.Fixed
+                       : SectorFixResult.CouldNotFix;
         }
 
         int[] pMap = CreateOffsetMap(2064, 0x0C, 0x10, false);
@@ -526,17 +543,19 @@ public static class CdChecksums
         return FixSectorWithEcc(sector, pMap, qMap, 0x81C, 0x8C8, 0, 0x810, 0x810);
     }
 
-    static bool FixMode2Form1Sector(byte[] sector)
+    static SectorFixResult FixMode2Form1Sector(byte[] sector)
     {
         bool? status = CheckCdSectorChannel(sector, out bool? correctEccP, out bool? correctEccQ, out bool? _);
 
-        if(status == true) return true;
+        if(status == true) return SectorFixResult.Correct;
 
         if(correctEccP == true && correctEccQ == true)
         {
             UpdateEdc(sector, 0x10, 0x808, 0x818);
 
-            return CheckCdSectorChannel(sector, out _, out _, out _) == true;
+            return CheckCdSectorChannel(sector, out _, out _, out _) == true
+                       ? SectorFixResult.Fixed
+                       : SectorFixResult.CouldNotFix;
         }
 
         int[] pMap = CreateOffsetMap(2064, 0, 0x10, true);
@@ -545,8 +564,8 @@ public static class CdChecksums
         return FixSectorWithEcc(sector, pMap, qMap, 0x81C, 0x8C8, 0x10, 0x808, 0x818);
     }
 
-    static bool FixSectorWithEcc(byte[] sector,          int[] pMap,    int[] qMap, int eccPOffset, int eccQOffset,
-                                 int    edcSourceOffset, int   edcSize, int   edcOffset)
+    static SectorFixResult FixSectorWithEcc(byte[] sector, int[] pMap, int[] qMap, int eccPOffset, int eccQOffset,
+                                            int    edcSourceOffset, int edcSize, int edcOffset)
     {
         for(var pass = 0; pass < 16; pass++)
         {
@@ -560,13 +579,15 @@ public static class CdChecksums
             {
                 if(correctEdc != true) UpdateEdc(sector, edcSourceOffset, edcSize, edcOffset);
 
-                return CheckCdSectorChannel(sector, out _, out _, out _) == true;
+                return CheckCdSectorChannel(sector, out _, out _, out _) == true
+                           ? SectorFixResult.Fixed
+                           : SectorFixResult.CouldNotFix;
             }
 
             if(!corrected || status == null) break;
         }
 
-        return false;
+        return SectorFixResult.CouldNotFix;
     }
 
     static bool TryFixEcc(byte[] sector, int[] offsetMap, int eccOffset, int majorCount, int minorCount, int majorMult,
@@ -898,15 +919,9 @@ public static class CdChecksums
         return false;
     }
 
-    readonly struct EccSyndromeMatch
+    readonly struct EccSyndromeMatch(int position, byte error)
     {
-        public readonly int  Position;
-        public readonly byte Error;
-
-        public EccSyndromeMatch(int position, byte error)
-        {
-            Position = position;
-            Error    = error;
-        }
+        public readonly int  Position = position;
+        public readonly byte Error    = error;
     }
 }

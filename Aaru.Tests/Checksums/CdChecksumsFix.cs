@@ -306,11 +306,11 @@ public class CdChecksumsFix
         ];
 
     [Test]
-    public void InvalidLengthReturnsNull()
+    public void InvalidLengthReturnsNotApplicable()
     {
-        var   sector = new byte[2048];
-        bool? result = CdChecksums.FixSector(sector);
-        result.Should().BeNull();
+        var             sector = new byte[2048];
+        SectorFixResult result = CdChecksums.FixSector(sector);
+        result.Should().Be(SectorFixResult.NotApplicable);
     }
 
     [Test]
@@ -324,9 +324,9 @@ public class CdChecksumsFix
 
         CdChecksums.CheckCdSector(sector).Should().BeFalse();
 
-        bool? result = CdChecksums.FixSector(sector);
+        SectorFixResult result = CdChecksums.FixSector(sector);
 
-        result.Should().BeTrue();
+        result.Should().Be(SectorFixResult.Fixed);
         CdChecksums.CheckCdSector(sector).Should().BeTrue();
         sector.Should().BeEquivalentTo(Mode1Sector);
     }
@@ -342,9 +342,9 @@ public class CdChecksumsFix
 
         CdChecksums.CheckCdSector(sector).Should().BeFalse();
 
-        bool? result = CdChecksums.FixSector(sector);
+        SectorFixResult result = CdChecksums.FixSector(sector);
 
-        result.Should().BeTrue();
+        result.Should().Be(SectorFixResult.Fixed);
         CdChecksums.CheckCdSector(sector).Should().BeTrue();
         sector.Should().BeEquivalentTo(Mode2Form1Sector);
     }
@@ -360,9 +360,9 @@ public class CdChecksumsFix
 
         CdChecksums.CheckCdSector(sector).Should().BeFalse();
 
-        bool? result = CdChecksums.FixSector(sector);
+        SectorFixResult result = CdChecksums.FixSector(sector);
 
-        result.Should().BeTrue();
+        result.Should().Be(SectorFixResult.Fixed);
         CdChecksums.CheckCdSector(sector).Should().BeTrue();
         sector.Should().BeEquivalentTo(Mode1Sector);
     }
@@ -378,9 +378,9 @@ public class CdChecksumsFix
 
         CdChecksums.CheckCdSector(sector).Should().BeFalse();
 
-        bool? result = CdChecksums.FixSector(sector);
+        SectorFixResult result = CdChecksums.FixSector(sector);
 
-        result.Should().BeTrue();
+        result.Should().Be(SectorFixResult.Fixed);
         CdChecksums.CheckCdSector(sector).Should().BeTrue();
         sector.Should().BeEquivalentTo(Mode1Sector);
     }
@@ -396,9 +396,9 @@ public class CdChecksumsFix
 
         CdChecksums.CheckCdSector(sector).Should().BeFalse();
 
-        bool? result = CdChecksums.FixSector(sector);
+        SectorFixResult result = CdChecksums.FixSector(sector);
 
-        result.Should().BeTrue();
+        result.Should().Be(SectorFixResult.Fixed);
         CdChecksums.CheckCdSector(sector).Should().BeTrue();
         sector.Should().BeEquivalentTo(Mode1Sector);
     }
@@ -414,9 +414,9 @@ public class CdChecksumsFix
 
         CdChecksums.CheckCdSector(sector).Should().BeFalse();
 
-        bool? result = CdChecksums.FixSector(sector);
+        SectorFixResult result = CdChecksums.FixSector(sector);
 
-        result.Should().BeFalse();
+        result.Should().Be(SectorFixResult.CouldNotFix);
         CdChecksums.CheckCdSector(sector).Should().BeFalse();
     }
 
@@ -431,9 +431,9 @@ public class CdChecksumsFix
 
         CdChecksums.CheckCdSector(sector).Should().BeFalse();
 
-        bool? result = CdChecksums.FixSector(sector);
+        SectorFixResult result = CdChecksums.FixSector(sector);
 
-        result.Should().BeTrue();
+        result.Should().Be(SectorFixResult.Fixed);
         CdChecksums.CheckCdSector(sector).Should().BeTrue();
         sector.Should().BeEquivalentTo(Mode2Form1Sector);
     }
@@ -449,9 +449,9 @@ public class CdChecksumsFix
 
         CdChecksums.CheckCdSector(sector).Should().BeFalse();
 
-        bool? result = CdChecksums.FixSector(sector);
+        SectorFixResult result = CdChecksums.FixSector(sector);
 
-        result.Should().BeFalse();
+        result.Should().Be(SectorFixResult.CouldNotFix);
         CdChecksums.CheckCdSector(sector).Should().BeFalse();
     }
 

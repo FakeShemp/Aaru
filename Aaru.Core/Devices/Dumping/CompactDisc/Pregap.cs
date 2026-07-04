@@ -241,14 +241,15 @@ partial class Dump
                     if(IsScrambledData(data, firstTrackPregapBlock, out _))
                     {
                         data = Sector.Scramble(data);
-                        bool? eccFixed = CdChecksums.FixSector(data);
+                        SectorFixResult eccFixed = CdChecksums.FixSector(data);
 
-                        if(eccFixed == null)
-                        {
-                            if((data[0x00F] & 0x03) == 2 && (data[0x012] & 0x20) == 0x20) success = true;
-                        }
-                        else
-                            success = eccFixed == true;
+                        success = eccFixed switch
+                                  {
+                                      SectorFixResult.Correct => true,
+                                      SectorFixResult.Fixed => true,
+                                      SectorFixResult.CouldNotFix => false,
+                                      _ => (data[0x00F] & 0x03) == 2 && (data[0x012] & 0x20) == 0x20
+                                  };
                     }
                 }
 
