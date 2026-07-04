@@ -124,22 +124,29 @@ partial class Dump
             }
 
             // ReSharper disable IntVariableOverflowInUncheckedContext
-            sense = _dev.ReadCd(out cmdBuf,
-                                out _,
-                                (uint)firstTrackPregapBlock,
-                                blockSize,
-                                1,
-                                MmcSectorTypes.AllTypes,
-                                false,
-                                false,
-                                true,
-                                MmcHeaderCodes.AllHeaders,
-                                true,
-                                true,
-                                MmcErrorField.None,
-                                supportedSubchannel,
-                                _dev.Timeout,
-                                out cmdDuration);
+            sense = _omnidrive
+                        ? _dev.OmniDriveReadCd(out cmdBuf,
+                                               out _,
+                                               (uint)firstTrackPregapBlock,
+                                               1,
+                                               _dev.Timeout,
+                                               out cmdDuration)
+                        : _dev.ReadCd(out cmdBuf,
+                                      out _,
+                                      (uint)firstTrackPregapBlock,
+                                      blockSize,
+                                      1,
+                                      MmcSectorTypes.AllTypes,
+                                      false,
+                                      false,
+                                      true,
+                                      MmcHeaderCodes.AllHeaders,
+                                      true,
+                                      true,
+                                      MmcErrorField.None,
+                                      supportedSubchannel,
+                                      _dev.Timeout,
+                                      out cmdDuration);
 
             // ReSharper restore IntVariableOverflowInUncheckedContext
 
@@ -182,7 +189,7 @@ partial class Dump
         _speedStopwatch.Stop();
 
         // Apply offset correction if any audio sector is present in the pregap range
-        if(needsOffsetCorrection)
+        if(needsOffsetCorrection || _omnidrive && offsetBytes != 0)
         {
             var hasAudioSectors = false;
 
@@ -193,7 +200,7 @@ partial class Dump
                 if(lba is >= -150 and <= -1 && readSuccess[i] && sectorIsAudio[i]) hasAudioSectors = true;
             }
 
-            if(hasAudioSectors)
+            if(hasAudioSectors || _omnidrive)
             {
                 var blocksToRead = (uint)totalSectorsToRead;
 
@@ -228,6 +235,22 @@ partial class Dump
             {
                 var data = new byte[2352];
                 Array.Copy(allSectorsBuffer, bufferIndex * (int)blockSize, data, 0, 2352);
+
+                if(_omnidrive)
+                {
+                    if(IsScrambledData(data, firstTrackPregapBlock, out _))
+                    {
+                        data = Sector.Scramble(data);
+                        bool? eccFixed = CdChecksums.FixSector(data);
+
+                        if(eccFixed == null)
+                        {
+                            if((data[0x00F] & 0x03) == 2 && (data[0x012] & 0x20) == 0x20) success = true;
+                        }
+                        else
+                            success = eccFixed == true;
+                    }
+                }
 
                 outputOptical.WriteSectorLong(data,
                                               (ulong)-firstTrackPregapBlock,
