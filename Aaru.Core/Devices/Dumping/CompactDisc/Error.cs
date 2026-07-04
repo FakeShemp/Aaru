@@ -301,7 +301,18 @@ partial class Dump
                 sectorsToReRead += (byte)sectorsForOffset;
             }
 
-            if(_supportsPlextorD8 && audioExtents.Contains(badSector))
+            if(_omnidrive)
+            {
+                // TODO: Data
+                sense = _dev.OmniDriveReadCd(out cmdBuf,
+                                             out senseBuf,
+                                             badSectorToReRead,
+                                             sectorsToReRead,
+                                             _dev.Timeout,
+                                             out cmdDuration,
+                                             true);
+            }
+            else if(_supportsPlextorD8 && audioExtents.Contains(badSector))
             {
                 sense = ReadPlextorWithSubchannel(out cmdBuf,
                                                   out senseBuf,
@@ -496,8 +507,9 @@ partial class Dump
 
                 // MEDIUM ERROR, retry with ignore error below
                 if(decSense is { ASC: 0x11 })
-                    if(!sectorsNotEvenPartial.Contains(badSector))
-                        sectorsNotEvenPartial.Add(badSector);
+                {
+                    if(!sectorsNotEvenPartial.Contains(badSector)) sectorsNotEvenPartial.Add(badSector);
+                }
             }
 
             // Because one block has been partially used to fix the offset

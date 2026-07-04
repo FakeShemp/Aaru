@@ -142,7 +142,18 @@ partial class Dump
                 sectorsToTrim += (byte)sectorsForOffset;
             }
 
-            if(_supportsPlextorD8 && audioExtents.Contains(badSector))
+            if(_omnidrive)
+            {
+                // TODO: Data
+                sense = _dev.OmniDriveReadCd(out cmdBuf,
+                                             out senseBuf,
+                                             badSectorToRead,
+                                             sectorsToTrim,
+                                             _dev.Timeout,
+                                             out cmdDuration,
+                                             true);
+            }
+            else if(_supportsPlextorD8 && audioExtents.Contains(badSector))
             {
                 sense = ReadPlextorWithSubchannel(out cmdBuf,
                                                   out senseBuf,
