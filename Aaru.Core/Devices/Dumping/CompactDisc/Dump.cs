@@ -834,7 +834,12 @@ sealed partial class Dump
                                    mediaTags,
                                    supportedSubchannel,
                                    ref totalDuration,
-                                   outputOptical);
+                                   outputOptical,
+                                   subLog,
+                                   offsetBytes,
+                                   sectorsForOffset,
+                                   desiredSubchannel,
+                                   subchannelExtents);
         }
 
         audioExtents = new ExtentsULong();
