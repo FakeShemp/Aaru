@@ -47,6 +47,7 @@ using Aaru.Devices;
 using Aaru.Logging;
 using Humanizer;
 using Track = Aaru.CommonTypes.Structs.Track;
+using TrackType = Aaru.CommonTypes.Enums.TrackType;
 
 namespace Aaru.Core.Devices.Dumping;
 
@@ -87,7 +88,7 @@ partial class Dump
                         bool readcd, MmcSubchannel supportedSubchannel, uint subSize, ref double totalDuration,
                         SubchannelLog subLog, MmcSubchannel desiredSubchannel, Dictionary<byte, string> isrcs,
                         ref string mcn, Track[] tracks, HashSet<int> subchannelExtents,
-                        Dictionary<byte, int> smallestPregapLbaPerTrack)
+                        Dictionary<byte, int> smallestPregapLbaPerTrack, int offsetBytes, int sectorsForOffset)
     {
         byte[]             cmdBuf        = null; // Data buffer
         const uint         sectorSize    = 2352; // Full sector size
@@ -101,6 +102,11 @@ partial class Dump
 
         foreach((ulong item1, ulong item2) in leadOutExtents.ToArray())
         {
+            Track t = tracks.FirstOrDefault(t => item1 == t.EndSector + 1);
+
+            bool isAudio               = t.Type == TrackType.Audio;
+            bool needsOffsetCorrection = _fixOffset && isAudio && offsetBytes != 0;
+
             for(ulong i = item1; i <= item2; i++)
             {
                 if(_aborted)
@@ -121,13 +127,34 @@ partial class Dump
                                                     i,
                                                     ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()));
 
+                uint blocksToRead          = 1;
+                var  firstSectorToRead     = (uint)i;
+                var  failedCrossingLeadOut = false;
+
+                if(needsOffsetCorrection)
+                {
+                    if(offsetBytes < 0)
+                    {
+                        firstSectorToRead =
+                            i >= (ulong)sectorsForOffset ? (uint)(i - (ulong)sectorsForOffset) : (uint)i;
+
+                        blocksToRead += (uint)sectorsForOffset;
+                    }
+                    else
+                    {
+                        blocksToRead += (uint)sectorsForOffset;
+
+                        if(i + blocksToRead > item2 + 1) failedCrossingLeadOut = true;
+                    }
+                }
+
                 if(readcd)
                 {
                     sense = _dev.ReadCd(out cmdBuf,
                                         out senseBuf,
-                                        (uint)i,
+                                        firstSectorToRead,
                                         blockSize,
-                                        1,
+                                        blocksToRead,
                                         MmcSectorTypes.AllTypes,
                                         false,
                                         false,
@@ -150,10 +177,10 @@ partial class Dump
                                         false,
                                         true,
                                         false,
-                                        i,
+                                        firstSectorToRead,
                                         blockSize,
                                         0,
-                                        1,
+                                        blocksToRead,
                                         false,
                                         _dev.Timeout,
                                         out cmdDuration);
@@ -167,10 +194,10 @@ partial class Dump
                                         true,
                                         false,
                                         false,
-                                        (uint)i,
+                                        firstSectorToRead,
                                         blockSize,
                                         0,
-                                        1,
+                                        blocksToRead,
                                         false,
                                         _dev.Timeout,
                                         out cmdDuration);
@@ -184,18 +211,39 @@ partial class Dump
                                         true,
                                         false,
                                         false,
-                                        (uint)i,
+                                        firstSectorToRead,
                                         blockSize,
                                         0,
-                                        1,
+                                        (ushort)blocksToRead,
                                         _dev.Timeout,
                                         out cmdDuration);
                 }
                 else if(read6)
-                    sense = _dev.Read6(out cmdBuf, out senseBuf, (uint)i, blockSize, 1, _dev.Timeout, out cmdDuration);
+                {
+                    sense = _dev.Read6(out cmdBuf,
+                                       out senseBuf,
+                                       firstSectorToRead,
+                                       blockSize,
+                                       (byte)blocksToRead,
+                                       _dev.Timeout,
+                                       out cmdDuration);
+                }
 
                 if(!sense && !_dev.Error)
                 {
+                    if(needsOffsetCorrection)
+                    {
+                        FixOffsetData(offsetBytes,
+                                      sectorSize,
+                                      sectorsForOffset,
+                                      supportedSubchannel,
+                                      ref blocksToRead,
+                                      subSize,
+                                      ref cmdBuf,
+                                      blockSize,
+                                      failedCrossingLeadOut);
+                    }
+
                     mhddLog.Write(i, cmdDuration);
                     ibgLog.Write(i, currentSpeed * 1024);
                     extents.Add(i, _maximumReadable, true);
@@ -339,7 +387,7 @@ partial class Dump
                          bool readcd, MmcSubchannel supportedSubchannel, uint subSize, ref double totalDuration,
                          SubchannelLog subLog, MmcSubchannel desiredSubchannel, Dictionary<byte, string> isrcs,
                          ref string mcn, Track[] tracks, HashSet<int> subchannelExtents,
-                         Dictionary<byte, int> smallestPregapLbaPerTrack)
+                         Dictionary<byte, int> smallestPregapLbaPerTrack, int offsetBytes, int sectorsForOffset)
     {
         byte[]             cmdBuf        = null; // Data buffer
         const uint         sectorSize    = 2352; // Full sector size
@@ -353,6 +401,11 @@ partial class Dump
 
         foreach((ulong item1, ulong item2) in leadOutExtents.ToArray())
         {
+            Track t = tracks.FirstOrDefault(t => item1 == t.EndSector + 1);
+
+            bool isAudio               = t.Type == TrackType.Audio;
+            bool needsOffsetCorrection = _fixOffset && isAudio && offsetBytes != 0;
+
             for(ulong i = item1; i <= item2; i++)
             {
                 if(_aborted)
@@ -373,13 +426,34 @@ partial class Dump
                                                     i,
                                                     ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()));
 
+                uint blocksToRead          = 1;
+                var  firstSectorToRead     = (uint)i;
+                var  failedCrossingLeadOut = false;
+
+                if(needsOffsetCorrection)
+                {
+                    if(offsetBytes < 0)
+                    {
+                        firstSectorToRead =
+                            i >= (ulong)sectorsForOffset ? (uint)(i - (ulong)sectorsForOffset) : (uint)i;
+
+                        blocksToRead += (uint)sectorsForOffset;
+                    }
+                    else
+                    {
+                        blocksToRead += (uint)sectorsForOffset;
+
+                        if(i + blocksToRead > item2 + 1) failedCrossingLeadOut = true;
+                    }
+                }
+
                 if(readcd)
                 {
                     sense = _dev.ReadCd(out cmdBuf,
                                         out senseBuf,
-                                        (uint)i,
+                                        firstSectorToRead,
                                         blockSize,
-                                        1,
+                                        blocksToRead,
                                         MmcSectorTypes.AllTypes,
                                         false,
                                         false,
@@ -402,10 +476,10 @@ partial class Dump
                                         false,
                                         true,
                                         false,
-                                        i,
+                                        firstSectorToRead,
                                         blockSize,
                                         0,
-                                        1,
+                                        blocksToRead,
                                         false,
                                         _dev.Timeout,
                                         out cmdDuration);
@@ -419,10 +493,10 @@ partial class Dump
                                         true,
                                         false,
                                         false,
-                                        (uint)i,
+                                        firstSectorToRead,
                                         blockSize,
                                         0,
-                                        1,
+                                        blocksToRead,
                                         false,
                                         _dev.Timeout,
                                         out cmdDuration);
@@ -436,18 +510,39 @@ partial class Dump
                                         true,
                                         false,
                                         false,
-                                        (uint)i,
+                                        firstSectorToRead,
                                         blockSize,
                                         0,
-                                        1,
+                                        (ushort)blocksToRead,
                                         _dev.Timeout,
                                         out cmdDuration);
                 }
                 else if(read6)
-                    sense = _dev.Read6(out cmdBuf, out senseBuf, (uint)i, blockSize, 1, _dev.Timeout, out cmdDuration);
+                {
+                    sense = _dev.Read6(out cmdBuf,
+                                       out senseBuf,
+                                       firstSectorToRead,
+                                       blockSize,
+                                       (byte)blocksToRead,
+                                       _dev.Timeout,
+                                       out cmdDuration);
+                }
 
                 if(!sense && !_dev.Error)
                 {
+                    if(needsOffsetCorrection)
+                    {
+                        FixOffsetData(offsetBytes,
+                                      sectorSize,
+                                      sectorsForOffset,
+                                      supportedSubchannel,
+                                      ref blocksToRead,
+                                      subSize,
+                                      ref cmdBuf,
+                                      blockSize,
+                                      failedCrossingLeadOut);
+                    }
+
                     mhddLog.Write(i, cmdDuration, _maximumReadable);
                     ibgLog.Write(i, currentSpeed * 1024);
                     extents.Add(i, _maximumReadable, true);
