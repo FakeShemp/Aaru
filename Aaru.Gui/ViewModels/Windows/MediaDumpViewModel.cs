@@ -764,6 +764,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                            BypassWiiDecryption,
                            false,
                            0,
+                           false,
                            false);
 
         new Thread(DoWork).Start();
