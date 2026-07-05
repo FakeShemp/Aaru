@@ -130,6 +130,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--error-recovery={0}",          settings.ErrorRecovery);
         AaruLogging.Debug(MODULE_NAME, "--hyper-speed={0}",             settings.HyperSpeed);
         AaruLogging.Debug(MODULE_NAME, "--absurd-speed={0}",            settings.AbsurdSpeed);
+        AaruLogging.Debug(MODULE_NAME, "--lead-out={0}",                settings.LeadOut);
 
         Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
         AaruLogging.Debug(MODULE_NAME, UI.Parsed_options);
@@ -554,7 +555,8 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   settings.StartReverse,
                                   settings.ErrorRecovery,
                                   settings.HyperSpeed,
-                                  settings.AbsurdSpeed);
+                                  settings.AbsurdSpeed,
+                                  settings.LeadOut);
 
             AnsiConsole.Progress()
                        .AutoClear(true)
@@ -842,6 +844,10 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [DefaultValue(false)]
         [CommandOption("--absurd-speed")]
         public bool AbsurdSpeed { get; set; }
+        [Description("Dump Lead-Out sectors if drive and image supports it.")]
+        [DefaultValue(false)]
+        [CommandOption("--lead-out")]
+        public bool LeadOut { get; set; }
     }
 
 #endregion

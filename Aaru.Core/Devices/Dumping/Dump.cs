@@ -71,6 +71,7 @@ public partial class Dump
     const           string                     PREGAP_MODULE_NAME = "Pregap calculator";
     const           string                     MODULE_NAME        = "Media dumping";
     static readonly TimeSpan                   _oneSecond         = 1.Seconds();
+    readonly        bool                       _absurdSpeed;
     readonly        bool                       _bypassWiiDecryption;
     readonly        bool                       _createGraph;
     readonly        bool                       _cureParanoia;
@@ -114,13 +115,13 @@ public partial class Dump
     readonly        Stopwatch                  _trimStopwatch;
     readonly        Stopwatch                  _writeStopwatch;
     bool                                       _aborted;
-    readonly bool                              _absurdSpeed;
     int                                        _correctSectors;
     AaruContext                                _ctx;   // Main database context
     Database.Models.Device                     _dbDev; // Device database entry
     bool                                       _dumpFirstTrackPregap;
     bool                                       _fixOffset;
     int                                        _fixedSectors;
+    readonly bool                              _leadout;
     uint                                       _maximumReadable; // Maximum number of sectors drive can read at once
     IMediaGraph                                _mediaGraph;
     bool                                       _missingTitleKeysDirty;
@@ -190,7 +191,7 @@ public partial class Dump
                 bool generateSubchannels, uint maximumReadable, bool useBufferedReads, bool storeEncrypted,
                 bool titleKeys, uint ignoreCdrRunOuts, bool createGraph, uint dimensions, bool paranoia,
                 bool cureParanoia, bool bypassWiiDecryption, bool startReverse, int errorRecovery, bool hyperSpeed,
-                bool absurdSpeed)
+                bool absurdSpeed, bool leadout)
     {
         _doResume              = doResume;
         _dev                   = dev;
@@ -239,6 +240,7 @@ public partial class Dump
         _errorRecovery         = errorRecovery;
         _hyperSpeed            = hyperSpeed;
         _absurdSpeed           = absurdSpeed;
+        _leadout               = leadout;
         _dumpStopwatch         = new Stopwatch();
         _sidecarStopwatch      = new Stopwatch();
         _speedStopwatch        = new Stopwatch();
