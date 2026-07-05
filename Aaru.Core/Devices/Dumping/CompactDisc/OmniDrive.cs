@@ -108,9 +108,47 @@ partial class Dump
         double elapsed               = 0;
         var    speedSectorCounter    = 0;
 
-        UpdateStatus?.Invoke("[slateblue1]Setting speed to [teal]8x[/] for scrambled reading.[/]");
 
-        _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
+        if(_hyperSpeed)
+        {
+            Track t = tracks.FirstOrDefault(t => t.StartSector <= _resume.NextBlock &&
+                                                 t.EndSector   >= _resume.NextBlock);
+
+            if(t is null)
+            {
+                UpdateStatus?.Invoke("[slateblue1]Setting speed to [teal]8x[/] for scrambled reading.[/]");
+
+                _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
+            }
+            else if(t.Type == TrackType.Audio)
+            {
+                UpdateStatus?.Invoke(Localization.Core.Setting_speed_to_8x_for_audio_reading);
+
+                _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
+            }
+            else
+            {
+                UpdateStatus?.Invoke(_speed == 0xFFFF
+                                         ? Localization.Core.Setting_speed_to_MAX_for_data_reading
+                                         : string.Format(Localization.Core.Setting_speed_to_0_x_for_data_reading,
+                                                         _speed));
+
+                _speed *= _speedMultiplier;
+
+                if(_speed is 0 or > 0xFFFF) _speed = 0xFFFF;
+
+                _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, (ushort)_speed, 0, _dev.Timeout, out _);
+            }
+        }
+        else
+        {
+            UpdateStatus?.Invoke("[slateblue1]Setting speed to [teal]8x[/] for scrambled reading.[/]");
+
+            _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
+        }
+
+        // Spin up
+        _dev.OmniDriveReadCd(out _, out _, (uint)_resume.NextBlock, _maximumReadable, _dev.Timeout, out _);
 
         for(ulong i = _resume.NextBlock; (long)i <= lastSector; i += blocksToRead)
         {
@@ -161,7 +199,32 @@ partial class Dump
 
             if(speedSectorCounter > 1000)
             {
-                _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
+                if(_hyperSpeed)
+                {
+                    Track t = tracks.FirstOrDefault(t => t.StartSector <= _resume.NextBlock &&
+                                                         t.EndSector   >= _resume.NextBlock);
+
+                    if(t is null || t.Type == TrackType.Audio)
+                        _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
+                    else
+                    {
+                        if(_speed is 0 or > 0xFFFF) _speed = 0xFFFF;
+
+                        _dev.SetCdSpeed(out _,
+                                        RotationalControl.ClvAndImpureCav,
+                                        (ushort)_speed,
+                                        0,
+                                        _dev.Timeout,
+                                        out _);
+                    }
+                }
+                else
+                {
+                    UpdateStatus?.Invoke("[slateblue1]Setting speed to [teal]8x[/] for scrambled reading.[/]");
+
+                    _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
+                }
+
                 speedSectorCounter = 0;
             }
             else

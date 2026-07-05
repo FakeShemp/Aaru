@@ -119,6 +119,7 @@ public partial class Dump
     bool                                       _dumpFirstTrackPregap;
     bool                                       _fixOffset;
     int                                        _fixedSectors;
+    readonly bool                              _hyperSpeed;
     uint                                       _maximumReadable; // Maximum number of sectors drive can read at once
     IMediaGraph                                _mediaGraph;
     bool                                       _missingTitleKeysDirty;
@@ -187,7 +188,7 @@ public partial class Dump
                 bool fixSubchannel, bool fixSubchannelCrc, bool skipCdireadyHole, ErrorLog errorLog,
                 bool generateSubchannels, uint maximumReadable, bool useBufferedReads, bool storeEncrypted,
                 bool titleKeys, uint ignoreCdrRunOuts, bool createGraph, uint dimensions, bool paranoia,
-                bool cureParanoia, bool bypassWiiDecryption, bool startReverse, int errorRecovery)
+                bool cureParanoia, bool bypassWiiDecryption, bool startReverse, int errorRecovery, bool hyperSpeed)
     {
         _doResume              = doResume;
         _dev                   = dev;
@@ -234,6 +235,7 @@ public partial class Dump
         _bypassWiiDecryption   = bypassWiiDecryption;
         _startReverse          = startReverse;
         _errorRecovery         = errorRecovery;
+        _hyperSpeed            = hyperSpeed;
         _dumpStopwatch         = new Stopwatch();
         _sidecarStopwatch      = new Stopwatch();
         _speedStopwatch        = new Stopwatch();

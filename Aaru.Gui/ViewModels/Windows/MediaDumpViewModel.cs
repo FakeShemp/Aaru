@@ -763,7 +763,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                            CureParanoia,
                            BypassWiiDecryption,
                            false,
-                           0);
+                           0,
+                           false);
 
         new Thread(DoWork).Start();
     }
