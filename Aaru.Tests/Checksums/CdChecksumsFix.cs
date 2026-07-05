@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System;
+using System.IO;
 using Aaru.Checksums;
 using FluentAssertions;
 using NUnit.Framework;
@@ -421,6 +422,46 @@ public class CdChecksumsFix
     }
 
     [Test]
+    public void Mode1TwoBytesInSamePRowCanBeFixed()
+    {
+        RequirePreparedSector(Mode1Sector, nameof(Mode1Sector));
+
+        var sector = new byte[2352];
+        Array.Copy(Mode1Sector, sector, sector.Length);
+        CorruptOffsets(sector, 0x62, 0xB8);
+
+        CdChecksums.CheckCdSector(sector).Should().BeFalse();
+
+        SectorFixResult result = CdChecksums.FixSector(sector);
+
+        result.Should().Be(SectorFixResult.Fixed);
+        CdChecksums.CheckCdSector(sector).Should().BeTrue();
+        sector.Should().BeEquivalentTo(Mode1Sector);
+    }
+
+    [Test]
+    public void FailingSectorCanBeFixedWithC2Pointers()
+    {
+        string failingPath = Path.Combine(Consts.TestFilesRoot, "Checksum test files", "failingsector.bin");
+        string workingPath = Path.Combine(Consts.TestFilesRoot, "Checksum test files", "workingsector.bin");
+
+        if(!File.Exists(failingPath) || !File.Exists(workingPath))
+            Assert.Ignore("External sector fixtures are not present.");
+
+        byte[] sector     = File.ReadAllBytes(failingPath);
+        byte[] working    = File.ReadAllBytes(workingPath);
+        byte[] c2Pointers = BuildC2PointersFromDifferences(sector, working);
+
+        CdChecksums.CheckCdSector(sector).Should().BeFalse();
+
+        SectorFixResult result = CdChecksums.FixSector(sector, c2Pointers);
+
+        result.Should().Be(SectorFixResult.Fixed);
+        CdChecksums.CheckCdSector(sector).Should().BeTrue();
+        sector.Should().BeEquivalentTo(working);
+    }
+
+    [Test]
     public void Mode2Form1HeavyCorruptionCanStillBeFixed()
     {
         RequirePreparedSector(Mode2Form1Sector, nameof(Mode2Form1Sector));
@@ -458,6 +499,20 @@ public class CdChecksumsFix
     static void CorruptOffsets(byte[] sector, params int[] offsets)
     {
         for(var i = 0; i < offsets.Length; i++) sector[offsets[i]] ^= (byte)(0x11 << (i & 3));
+    }
+
+    static byte[] BuildC2PointersFromDifferences(byte[] sector, byte[] fixedSector)
+    {
+        var c2Pointers = new byte[294];
+
+        for(var i = 0; i < sector.Length; i++)
+        {
+            if(sector[i] == fixedSector[i]) continue;
+
+            c2Pointers[i / 8] |= (byte)(0x80 >> (i & 7));
+        }
+
+        return c2Pointers;
     }
 
     static void RequirePreparedSector(byte[] sector, string name)

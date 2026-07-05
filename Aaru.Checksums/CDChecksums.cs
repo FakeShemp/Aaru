@@ -38,7 +38,7 @@ using Aaru.Logging;
 
 namespace Aaru.Checksums;
 
-/// <summary>Result of a <see cref="CdChecksums.FixSector" /> operation.</summary>
+/// <summary>Result of a <see cref="CdChecksums.FixSector(byte[])" /> operation.</summary>
 public enum SectorFixResult
 {
     /// <summary>Input is invalid or the sector type has no repairable ECC.</summary>
@@ -54,12 +54,14 @@ public enum SectorFixResult
 /// <summary>Implements ReedSolomon and CRC32 algorithms as used by CD-ROM</summary>
 public static class CdChecksums
 {
-    const  string                             MODULE_NAME = "CD checksums";
-    static byte[]                             _eccFTable;
-    static byte[]                             _eccBTable;
-    static uint[]                             _edcTable;
-    static Dictionary<uint, EccSyndromeMatch> _eccPSyndromeTable;
-    static Dictionary<uint, EccSyndromeMatch> _eccQSyndromeTable;
+    const  string MODULE_NAME = "CD checksums";
+    static byte[] _eccFTable;
+    static byte[] _eccBTable;
+    static uint[] _edcTable;
+    static byte[] _gfExp;       // α^k for k=0..254, length 256 (_gfExp[255] wraps to _gfExp[0])
+    static byte[] _gfLog;       // log_α(v) for v=1..255; _gfLog[0] unused
+    static byte[] _eccPWeights; // H_P column weights: α^(25−pos) for pos=0..25
+    static byte[] _eccQWeights; // H_Q column weights: α^(44−pos) for pos=0..44
 
     /// <summary>Checks the EDC and ECC of a CD sector</summary>
     /// <param name="buffer">CD sector</param>
@@ -129,12 +131,7 @@ public static class CdChecksums
 
     static void EccInit()
     {
-        if(_eccFTable         != null &&
-           _eccBTable         != null &&
-           _edcTable          != null &&
-           _eccPSyndromeTable != null &&
-           _eccQSyndromeTable != null)
-            return;
+        if(_eccFTable != null && _eccBTable != null && _edcTable != null && _gfExp != null) return;
 
         _eccFTable = new byte[256];
         _eccBTable = new byte[256];
@@ -152,42 +149,27 @@ public static class CdChecksums
             _edcTable[i] = edc;
         }
 
-        _eccPSyndromeTable = BuildSyndromeTable(24);
-        _eccQSyndromeTable = BuildSyndromeTable(43);
-    }
+        // GF(2^8) log/exp tables using primitive element α=2 and polynomial x^8+x^4+x^3+x^2+1
+        // as specified in ECMA-130 Annex A section A.3.
+        _gfExp    = new byte[256];
+        _gfLog    = new byte[256];
+        _gfExp[0] = 1;
 
-    static Dictionary<uint, EccSyndromeMatch> BuildSyndromeTable(int minorCount)
-    {
-        Dictionary<uint, EccSyndromeMatch> table = new();
-        var                                row   = new byte[minorCount];
+        for(var i = 1; i < 255; i++) _gfExp[i] = _eccFTable[_gfExp[i - 1]];
 
-        for(var position = 0; position < minorCount + 2; position++)
-        {
-            for(var error = 1; error < 256; error++)
-            {
-                Array.Clear(row, 0, row.Length);
+        _gfExp[255] = _gfExp[0];
 
-                byte storedA = 0;
-                byte storedB = 0;
+        for(var i = 0; i < 255; i++) _gfLog[_gfExp[i]] = (byte)i;
 
-                if(position < minorCount)
-                    row[position] = (byte)error;
-                else if(position == minorCount)
-                    storedA = (byte)error;
-                else
-                    storedB = (byte)error;
+        // H_P column weights: weights[pos] = α^(25−pos) for pos=0..25 (ECMA-130 Annex A, H_P matrix).
+        _eccPWeights = new byte[26];
 
-                ComputeEcc(row, out byte calcA, out byte calcB);
+        for(var pos = 0; pos < 26; pos++) _eccPWeights[pos] = _gfExp[(255 + 25 - pos) % 255];
 
-                var syndrome = (uint)((calcA ^ storedA) << 8 | calcB ^ storedB);
+        // H_Q column weights: weights[pos] = α^(44−pos) for pos=0..44 (ECMA-130 Annex A, H_Q matrix).
+        _eccQWeights = new byte[45];
 
-                if(syndrome == 0 || table.ContainsKey(syndrome)) continue;
-
-                table.Add(syndrome, new EccSyndromeMatch(position, (byte)error));
-            }
-        }
-
-        return table;
+        for(var pos = 0; pos < 45; pos++) _eccQWeights[pos] = _gfExp[(255 + 44 - pos) % 255];
     }
 
     static void ComputeEcc(IReadOnlyList<byte> data, out byte eccA, out byte eccB)
@@ -491,7 +473,59 @@ public static class CdChecksums
     ///     <see cref="SectorFixResult.CouldNotFix" /> if it had uncorrectable errors, and
     ///     <see cref="SectorFixResult.NotApplicable" /> if the input is invalid or the sector type has no repairable ECC.
     /// </returns>
-    public static SectorFixResult FixSector(byte[] buffer)
+    public static SectorFixResult FixSector(byte[] buffer) => FixSector(buffer, (bool[])null);
+
+    /// <summary>
+    ///     Attempts to repair a raw 2352-byte data sector using stored ECC-P and ECC-Q values and MMC C2 pointers.
+    /// </summary>
+    /// <param name="buffer">Raw 2352-byte sector.</param>
+    /// <param name="c2Pointers">294-byte C2 pointer map, or 296-byte C2 pointer map plus block error bytes.</param>
+    /// <returns>
+    ///     <see cref="SectorFixResult.Correct" /> if the sector was already correct,
+    ///     <see cref="SectorFixResult.Fixed" /> if it had errors that were successfully corrected,
+    ///     <see cref="SectorFixResult.CouldNotFix" /> if it had uncorrectable errors, and
+    ///     <see cref="SectorFixResult.NotApplicable" /> if the input is invalid or the sector type has no repairable ECC.
+    /// </returns>
+    public static SectorFixResult FixSector(byte[] buffer, byte[] c2Pointers)
+    {
+        if(buffer is not { Length: 2352 }) return SectorFixResult.NotApplicable;
+
+        if(c2Pointers == null) return FixSector(buffer, (bool[])null);
+
+        if(c2Pointers.Length != 294 && c2Pointers.Length != 296) return SectorFixResult.NotApplicable;
+
+        var original = new byte[buffer.Length];
+        Array.Copy(buffer, original, buffer.Length);
+
+        for(var bitOrder = 0; bitOrder < 2; bitOrder++)
+        {
+            Array.Copy(original, buffer, buffer.Length);
+
+            bool[]          erasureMap = CreateErasureMapFromC2Pointers(c2Pointers, bitOrder == 0);
+            SectorFixResult result     = FixSector(buffer, erasureMap);
+
+            if(result == SectorFixResult.CouldNotFix) continue;
+
+            return result == SectorFixResult.Correct && SectorChanged(original, buffer)
+                       ? SectorFixResult.Fixed
+                       : result;
+        }
+
+        Array.Copy(original, buffer, buffer.Length);
+
+        return SectorFixResult.CouldNotFix;
+    }
+
+    static bool SectorChanged(byte[] original, byte[] current)
+    {
+        for(var i = 0; i < original.Length; i++)
+            if(original[i] != current[i])
+                return true;
+
+        return false;
+    }
+
+    static SectorFixResult FixSector(byte[] buffer, bool[] erasureMap)
     {
         if(buffer is not { Length: 2352 }) return SectorFixResult.NotApplicable;
 
@@ -511,16 +545,38 @@ public static class CdChecksums
            buffer[0x00B] != 0x00)
             return SectorFixResult.NotApplicable;
 
-        return (buffer[0x00F] & 0x03) switch
-               {
-                   0x01                                     => FixMode1Sector(buffer),
-                   0x02 when (buffer[0x012] & 0x20) == 0x20 => SectorFixResult.NotApplicable,
-                   0x02                                     => FixMode2Form1Sector(buffer),
-                   _                                        => SectorFixResult.NotApplicable
-               };
+        var original = new byte[buffer.Length];
+        Array.Copy(buffer, original, buffer.Length);
+
+        SectorFixResult result = (buffer[0x00F] & 0x03) switch
+                                 {
+                                     0x01 => FixMode1Sector(buffer, erasureMap),
+                                     0x02 when (buffer[0x012] & 0x20) == 0x20 => SectorFixResult.NotApplicable,
+                                     0x02 => FixMode2Form1Sector(buffer, erasureMap),
+                                     _ => SectorFixResult.NotApplicable
+                                 };
+
+        return result;
     }
 
-    static SectorFixResult FixMode1Sector(byte[] sector)
+    static bool[] CreateErasureMapFromC2Pointers(byte[] c2Pointers, bool msbFirst)
+    {
+        var erasureMap = new bool[2352];
+
+        for(var i = 0; i < 294; i++)
+        {
+            for(var bit = 0; bit < 8; bit++)
+            {
+                int mask = msbFirst ? 0x80 >> bit : 1 << bit;
+
+                if((c2Pointers[i] & mask) != 0) erasureMap[i * 8 + bit] = true;
+            }
+        }
+
+        return erasureMap;
+    }
+
+    static SectorFixResult FixMode1Sector(byte[] sector, bool[] erasureMap)
     {
         bool? status = CheckCdSectorChannel(sector, out bool? correctEccP, out bool? correctEccQ, out bool? _);
 
@@ -540,10 +596,10 @@ public static class CdChecksums
         int[] pMap = CreateOffsetMap(2064, 0x0C, 0x10, false);
         int[] qMap = CreateOffsetMap(2236, 0x0C, 0x10, false);
 
-        return FixSectorWithEcc(sector, pMap, qMap, 0x81C, 0x8C8, 0, 0x810, 0x810);
+        return FixSectorWithEcc(sector, pMap, qMap, 0x81C, 0x8C8, 0, 0x810, 0x810, erasureMap);
     }
 
-    static SectorFixResult FixMode2Form1Sector(byte[] sector)
+    static SectorFixResult FixMode2Form1Sector(byte[] sector, bool[] erasureMap)
     {
         bool? status = CheckCdSectorChannel(sector, out bool? correctEccP, out bool? correctEccQ, out bool? _);
 
@@ -561,16 +617,154 @@ public static class CdChecksums
         int[] pMap = CreateOffsetMap(2064, 0, 0x10, true);
         int[] qMap = CreateOffsetMap(2236, 0, 0x10, true);
 
-        return FixSectorWithEcc(sector, pMap, qMap, 0x81C, 0x8C8, 0x10, 0x808, 0x818);
+        return FixSectorWithEcc(sector, pMap, qMap, 0x81C, 0x8C8, 0x10, 0x808, 0x818, erasureMap);
     }
 
     static SectorFixResult FixSectorWithEcc(byte[] sector, int[] pMap, int[] qMap, int eccPOffset, int eccQOffset,
-                                            int    edcSourceOffset, int edcSize, int edcOffset)
+                                            int    edcSourceOffset, int edcSize, int edcOffset, bool[] erasureMap)
     {
-        for(var pass = 0; pass < 16; pass++)
+        int[][] pRows = BuildRowOffsets(pMap, 86, 24, 2,  86);
+        int[][] qRows = BuildRowOffsets(qMap, 52, 43, 86, 88);
+
+        // Reverse maps: sector byte offset → (row index, position in row) for each code.
+        // Used by TryFixEccValidated to require cross-code locator agreement before applying a correction.
+        var pByteToRow = new int[0x930];
+        var pByteToPos = new int[0x930];
+        var qByteToRow = new int[0x930];
+        var qByteToPos = new int[0x930];
+
+        for(var i = 0; i < 0x930; i++)
         {
-            bool corrected = TryFixEcc(sector, pMap, eccPOffset, 86, 24, 2, 86, _eccPSyndromeTable);
-            corrected = TryFixEcc(sector, qMap, eccQOffset, 52, 43, 86, 88, _eccQSyndromeTable) || corrected;
+            pByteToRow[i] = -1;
+            qByteToRow[i] = -1;
+        }
+
+        for(var maj = 0; maj < 86; maj++)
+        {
+            for(var min = 0; min < 24; min++)
+                if(pRows[maj][min] >= 0)
+                {
+                    pByteToRow[pRows[maj][min]] = maj;
+                    pByteToPos[pRows[maj][min]] = min;
+                }
+        }
+
+        for(var maj = 0; maj < 52; maj++)
+        {
+            for(var min = 0; min < 43; min++)
+                if(qRows[maj][min] >= 0)
+                {
+                    qByteToRow[qRows[maj][min]] = maj;
+                    qByteToPos[qRows[maj][min]] = min;
+                }
+        }
+
+        // Also map parity byte offsets into the reverse maps.
+        for(var maj = 0; maj < 86; maj++)
+        {
+            int pb1 = eccPOffset + maj, pb2 = eccPOffset + 86 + maj;
+
+            if(pb1 < 0x930)
+            {
+                pByteToRow[pb1] = maj;
+                pByteToPos[pb1] = 24;
+            }
+
+            if(pb2 < 0x930)
+            {
+                pByteToRow[pb2] = maj;
+                pByteToPos[pb2] = 25;
+            }
+
+            if(qByteToRow[pb1] < 0)
+            {
+                /* P-parity byte not in Q-row data range — no entry */
+            }
+        }
+
+        for(var maj = 0; maj < 52; maj++)
+        {
+            int qb1 = eccQOffset + maj, qb2 = eccQOffset + 52 + maj;
+
+            if(qb1 < 0x930)
+            {
+                qByteToRow[qb1] = maj;
+                qByteToPos[qb1] = 43;
+            }
+
+            if(qb2 < 0x930)
+            {
+                qByteToRow[qb2] = maj;
+                qByteToPos[qb2] = 44;
+            }
+        }
+
+        if(erasureMap != null)
+        {
+            SectorFixResult erasureResult =
+                FixSectorWithErasures(sector, pRows, qRows, eccPOffset, eccQOffset, erasureMap);
+
+            if(erasureResult != SectorFixResult.CouldNotFix) return erasureResult;
+        }
+
+        for(var pass = 0; pass < 64; pass++)
+        {
+            uint[] pSyndromes = ComputeRowSyndromes(sector, pRows, eccPOffset, 86, 24, _eccPWeights);
+            uint[] qSyndromes = ComputeRowSyndromes(sector, qRows, eccQOffset, 52, 43, _eccQWeights);
+            int    failedRows = CountFailedRows(pSyndromes) + CountFailedRows(qSyndromes);
+            var    previous   = new byte[sector.Length];
+            Array.Copy(sector, previous, sector.Length);
+
+            // Fix P-rows (skip if Q's 1-error locator points elsewhere), then undo newly-broken Q-rows.
+            bool corrected = TryFixEccValidated(sector,
+                                                pRows,
+                                                eccPOffset,
+                                                86,
+                                                24,
+                                                _eccPWeights,
+                                                qRows,
+                                                eccQOffset,
+                                                52,
+                                                43,
+                                                _eccQWeights,
+                                                qByteToRow,
+                                                qByteToPos);
+
+            RevertNewlyFailingRows(sector, qRows, eccQOffset, 52, 43, _eccQWeights, qSyndromes);
+
+            // Recompute P syndromes after P-pass + Q-reverts — these reflect which P-rows are now correct.
+            uint[] pSyndromesAfterP = ComputeRowSyndromes(sector, pRows, eccPOffset, 86, 24, _eccPWeights);
+
+            // Fix Q-rows (skip if P's 1-error locator points elsewhere), then undo newly-broken P-rows.
+            corrected = TryFixEccValidated(sector,
+                                           qRows,
+                                           eccQOffset,
+                                           52,
+                                           43,
+                                           _eccQWeights,
+                                           pRows,
+                                           eccPOffset,
+                                           86,
+                                           24,
+                                           _eccPWeights,
+                                           pByteToRow,
+                                           pByteToPos) ||
+                        corrected;
+
+            RevertNewlyFailingRows(sector, pRows, eccPOffset, 86, 24, _eccPWeights, pSyndromesAfterP);
+
+            if(corrected)
+            {
+                uint[] correctedPSyndromes = ComputeRowSyndromes(sector, pRows, eccPOffset, 86, 24, _eccPWeights);
+                uint[] correctedQSyndromes = ComputeRowSyndromes(sector, qRows, eccQOffset, 52, 43, _eccQWeights);
+                int correctedFailedRows = CountFailedRows(correctedPSyndromes) + CountFailedRows(correctedQSyndromes);
+
+                if(correctedFailedRows >= failedRows)
+                {
+                    Array.Copy(previous, sector, sector.Length);
+                    corrected = false;
+                }
+            }
 
             bool? status =
                 CheckCdSectorChannel(sector, out bool? correctEccP, out bool? correctEccQ, out bool? correctEdc);
@@ -587,52 +781,626 @@ public static class CdChecksums
             if(!corrected || status == null) break;
         }
 
+        // Single-error correction stalled — try 2-error correction with cross-code validation.
+        for(var brutePass = 0; brutePass < 64; brutePass++)
+        {
+            bool bruteFixed = TryFix2ErrorRows(sector,
+                                               pRows,
+                                               86,
+                                               24,
+                                               qRows,
+                                               52,
+                                               43,
+                                               eccPOffset,
+                                               eccQOffset,
+                                               _eccPWeights,
+                                               _eccQWeights);
+
+            bruteFixed |= TryFix2ErrorRows(sector,
+                                           qRows,
+                                           52,
+                                           43,
+                                           pRows,
+                                           86,
+                                           24,
+                                           eccQOffset,
+                                           eccPOffset,
+                                           _eccQWeights,
+                                           _eccPWeights);
+
+            if(!bruteFixed) break;
+
+            // Re-run single-error correction after each 2-error pass, with the same
+            // convergence guard as the outer loop so that wrong corrections (fake locators
+            // from still-multi-error rows) are reverted and do not accumulate.
+            for(var synPass = 0; synPass < 64; synPass++)
+            {
+                uint[] pSyn2Before   = ComputeRowSyndromes(sector, pRows, eccPOffset, 86, 24, _eccPWeights);
+                uint[] qSyn2Before   = ComputeRowSyndromes(sector, qRows, eccQOffset, 52, 43, _eccQWeights);
+                int    failed2Before = CountFailedRows(pSyn2Before) + CountFailedRows(qSyn2Before);
+                var    previous2     = new byte[sector.Length];
+                Array.Copy(sector, previous2, sector.Length);
+
+                bool corrected2 = TryFixEcc(sector, pRows, eccPOffset, 86, 24, _eccPWeights);
+                RevertNewlyFailingRows(sector, qRows, eccQOffset, 52, 43, _eccQWeights, qSyn2Before);
+                uint[] pSyn2AfterP = ComputeRowSyndromes(sector, pRows, eccPOffset, 86, 24, _eccPWeights);
+                corrected2 = TryFixEcc(sector, qRows, eccQOffset, 52, 43, _eccQWeights) || corrected2;
+                RevertNewlyFailingRows(sector, pRows, eccPOffset, 86, 24, _eccPWeights, pSyn2AfterP);
+
+                if(corrected2)
+                {
+                    uint[] pSyn2After   = ComputeRowSyndromes(sector, pRows, eccPOffset, 86, 24, _eccPWeights);
+                    uint[] qSyn2After   = ComputeRowSyndromes(sector, qRows, eccQOffset, 52, 43, _eccQWeights);
+                    int    failed2After = CountFailedRows(pSyn2After) + CountFailedRows(qSyn2After);
+
+                    if(failed2After >= failed2Before)
+                    {
+                        Array.Copy(previous2, sector, sector.Length);
+
+                        break;
+                    }
+                }
+
+                CheckCdSectorChannel(sector, out bool? correctEccP2, out bool? correctEccQ2, out bool? correctEdc2);
+
+                if(correctEccP2 == true && correctEccQ2 == true)
+                {
+                    if(correctEdc2 != true) UpdateEdc(sector, edcSourceOffset, edcSize, edcOffset);
+
+                    return CheckCdSectorChannel(sector, out _, out _, out _) == true
+                               ? SectorFixResult.Fixed
+                               : SectorFixResult.CouldNotFix;
+                }
+
+                if(!corrected2) break;
+            }
+        }
+
         return SectorFixResult.CouldNotFix;
     }
 
-    static bool TryFixEcc(byte[] sector, int[] offsetMap, int eccOffset, int majorCount, int minorCount, int majorMult,
-                          int    minorInc, Dictionary<uint, EccSyndromeMatch> syndromeTable)
+    /// <summary>
+    ///     2-error correction on stuck code rows using cross-code syndrome validation.
+    ///     For each row with a non-zero ECMA syndrome (S₀,S₁), enumerates all C(n,2) position pairs (p1,p2)
+    ///     and solves for (e1,e2) in O(1) via the ECMA-130 Annex A H matrix formula:
+    ///     e1 = (S₁ ⊕ w2·S₀)/(w1 ⊕ w2),  e2 = S₀ ⊕ e1  where w_i = fixWeights[p_i].
+    ///     All pairs are tried; the pair that minimises the cross-code failure count is accepted,
+    ///     provided it does not increase that count (Q must not get worse when fixing a P-row and
+    ///     vice-versa).  Accepting the globally best pair prevents false-positive corrections that
+    ///     arise when a correct fix reduces 2-error cross-code rows to 1-error (still failing, so
+    ///     a strict-decrease test would wrongly reject it).
+    /// </summary>
+    static bool TryFix2ErrorRows(byte[]  sector,         int[][] fixRows,         int fixMajorCount, int fixMinorCount,
+                                 int[][] checkRows,      int     checkMajorCount, int checkMinorCount, int fixEccOffset,
+                                 int     checkEccOffset, byte[]  fixWeights,      byte[] checkWeights)
     {
-        var corrected = false;
-        int size      = majorCount * minorCount;
+        int fixPositionCount = fixMinorCount + 2;
+        var anyFixed         = false;
+
+        for(var major = 0; major < fixMajorCount; major++)
+        {
+            (byte s0, byte s1) = ComputeEcmaRowSyndrome(sector,
+                                                        fixRows[major],
+                                                        fixEccOffset,
+                                                        major,
+                                                        fixMajorCount,
+                                                        fixMinorCount,
+                                                        fixWeights);
+
+            if(s0 == 0 && s1 == 0) continue;
+
+            int checkFailedBefore =
+                CountFailedRows(ComputeRowSyndromes(sector,
+                                                    checkRows,
+                                                    checkEccOffset,
+                                                    checkMajorCount,
+                                                    checkMinorCount,
+                                                    checkWeights));
+
+            // Find the pair (p1, p2) that minimises cross-code failures after correction.
+            int  bestCheckFailed = checkFailedBefore + 1; // sentinel: must be ≤ before to accept
+            int  bestP1          = -1;
+            int  bestP2          = -1;
+            byte bestE1          = 0;
+            byte bestE2          = 0;
+
+            for(var p1 = 0; p1 < fixPositionCount; p1++)
+            {
+                for(int p2 = p1 + 1; p2 < fixPositionCount; p2++)
+                {
+                    byte w1    = fixWeights[p1];
+                    byte w2    = fixWeights[p2];
+                    var  denom = (byte)(w1 ^ w2);
+
+                    if(denom == 0) continue;
+
+                    byte e1 = GfDiv((byte)(s1 ^ GfMul(w2, s0)), denom);
+                    var  e2 = (byte)(s0 ^ e1);
+
+                    if(e1 == 0 && e2 == 0) continue;
+
+                    ApplyEccRowError(sector, fixRows[major], fixEccOffset, major, fixMajorCount, fixMinorCount, p1, e1);
+                    ApplyEccRowError(sector, fixRows[major], fixEccOffset, major, fixMajorCount, fixMinorCount, p2, e2);
+
+                    int checkFailedAfter =
+                        CountFailedRows(ComputeRowSyndromes(sector,
+                                                            checkRows,
+                                                            checkEccOffset,
+                                                            checkMajorCount,
+                                                            checkMinorCount,
+                                                            checkWeights));
+
+                    ApplyEccRowError(sector, fixRows[major], fixEccOffset, major, fixMajorCount, fixMinorCount, p1, e1);
+                    ApplyEccRowError(sector, fixRows[major], fixEccOffset, major, fixMajorCount, fixMinorCount, p2, e2);
+
+                    if(checkFailedAfter < bestCheckFailed)
+                    {
+                        bestCheckFailed = checkFailedAfter;
+                        bestP1          = p1;
+                        bestP2          = p2;
+                        bestE1          = e1;
+                        bestE2          = e2;
+                    }
+                }
+            }
+
+            // Accept only if the best candidate strictly decreases cross-code failures.
+            if(bestP1 >= 0 && bestCheckFailed < checkFailedBefore)
+            {
+                ApplyEccRowError(sector,
+                                 fixRows[major],
+                                 fixEccOffset,
+                                 major,
+                                 fixMajorCount,
+                                 fixMinorCount,
+                                 bestP1,
+                                 bestE1);
+
+                ApplyEccRowError(sector,
+                                 fixRows[major],
+                                 fixEccOffset,
+                                 major,
+                                 fixMajorCount,
+                                 fixMinorCount,
+                                 bestP2,
+                                 bestE2);
+
+                anyFixed = true;
+            }
+        }
+
+        return anyFixed;
+    }
+
+    static int[][] BuildRowOffsets(int[] offsetMap, int majorCount, int minorCount, int majorMult, int minorInc)
+    {
+        var rows = new int[majorCount][];
+        int size = majorCount * minorCount;
 
         for(var major = 0; major < majorCount; major++)
         {
-            int index      = (major >> 1) * majorMult + (major & 1);
-            var row        = new byte[minorCount];
-            var rowOffsets = new int[minorCount];
+            int index = (major >> 1) * majorMult + (major & 1);
+            rows[major] = new int[minorCount];
 
             for(var minor = 0; minor < minorCount; minor++)
             {
-                int offset = offsetMap[index];
-                rowOffsets[minor] =  offset;
-                row[minor]        =  offset >= 0 ? sector[offset] : (byte)0;
-                index             += minorInc;
+                rows[major][minor] =  offsetMap[index];
+                index              += minorInc;
 
                 if(index >= size) index -= size;
             }
+        }
 
-            ComputeEcc(row, out byte calcA, out byte calcB);
+        return rows;
+    }
 
-            byte storedA  = sector[eccOffset + major];
-            byte storedB  = sector[eccOffset + majorCount + major];
-            var  syndrome = (uint)((calcA ^ storedA) << 8 | calcB ^ storedB);
+    static SectorFixResult FixSectorWithErasures(byte[] sector,     int[][] pRows, int[][] qRows, int eccPOffset,
+                                                 int    eccQOffset, bool[]  erasureMap)
+    {
+        for(var pass = 0; pass < 64; pass++)
+        {
+            bool corrected = TryFixEccErasures(sector, pRows, eccPOffset, 86, 24, erasureMap, _eccPWeights);
 
-            if(syndrome == 0 || !syndromeTable.TryGetValue(syndrome, out EccSyndromeMatch match)) continue;
+            corrected = TryFixEccErasures(sector, qRows, eccQOffset, 52, 43, erasureMap, _eccQWeights) || corrected;
 
-            if(match.Position < minorCount)
+            bool? status =
+                CheckCdSectorChannel(sector, out bool? correctEccP, out bool? correctEccQ, out bool? correctEdc);
+
+            if(correctEccP == true && correctEccQ == true)
             {
-                int offset = rowOffsets[match.Position];
+                if(correctEdc == true) return SectorFixResult.Fixed;
 
-                if(offset < 0) continue;
-
-                sector[offset] ^= match.Error;
+                return SectorFixResult.CouldNotFix;
             }
-            else if(match.Position == minorCount)
-                sector[eccOffset + major] ^= match.Error;
-            else
-                sector[eccOffset + majorCount + major] ^= match.Error;
 
+            if(!corrected || status == null) break;
+        }
+
+        return SectorFixResult.CouldNotFix;
+    }
+
+    static bool TryFixEccErasures(byte[] sector,     int[][] rows, int eccOffset, int majorCount, int minorCount,
+                                  bool[] erasureMap, byte[]  weights)
+    {
+        var corrected = false;
+
+        for(var major = 0; major < majorCount; major++)
+        {
+            List<int> positions = GetKnownErasurePositions(rows[major],
+                                                           eccOffset,
+                                                           major,
+                                                           majorCount,
+                                                           minorCount,
+                                                           erasureMap);
+
+            if(positions.Count == 0 || positions.Count > 2) continue;
+
+            (byte s0, byte s1) =
+                ComputeEcmaRowSyndrome(sector, rows[major], eccOffset, major, majorCount, minorCount, weights);
+
+            if(s0 == 0 && s1 == 0)
+            {
+                ClearKnownErasurePositions(rows[major],
+                                           eccOffset,
+                                           major,
+                                           majorCount,
+                                           minorCount,
+                                           positions,
+                                           erasureMap);
+
+                continue;
+            }
+
+            if(positions.Count == 1)
+            {
+                if(!TrySolveOneErasureSyndrome(s0, s1, positions[0], weights, out byte error)) continue;
+
+                ApplyEccRowError(sector, rows[major], eccOffset, major, majorCount, minorCount, positions[0], error);
+
+                ClearKnownErasurePosition(rows[major],
+                                          eccOffset,
+                                          major,
+                                          majorCount,
+                                          minorCount,
+                                          positions[0],
+                                          erasureMap);
+
+                corrected = true;
+
+                continue;
+            }
+
+            if(!TrySolveTwoErasureSyndrome(s0,
+                                           s1,
+                                           positions[0],
+                                           positions[1],
+                                           weights,
+                                           out byte error1,
+                                           out byte error2))
+                continue;
+
+            ApplyEccRowError(sector, rows[major], eccOffset, major, majorCount, minorCount, positions[0], error1);
+            ApplyEccRowError(sector, rows[major], eccOffset, major, majorCount, minorCount, positions[1], error2);
+            ClearKnownErasurePositions(rows[major], eccOffset, major, majorCount, minorCount, positions, erasureMap);
+
+            corrected = true;
+        }
+
+        return corrected;
+    }
+
+    // GF(2^8) multiply using log/exp tables; returns 0 if either operand is 0.
+    static byte GfMul(byte a, byte b) => a == 0 || b == 0 ? (byte)0 : _gfExp[(_gfLog[a] + _gfLog[b]) % 255];
+
+    // GF(2^8) divide a/b; returns 0 if a==0. b must be non-zero.
+    static byte GfDiv(byte a, byte b) => a == 0 ? (byte)0 : _gfExp[(255 + _gfLog[a] - _gfLog[b]) % 255];
+
+    /// <summary>
+    ///     Computes the two ECMA-130 Annex A syndromes (S₀, S₁) for one ECC row.
+    ///     S₀ = XOR of all codeword bytes (H row 1 = all-ones).
+    ///     S₁ = Σ weights[pos]·byte[pos] (H row 2 = α-weighted sum).
+    ///     Both are zero for a correct codeword.  A single error e at position pos satisfies
+    ///     S₀=e and S₁=weights[pos]·e, giving pos=(n−1)−log_α(S₁/S₀).
+    /// </summary>
+    static (byte s0, byte s1) ComputeEcmaRowSyndrome(byte[] sector, int[] row, int eccOffset, int major, int majorCount,
+                                                     int    minorCount, byte[] weights)
+    {
+        byte s0 = 0, s1 = 0;
+
+        for(var pos = 0; pos < minorCount; pos++)
+        {
+            int offset = row[pos];
+
+            if(offset < 0) continue;
+            byte v = sector[offset];
+            s0 ^= v;
+            s1 ^= GfMul(weights[pos], v);
+        }
+
+        byte pa = sector[eccOffset + major];
+        s0 ^= pa;
+        s1 ^= GfMul(weights[minorCount], pa); // α^1 weight for first parity byte
+
+        byte pb = sector[eccOffset + majorCount + major];
+        s0 ^= pb;
+        s1 ^= pb; // α^0 = 1 weight for second parity byte
+
+        return (s0, s1);
+    }
+
+    static uint ComputeRowSyndrome(byte[] sector, int[] row, int eccOffset, int major, int majorCount, int minorCount,
+                                   byte[] weights)
+    {
+        (byte s0, byte s1) = ComputeEcmaRowSyndrome(sector, row, eccOffset, major, majorCount, minorCount, weights);
+
+        return (uint)(s0 << 8 | s1);
+    }
+
+    static List<int> GetKnownErasurePositions(int[]  row, int eccOffset, int major, int majorCount, int minorCount,
+                                              bool[] erasureMap)
+    {
+        List<int> positions = [];
+
+        for(var position = 0; position < minorCount + 2; position++)
+        {
+            int offset = GetEccRowPositionOffset(row, eccOffset, major, majorCount, minorCount, position);
+
+            if(offset >= 0 && erasureMap[offset]) positions.Add(position);
+        }
+
+        return positions;
+    }
+
+    static void ClearKnownErasurePositions(int[]     row, int eccOffset, int major, int majorCount, int minorCount,
+                                           List<int> positions, bool[] erasureMap)
+    {
+        for(var i = 0; i < positions.Count; i++)
+            ClearKnownErasurePosition(row, eccOffset, major, majorCount, minorCount, positions[i], erasureMap);
+    }
+
+    static void ClearKnownErasurePosition(int[] row,      int    eccOffset, int major, int majorCount, int minorCount,
+                                          int   position, bool[] erasureMap)
+    {
+        int offset = GetEccRowPositionOffset(row, eccOffset, major, majorCount, minorCount, position);
+
+        if(offset >= 0) erasureMap[offset] = false;
+    }
+
+    static uint[] ComputeRowSyndromes(byte[] sector, int[][] rows, int eccOffset, int majorCount, int minorCount,
+                                      byte[] weights)
+    {
+        var syndromes = new uint[majorCount];
+
+        for(var major = 0; major < majorCount; major++)
+            syndromes[major] =
+                ComputeRowSyndrome(sector, rows[major], eccOffset, major, majorCount, minorCount, weights);
+
+        return syndromes;
+    }
+
+    static int CountFailedRows(uint[] syndromes)
+    {
+        var count = 0;
+
+        for(var i = 0; i < syndromes.Length; i++)
+        {
+            if(syndromes[i] != 0) count++;
+        }
+
+        return count;
+    }
+
+    static int GetEccRowPositionOffset(int[] rowOffsets, int eccOffset, int major, int majorCount, int minorCount,
+                                       int   position)
+    {
+        if(position < minorCount) return rowOffsets[position];
+
+        return position == minorCount ? eccOffset + major : eccOffset + majorCount + major;
+    }
+
+    /// <summary>
+    ///     Solve for the single erasure error value from ECMA syndromes.
+    ///     From H·V=0 with one error e at position pos: S₀=e, S₁=weights[pos]·e.
+    ///     Verify consistency and return error = S₀.
+    /// </summary>
+    static bool TrySolveOneErasureSyndrome(byte s0, byte s1, int position, byte[] weights, out byte error)
+    {
+        error = 0;
+
+        if(s0 == 0) return false;
+
+        // Verify syndrome is consistent with a single error at this position.
+        if(GfMul(weights[position], s0) != s1) return false;
+
+        error = s0;
+
+        return true;
+    }
+
+    /// <summary>
+    ///     Solve for two erasure error values from ECMA syndromes using the direct GF formula.
+    ///     From H·V=0 with errors (e1,e2) at known positions (p1,p2):
+    ///     e1 = (S₁ ⊕ w2·S₀) / (w1 ⊕ w2),  e2 = S₀ ⊕ e1  where w_i = weights[p_i].
+    /// </summary>
+    static bool TrySolveTwoErasureSyndrome(byte     s0,     byte     s1, int position1, int position2, byte[] weights,
+                                           out byte error1, out byte error2)
+    {
+        error1 = 0;
+        error2 = 0;
+
+        byte w1    = weights[position1];
+        byte w2    = weights[position2];
+        var  denom = (byte)(w1 ^ w2);
+
+        if(denom == 0) return false;
+
+        error1 = GfDiv((byte)(s1 ^ GfMul(w2, s0)), denom);
+        error2 = (byte)(s0 ^ error1);
+
+        return true;
+    }
+
+    static void ApplyEccRowError(byte[] sector,     int[] rowOffsets, int  eccOffset, int major, int majorCount,
+                                 int    minorCount, int   position,   byte error)
+    {
+        int offset = GetEccRowPositionOffset(rowOffsets, eccOffset, major, majorCount, minorCount, position);
+
+        if(offset >= 0) sector[offset] ^= error;
+    }
+
+    /// <summary>
+    ///     For each row in <paramref name="rows" /> that had a zero syndrome in <paramref name="syndromesBefore" />
+    ///     (was correct) but now has a non-zero syndrome (broke), revertes the single error that was introduced.
+    ///     This catches wrong single-error corrections from <see cref="TryFixEcc" /> that applied a fake locator
+    ///     (derived from a multi-error row) at a byte that was previously clean, making the cross-code row fail.
+    ///     The syndrome of a newly-failing row that was clean before is guaranteed to be a 1-error syndrome because
+    ///     exactly one byte changed in that row (the fake correction), so the locator unambiguously identifies and
+    ///     reverts it.
+    /// </summary>
+    static void RevertNewlyFailingRows(byte[] sector,  int[][] rows, int eccOffset, int majorCount, int minorCount,
+                                       byte[] weights, uint[]  syndromesBefore)
+    {
+        int n = minorCount + 2;
+
+        for(var major = 0; major < majorCount; major++)
+        {
+            // Only care about rows that were passing (syndrome == 0) before the last fix pass.
+            if(syndromesBefore[major] != 0) continue;
+
+            (byte s0, byte s1) =
+                ComputeEcmaRowSyndrome(sector, rows[major], eccOffset, major, majorCount, minorCount, weights);
+
+            if(s0 == 0) continue; // still passing — no wrong correction here
+
+            // Row went from correct to failing: a wrong correction introduced exactly 1 error.
+            // Use the ECMA single-error locator to find and revert it.
+            byte locator = GfDiv(s1, s0);
+
+            if(locator == 0) continue;
+            int pos = n - 1 - _gfLog[locator];
+
+            if(pos < 0 || pos >= n) continue;
+
+            ApplyEccRowError(sector, rows[major], eccOffset, major, majorCount, minorCount, pos, s0);
+        }
+    }
+
+    /// <summary>
+    ///     Single-error correction with cross-code locator agreement validation.
+    ///     For each candidate correction: the fix-code locator gives position <c>b</c> and value <c>e</c>.
+    ///     The correction is accepted only if the check-code row containing <c>b</c> also has its
+    ///     1-error locator pointing to <c>b</c> (i.e., both codes independently identify the same byte as
+    ///     the single error).  This eliminates corrections at previously-correct bytes that happen to give
+    ///     a valid-looking fix-code locator from a multi-error row.
+    ///     When the check-code row has 2+ errors the locator does not point to <c>b</c>, so the correction
+    ///     is skipped; subsequent passes (after the check-code errors decrease) will accept it.
+    /// </summary>
+    static bool TryFixEccValidated(byte[] sector, int[][] rows, int eccOffset, int majorCount, int minorCount,
+                                   byte[] weights, int[][] checkRows, int checkEccOffset, int checkMajorCount,
+                                   int checkMinorCount, byte[] checkWeights, int[] byteToCheckRow, int[] byteToCheckPos)
+    {
+        var corrected = false;
+        int n         = minorCount      + 2;
+        int nCheck    = checkMinorCount + 2;
+
+        for(var major = 0; major < majorCount; major++)
+        {
+            (byte s0, byte s1) =
+                ComputeEcmaRowSyndrome(sector, rows[major], eccOffset, major, majorCount, minorCount, weights);
+
+            if(s0 == 0) continue;
+
+            byte locator = GfDiv(s1, s0);
+
+            if(locator == 0) continue;
+
+            int pos = n - 1 - _gfLog[locator];
+
+            if(pos < 0 || pos >= n) continue;
+
+            // Get the byte offset this correction targets.
+            int byteOffset = GetEccRowPositionOffset(rows[major], eccOffset, major, majorCount, minorCount, pos);
+
+            if(byteOffset < 0 || byteOffset >= byteToCheckRow.Length)
+                goto apply; // parity byte or unmapped: apply directly
+
+            int checkRowIdx = byteToCheckRow[byteOffset];
+
+            if(checkRowIdx < 0) goto apply; // byte not covered by check code: apply directly
+
+            int checkPos = byteToCheckPos[byteOffset];
+
+            // Require the check-code row's 1-error locator to point to the same byte.
+            (byte cs0, byte cs1) = ComputeEcmaRowSyndrome(sector,
+                                                          checkRows[checkRowIdx],
+                                                          checkEccOffset,
+                                                          checkRowIdx,
+                                                          checkMajorCount,
+                                                          checkMinorCount,
+                                                          checkWeights);
+
+            if(cs0 == 0) goto skip; // check-code row is correct — fix-code "correction" would break it
+
+            byte checkLocator = GfDiv(cs1, cs0);
+
+            if(checkLocator == 0) goto skip;
+
+            int checkLocPos = nCheck - 1 - _gfLog[checkLocator];
+
+            // Only skip if the check-code has a VALID single-error locator that points to a DIFFERENT byte.
+            // This catches the case: Q-row has exactly 1 error somewhere else, P-correction would introduce
+            // a second error at the candidate byte.  If the locator is out-of-range (multi-error Q-row with
+            // no valid single-error locator), we allow the P-correction — we just can't confirm it.
+            if(checkLocPos >= 0 && checkLocPos < nCheck)
+            {
+                int checkByteOffset = GetEccRowPositionOffset(checkRows[checkRowIdx],
+                                                              checkEccOffset,
+                                                              checkRowIdx,
+                                                              checkMajorCount,
+                                                              checkMinorCount,
+                                                              checkLocPos);
+
+                if(checkByteOffset >= 0 && checkByteOffset != byteOffset) goto skip;
+            }
+
+        apply:
+            ApplyEccRowError(sector, rows[major], eccOffset, major, majorCount, minorCount, pos, s0);
+            corrected = true;
+
+            continue;
+
+        skip: ;
+        }
+
+        return corrected;
+    }
+
+    /// <summary>
+    ///     Single-error correction using the ECMA-130 Annex A parity check matrices.
+    ///     For each row with syndrome (S₀,S₁): error value = S₀,
+    ///     error position = (n−1) − log_α(S₁/S₀) where n = minorCount+2.
+    /// </summary>
+    static bool TryFixEcc(byte[] sector, int[][] rows, int eccOffset, int majorCount, int minorCount, byte[] weights)
+    {
+        var corrected = false;
+        int n         = minorCount + 2;
+
+        for(var major = 0; major < majorCount; major++)
+        {
+            (byte s0, byte s1) =
+                ComputeEcmaRowSyndrome(sector, rows[major], eccOffset, major, majorCount, minorCount, weights);
+
+            if(s0 == 0) continue;
+
+            byte locator = GfDiv(s1, s0);
+
+            if(locator == 0) continue; // S₁=0 but S₀≠0: even-count error pattern, unlocatable
+
+            int pos = n - 1 - _gfLog[locator];
+
+            if(pos < 0 || pos >= n) continue;
+
+            ApplyEccRowError(sector, rows[major], eccOffset, major, majorCount, minorCount, pos, s0);
             corrected = true;
         }
 
@@ -917,11 +1685,5 @@ public static class CdChecksums
                           calculatedCdtp4Crc);
 
         return false;
-    }
-
-    readonly struct EccSyndromeMatch(int position, byte error)
-    {
-        public readonly int  Position = position;
-        public readonly byte Error    = error;
     }
 }
