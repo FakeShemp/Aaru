@@ -34,6 +34,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Aaru.Checksums;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
@@ -148,17 +149,14 @@ partial class Dump
                 continue;
             }
 
-            if(_fixOffset)
+            if(offsetBytes < 0)
             {
-                if(offsetBytes < 0)
-                {
-                    if(i == 0)
-                        firstSectorToRead = uint.MaxValue - (uint)(sectorsForOffset - 1); // -1
-                    else
-                        firstSectorToRead -= (uint)sectorsForOffset;
+                if(i == 0)
+                    firstSectorToRead = uint.MaxValue - (uint)(sectorsForOffset - 1); // -1
+                else
+                    firstSectorToRead -= (uint)sectorsForOffset;
 
-                    if(blocksToRead <= sectorsForOffset) blocksToRead += (uint)sectorsForOffset;
-                }
+                if(blocksToRead <= sectorsForOffset) blocksToRead += (uint)sectorsForOffset;
             }
 
             if(speedSectorCounter > 1000)
@@ -195,7 +193,7 @@ partial class Dump
             if(!sense && !_dev.Error)
             {
                 // Because one block has been partially used to fix the offset
-                if(_fixOffset && offsetBytes != 0)
+                if(offsetBytes != 0)
                 {
                     FixOffsetData(offsetBytes,
                                   sectorSize,
@@ -213,126 +211,114 @@ partial class Dump
                 extents.Add(i, blocksToRead, true);
                 _writeStopwatch.Restart();
 
-                if(supportedSubchannel != MmcSubchannel.None)
+                var         data         = new byte[sectorSize * blocksToRead];
+                var         sub          = new byte[subSize    * blocksToRead];
+                var         sectorStatus = new SectorStatus[blocksToRead];
+                var         sector       = new byte[sectorSize];
+                List<ulong> paintBad     = [];
+
+                for(var b = 0; b < blocksToRead; b++)
                 {
-                    var data         = new byte[sectorSize * blocksToRead];
-                    var sub          = new byte[subSize    * blocksToRead];
-                    var sectorStatus = new SectorStatus[blocksToRead];
-                    var sector       = new byte[sectorSize];
+                    Array.Copy(cmdBuf, (int)(0 + b * blockSize), sector, 0, sectorSize);
+
+                    if(IsScrambledData(sector, (int)(i + (ulong)b), out _))
+                    {
+                        sector = Sector.Scramble(sector);
+                        SectorFixResult fixStatus = CdChecksums.FixSector(sector);
+                        if(fixStatus == SectorFixResult.Correct) _correctSectors++;
+                        if(fixStatus == SectorFixResult.Fixed) _fixedSectors++;
+
+                        if(fixStatus == SectorFixResult.CouldNotFix)
+                        {
+                            sectorStatus[b] = SectorStatus.Errored;
+                            _resume.BadBlocks.Add(i + (ulong)b);
+                            paintBad.Add(i          + (ulong)b);
+                        }
+
+                        Array.Copy(sector, 0, cmdBuf, (int)(0 + b * blockSize), sectorSize);
+                    }
+
+                    Array.Copy(cmdBuf, (int)(0 + b * blockSize), data, sectorSize * b, sectorSize);
+
+                    Array.Copy(cmdBuf, (int)(sectorSize + b * blockSize), sub, subSize * b, subSize);
+
+                    // Not already set
+                    if(sectorStatus[b] != SectorStatus.Errored) sectorStatus[b] = SectorStatus.Dumped;
+                }
+
+                if(supportsLongSectors)
+                    outputFormat.WriteSectorsLong(data, i, false, blocksToRead, sectorStatus);
+                else
+                {
+                    var cooked = new MemoryStream();
 
                     for(var b = 0; b < blocksToRead; b++)
                     {
-                        Array.Copy(cmdBuf, (int)(0 + b * blockSize), data, sectorSize * b, sectorSize);
-
-                        Array.Copy(cmdBuf, (int)(sectorSize + b * blockSize), sub, subSize * b, subSize);
-
                         Array.Copy(cmdBuf, (int)(0 + b * blockSize), sector, 0, sectorSize);
-
-                        sectorStatus[b] = SectorStatus.Dumped;
+                        byte[] cookedSector = Sector.GetUserData(sector);
+                        cooked.Write(cookedSector, 0, cookedSector.Length);
                     }
 
-                    if(supportsLongSectors)
-                        outputFormat.WriteSectorsLong(data, i, false, blocksToRead, sectorStatus);
-                    else
-                    {
-                        var cooked = new MemoryStream();
-
-                        for(var b = 0; b < blocksToRead; b++)
-                        {
-                            Array.Copy(cmdBuf, (int)(0 + b * blockSize), sector, 0, sectorSize);
-                            byte[] cookedSector = Sector.GetUserData(sector);
-                            cooked.Write(cookedSector, 0, cookedSector.Length);
-                        }
-
-                        outputFormat.WriteSectors(cooked.ToArray(), i, false, blocksToRead, sectorStatus);
-                    }
-
-                    bool indexesChanged = Media.CompactDisc.WriteSubchannelToImage(supportedSubchannel,
-                        desiredSubchannel,
-                        sub,
-                        i,
-                        blocksToRead,
-                        subLog,
-                        isrcs,
-                        (byte)track.Sequence,
-                        ref mcn,
-                        tracks,
-                        subchannelExtents,
-                        _fixSubchannelPosition,
-                        outputFormat as IWritableOpticalImage,
-                        _fixSubchannel,
-                        _fixSubchannelCrc,
-                        UpdateStatus,
-                        smallestPregapLbaPerTrack,
-                        true,
-                        out List<ulong> newPregapSectors);
-
-                    // Set tracks and go back
-                    if(indexesChanged)
-                    {
-                        (outputFormat as IWritableOpticalImage).SetTracks([.. tracks]);
-
-                        foreach(ulong newPregapSector in newPregapSectors)
-                        {
-                            if(newPregapSector == 0) continue;
-
-                            Track sectorTrack =
-                                tracks.FirstOrDefault(t => t.StartSector <= newPregapSector &&
-                                                           t.EndSector   >= newPregapSector);
-
-                            if(sectorTrack.Sequence == 1) continue;
-
-                            Track prevTrack = tracks.FirstOrDefault(t => t.Sequence == sectorTrack.Sequence - 1);
-
-                            if(sectorTrack.Session != prevTrack.Session) continue;
-
-                            if(sectorTrack.Type != prevTrack.Type) _resume.BadBlocks.Add(newPregapSector);
-                        }
-
-                        if(i >= blocksToRead)
-                            i -= blocksToRead;
-                        else
-                            i = 0;
-
-                        if(i > 0) i--;
-
-                        foreach(Track aTrack in tracks.Where(static aTrack => aTrack.Type == TrackType.Audio))
-                            audioExtents.Add(aTrack.StartSector, aTrack.EndSector);
-
-                        continue;
-                    }
+                    outputFormat.WriteSectors(cooked.ToArray(), i, false, blocksToRead, sectorStatus);
                 }
-                else
+
+                bool indexesChanged = Media.CompactDisc.WriteSubchannelToImage(supportedSubchannel,
+                                                                               desiredSubchannel,
+                                                                               sub,
+                                                                               i,
+                                                                               blocksToRead,
+                                                                               subLog,
+                                                                               isrcs,
+                                                                               (byte)track.Sequence,
+                                                                               ref mcn,
+                                                                               tracks,
+                                                                               subchannelExtents,
+                                                                               _fixSubchannelPosition,
+                                                                               outputFormat as IWritableOpticalImage,
+                                                                               _fixSubchannel,
+                                                                               _fixSubchannelCrc,
+                                                                               UpdateStatus,
+                                                                               smallestPregapLbaPerTrack,
+                                                                               true,
+                                                                               out List<ulong> newPregapSectors);
+
+                // Set tracks and go back
+                if(indexesChanged)
                 {
-                    if(supportsLongSectors)
+                    (outputFormat as IWritableOpticalImage).SetTracks([.. tracks]);
+
+                    foreach(ulong newPregapSector in newPregapSectors)
                     {
-                        outputFormat.WriteSectorsLong(cmdBuf,
-                                                      i,
-                                                      false,
-                                                      blocksToRead,
-                                                      [.. Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)]);
+                        if(newPregapSector == 0) continue;
+
+                        Track sectorTrack =
+                            tracks.FirstOrDefault(t => t.StartSector <= newPregapSector &&
+                                                       t.EndSector   >= newPregapSector);
+
+                        if(sectorTrack.Sequence == 1) continue;
+
+                        Track prevTrack = tracks.FirstOrDefault(t => t.Sequence == sectorTrack.Sequence - 1);
+
+                        if(sectorTrack.Session != prevTrack.Session) continue;
+
+                        if(sectorTrack.Type != prevTrack.Type) _resume.BadBlocks.Add(newPregapSector);
                     }
+
+                    if(i >= blocksToRead)
+                        i -= blocksToRead;
                     else
-                    {
-                        var cooked = new MemoryStream();
-                        var sector = new byte[sectorSize];
+                        i = 0;
 
-                        for(var b = 0; b < blocksToRead; b++)
-                        {
-                            Array.Copy(cmdBuf, (int)(b * sectorSize), sector, 0, sectorSize);
-                            byte[] cookedSector = Sector.GetUserData(sector);
-                            cooked.Write(cookedSector, 0, cookedSector.Length);
-                        }
+                    if(i > 0) i--;
 
-                        outputFormat.WriteSectors(cooked.ToArray(),
-                                                  i,
-                                                  false,
-                                                  blocksToRead,
-                                                  [.. Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)]);
-                    }
+                    foreach(Track aTrack in tracks.Where(static aTrack => aTrack.Type == TrackType.Audio))
+                        audioExtents.Add(aTrack.StartSector, aTrack.EndSector);
+
+                    continue;
                 }
 
                 _mediaGraph?.PaintSectorsGood(i, blocksToRead);
+                foreach(ulong b in paintBad) _mediaGraph?.PaintSectorsBad(b, 1);
 
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
             }

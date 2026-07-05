@@ -188,6 +188,8 @@ partial class Dump
 
         _speedStopwatch.Stop();
 
+        uint blocksToRead = 150;
+
         // Apply offset correction if any audio sector is present in the pregap range
         if(needsOffsetCorrection || _omnidrive && offsetBytes != 0)
         {
@@ -202,7 +204,7 @@ partial class Dump
 
             if(hasAudioSectors || _omnidrive)
             {
-                var blocksToRead = (uint)totalSectorsToRead;
+                blocksToRead = (uint)totalSectorsToRead;
 
                 FixOffsetData(offsetBytes,
                               2352,
@@ -221,9 +223,9 @@ partial class Dump
         // starting at index 0, regardless of whether the offset was positive or negative.
         var firstSectorWritten = false;
 
-        for(int firstTrackPregapBlock = -150; firstTrackPregapBlock <= -1; firstTrackPregapBlock++)
+        for(var firstTrackPregapBlock = (int)-blocksToRead; firstTrackPregapBlock <= -1; firstTrackPregapBlock++)
         {
-            int bufferIndex = firstTrackPregapBlock + 150; // 0 = LBA -150, 149 = LBA -1
+            var bufferIndex = (int)(firstTrackPregapBlock + blocksToRead); // 0 = LBA -150, 149 = LBA -1
 
             // Map back to the pre-correction read index to check whether the read succeeded.
             // For negative offset the extra sectors were prepended, so index shifts by sectorsForOffset.

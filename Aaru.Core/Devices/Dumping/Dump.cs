@@ -113,10 +113,12 @@ public partial class Dump
     readonly        Stopwatch                  _trimStopwatch;
     readonly        Stopwatch                  _writeStopwatch;
     bool                                       _aborted;
+    int                                        _correctSectors;
     AaruContext                                _ctx;   // Main database context
     Database.Models.Device                     _dbDev; // Device database entry
     bool                                       _dumpFirstTrackPregap;
     bool                                       _fixOffset;
+    int                                        _fixedSectors;
     uint                                       _maximumReadable; // Maximum number of sectors drive can read at once
     IMediaGraph                                _mediaGraph;
     bool                                       _missingTitleKeysDirty;

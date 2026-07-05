@@ -129,7 +129,7 @@ partial class Dump
             byte sectorsToTrim   = 1;
             var  badSectorToRead = (uint)badSector;
 
-            if(_fixOffset && audioExtents.Contains(badSector) && offsetBytes != 0)
+            if((_fixOffset && audioExtents.Contains(badSector) || _omnidrive) && offsetBytes != 0)
             {
                 if(offsetBytes < 0)
                 {
@@ -144,7 +144,6 @@ partial class Dump
 
             if(_omnidrive)
             {
-                // TODO: Data
                 sense = _dev.OmniDriveReadCd(out cmdBuf,
                                              out senseBuf,
                                              badSectorToRead,
@@ -404,11 +403,49 @@ partial class Dump
                 continue;
             }
 
+            // Because one block has been partially used to fix the offset
+            if(_fixOffset && audioExtents.Contains(badSector) && offsetBytes != 0)
+            {
+                uint blocksToRead = sectorsToTrim;
+
+                FixOffsetData(offsetBytes,
+                              sectorSize,
+                              sectorsForOffset,
+                              supportedSubchannel,
+                              ref blocksToRead,
+                              subSize,
+                              ref cmdBuf,
+                              blockSize,
+                              false);
+            }
+
             SectorStatus sectorStatus = SectorStatus.Dumped;
 
             if(!sense && !_dev.Error)
             {
-                if(!audioExtents.Contains(badSector) && _paranoia)
+                if(_omnidrive)
+                {
+                    var sector = new byte[sectorSize];
+                    Array.Copy(cmdBuf, 0, sector, 0, sectorSize);
+
+                    if(IsScrambledData(sector, (int)badSector, out _))
+                    {
+                        sector = Sector.Scramble(sector);
+                        SectorFixResult fixStatus = CdChecksums.FixSector(sector);
+                        if(fixStatus == SectorFixResult.Correct) _correctSectors++;
+                        if(fixStatus == SectorFixResult.Fixed) _fixedSectors++;
+
+                        if(fixStatus != SectorFixResult.CouldNotFix)
+                        {
+                            _resume.BadBlocks.Remove(badSector);
+                            extents.Add(badSector);
+                            _mediaGraph?.PaintSectorGood(badSector);
+                        }
+
+                        Array.Copy(sector, 0, cmdBuf, 0, sectorSize);
+                    }
+                }
+                else if(!audioExtents.Contains(badSector) && _paranoia)
                 {
                     var sector = new byte[sectorSize];
                     Array.Copy(cmdBuf, 0, sector, 0, sectorSize);
@@ -447,23 +484,6 @@ partial class Dump
                     _mediaGraph?.PaintSectorGood(badSector);
                 }
             }
-
-            // Because one block has been partially used to fix the offset
-            if(_fixOffset && audioExtents.Contains(badSector) && offsetBytes != 0)
-            {
-                uint blocksToRead = sectorsToTrim;
-
-                FixOffsetData(offsetBytes,
-                              sectorSize,
-                              sectorsForOffset,
-                              supportedSubchannel,
-                              ref blocksToRead,
-                              subSize,
-                              ref cmdBuf,
-                              blockSize,
-                              false);
-            }
-
 
             if(supportedSubchannel != MmcSubchannel.None)
             {
