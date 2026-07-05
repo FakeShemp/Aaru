@@ -11351,5 +11351,41 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Filesystem_contents_cannot_be_extracted", resourceCulture);
             }
         }
+        
+        public static string _0_sectors_were_correct_when_read {
+            get {
+                return ResourceManager.GetString("_0_sectors_were_correct_when_read", resourceCulture);
+            }
+        }
+        
+        public static string _0_sectors_had_to_be_fixed {
+            get {
+                return ResourceManager.GetString("_0_sectors_had_to_be_fixed", resourceCulture);
+            }
+        }
+        
+        public static string Help_hyperspeed {
+            get {
+                return ResourceManager.GetString("Help_hyperspeed", resourceCulture);
+            }
+        }
+        
+        public static string Help_absurdspeed {
+            get {
+                return ResourceManager.GetString("Help_absurdspeed", resourceCulture);
+            }
+        }
+        
+        public static string Help_Leadout {
+            get {
+                return ResourceManager.GetString("Help_Leadout", resourceCulture);
+            }
+        }
+        
+        public static string Detected_Omnidrive {
+            get {
+                return ResourceManager.GetString("Detected_Omnidrive", resourceCulture);
+            }
+        }
     }
 }

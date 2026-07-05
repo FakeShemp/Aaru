@@ -2199,7 +2199,7 @@
     <value>Leyendo LBA 0...</value>
   </data>
     <data name="Reading_lead_outs" xml:space="preserve">
-    <value>Leyendo Lead-Outs</value>
+    <value>[slateblue1]Leyendo Lead-Outs[/]</value>
   </data>
     <data name="Reading_PCMCIA_CIS" xml:space="preserve">
         <value>[slateblue1]Leyendo CIS de PCMCIA.[/]</value>
@@ -2211,7 +2211,7 @@
         <value>[slateblue1]Leyendo directorio raíz en el sector [lime]{0}[/]...[/]</value>
     </data>
     <data name="Reading_sector_0_at_lead_out_1" xml:space="preserve">
-    <value>Leyendo sector {0} en el Lead-Out ({1})</value>
+    <value>[slateblue1]Leyendo sector [lime]{0}[/] en el Lead-Out ([aqua]{1}[/])[/]</value>
   </data>
     <data name="Reading_sector_0_of_1_2" xml:space="preserve">
         <value>[slateblue1]Leyendo sector [lime]{0}[/] de [violet]{1}[/] ([aqua]{2}[/])[/]</value>

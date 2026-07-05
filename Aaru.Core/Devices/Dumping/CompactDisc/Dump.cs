@@ -50,6 +50,7 @@ using Aaru.Database.Models;
 using Aaru.Decoders.CD;
 using Aaru.Devices;
 using Aaru.Images;
+using Aaru.Localization;
 using Aaru.Logging;
 using Humanizer;
 using Spectre.Console;
@@ -675,9 +676,8 @@ sealed partial class Dump
             foreach(int sub in _resume.BadSubchannels) subchannelExtents.Add(sub);
 
             if(_resume.NextBlock < blocks)
-            {
-                for(ulong i = _resume.NextBlock; i < blocks; i++) subchannelExtents.Add((int)i);
-            }
+                for(ulong i = _resume.NextBlock; i < blocks; i++)
+                    subchannelExtents.Add((int)i);
         }
 
         if(_resume.NextBlock > 0)
@@ -1168,9 +1168,8 @@ sealed partial class Dump
                         supportsLongSectors);
 
         foreach(Tuple<ulong, ulong> leadoutExtent in leadOutExtents.ToArray())
-        {
-            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++) subchannelExtents.Remove((int)e);
-        }
+            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++)
+                subchannelExtents.Remove((int)e);
 
         if(subchannelExtents.Count > 0 && _retryPasses > 0 && _retrySubchannel)
         {
@@ -1349,8 +1348,8 @@ sealed partial class Dump
 
         if(_omnidrive)
         {
-            UpdateStatus?.Invoke($"{_correctSectors} sectors were correct when read.");
-            UpdateStatus?.Invoke($"{_fixedSectors} sectors had to be fixed.");
+            UpdateStatus?.Invoke(string.Format(UI._0_sectors_were_correct_when_read, _correctSectors));
+            UpdateStatus?.Invoke(string.Format(UI._0_sectors_had_to_be_fixed,        _fixedSectors));
         }
 
         UpdateStatus?.Invoke(string.Format(Localization.Core._0_sectors_could_not_be_read, _resume.BadBlocks.Count));

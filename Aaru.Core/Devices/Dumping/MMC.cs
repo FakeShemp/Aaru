@@ -45,6 +45,7 @@ using Aaru.Decoders.SCSI.MMC;
 using Aaru.Decryption;
 using Aaru.Decryption.DVD;
 using Aaru.Devices;
+using Aaru.Localization;
 using Aaru.Logging;
 using DDS = Aaru.Decoders.DVD.DDS;
 using DMI = Aaru.Decoders.Xbox.DMI;
@@ -300,8 +301,7 @@ partial class Dump
 
         _omnidrive = _dev.IsOmniDriveFirmware(out byte odMajor, out byte odMinor, out byte odRevision);
 
-        if(_omnidrive)
-            AaruLogging.WriteLine($"[slateblue1]Detected [/][#FFFFFF]O[/][#FFAFC8]m[/][#74D7EE]n[/][#E40303]i[/][#FF8C00]D[/][#FFED00]r[/][#008026]i[/][#004DFF]v[/][#750787]e[/][#613915]![/][000000]![/] [slateblue1]version[/] [purple]{odMajor}.{odMinor}.{odRevision}[/]");
+        if(_omnidrive) AaruLogging.WriteLine(string.Format(UI.Detected_Omnidrive, odMajor, odMinor, odRevision));
 
         if(compactDisc)
         {

@@ -972,10 +972,10 @@
         <value>[slateblue1]Correctly retried sector [lime]{0}[/] subchannel in pass [teal]{1}[/].[/]</value>
     </data>
     <data name="Reading_lead_outs" xml:space="preserve">
-    <value>Reading lead-outs</value>
+    <value>[slateblue1]Reading lead-outs[/]</value>
   </data>
     <data name="Reading_sector_0_at_lead_out_1" xml:space="preserve">
-    <value>Reading sector {0} at lead-out ({1})</value>
+    <value>[slateblue1]Reading sector [lime]{0}[/] at lead-out ([aqua]{1}[/])[/]</value>
   </data>
     <data name="Reading_first_track_pregap" xml:space="preserve">
         <value>[slateblue1]Reading first track pregap[/]</value>

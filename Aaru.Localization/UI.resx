@@ -5755,4 +5755,22 @@ Do you want to continue?</value>
     <data name="Filesystem_contents_cannot_be_extracted" xml:space="preserve">
         <value>[slateblue1]Filesystem contents cannot be extracted.[/]</value>
     </data>
+    <data name="_0_sectors_were_correct_when_read" xml:space="preserve">
+        <value>[maroon][teal]{0}[/] sectors were correct when read.[/]</value>
+    </data>
+    <data name="_0_sectors_had_to_be_fixed" xml:space="preserve">
+        <value>[maroon][teal]{0}[/] sectors had to be fixed.[/]</value>
+    </data>
+    <data name="Help_hyperspeed" xml:space="preserve">
+        <value>(OmniDrive only) Allows higher speed when we know the underlying track is data</value>
+    </data>
+    <data name="Help_absurdspeed" xml:space="preserve">
+        <value>(OmniDrive only) Use maximum speed always</value>
+    </data>
+    <data name="Help_Leadout" xml:space="preserve">
+        <value>Dump Lead-Out sectors if drive and image supports it.</value>
+    </data>
+    <data name="Detected_Omnidrive" xml:space="preserve">
+        <value>[slateblue1]Detected [/][#FFFFFF]O[/][#FFAFC8]m[/][#74D7EE]n[/][#E40303]i[/][#FF8C00]D[/][#FFED00]r[/][#008026]i[/][#004DFF]v[/][#750787]e[/][#613915]![/][000000]![/] [slateblue1]version[/] [purple]{0}.{1}.{2}[/]</value>
+    </data>
 </root>

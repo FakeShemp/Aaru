@@ -836,15 +836,15 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [DefaultValue(0)]
         [CommandOption("--error-recovery")]
         public int ErrorRecovery { get; set; }
-        [Description("(OmniDrive only) Allows higher speed when we know the underlying track is data")]
+        [LocalizedDescription(nameof(UI.Help_hyperspeed))]
         [DefaultValue(false)]
         [CommandOption("--hyper-speed")]
         public bool HyperSpeed { get; set; }
-        [Description("(OmniDrive only) Use maximum speed always")]
+        [LocalizedDescription(nameof(UI.Help_absurdspeed))]
         [DefaultValue(false)]
         [CommandOption("--absurd-speed")]
         public bool AbsurdSpeed { get; set; }
-        [Description("Dump Lead-Out sectors if drive and image supports it.")]
+        [LocalizedDescription(nameof(UI.Help_Leadout))]
         [DefaultValue(false)]
         [CommandOption("--lead-out")]
         public bool LeadOut { get; set; }
