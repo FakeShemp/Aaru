@@ -301,15 +301,51 @@ partial class Dump
                 sectorsToReRead += (byte)sectorsForOffset;
             }
 
+            byte[] c2Pointers = null;
+
             if(_omnidrive)
             {
-                sense = _dev.OmniDriveReadCd(out cmdBuf,
-                                             out senseBuf,
-                                             badSectorToReRead,
-                                             sectorsToReRead,
-                                             _dev.Timeout,
-                                             out cmdDuration,
-                                             true);
+                bool c2Sense = _dev.OmniDriveReadCdWithC2(out byte[] c2Buf,
+                                                          out senseBuf,
+                                                          badSectorToReRead,
+                                                          sectorsToReRead,
+                                                          _dev.Timeout,
+                                                          out cmdDuration,
+                                                          true);
+
+                if(!c2Sense)
+                {
+                    sense = false;
+
+                    // badSectorToReRead may be < badSector when offsetBytes < 0.
+                    var sectorIndex = (int)((uint)badSector - badSectorToReRead);
+
+                    // Extract C2 for the target sector from the coherent c2Buf.
+                    c2Pointers = new byte[294];
+                    Array.Copy(c2Buf, sectorIndex * 2742 + 2352, c2Pointers, 0, 294);
+
+                    // Rebuild cmdBuf in OmniDriveReadCd format (2448 per sector = data+sub)
+                    // so FixOffsetData and downstream code see the expected layout.
+                    cmdBuf = new byte[2448 * sectorsToReRead];
+
+                    for(var s = 0; s < sectorsToReRead; s++)
+                    {
+                        int src = s * 2742;
+                        int dst = s * 2448;
+                        Array.Copy(c2Buf, src,        cmdBuf, dst,        2352); // data
+                        Array.Copy(c2Buf, src + 2646, cmdBuf, dst + 2352, 96);   // sub
+                    }
+                }
+                else
+                {
+                    sense = _dev.OmniDriveReadCd(out cmdBuf,
+                                                 out senseBuf,
+                                                 badSectorToReRead,
+                                                 sectorsToReRead,
+                                                 _dev.Timeout,
+                                                 out cmdDuration,
+                                                 true);
+                }
             }
             else if(_supportsPlextorD8 && audioExtents.Contains(badSector))
             {
@@ -540,7 +576,11 @@ partial class Dump
                     if(IsScrambledData(sector, (int)badSector, out _))
                     {
                         sector = Sector.Scramble(sector);
-                        SectorFixResult fixStatus = CdChecksums.FixSector(sector);
+
+                        SectorFixResult fixStatus = c2Pointers == null
+                                                        ? CdChecksums.FixSector(sector)
+                                                        : CdChecksums.FixSector(sector, c2Pointers);
+
                         if(fixStatus == SectorFixResult.Correct) _correctSectors++;
                         if(fixStatus == SectorFixResult.Fixed) _fixedSectors++;
 
@@ -550,6 +590,46 @@ partial class Dump
                             extents.Add(badSector);
                             _mediaGraph?.PaintSectorGood(badSector);
                             sectorsNotEvenPartial.Remove(badSector);
+
+                            UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_sector_0_in_pass_1,
+                                                               badSector,
+                                                               pass));
+                        }
+                        else if(readcd)
+                        {
+                            // ECC correction failed — try READ CD (drive's CIRC) as last resort.
+                            bool readCdSense = _dev.ReadCd(out byte[] readCdBuf,
+                                                           out _,
+                                                           (uint)badSector,
+                                                           sectorSize,
+                                                           1,
+                                                           MmcSectorTypes.AllTypes,
+                                                           false,
+                                                           false,
+                                                           true,
+                                                           MmcHeaderCodes.AllHeaders,
+                                                           true,
+                                                           true,
+                                                           MmcErrorField.None,
+                                                           MmcSubchannel.None,
+                                                           _dev.Timeout,
+                                                           out double readCdDuration);
+
+                            totalDuration += readCdDuration;
+
+                            if(!readCdSense && !_dev.Error && CdChecksums.CheckCdSector(readCdBuf) == true)
+                            {
+                                Array.Copy(readCdBuf, 0, sector, 0, sectorSize);
+                                _resume.BadBlocks.Remove(badSector);
+                                extents.Add(badSector);
+                                _mediaGraph?.PaintSectorGood(badSector);
+                                sectorsNotEvenPartial.Remove(badSector);
+
+                                UpdateStatus?.Invoke(string.Format(Localization.Core
+                                                                      .Correctly_retried_sector_0_in_pass_1,
+                                                                   badSector,
+                                                                   pass));
+                            }
                         }
 
                         Array.Copy(sector, 0, cmdBuf, 0, sectorSize);
