@@ -263,6 +263,37 @@ public partial class Device
         return sense;
     }
 
+    public bool OmniDriveReadCdWithC2(out byte[] buffer,         out ReadOnlySpan<byte> senseBuffer, uint lba,
+                                      uint       transferLength, uint timeout, out double duration, bool fua = false,
+                                      bool       rawAddressing = false)
+    {
+        senseBuffer = SenseBuffer;
+        Span<byte> cdb = CdbBuffer[..12];
+        buffer = new byte[2742 * transferLength];
+
+        cdb.Clear();
+        cdb[0]  = (byte)ScsiCommands.ReadOmniDrive;
+        cdb[1]  = EncodeOmniDriveReadCdb1(OmniDriveDiscType.CD, rawAddressing, fua, false);
+        cdb[2]  = (byte)(lba >> 24            & 0xFF);
+        cdb[3]  = (byte)(lba >> 16            & 0xFF);
+        cdb[4]  = (byte)(lba >> 8             & 0xFF);
+        cdb[5]  = (byte)(lba                  & 0xFF);
+        cdb[6]  = (byte)(transferLength >> 24 & 0xFF);
+        cdb[7]  = (byte)(transferLength >> 16 & 0xFF);
+        cdb[8]  = (byte)(transferLength >> 8  & 0xFF);
+        cdb[9]  = (byte)(transferLength       & 0xFF);
+        cdb[10] = 4 + 1; // subchannels=RW, C2
+        cdb[11] = 0;     // control
+
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
+
+        Error = LastError != 0;
+
+        AaruLogging.Debug(SCSI_MODULE_NAME, "OmniDrive READ CD took {0} ms", duration);
+
+        return sense;
+    }
+
     enum OmniDriveDiscType
     {
         CD  = 0,
