@@ -444,6 +444,12 @@ partial class Dump
 
                         Array.Copy(sector, 0, cmdBuf, 0, sectorSize);
                     }
+                    else
+                    {
+                        _resume.BadBlocks.Remove(badSector);
+                        extents.Add(badSector);
+                        _mediaGraph?.PaintSectorGood(badSector);
+                    }
                 }
                 else if(!audioExtents.Contains(badSector) && _paranoia)
                 {

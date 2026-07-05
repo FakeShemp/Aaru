@@ -506,8 +506,9 @@ partial class Dump
 
                 // MEDIUM ERROR, retry with ignore error below
                 if(decSense is { ASC: 0x11 })
-                    if(!sectorsNotEvenPartial.Contains(badSector))
-                        sectorsNotEvenPartial.Add(badSector);
+                {
+                    if(!sectorsNotEvenPartial.Contains(badSector)) sectorsNotEvenPartial.Add(badSector);
+                }
             }
 
             // Because one block has been partially used to fix the offset
@@ -552,6 +553,13 @@ partial class Dump
                         }
 
                         Array.Copy(sector, 0, cmdBuf, 0, sectorSize);
+                    }
+                    else
+                    {
+                        _resume.BadBlocks.Remove(badSector);
+                        extents.Add(badSector);
+                        _mediaGraph?.PaintSectorGood(badSector);
+                        sectorsNotEvenPartial.Remove(badSector);
                     }
                 }
                 else if(!audioExtents.Contains(badSector) && _paranoia)
