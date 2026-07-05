@@ -108,8 +108,13 @@ partial class Dump
         double elapsed               = 0;
         var    speedSectorCounter    = 0;
 
+        if(_absurdSpeed)
+        {
+            UpdateStatus?.Invoke("[slateblue1]Yes, sir! Setting absurd speed sir![/]");
 
-        if(_hyperSpeed)
+            _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 0xFFFF, 0, _dev.Timeout, out _);
+        }
+        else if(_hyperSpeed)
         {
             Track t = tracks.FirstOrDefault(t => t.StartSector <= _resume.NextBlock &&
                                                  t.EndSector   >= _resume.NextBlock);
@@ -199,7 +204,9 @@ partial class Dump
 
             if(speedSectorCounter > 1000)
             {
-                if(_hyperSpeed)
+                if(_absurdSpeed)
+                    _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 0xFFFF, 0, _dev.Timeout, out _);
+                else if(_hyperSpeed)
                 {
                     Track t = tracks.FirstOrDefault(t => t.StartSector <= _resume.NextBlock &&
                                                          t.EndSector   >= _resume.NextBlock);

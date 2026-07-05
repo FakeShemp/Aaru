@@ -129,6 +129,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--start-reverse={0}",           settings.StartReverse);
         AaruLogging.Debug(MODULE_NAME, "--error-recovery={0}",          settings.ErrorRecovery);
         AaruLogging.Debug(MODULE_NAME, "--hyper-speed={0}",             settings.HyperSpeed);
+        AaruLogging.Debug(MODULE_NAME, "--absurd-speed={0}",            settings.AbsurdSpeed);
 
         Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
         AaruLogging.Debug(MODULE_NAME, UI.Parsed_options);
@@ -552,7 +553,8 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   settings.BypassWiiDecryption,
                                   settings.StartReverse,
                                   settings.ErrorRecovery,
-                                  settings.HyperSpeed);
+                                  settings.HyperSpeed,
+                                  settings.AbsurdSpeed);
 
             AnsiConsole.Progress()
                        .AutoClear(true)
@@ -836,6 +838,10 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [DefaultValue(false)]
         [CommandOption("--hyper-speed")]
         public bool HyperSpeed { get; set; }
+        [Description("(OmniDrive only) Use maximum speed always")]
+        [DefaultValue(false)]
+        [CommandOption("--absurd-speed")]
+        public bool AbsurdSpeed { get; set; }
     }
 
 #endregion
