@@ -958,6 +958,38 @@ sealed partial class Dump
 
             if(_skipCdireadyHole)
             {
+                // This codepath is disabled because it's doing strange things, let the OmniDrive behave like a normal drive here
+                /*
+                if(_omnidrive)
+                {
+                    OmniDriveReadCdiReady(blockSize,
+                                          ref currentSpeed,
+                                          currentTry,
+                                          extents,
+                                          ibgLog,
+                                          ref imageWriteDuration,
+                                          leadOutExtents,
+                                          ref maxSpeed,
+                                          mhddLog,
+                                          ref minSpeed,
+                                          subSize,
+                                          supportedSubchannel,
+                                          ref totalDuration,
+                                          tracks,
+                                          subLog,
+                                          desiredSubchannel,
+                                          isrcs,
+                                          ref mcn,
+                                          subchannelExtents,
+                                          blocks,
+                                          cdiReadyReadAsAudio,
+                                          offsetBytes,
+                                          sectorsForOffset,
+                                          smallestPregapLbaPerTrack);
+                }
+                else
+                {
+                */
                 ReadCdiReady(blockSize,
                              ref currentSpeed,
                              currentTry,
@@ -982,6 +1014,8 @@ sealed partial class Dump
                              offsetBytes,
                              sectorsForOffset,
                              smallestPregapLbaPerTrack);
+
+                //}
             }
         }
 

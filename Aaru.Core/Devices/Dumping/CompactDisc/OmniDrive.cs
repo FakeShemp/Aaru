@@ -43,6 +43,7 @@ using Aaru.Core.Logging;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
+using Aaru.Localization;
 using Aaru.Logging;
 using Humanizer;
 using Track = Aaru.CommonTypes.Structs.Track;
@@ -110,7 +111,7 @@ partial class Dump
 
         if(_absurdSpeed)
         {
-            UpdateStatus?.Invoke("[slateblue1]Yes, sir! Setting absurd speed sir![/]");
+            UpdateStatus?.Invoke(UI.Yes__sir__Setting_absurd_speed_sir);
 
             _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 0xFFFF, 0, _dev.Timeout, out _);
         }
@@ -121,7 +122,7 @@ partial class Dump
 
             if(t is null)
             {
-                UpdateStatus?.Invoke("[slateblue1]Setting speed to [teal]8x[/] for scrambled reading.[/]");
+                UpdateStatus?.Invoke(UI.Setting_speed_to_8x_for_scrambled_reading);
 
                 _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
             }
@@ -147,7 +148,7 @@ partial class Dump
         }
         else
         {
-            UpdateStatus?.Invoke("[slateblue1]Setting speed to [teal]8x[/] for scrambled reading.[/]");
+            UpdateStatus?.Invoke(UI.Setting_speed_to_8x_for_scrambled_reading);
 
             _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
         }
@@ -226,11 +227,7 @@ partial class Dump
                     }
                 }
                 else
-                {
-                    UpdateStatus?.Invoke("[slateblue1]Setting speed to [teal]8x[/] for scrambled reading.[/]");
-
                     _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
-                }
 
                 speedSectorCounter = 0;
             }
@@ -502,5 +499,332 @@ partial class Dump
         EndProgress?.Invoke();
 
         _resume.BadBlocks = [.. _resume.BadBlocks.Distinct()];
+    }
+
+    /// <summary>Reads all the hidden track in CD-i Ready discs</summary>
+    /// <param name="blocks">Total number of positive sectors</param>
+    /// <param name="blockSize">Size of the read sector in bytes</param>
+    /// <param name="currentSpeed">Current read speed</param>
+    /// <param name="currentTry">Current dump hardware try</param>
+    /// <param name="extents">Extents</param>
+    /// <param name="ibgLog">IMGBurn log</param>
+    /// <param name="imageWriteDuration">Duration of image write</param>
+    /// <param name="leadOutExtents">Lead-out extents</param>
+    /// <param name="maxSpeed">Maximum speed</param>
+    /// <param name="mhddLog">MHDD log</param>
+    /// <param name="minSpeed">Minimum speed</param>
+    /// <param name="offsetBytes">Read offset</param>
+    /// <param name="sectorsForOffset">Sectors needed to fix offset</param>
+    /// <param name="subSize">Subchannel size in bytes</param>
+    /// <param name="supportedSubchannel">Drive's maximum supported subchannel</param>
+    /// <param name="totalDuration">Total commands duration</param>
+    /// <param name="cdiReadyReadAsAudio">Is the drive returning CD-i Ready hidden track as audio?</param>
+    /// <param name="tracks">Disc tracks</param>
+    /// <param name="subLog">Subchannel log</param>
+    /// <param name="desiredSubchannel">Subchannel desired to save</param>
+    /// <param name="isrcs">List of disc ISRCs</param>
+    /// <param name="mcn">Disc media catalogue number</param>
+    /// <param name="subchannelExtents">List of subchannels not yet dumped correctly</param>
+    /// <param name="smallestPregapLbaPerTrack">List of smallest pregap relative address per track</param>
+    void OmniDriveReadCdiReady(uint blockSize, ref double currentSpeed, DumpHardware currentTry, ExtentsULong extents,
+                               IbgLog ibgLog, ref double imageWriteDuration, ExtentsULong leadOutExtents,
+                               ref double maxSpeed, MhddLog mhddLog, ref double minSpeed, uint subSize,
+                               MmcSubchannel supportedSubchannel, ref double totalDuration, Track[] tracks,
+                               SubchannelLog subLog, MmcSubchannel desiredSubchannel, Dictionary<byte, string> isrcs,
+                               ref string mcn, HashSet<int> subchannelExtents, ulong blocks, bool cdiReadyReadAsAudio,
+                               int offsetBytes, int sectorsForOffset, Dictionary<byte, int> smallestPregapLbaPerTrack)
+    {
+        ulong              sectorSpeedStart = 0; // Used to calculate correct speed
+        bool               sense;                // Sense indicator
+        byte[]             cmdBuf;               // Data buffer
+        ReadOnlySpan<byte> senseBuf;             // Sense buffer
+        double             cmdDuration;          // Command execution time
+        const uint         sectorSize = 2352;    // Full sector size
+        Track              firstTrack = tracks.FirstOrDefault();
+        uint               blocksToRead; // How many sectors to read at once
+        var                outputOptical      = _outputPlugin as IWritableOpticalImage;
+        var                speedSectorCounter = 0;
+
+        if(firstTrack is null) return;
+
+        if(_absurdSpeed)
+        {
+            UpdateStatus?.Invoke(UI.Yes__sir__Setting_absurd_speed_sir);
+
+            _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 0xFFFF, 0, _dev.Timeout, out _);
+        }
+        else if(_hyperSpeed)
+        {
+            Track t = tracks.FirstOrDefault(t => t.StartSector <= _resume.NextBlock &&
+                                                 t.EndSector   >= _resume.NextBlock);
+
+            if(t is null)
+            {
+                UpdateStatus?.Invoke(UI.Setting_speed_to_8x_for_scrambled_reading);
+
+                _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
+            }
+            else if(t.Type == TrackType.Audio)
+            {
+                UpdateStatus?.Invoke(Localization.Core.Setting_speed_to_8x_for_audio_reading);
+
+                _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
+            }
+            else
+            {
+                UpdateStatus?.Invoke(_speed == 0xFFFF
+                                         ? Localization.Core.Setting_speed_to_MAX_for_data_reading
+                                         : string.Format(Localization.Core.Setting_speed_to_0_x_for_data_reading,
+                                                         _speed));
+
+                _speed *= _speedMultiplier;
+
+                if(_speed is 0 or > 0xFFFF) _speed = 0xFFFF;
+
+                _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, (ushort)_speed, 0, _dev.Timeout, out _);
+            }
+        }
+        else
+        {
+            UpdateStatus?.Invoke(UI.Setting_speed_to_8x_for_scrambled_reading);
+
+            _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
+        }
+
+        InitProgress?.Invoke();
+
+        for(ulong i = _resume.NextBlock; i <= firstTrack.EndSector; i += blocksToRead)
+        {
+            if(_aborted)
+            {
+                currentTry.Extents = ExtentsConverter.ToMetadata(extents);
+                UpdateStatus?.Invoke(Localization.Core.Aborted);
+
+                break;
+            }
+
+            var firstSectorToRead = (uint)i;
+
+            blocksToRead = _maximumReadable;
+
+            if(blocksToRead == 1) blocksToRead += (uint)sectorsForOffset;
+
+            if(offsetBytes < 0)
+            {
+                if(i == 0)
+                    firstSectorToRead = uint.MaxValue - (uint)(sectorsForOffset - 1); // -1
+                else
+                    firstSectorToRead -= (uint)sectorsForOffset;
+            }
+
+            if(speedSectorCounter > 1000)
+            {
+                if(_absurdSpeed)
+                    _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 0xFFFF, 0, _dev.Timeout, out _);
+                else if(_hyperSpeed)
+                {
+                    Track t = tracks.FirstOrDefault(t => t.StartSector <= _resume.NextBlock &&
+                                                         t.EndSector   >= _resume.NextBlock);
+
+                    if(t is null || t.Type == TrackType.Audio)
+                        _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
+                    else
+                    {
+                        if(_speed is 0 or > 0xFFFF) _speed = 0xFFFF;
+
+                        _dev.SetCdSpeed(out _,
+                                        RotationalControl.ClvAndImpureCav,
+                                        (ushort)_speed,
+                                        0,
+                                        _dev.Timeout,
+                                        out _);
+                    }
+                }
+                else
+                    _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
+
+                speedSectorCounter = 0;
+            }
+            else
+                speedSectorCounter += (int)blocksToRead;
+
+            if(currentSpeed > maxSpeed && currentSpeed > 0) maxSpeed = currentSpeed;
+
+            if(currentSpeed < minSpeed && currentSpeed > 0) minSpeed = currentSpeed;
+
+            UpdateProgress?.Invoke(string.Format(Localization.Core.Reading_sector_0_of_1_2,
+                                                 i,
+                                                 blocks,
+                                                 ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()),
+                                   (long)i,
+                                   (long)blocks);
+
+            _speedStopwatch.Start();
+
+            sense = _dev.OmniDriveReadCd(out cmdBuf,
+                                         out senseBuf,
+                                         firstSectorToRead,
+                                         blocksToRead,
+                                         _dev.Timeout,
+                                         out cmdDuration);
+
+            // OmniDrive seems to be doing something crazy, the command should return scrambled sectors, but as
+            // CD-i Ready is "magic", it seems to be making it return descrambled sectors here, so let's check
+            var dorothy   = new byte[2352];
+            var scrambled = true;
+            Array.Copy(cmdBuf, 0, dorothy, 0, 2352);
+            if(IsData(dorothy) && !IsScrambledData(dorothy, (int)firstSectorToRead, out _)) scrambled = false;
+
+            totalDuration += cmdDuration;
+            _speedStopwatch.Stop();
+            double elapsed;
+
+            if(!sense && !_dev.Error)
+            {
+                if(scrambled)
+                {
+                    FixOffsetData(offsetBytes,
+                                  sectorSize,
+                                  sectorsForOffset,
+                                  supportedSubchannel,
+                                  ref blocksToRead,
+                                  subSize,
+                                  ref cmdBuf,
+                                  blockSize,
+                                  false);
+                }
+
+                mhddLog.Write(i, cmdDuration);
+                ibgLog.Write(i, currentSpeed * 1024);
+                extents.Add(i, blocksToRead, true);
+                _writeStopwatch.Restart();
+
+                List<ulong> paintBad = [];
+
+                if(supportedSubchannel != MmcSubchannel.None)
+                {
+                    var data         = new byte[sectorSize * blocksToRead];
+                    var sub          = new byte[subSize    * blocksToRead];
+                    var tmpData      = new byte[sectorSize];
+                    var sectorStatus = new SectorStatus[blocksToRead];
+
+                    for(var b = 0; b < blocksToRead; b++)
+                    {
+                        sectorStatus[b] = SectorStatus.Dumped;
+                        Array.Copy(cmdBuf, (int)(0 + b * blockSize), tmpData, 0, sectorSize);
+                        if(scrambled) tmpData       = Sector.Scramble(tmpData);
+                        SectorFixResult fixedStatus = CdChecksums.FixSector(tmpData);
+
+                        if(fixedStatus == SectorFixResult.Correct) _correctSectors++;
+                        if(fixedStatus == SectorFixResult.Fixed) _fixedSectors++;
+
+                        if(fixedStatus == SectorFixResult.CouldNotFix) // Damaged
+                        {
+                            sectorStatus[b] = SectorStatus.Errored;
+                            _resume.BadBlocks.Add(i + (ulong)b);
+                            paintBad.Add(i          + (ulong)b);
+                        }
+
+                        Array.Copy(tmpData, 0, data, sectorSize * b, sectorSize);
+
+                        Array.Copy(cmdBuf, (int)(sectorSize + b * blockSize), sub, subSize * b, subSize);
+                    }
+
+                    outputOptical.WriteSectorsLong(data, i, false, blocksToRead, sectorStatus);
+
+                    bool indexesChanged = Media.CompactDisc.WriteSubchannelToImage(supportedSubchannel,
+                        desiredSubchannel,
+                        sub,
+                        i,
+                        blocksToRead,
+                        subLog,
+                        isrcs,
+                        1,
+                        ref mcn,
+                        tracks,
+                        subchannelExtents,
+                        _fixSubchannelPosition,
+                        outputOptical,
+                        _fixSubchannel,
+                        _fixSubchannelCrc,
+                        UpdateStatus,
+                        smallestPregapLbaPerTrack,
+                        true,
+                        out List<ulong> newPregapSectors);
+
+                    // Set tracks and go back
+                    if(indexesChanged)
+                    {
+                        outputOptical.SetTracks(tracks.ToList());
+
+                        _resume.BadBlocks.AddRange(newPregapSectors);
+
+                        if(i >= blocksToRead)
+                            i -= blocksToRead;
+                        else
+                            i = 0;
+
+                        if(i > 0) i--;
+
+                        continue;
+                    }
+                }
+                else
+                {
+                    var tmpData = new byte[sectorSize];
+                    var data    = new byte[sectorSize * blocksToRead];
+                    var status  = new SectorStatus[blocksToRead];
+
+                    for(var b = 0; b < blocksToRead; b++)
+                    {
+                        status[b] = SectorStatus.Dumped;
+                        Array.Copy(cmdBuf, (int)(b * sectorSize), tmpData, 0, sectorSize);
+                        if(scrambled) tmpData       = Sector.Scramble(tmpData);
+                        SectorFixResult fixedStatus = CdChecksums.FixSector(tmpData);
+                        if(fixedStatus == SectorFixResult.Correct) _correctSectors++;
+                        if(fixedStatus == SectorFixResult.Fixed) _fixedSectors++;
+
+                        if(fixedStatus == SectorFixResult.CouldNotFix) // Damaged
+                        {
+                            _resume.BadBlocks.Add(i + (ulong)b);
+                            paintBad.Add(i          + (ulong)b);
+                            status[b] = SectorStatus.Errored;
+                        }
+
+                        Array.Copy(tmpData, 0, data, sectorSize * b, sectorSize);
+                    }
+
+                    outputOptical.WriteSectorsLong(data, i, false, blocksToRead, status);
+                }
+
+                imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
+
+                _mediaGraph?.PaintSectorsGood(i, blocksToRead);
+            }
+            else
+            {
+                _errorLog?.WriteLine(i, _dev.Error, _dev.LastError, senseBuf.ToArray());
+
+                _resume.NextBlock = firstTrack.EndSector + 1;
+
+                break;
+            }
+
+            _writeStopwatch.Stop();
+            sectorSpeedStart += blocksToRead;
+
+            _resume.NextBlock = i + blocksToRead;
+
+            elapsed = _speedStopwatch.Elapsed.TotalSeconds;
+
+            if(elapsed <= 0 || sectorSpeedStart * blockSize < 524288) continue;
+
+            currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed);
+            sectorSpeedStart = 0;
+            _speedStopwatch.Reset();
+        }
+
+        _speedStopwatch.Stop();
+        EndProgress?.Invoke();
     }
 }

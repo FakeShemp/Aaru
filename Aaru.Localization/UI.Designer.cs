@@ -11387,5 +11387,17 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Detected_Omnidrive", resourceCulture);
             }
         }
+        
+        public static string Yes__sir__Setting_absurd_speed_sir {
+            get {
+                return ResourceManager.GetString("Yes__sir__Setting_absurd_speed_sir", resourceCulture);
+            }
+        }
+        
+        public static string Setting_speed_to_8x_for_scrambled_reading {
+            get {
+                return ResourceManager.GetString("Setting_speed_to_8x_for_scrambled_reading", resourceCulture);
+            }
+        }
     }
 }
