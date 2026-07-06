@@ -484,7 +484,7 @@ partial class Dump
 
                         sense = _dev.ScsiInquiry(out byte[] inqBuf, out _);
 
-                        if(sense || Inquiry.Decode(inqBuf)?.KreonPresent != true)
+                        if((sense || Inquiry.Decode(inqBuf)?.KreonPresent != true) && !_omnidrive)
                         {
                             StoppingErrorMessage?.Invoke(Localization.Core
                                                                      .Dumping_Xbox_Game_Discs_requires_a_drive_with_Kreon_firmware);

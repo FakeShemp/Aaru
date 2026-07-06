@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : XGD.cs
+// Filename       : Kreon.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Core algorithms.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Dumps Xbox Game Discs.
+//     Dumps Xbox Game Discs using drives with the Kreon firmware.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -66,7 +66,7 @@ partial class Dump
     /// <summary>Dumps an Xbox Game Disc using a Kreon drive</summary>
     /// <param name="mediaTags">Media tags as retrieved in MMC layer</param>
     /// <param name="dskType">Disc type as detected in MMC layer</param>
-    void Xgd(Dictionary<MediaTagType, byte[]> mediaTags, MediaType dskType)
+    void DumpXgdKreon(Dictionary<MediaTagType, byte[]> mediaTags, MediaType dskType)
     {
         bool       sense;
         const uint blockSize     = 2048;
@@ -1105,8 +1105,9 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-                for(ulong i = ur; i < ur + blocksToRead; i++)
-                    tmpList.Add(i);
+            {
+                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
+            }
 
             tmpList.Sort();
 

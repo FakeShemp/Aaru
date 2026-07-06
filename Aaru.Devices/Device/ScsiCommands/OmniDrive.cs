@@ -106,9 +106,8 @@ public partial class Device
         if(reserved5.Length < omnidrive.Length) return false;
 
         for(var i = 0; i < omnidrive.Length; i++)
-        {
-            if(reserved5[i] != omnidrive[i]) return false;
-        }
+            if(reserved5[i] != omnidrive[i])
+                return false;
 
         major    = reserved5[9];
         minor    = reserved5[10];
@@ -127,9 +126,9 @@ public partial class Device
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="fua">Set to <c>true</c> if the command should use FUA.</param>
     /// <param name="descramble">Set to <c>true</c> if the data should be descrambled by the device.</param>
-    public bool OmniDriveReadRawDvd(out byte[] buffer,         out ReadOnlySpan<byte> senseBuffer, uint lba,
-                                    uint       transferLength, uint timeout, out double duration, bool fua = false,
-                                    bool       descramble = true)
+    public bool OmniDriveReadRawDvd(out byte[] buffer,            out ReadOnlySpan<byte> senseBuffer, uint lba,
+                                    uint       transferLength,    uint timeout, out double duration, bool fua = false,
+                                    bool       descramble = true, bool rawAddresing = false)
     {
         senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
@@ -138,7 +137,7 @@ public partial class Device
         FillOmniDriveReadDvdCdb(cdb,
                                 lba,
                                 transferLength,
-                                EncodeOmniDriveReadCdb1(OmniDriveDiscType.DVD, false, fua, descramble));
+                                EncodeOmniDriveReadCdb1(OmniDriveDiscType.DVD, rawAddresing, fua, descramble));
 
         LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
