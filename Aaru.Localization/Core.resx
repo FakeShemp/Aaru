@@ -1734,7 +1734,7 @@
         <value>[slateblue1]Getting video partition size[/]</value>
     </data>
     <data name="Locking_drive" xml:space="preserve">
-    <value>Locking drive.</value>
+    <value>[slateblue1]Locking drive.[/]</value>
   </data>
     <data name="Cannot_lock_drive_not_continuing" xml:space="preserve">
         <value>[red]Cannot lock drive, not continuing.[/]</value>
@@ -1779,7 +1779,7 @@
         <value>[red]Cannot decode PFI.[/]</value>
     </data>
     <data name="WxRipper_PFI_Data_Area_Start_PSN_0_sectors" xml:space="preserve">
-        <value>[slateblue1][italic]WxRipper[/] PFI's Data Area Start PSN: [lime]{0}[/lime] sectors[/]</value>
+        <value>[slateblue1][italic]WxRipper[/] PFI's Data Area Start PSN: [lime]{0}[/] sectors[/]</value>
     </data>
     <data name="WxRipper_PFI_Layer_0_End_PSN_0_sectors" xml:space="preserve">
         <value>[slateblue1][italic]WxRipper[/] PFI's Layer [teal]0[/] End PSN: [lime]{0}[/] sectors[/]</value>

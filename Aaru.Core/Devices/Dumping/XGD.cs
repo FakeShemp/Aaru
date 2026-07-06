@@ -76,6 +76,8 @@ partial class Dump
         double     maxSpeed      = double.MinValue;
         double     minSpeed      = double.MaxValue;
 
+        UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0, dskType.Humanize()));
+
         if(_outputPlugin is not IWritableImage outputFormat)
         {
             StoppingErrorMessage?.Invoke(Localization.Core.Image_is_not_writable_aborting);
@@ -97,9 +99,9 @@ partial class Dump
             }
         }
 
-        if(mediaTags.ContainsKey(MediaTagType.DVD_PFI)) mediaTags.Remove(MediaTagType.DVD_PFI);
+        mediaTags.Remove(MediaTagType.DVD_PFI);
 
-        if(mediaTags.ContainsKey(MediaTagType.DVD_DMI)) mediaTags.Remove(MediaTagType.DVD_DMI);
+        mediaTags.Remove(MediaTagType.DVD_DMI);
 
         // Drive shall move to lock state when a new disc is inserted. Old kreon versions do not lock correctly so save this
         sense = _dev.ReadCapacity(out byte[] coldReadCapacity, out ReadOnlySpan<byte> senseBuf, _dev.Timeout, out _);
@@ -497,14 +499,14 @@ partial class Dump
 
         var mhddLog = new MhddLog(_outputPrefix + ".mhddlog.bin",
                                   _dev,
-                                  blocks,
+                                  totalSize,
                                   blockSize,
                                   blocksToRead,
                                   _private,
                                   _dimensions);
 
         var ibgLog = new IbgLog(_outputPrefix + ".ibg", 0x0010);
-        ret = outputFormat.Create(_outputPath, dskType, _formatOptions, blocks, 0, 0, blockSize);
+        ret = outputFormat.Create(_outputPath, dskType, _formatOptions, totalSize, 0, 0, blockSize);
 
         // Cannot create image
         if(!ret)
@@ -586,7 +588,14 @@ partial class Dump
         InitProgress?.Invoke();
         double elapsed = 0;
 
-        for(var e = 0; e <= 16; e++)
+        // XGD1 uses 16 protection extents (indices 0-15).
+        // XGD2 and XGD3 only have actual protection zones at indices 0 and 3;
+        // the other entries contain challenge-response authentication data, not unreadable sector ranges.
+        int[] protectionExtentIndices = dskType == MediaType.XGD
+                                            ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+                                            : [0, 3];
+
+        for(var ei = 0; ei <= protectionExtentIndices.Length; ei++)
         {
             if(_aborted)
             {
@@ -602,8 +611,10 @@ partial class Dump
             ulong extentStart, extentEnd;
 
             // Extents
-            if(e < 16)
+            if(ei < protectionExtentIndices.Length)
             {
+                int e = protectionExtentIndices[ei];
+
                 if(xboxSs.Value.Extents[e].StartPSN <= xboxSs.Value.Layer0EndPSN)
                     extentStart = xboxSs.Value.Extents[e].StartPSN - 0x30000;
                 else
@@ -623,11 +634,11 @@ partial class Dump
                 }
             }
 
-            // After last extent
+            // After last extent — sentinel: extentEnd < extentStart so the protection write loop does not run
             else
             {
                 extentStart = blocks;
-                extentEnd   = blocks;
+                extentEnd   = blocks - 1;
             }
 
             if(currentSector > extentEnd) continue;
@@ -793,11 +804,15 @@ partial class Dump
 
         EndProgress?.Invoke();
 
+        // Ensure middle zone starts right after the locked-capacity boundary regardless of where
+        // the game loop ended (protection zone 3 may push currentSector past blocks)
+        if(!_aborted) currentSector = blocks;
+
         // Middle Zone D
         UpdateStatus?.Invoke(Localization.Core.Writing_Middle_Zone_D_empty);
         InitProgress?.Invoke();
 
-        for(ulong middle = currentSector - blocks - 1; middle < middleZone - 1; middle += blocksToRead)
+        for(ulong middle = 0; middle < middleZone; middle += blocksToRead)
         {
             if(_aborted)
             {
@@ -807,29 +822,28 @@ partial class Dump
                 break;
             }
 
-            if(middleZone - 1 - middle < blocksToRead) blocksToRead = (uint)(middleZone - 1 - middle);
+            if(middleZone - middle < blocksToRead) blocksToRead = (uint)(middleZone - middle);
 
             UpdateProgress?.Invoke(string.Format(Localization.Core.Reading_sector_0_of_1_2,
-                                                 middle + currentSector,
+                                                 currentSector,
                                                  totalSize,
                                                  ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()),
-                                   (long)(middle + currentSector),
+                                   (long)currentSector,
                                    (long)totalSize);
 
-            mhddLog.Write(middle + currentSector, _speedStopwatch.Elapsed.TotalMilliseconds, blocksToRead);
-            ibgLog.Write(middle  + currentSector, currentSpeed * 1024);
+            mhddLog.Write(currentSector, _speedStopwatch.Elapsed.TotalMilliseconds, blocksToRead);
+            ibgLog.Write(currentSector, currentSpeed * 1024);
 
             // Write empty data
             _writeStopwatch.Restart();
 
             outputFormat.WriteSectors(new byte[blockSize * blocksToRead],
-                                      middle + currentSector,
+                                      currentSector,
                                       false,
                                       blocksToRead,
                                       Enumerable.Repeat(SectorStatus.NotDumped, (int)blocksToRead).ToArray());
 
             imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
-            extents.Add(currentSector, blocksToRead, true);
             _writeStopwatch.Stop();
 
             currentSector     += blocksToRead;

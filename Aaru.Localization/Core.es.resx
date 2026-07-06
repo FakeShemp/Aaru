@@ -1524,7 +1524,7 @@
         <value>[fuchsiaLOCATE[/] [slateblue1]funciona.[/]</value>
     </data>
     <data name="Locking_drive" xml:space="preserve">
-    <value>Bloqueando la unidad.</value>
+    <value>[slateblue1]Bloqueando la unidad.[/]</value>
   </data>
     <data name="Log_section_separator" xml:space="preserve">
     <value>####################################################################</value>
