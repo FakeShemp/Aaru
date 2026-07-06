@@ -77,7 +77,9 @@ public static class SS
             Unknown8 = new byte[16],
             Unknown9 = new byte[16],
             Unknown10 = new byte[303],
-            Unknown11 = new byte[104],
+            Unknown11 = new byte[103],
+            RangeVersion = response[1631],
+            RangeCount = response[1632],
             Extents = new SecuritySectorExtent[23],
             ExtentsCopy = new SecuritySectorExtent[23]
         };
@@ -110,7 +112,7 @@ public static class SS
         Array.Copy(response, 1120, ss.Unknown8,  0, 16);
         Array.Copy(response, 1180, ss.Unknown9,  0, 16);
         Array.Copy(response, 1208, ss.Unknown10, 0, 303);
-        Array.Copy(response, 1528, ss.Unknown11, 0, 104);
+        Array.Copy(response, 1528, ss.Unknown11, 0, 103);
 
         for(var i = 0; i < 23; i++)
         {
@@ -354,60 +356,64 @@ public static class SS
     public struct SecuritySector
     {
         /// <summary>Byte 0, bits 7 to 4 Disk category field</summary>
-        public DiskCategory DiskCategory;
+        public DiskCategory       DiskCategory;
         /// <summary>Byte 0, bits 3 to 0 Media version</summary>
-        public byte PartVersion;
+        public byte               PartVersion;
         /// <summary>Byte 1, bits 7 to 4 120mm if 0, 80mm if 1. If UMD (60mm) 0 also. Reserved rest of values</summary>
-        public DVDSize DiscSize;
+        public DVDSize            DiscSize;
         /// <summary>Byte 1, bits 3 to 0 Maximum data rate</summary>
-        public MaximumRateField MaximumRate;
+        public MaximumRateField   MaximumRate;
         /// <summary>Byte 2, bit 7 Reserved</summary>
-        public bool Reserved3;
+        public bool               Reserved3;
         /// <summary>Byte 2, bits 6 to 5 Number of layers</summary>
-        public byte Layers;
+        public byte               Layers;
         /// <summary>Byte 2, bit 4 Track path</summary>
-        public bool TrackPath;
+        public bool               TrackPath;
         /// <summary>Byte 2, bits 3 to 0 Layer type</summary>
         public LayerTypeFieldMask LayerType;
         /// <summary>Byte 3, bits 7 to 4 Linear density field</summary>
         public LinearDensityField LinearDensity;
         /// <summary>Byte 3, bits 3 to 0 Track density field</summary>
-        public TrackDensityField TrackDensity;
+        public TrackDensityField  TrackDensity;
         /// <summary>Bytes 4 to 7 PSN where Data Area starts</summary>
-        public uint DataAreaStartPSN;
+        public uint               DataAreaStartPSN;
         /// <summary>Bytes 8 to 11 PSN where Data Area ends</summary>
-        public uint DataAreaEndPSN;
+        public uint               DataAreaEndPSN;
         /// <summary>Bytes 12 to 15 PSN where Data Area ends in Layer 0</summary>
-        public uint Layer0EndPSN;
+        public uint               Layer0EndPSN;
 
         /// <summary>Byte 27 Always 0x06 on XGD3</summary>
-        public byte Unknown1;
+        public byte                   Unknown1;
         /// <summary>Bytes 256 to 283 Unknown, XGD2 and XGD3</summary>
-        public byte[] Unknown2;
+        public byte[]                 Unknown2;
         /// <summary>Bytes 284 to 719 Unknown, XGD3</summary>
-        public byte[] Unknown3;
+        public byte[]                 Unknown3;
         /// <summary>Bytes 720 to 723 Unknown</summary>
-        public byte[] Unknown4;
+        public byte[]                 Unknown4;
         /// <summary>Bytes 724 to 767 Unknown, XGD3</summary>
-        public byte[] Unknown5;
+        public byte[]                 Unknown5;
         /// <summary>Byte 768 Version of challenge table</summary>
-        public byte ChallengeTableVersion;
+        public byte                   ChallengeTableVersion;
         /// <summary>Byte 769 Number of challenge entries</summary>
-        public byte NoChallengeEntries;
+        public byte                   NoChallengeEntries;
         /// <summary>Bytes 770 to 1022 Unknown</summary>
-        public ChallengeEntry[] ChallengeEntries;
+        public ChallengeEntry[]       ChallengeEntries;
         /// <summary>Byte 1023 Unknown</summary>
-        public byte Unknown6;
+        public byte                   Unknown6;
         /// <summary>Bytes 1052 to 1099 Unknown, XGD1 only</summary>
-        public byte[] Unknown7;
+        public byte[]                 Unknown7;
         /// <summary>Bytes 1120 to 1135 Unknown, XGD2 and XGD3</summary>
-        public byte[] Unknown8;
+        public byte[]                 Unknown8;
         /// <summary>Bytes 1180 to 1195 Unknown</summary>
-        public byte[] Unknown9;
+        public byte[]                 Unknown9;
         /// <summary>Bytes 1208 to 1511 Unknown</summary>
-        public byte[] Unknown10;
-        /// <summary>Bytes 1528 to 1632</summary>
-        public byte[] Unknown11;
+        public byte[]                 Unknown10;
+        /// <summary>Bytes 1528 to 1630</summary>
+        public byte[]                 Unknown11;
+        /// <summary>Byte 1631 Range version</summary>
+        public byte                   RangeVersion;
+        /// <summary>Byte 1632 Number of valid security extent ranges</summary>
+        public byte                   RangeCount;
         /// <summary>Bytes 1633 to 1839 Security extents, 23 entries of 9 bytes</summary>
         public SecuritySectorExtent[] Extents;
         /// <summary>Bytes 1840 to 2047 Copy of the security extents, 23 entries of 9 bytes</summary>
