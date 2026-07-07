@@ -2676,6 +2676,9 @@
     <data name="Volume_was_last_updated_on_0_" xml:space="preserve">
     <value>Volume was last updated on {0}</value>
   </data>
+    <data name="GDFX_Name" xml:space="preserve">
+    <value>Xbox DVD File System</value>
+  </data>
     <data name="LIF_Name" xml:space="preserve">
     <value>HP Logical Interchange Format Plugin</value>
   </data>

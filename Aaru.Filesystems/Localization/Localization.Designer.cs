@@ -5343,6 +5343,12 @@ namespace Aaru.Filesystems {
             }
         }
 
+        internal static string GDFX_Name {
+            get {
+                return ResourceManager.GetString("GDFX_Name", resourceCulture);
+            }
+        }
+
         internal static string LIF_Name {
             get {
                 return ResourceManager.GetString("LIF_Name", resourceCulture);
