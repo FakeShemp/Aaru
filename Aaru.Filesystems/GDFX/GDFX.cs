@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -48,11 +49,15 @@ public sealed partial class GDFX : IReadOnlyFilesystem
 {
     const string MODULE_NAME = "GDFX plugin";
 
-    bool        _debug;
-    Encoding    _encoding;
-    IMediaImage _imagePlugin;
-    bool        _mounted;
-    Partition   _partition;
+    bool                                   _debug;
+    Dictionary<string, List<DecodedEntry>> _directoryCache;
+    Encoding                               _encoding;
+    IMediaImage                            _imagePlugin;
+    bool                                   _mounted;
+    Partition                              _partition;
+    ulong                                  _partitionBaseOffset;
+    FileSystemInfo                         _statFs;
+    VolumeDescriptor                       _volumeDescriptor;
 
     /// <inheritdoc />
     public FileSystem                                                Metadata         { get; private set; }
