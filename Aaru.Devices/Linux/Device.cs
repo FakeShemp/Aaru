@@ -54,7 +54,7 @@ partial class Device : Devices.Device, IDisposable
     private       nuint _capacity;
     /// <summary>Gets the file handle representing this device</summary>
     /// <value>The file handle</value>
-    int _fileDescriptor;
+    int                 _fileDescriptor;
 
 // Persistent, aligned native buffer
     private nuint _nativeBuffer;
@@ -88,13 +88,33 @@ partial class Device : Devices.Device, IDisposable
     {
         errno = ErrorNumber.NoError;
 
+        // Prefer /dev/sg* over block devices (/dev/sr*, /dev/sd*, /dev/st*) so that the kernel
+        // does not apply SCSI command filtering, which blocks vendor-specific opcodes (e.g. OmniDrive
+        // 0xC0) without CAP_SYS_RAWIO.  The sg device is looked up via sysfs and used only for
+        // opening; all other sysfs queries below continue to use the original devicePath.
+        string openPath = devicePath;
+
+        if(devicePath.StartsWith("/dev/sr", StringComparison.Ordinal) ||
+           devicePath.StartsWith("/dev/sd", StringComparison.Ordinal) ||
+           devicePath.StartsWith("/dev/st", StringComparison.Ordinal))
+        {
+            string sgDir = "/sys/block/" + Path.GetFileName(devicePath) + "/device/scsi_generic";
+
+            if(Directory.Exists(sgDir))
+            {
+                string[] sgEntries = Directory.GetFileSystemEntries(sgDir, "*", SearchOption.TopDirectoryOnly);
+
+                if(sgEntries.Length > 0) openPath = "/dev/" + Path.GetFileName(sgEntries[0]);
+            }
+        }
+
         var dev = new Device
         {
             PlatformId      = DetectOS.GetRealPlatformID(),
             Timeout         = 15,
             Error           = false,
             IsRemovable     = false,
-            _fileDescriptor = Extern.open(devicePath, FileFlags.ReadWrite | FileFlags.NonBlocking | FileFlags.CreateNew)
+            _fileDescriptor = Extern.open(openPath, FileFlags.ReadWrite | FileFlags.NonBlocking | FileFlags.CreateNew)
         };
 
         if(dev._fileDescriptor < 0)
@@ -103,7 +123,7 @@ partial class Device : Devices.Device, IDisposable
 
             if(dev.LastError is 13 or 30) // EACCES or EROFS
             {
-                dev._fileDescriptor = Extern.open(devicePath, FileFlags.Readonly | FileFlags.NonBlocking);
+                dev._fileDescriptor = Extern.open(openPath, FileFlags.Readonly | FileFlags.NonBlocking);
 
                 if(dev._fileDescriptor < 0)
                 {
