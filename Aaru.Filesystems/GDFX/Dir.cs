@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : GDFX.cs
+// Filename       : Dir.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Microsoft Xbox DVD File System plugin.
@@ -26,51 +26,29 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
-// References:
-//   https://github.com/drpetersonfernandes/SimpleXisoDrive
-//   https://github.com/emoose/xbox-winfsp
-//   https://github.com/multimediamike/xbfuse
-//   https://github.com/thrimbor/xbiso
-//   https://github.com/XboxDev/extract-xiso
-//   https://github.com/antangelo/xdvdfs
-/// <inheritdoc />
-/// <summary>Implements the Xbox DVD File System (XDVDFS / GDFX)</summary>
-public sealed partial class GDFX : IReadOnlyFilesystem
+public sealed partial class GDFX
 {
-    const string MODULE_NAME = "GDFX plugin";
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node)
+    {
+        node = null;
 
-    bool        _debug;
-    Encoding    _encoding;
-    IMediaImage _imagePlugin;
-    bool        _mounted;
-    Partition   _partition;
+        return ErrorNumber.NotImplemented;
+    }
 
     /// <inheritdoc />
-    public FileSystem                                                Metadata         { get; private set; }
-    /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
-    /// <inheritdoc />
-    public Dictionary<string, string>                                Namespaces       => [];
-
-#region IFilesystem Members
+    public ErrorNumber CloseDir(IDirNode node) => ErrorNumber.NotImplemented;
 
     /// <inheritdoc />
-    public string Name => Localization.GDFX_Name;
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
 
-    /// <inheritdoc />
-    public Guid Id => new("4B5C6D7E-8F90-1234-5678-ABCDEF012345");
-
-    /// <inheritdoc />
-    public string Author => Authors.NataliaPortillo;
-
-#endregion
+        return ErrorNumber.NotImplemented;
+    }
 }
