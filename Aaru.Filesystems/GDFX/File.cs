@@ -27,7 +27,6 @@
 // ****************************************************************************/
 
 using System;
-using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -154,31 +153,5 @@ public sealed partial class GDFX
         read            =  toRead;
 
         return ErrorNumber.NoError;
-    }
-
-    /// <summary>Resolves a path string to a directory entry in the cache.</summary>
-    ErrorNumber ResolveEntry(string path, out DecodedEntry entry)
-    {
-        entry = null;
-
-        string[] parts = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
-
-        if(parts.Length == 0) return ErrorNumber.InvalidArgument;
-
-        string dirPath  = parts.Length == 1 ? "/" : "/" + string.Join("/", parts[..^1]);
-        string fileName = parts[^1];
-
-        if(!_directoryCache.TryGetValue(dirPath, out List<DecodedEntry> dirEntries)) return ErrorNumber.NoSuchFile;
-
-        foreach(DecodedEntry e in dirEntries)
-        {
-            if(!string.Equals(e.Name, fileName, StringComparison.OrdinalIgnoreCase)) continue;
-
-            entry = e;
-
-            return ErrorNumber.NoError;
-        }
-
-        return ErrorNumber.NoSuchFile;
     }
 }

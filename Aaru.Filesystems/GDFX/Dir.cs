@@ -27,10 +27,11 @@
 // ****************************************************************************/
 
 using System.Collections.Generic;
+using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Helpers;
 using Aaru.Logging;
+using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Filesystems;
 
@@ -41,18 +42,48 @@ public sealed partial class GDFX
     {
         node = null;
 
-        return ErrorNumber.NotImplemented;
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        string normalizedPath = string.IsNullOrEmpty(path)
+                                    ? "/"
+                                    : path.StartsWith('/')
+                                        ? path
+                                        : "/" + path;
+
+        if(!_directoryCache.TryGetValue(normalizedPath, out List<DecodedEntry> entries)) return ErrorNumber.NoSuchFile;
+
+        node = new GdfxDirNode
+        {
+            Path     = normalizedPath,
+            Contents = entries.Select(e => e.Name).ToArray(),
+            Position = 0
+        };
+
+        return ErrorNumber.NoError;
     }
 
     /// <inheritdoc />
-    public ErrorNumber CloseDir(IDirNode node) => ErrorNumber.NotImplemented;
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(node is not GdfxDirNode) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
 
     /// <inheritdoc />
     public ErrorNumber ReadDir(IDirNode node, out string filename)
     {
         filename = null;
 
-        return ErrorNumber.NotImplemented;
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not GdfxDirNode dirNode) return ErrorNumber.InvalidArgument;
+
+        if(dirNode.Position >= dirNode.Contents.Length) return ErrorNumber.NoError;
+
+        filename = dirNode.Contents[dirNode.Position++];
+
+        return ErrorNumber.NoError;
     }
 
     /// <summary>
