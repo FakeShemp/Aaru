@@ -5349,6 +5349,54 @@ namespace Aaru.Filesystems {
             }
         }
 
+        internal static string Xbox_DVD_File_System {
+            get {
+                return ResourceManager.GetString("Xbox_DVD_File_System", resourceCulture);
+            }
+        }
+
+        internal static string Disc_type_0 {
+            get {
+                return ResourceManager.GetString("Disc_type_0", resourceCulture);
+            }
+        }
+
+        internal static string Root_directory_sector_0 {
+            get {
+                return ResourceManager.GetString("Root_directory_sector_0", resourceCulture);
+            }
+        }
+
+        internal static string Rebuilt_XISO {
+            get {
+                return ResourceManager.GetString("Rebuilt_XISO", resourceCulture);
+            }
+        }
+
+        internal static string XGD1 {
+            get {
+                return ResourceManager.GetString("XGD1", resourceCulture);
+            }
+        }
+
+        internal static string XGD2 {
+            get {
+                return ResourceManager.GetString("XGD2", resourceCulture);
+            }
+        }
+
+        internal static string XGD3 {
+            get {
+                return ResourceManager.GetString("XGD3", resourceCulture);
+            }
+        }
+
+        internal static string Standard_Xbox_image {
+            get {
+                return ResourceManager.GetString("Standard_Xbox_image", resourceCulture);
+            }
+        }
+
         internal static string LIF_Name {
             get {
                 return ResourceManager.GetString("LIF_Name", resourceCulture);
