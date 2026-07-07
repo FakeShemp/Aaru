@@ -26,9 +26,12 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
+using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 
 namespace Aaru.Filesystems;
 
@@ -39,7 +42,11 @@ public sealed partial class GDFX
     {
         stat = null;
 
-        return ErrorNumber.NotImplemented;
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        stat = _statFs.ShallowCopy();
+
+        return ErrorNumber.NoError;
     }
 
     /// <inheritdoc />
@@ -47,7 +54,41 @@ public sealed partial class GDFX
     {
         stat = null;
 
-        return ErrorNumber.NotImplemented;
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(string.IsNullOrEmpty(path) || string.Equals(path, "/", StringComparison.OrdinalIgnoreCase))
+        {
+            stat = new FileEntryInfo
+            {
+                Attributes = FileAttributes.Directory,
+                BlockSize  = SECTOR_SIZE,
+                Links      = 1
+            };
+
+            return ErrorNumber.NoError;
+        }
+
+        ErrorNumber errno = ResolveEntry(path, out DecodedEntry entry);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        FileAttributes attrs = entry.IsDirectory ? FileAttributes.Directory : FileAttributes.File;
+
+        if((entry.Attributes & ATTR_READONLY) != 0) attrs |= FileAttributes.ReadOnly;
+        if((entry.Attributes & ATTR_HIDDEN)   != 0) attrs |= FileAttributes.Hidden;
+        if((entry.Attributes & ATTR_SYSTEM)   != 0) attrs |= FileAttributes.System;
+        if((entry.Attributes & ATTR_ARCHIVE)  != 0) attrs |= FileAttributes.Archive;
+
+        stat = new FileEntryInfo
+        {
+            Attributes = attrs,
+            BlockSize  = SECTOR_SIZE,
+            Blocks     = (entry.DataSize + SECTOR_SIZE - 1) / SECTOR_SIZE,
+            Length     = entry.DataSize,
+            Links      = 1
+        };
+
+        return ErrorNumber.NoError;
     }
 
     /// <inheritdoc />
@@ -55,17 +96,89 @@ public sealed partial class GDFX
     {
         node = null;
 
-        return ErrorNumber.NotImplemented;
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber errno = ResolveEntry(path, out DecodedEntry entry);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(entry.IsDirectory) return ErrorNumber.IsDirectory;
+
+        node = new GdfxFileNode
+        {
+            Path        = path,
+            Length      = entry.DataSize,
+            Offset      = 0,
+            StartSector = entry.DataSector
+        };
+
+        return ErrorNumber.NoError;
     }
 
     /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node) => ErrorNumber.NotImplemented;
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(node is not GdfxFileNode) return ErrorNumber.InvalidArgument;
+
+        return ErrorNumber.NoError;
+    }
 
     /// <inheritdoc />
     public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
     {
         read = 0;
 
-        return ErrorNumber.NotImplemented;
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not GdfxFileNode fileNode) return ErrorNumber.InvalidArgument;
+
+        if(length <= 0) return ErrorNumber.InvalidArgument;
+        if(buffer is null) return ErrorNumber.InvalidArgument;
+        if(buffer.Length   < length) return ErrorNumber.InvalidArgument;
+        if(fileNode.Offset >= fileNode.Length) return ErrorNumber.NoError;
+
+        long remaining = fileNode.Length - fileNode.Offset;
+        long toRead    = Math.Min(length, remaining);
+
+        var  firstSector = (uint)(fileNode.Offset / SECTOR_SIZE);
+        uint sectorCount = (uint)((fileNode.Offset + toRead + SECTOR_SIZE - 1) / SECTOR_SIZE) - firstSector;
+
+        ErrorNumber errno = ReadGameSectors(fileNode.StartSector + firstSector, sectorCount, out byte[] sectorData);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        long offsetInFirstSector = fileNode.Offset % SECTOR_SIZE;
+        Array.Copy(sectorData, offsetInFirstSector, buffer, 0, toRead);
+
+        fileNode.Offset += toRead;
+        read            =  toRead;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Resolves a path string to a directory entry in the cache.</summary>
+    ErrorNumber ResolveEntry(string path, out DecodedEntry entry)
+    {
+        entry = null;
+
+        string[] parts = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
+
+        if(parts.Length == 0) return ErrorNumber.InvalidArgument;
+
+        string dirPath  = parts.Length == 1 ? "/" : "/" + string.Join("/", parts[..^1]);
+        string fileName = parts[^1];
+
+        if(!_directoryCache.TryGetValue(dirPath, out List<DecodedEntry> dirEntries)) return ErrorNumber.NoSuchFile;
+
+        foreach(DecodedEntry e in dirEntries)
+        {
+            if(!string.Equals(e.Name, fileName, StringComparison.OrdinalIgnoreCase)) continue;
+
+            entry = e;
+
+            return ErrorNumber.NoError;
+        }
+
+        return ErrorNumber.NoSuchFile;
     }
 }
