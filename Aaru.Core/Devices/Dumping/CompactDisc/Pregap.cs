@@ -160,7 +160,7 @@ partial class Dump
                 sectorIsAudio[bufferIndex] = !IsData(sectorData);
                 readSuccess[bufferIndex]   = true;
 
-                if(firstTrackPregapBlock >= -150)
+                if(firstTrackPregapBlock is >= -150 and < 0)
                 {
                     firstTrackPregapSectorsGood++;
                     totalDuration += cmdDuration;
@@ -169,7 +169,7 @@ partial class Dump
             }
             else
             {
-                if(firstTrackPregapBlock >= -150)
+                if(firstTrackPregapBlock is >= -150 and < 0)
                     (_mediaGraph as Spiral)?.PaintCdLeadInSector(firstTrackPregapBlock, SKColors.Red);
             }
 
