@@ -109,9 +109,9 @@ partial class Dump
         double elapsed               = 0;
         var    speedSectorCounter    = 0;
 
-        if(_absurdSpeed)
+        if(_ludicrousSpeed)
         {
-            UpdateStatus?.Invoke(UI.Yes__sir__Setting_absurd_speed_sir);
+            UpdateStatus?.Invoke(UI.Yes__sir__Setting_ludicrous_speed_sir);
 
             _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 0xFFFF, 0, _dev.Timeout, out _);
         }
@@ -205,7 +205,7 @@ partial class Dump
 
             if(speedSectorCounter > 1000)
             {
-                if(_absurdSpeed)
+                if(_ludicrousSpeed)
                     _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 0xFFFF, 0, _dev.Timeout, out _);
                 else if(_hyperSpeed)
                 {
@@ -547,9 +547,9 @@ partial class Dump
 
         if(firstTrack is null) return;
 
-        if(_absurdSpeed)
+        if(_ludicrousSpeed)
         {
-            UpdateStatus?.Invoke(UI.Yes__sir__Setting_absurd_speed_sir);
+            UpdateStatus?.Invoke(UI.Yes__sir__Setting_ludicrous_speed_sir);
 
             _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 0xFFFF, 0, _dev.Timeout, out _);
         }
@@ -619,7 +619,7 @@ partial class Dump
 
             if(speedSectorCounter > 1000)
             {
-                if(_absurdSpeed)
+                if(_ludicrousSpeed)
                     _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 0xFFFF, 0, _dev.Timeout, out _);
                 else if(_hyperSpeed)
                 {
