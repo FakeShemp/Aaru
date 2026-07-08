@@ -71,7 +71,6 @@ public partial class Dump
     const           string                     PREGAP_MODULE_NAME = "Pregap calculator";
     const           string                     MODULE_NAME        = "Media dumping";
     static readonly TimeSpan                   _oneSecond         = 1.Seconds();
-    readonly        bool                       _absurdSpeed;
     readonly        bool                       _bypassWiiDecryption;
     readonly        bool                       _createGraph;
     readonly        bool                       _cureParanoia;
@@ -95,6 +94,7 @@ public partial class Dump
     readonly        uint                       _ignoreCdrRunOuts;
     readonly        Stopwatch                  _imageCloseStopwatch;
     readonly        bool                       _leadout;
+    readonly        bool                       _ludicrousSpeed;
     readonly        bool                       _metadata;
     readonly        string                     _outputPath;
     readonly        IBaseWritableImage         _outputPlugin;
@@ -106,6 +106,7 @@ public partial class Dump
     readonly        ushort                     _retryPasses;
     readonly        bool                       _retrySubchannel;
     readonly        Stopwatch                  _sidecarStopwatch;
+    readonly        bool                       _skipSafedisc;
     readonly        Stopwatch                  _speedStopwatch;
     readonly        bool                       _startReverse;
     readonly        bool                       _stopOnError;
@@ -131,7 +132,6 @@ public partial class Dump
     Sidecar                                    _sidecarClass;
     uint                                       _skip;
     bool                                       _skipCdireadyHole;
-    readonly bool                              _skipSafedisc;
     int                                        _speed;
     int                                        _speedMultiplier;
     bool                                       _supportsPlextorD8;
@@ -192,7 +192,7 @@ public partial class Dump
                 bool generateSubchannels, uint maximumReadable, bool useBufferedReads, bool storeEncrypted,
                 bool titleKeys, uint ignoreCdrRunOuts, bool createGraph, uint dimensions, bool paranoia,
                 bool cureParanoia, bool bypassWiiDecryption, bool startReverse, int errorRecovery, bool hyperSpeed,
-                bool absurdSpeed, bool leadout, bool skipSafedisc)
+                bool ludicrousSpeed, bool leadout, bool skipSafedisc)
     {
         _doResume              = doResume;
         _dev                   = dev;
@@ -240,7 +240,7 @@ public partial class Dump
         _startReverse          = startReverse;
         _errorRecovery         = errorRecovery;
         _hyperSpeed            = hyperSpeed;
-        _absurdSpeed           = absurdSpeed;
+        _ludicrousSpeed        = ludicrousSpeed;
         _leadout               = leadout;
         _skipSafedisc          = skipSafedisc;
         _dumpStopwatch         = new Stopwatch();

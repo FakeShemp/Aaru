@@ -5764,7 +5764,7 @@ Do you want to continue?</value>
     <data name="Help_hyperspeed" xml:space="preserve">
         <value>(OmniDrive only) Allows higher speed when we know the underlying track is data</value>
     </data>
-    <data name="Help_absurdspeed" xml:space="preserve">
+    <data name="Help_ludicrousspeed" xml:space="preserve">
         <value>(OmniDrive only) Use maximum speed always</value>
     </data>
     <data name="Help_Leadout" xml:space="preserve">
@@ -5773,8 +5773,8 @@ Do you want to continue?</value>
     <data name="Detected_Omnidrive" xml:space="preserve">
         <value>[slateblue1]Detected [/][#FFFFFF]O[/][#FFAFC8]m[/][#74D7EE]n[/][#E40303]i[/][#FF8C00]D[/][#FFED00]r[/][#008026]i[/][#004DFF]v[/][#750787]e[/][#613915]![/][000000]![/] [slateblue1]version[/] [purple]{0}.{1}.{2}[/]</value>
     </data>
-    <data name="Yes__sir__Setting_absurd_speed_sir" xml:space="preserve">
-        <value>[slateblue1]Yes, sir! Setting absurd speed sir![/]</value>
+    <data name="Yes__sir__Setting_ludicrous_speed_sir" xml:space="preserve">
+        <value>[slateblue1]Yes, sir! Setting ludicrous speed sir![/]</value>
     </data>
     <data name="Setting_speed_to_8x_for_scrambled_reading" xml:space="preserve">
         <value>[slateblue1]Setting speed to [teal]8x[/] for scrambled reading.[/]</value>

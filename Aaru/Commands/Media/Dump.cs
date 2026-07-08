@@ -129,7 +129,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--start-reverse={0}",           settings.StartReverse);
         AaruLogging.Debug(MODULE_NAME, "--error-recovery={0}",          settings.ErrorRecovery);
         AaruLogging.Debug(MODULE_NAME, "--hyper-speed={0}",             settings.HyperSpeed);
-        AaruLogging.Debug(MODULE_NAME, "--absurd-speed={0}",            settings.AbsurdSpeed);
+        AaruLogging.Debug(MODULE_NAME, "--ludicrous-speed={0}",         settings.LudicrousSpeed);
         AaruLogging.Debug(MODULE_NAME, "--lead-out={0}",                settings.LeadOut);
         AaruLogging.Debug(MODULE_NAME, "--skip-safedisc={0}",           settings.SkipSafeDisc);
 
@@ -556,7 +556,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   settings.StartReverse,
                                   settings.ErrorRecovery,
                                   settings.HyperSpeed,
-                                  settings.AbsurdSpeed,
+                                  settings.LudicrousSpeed,
                                   settings.LeadOut,
                                   settings.SkipSafeDisc);
 
@@ -842,10 +842,10 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [DefaultValue(false)]
         [CommandOption("--hyper-speed")]
         public bool HyperSpeed { get; set; }
-        [LocalizedDescription(nameof(UI.Help_absurdspeed))]
+        [LocalizedDescription(nameof(UI.Help_ludicrousspeed))]
         [DefaultValue(false)]
-        [CommandOption("--absurd-speed")]
-        public bool AbsurdSpeed { get; set; }
+        [CommandOption("--ludicrous-speed")]
+        public bool LudicrousSpeed { get; set; }
         [LocalizedDescription(nameof(UI.Help_Leadout))]
         [DefaultValue(false)]
         [CommandOption("--lead-out")]

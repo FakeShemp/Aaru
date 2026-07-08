@@ -11370,9 +11370,9 @@ namespace Aaru.Localization {
             }
         }
         
-        public static string Help_absurdspeed {
+        public static string Help_ludicrousspeed {
             get {
-                return ResourceManager.GetString("Help_absurdspeed", resourceCulture);
+                return ResourceManager.GetString("Help_ludicrousspeed", resourceCulture);
             }
         }
         
@@ -11388,9 +11388,9 @@ namespace Aaru.Localization {
             }
         }
         
-        public static string Yes__sir__Setting_absurd_speed_sir {
+        public static string Yes__sir__Setting_ludicrous_speed_sir {
             get {
-                return ResourceManager.GetString("Yes__sir__Setting_absurd_speed_sir", resourceCulture);
+                return ResourceManager.GetString("Yes__sir__Setting_ludicrous_speed_sir", resourceCulture);
             }
         }
         
