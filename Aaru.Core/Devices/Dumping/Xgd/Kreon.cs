@@ -1105,9 +1105,8 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-            {
-                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
-            }
+                for(ulong i = ur; i < ur + blocksToRead; i++)
+                    tmpList.Add(i);
 
             tmpList.Sort();
 
@@ -1219,7 +1218,7 @@ partial class Dump
                     UpdateStatus?.Invoke(Localization.Core
                                                      .Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading);
 
-                    AaruLogging.Debug(Localization.Core.Error_0, Sense.PrettifySense(senseBuf));
+                    AaruLogging.Debug(MODULE_NAME, Localization.Core.Error_0, Sense.PrettifySense(senseBuf));
                 }
                 else
                     runningPersistent = true;

@@ -206,7 +206,7 @@ partial class Dump
                 UpdateStatus?.Invoke(Localization.Core
                                                  .Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading);
 
-                AaruLogging.Debug(Localization.Core.Error_0, Sense.PrettifySense(senseBuf));
+                AaruLogging.Debug(MODULE_NAME, Localization.Core.Error_0, Sense.PrettifySense(senseBuf));
             }
             else
                 runningPersistent = true;
@@ -544,8 +544,9 @@ partial class Dump
 
                 // MEDIUM ERROR, retry with ignore error below
                 if(decSense is { ASC: 0x11 })
-                    if(!sectorsNotEvenPartial.Contains(badSector))
-                        sectorsNotEvenPartial.Add(badSector);
+                {
+                    if(!sectorsNotEvenPartial.Contains(badSector)) sectorsNotEvenPartial.Add(badSector);
+                }
             }
 
             // Because one block has been partially used to fix the offset
