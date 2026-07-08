@@ -94,6 +94,7 @@ public partial class Dump
     readonly        bool                       _hyperSpeed;
     readonly        uint                       _ignoreCdrRunOuts;
     readonly        Stopwatch                  _imageCloseStopwatch;
+    readonly        bool                       _leadout;
     readonly        bool                       _metadata;
     readonly        string                     _outputPath;
     readonly        IBaseWritableImage         _outputPlugin;
@@ -121,7 +122,6 @@ public partial class Dump
     bool                                       _dumpFirstTrackPregap;
     bool                                       _fixOffset;
     int                                        _fixedSectors;
-    readonly bool                              _leadout;
     uint                                       _maximumReadable; // Maximum number of sectors drive can read at once
     IMediaGraph                                _mediaGraph;
     bool                                       _missingTitleKeysDirty;
@@ -131,6 +131,7 @@ public partial class Dump
     Sidecar                                    _sidecarClass;
     uint                                       _skip;
     bool                                       _skipCdireadyHole;
+    readonly bool                              _skipSafedisc;
     int                                        _speed;
     int                                        _speedMultiplier;
     bool                                       _supportsPlextorD8;
@@ -191,7 +192,7 @@ public partial class Dump
                 bool generateSubchannels, uint maximumReadable, bool useBufferedReads, bool storeEncrypted,
                 bool titleKeys, uint ignoreCdrRunOuts, bool createGraph, uint dimensions, bool paranoia,
                 bool cureParanoia, bool bypassWiiDecryption, bool startReverse, int errorRecovery, bool hyperSpeed,
-                bool absurdSpeed, bool leadout)
+                bool absurdSpeed, bool leadout, bool skipSafedisc)
     {
         _doResume              = doResume;
         _dev                   = dev;
@@ -241,6 +242,7 @@ public partial class Dump
         _hyperSpeed            = hyperSpeed;
         _absurdSpeed           = absurdSpeed;
         _leadout               = leadout;
+        _skipSafedisc          = skipSafedisc;
         _dumpStopwatch         = new Stopwatch();
         _sidecarStopwatch      = new Stopwatch();
         _speedStopwatch        = new Stopwatch();

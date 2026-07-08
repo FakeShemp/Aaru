@@ -131,6 +131,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--hyper-speed={0}",             settings.HyperSpeed);
         AaruLogging.Debug(MODULE_NAME, "--absurd-speed={0}",            settings.AbsurdSpeed);
         AaruLogging.Debug(MODULE_NAME, "--lead-out={0}",                settings.LeadOut);
+        AaruLogging.Debug(MODULE_NAME, "--skip-safedisc={0}",           settings.SkipSafeDisc);
 
         Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
         AaruLogging.Debug(MODULE_NAME, UI.Parsed_options);
@@ -556,7 +557,8 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   settings.ErrorRecovery,
                                   settings.HyperSpeed,
                                   settings.AbsurdSpeed,
-                                  settings.LeadOut);
+                                  settings.LeadOut,
+                                  settings.SkipSafeDisc);
 
             AnsiConsole.Progress()
                        .AutoClear(true)
@@ -848,6 +850,10 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [DefaultValue(false)]
         [CommandOption("--lead-out")]
         public bool LeadOut { get; set; }
+        [Description("Skip retrying sectors from 800 to 10000, that are typically used by SafeDisc protection")]
+        [DefaultValue(false)]
+        [CommandOption("--skip-safedisc")]
+        public bool SkipSafeDisc { get; set; }
     }
 
 #endregion
