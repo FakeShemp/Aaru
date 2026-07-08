@@ -108,7 +108,7 @@ partial class Dump
         byte[]          md6;
         byte[]          md10;
 
-        if(_persistent)
+        if(_persistent && !_omnidrive)
         {
             Modes.ModePage_01_MMC pgMmc;
 
@@ -786,7 +786,7 @@ partial class Dump
             */
 
         // Try to ignore read errors, on some drives this allows to recover partial even if damaged data
-        if(_persistent && sectorsNotEvenPartial.Count > 0)
+        if(_persistent && !_omnidrive && sectorsNotEvenPartial.Count > 0)
         {
             var pgMmc = new Modes.ModePage_01_MMC
             {
