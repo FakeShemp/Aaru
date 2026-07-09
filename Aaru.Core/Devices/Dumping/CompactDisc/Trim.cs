@@ -430,7 +430,7 @@ partial class Dump
                     var sector = new byte[sectorSize];
                     Array.Copy(cmdBuf, 0, sector, 0, sectorSize);
 
-                    if(IsScrambledData(sector, (int)badSector, out _))
+                    if(IsScrambledData(sector, (int)badSector, out _) || !audioExtents.Contains(badSector))
                     {
                         sector = Sector.Scramble(sector);
                         SectorFixResult fixStatus = CdChecksums.FixSector(sector);
