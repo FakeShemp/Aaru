@@ -304,7 +304,7 @@ partial class Dump
 
                         if(fixStatus == SectorFixResult.NotApplicable &&
                            !audioExtents.Contains(i + (ulong)b)       &&
-                           ((sector[0x00F] & 0x03) != 0x02 || (sector[0x012] & 0x20) != 0x20))
+                           (!HasValidSync(sector) || (sector[0x00F] & 0x03) != 0x02 || (sector[0x012] & 0x20) != 0x20))
                         {
                             sectorStatus[b] = SectorStatus.Errored;
                             _resume.BadBlocks.Add(i + (ulong)b);

@@ -67,6 +67,27 @@ partial class Dump
         return syncMark.SequenceEqual(testMark) && (sector[0xF] == 0 || sector[0xF] == 1 || sector[0xF] == 2);
     }
 
+    /// <summary>Checks if a descrambled sector starts with a valid Yellow Book sync mark</summary>
+    /// <param name="sector">Sector contents</param>
+    /// <returns><c>true</c> if the 12-byte sync mark is present at offset 0, <c>false</c> otherwise</returns>
+    static bool HasValidSync(byte[] sector)
+    {
+        if(sector?.Length != 2352) return false;
+
+        return sector[0x000] == 0x00 &&
+               sector[0x001] == 0xFF &&
+               sector[0x002] == 0xFF &&
+               sector[0x003] == 0xFF &&
+               sector[0x004] == 0xFF &&
+               sector[0x005] == 0xFF &&
+               sector[0x006] == 0xFF &&
+               sector[0x007] == 0xFF &&
+               sector[0x008] == 0xFF &&
+               sector[0x009] == 0xFF &&
+               sector[0x00A] == 0xFF &&
+               sector[0x00B] == 0x00;
+    }
+
     /// <summary>Detects if a sector contains scrambled data</summary>
     /// <param name="sector">Sector contents</param>
     /// <param name="wantedLba">What LBA we intended to read</param>
