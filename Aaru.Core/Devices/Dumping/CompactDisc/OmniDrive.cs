@@ -302,7 +302,24 @@ partial class Dump
                             paintBad.Add(i          + (ulong)b);
                         }
 
+                        if(fixStatus == SectorFixResult.NotApplicable &&
+                           !audioExtents.Contains(i + (ulong)b)       &&
+                           ((sector[0x00F] & 0x03) != 0x02 || (sector[0x012] & 0x20) != 0x20))
+                        {
+                            sectorStatus[b] = SectorStatus.Errored;
+                            _resume.BadBlocks.Add(i + (ulong)b);
+                            paintBad.Add(i          + (ulong)b);
+                        }
+
                         Array.Copy(sector, 0, cmdBuf, (int)(0 + b * blockSize), sectorSize);
+                    }
+
+                    // Should be data but it's not?
+                    else if(!audioExtents.Contains(i + (ulong)b))
+                    {
+                        sectorStatus[b] = SectorStatus.Errored;
+                        _resume.BadBlocks.Add(i + (ulong)b);
+                        paintBad.Add(i          + (ulong)b);
                     }
 
                     Array.Copy(cmdBuf, (int)(0 + b * blockSize), data, sectorSize * b, sectorSize);
