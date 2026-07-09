@@ -406,7 +406,7 @@ partial class Dump
             }
 
             // Because one block has been partially used to fix the offset
-            if(_fixOffset && audioExtents.Contains(badSector) && offsetBytes != 0)
+            if((_fixOffset && audioExtents.Contains(badSector) || _omnidrive) && offsetBytes != 0)
             {
                 uint blocksToRead = sectorsToTrim;
 
