@@ -63,7 +63,7 @@ partial class Dump
     void DumpXgdOmniDrive(Dictionary<MediaTagType, byte[]> mediaTags, MediaType dskType)
     {
         bool   sense;
-        uint   blocksToRead  = 64;
+        uint   blocksToRead  = 32;
         double totalDuration = 0;
         double currentSpeed  = 0;
         double maxSpeed      = double.MinValue;
