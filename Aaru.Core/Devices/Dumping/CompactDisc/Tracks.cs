@@ -232,17 +232,48 @@ partial class Dump
         {
             updateStatus?.Invoke(Localization.Core.No_tracks_found_adding_a_single_track_from_zero_to_Lead_Out);
 
+            // The TOC gave us no type information for this synthetic track. Rather than trusting the
+            // TrackType.Audio default (which would later cause the dump loop to skip all garbage
+            // detection for the whole disc), sample sector 0 and only call it Audio if it actually
+            // looks like audio. If the read fails or is inconclusive, prefer a data-like type: treating
+            // audio as data merely runs unnecessary validation, while the reverse silently disables it.
+            TrackType singleTrackType = leadoutTrackType;
+
+            if(singleTrackType == TrackType.Audio)
+            {
+                sense = dev.ReadCd(out cmdBuf,
+                                   out _,
+                                   0,
+                                   sectorSize,
+                                   1,
+                                   MmcSectorTypes.AllTypes,
+                                   false,
+                                   false,
+                                   true,
+                                   MmcHeaderCodes.AllHeaders,
+                                   true,
+                                   true,
+                                   MmcErrorField.None,
+                                   MmcSubchannel.None,
+                                   dev.Timeout,
+                                   out _);
+
+                singleTrackType = !sense && (IsData(cmdBuf) || IsScrambledData(cmdBuf, 0, out _))
+                                      ? TrackType.CdMode2Formless
+                                      : TrackType.Audio;
+            }
+
             trackList.Add(new Track
             {
                 Sequence          = 1,
                 Session           = 1,
-                Type              = leadoutTrackType,
+                Type              = singleTrackType,
                 StartSector       = 0,
                 BytesPerSector    = (int)sectorSize,
                 RawBytesPerSector = (int)sectorSize
             });
 
-            trackFlags?.Add(1, (byte)(leadoutTrackType == TrackType.Audio ? 0 : 4));
+            trackFlags?.Add(1, (byte)(singleTrackType == TrackType.Audio ? 0 : 4));
         }
 
         if(lastSector != 0) return [.. trackList];

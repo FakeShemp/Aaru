@@ -544,8 +544,9 @@ partial class Dump
 
                 // MEDIUM ERROR, retry with ignore error below
                 if(decSense is { ASC: 0x11 })
-                    if(!sectorsNotEvenPartial.Contains(badSector))
-                        sectorsNotEvenPartial.Add(badSector);
+                {
+                    if(!sectorsNotEvenPartial.Contains(badSector)) sectorsNotEvenPartial.Add(badSector);
+                }
             }
 
             // Because one block has been partially used to fix the offset
@@ -565,7 +566,6 @@ partial class Dump
             }
 
             SectorStatus sectorStatus = SectorStatus.Dumped;
-
 
             if(!sense && !_dev.Error)
             {
@@ -606,7 +606,7 @@ partial class Dump
                                                                badSector,
                                                                pass));
                         }
-                        else if(!audioExtents.Contains(badSector) && readcd)
+                        else if(!audioExtents.Contains(badSector))
                         {
                             // ECC correction failed — try READ CD (drive's CIRC) as last resort.
                             bool readCdSense = _dev.ReadCd(out byte[] readCdBuf,
@@ -724,7 +724,7 @@ partial class Dump
                     sectorsNotEvenPartial.Remove(badSector);
                 }
             }
-            else if(_omnidrive && readcd && !audioExtents.Contains(badSector))
+            else if(_omnidrive && !audioExtents.Contains(badSector))
             {
                 // Read scrambled failed, for some reason... — try READ CD as a last resort.
                 bool readCdSense = _dev.ReadCd(out byte[] readCdBuf,

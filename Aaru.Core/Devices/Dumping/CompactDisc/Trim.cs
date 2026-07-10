@@ -453,7 +453,7 @@ partial class Dump
                             extents.Add(badSector);
                             _mediaGraph?.PaintSectorGood(badSector);
                         }
-                        else if(!audioExtents.Contains(badSector) && readcd)
+                        else if(!audioExtents.Contains(badSector))
                         {
                             // ECC correction failed — try READ CD (drive's CIRC) as last resort.
                             bool readCdSense = _dev.ReadCd(out byte[] readCdBuf,
