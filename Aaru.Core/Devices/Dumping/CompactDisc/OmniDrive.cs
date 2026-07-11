@@ -286,6 +286,11 @@ partial class Dump
 
                 for(var b = 0; b < blocksToRead; b++)
                 {
+                    // A read can overrun into the Lead-Out past the last user area sector (e.g. near the
+                    // end of the disc, where blocksToRead is not clamped to lastSector). Those sectors are
+                    // not part of the user area and must never be flagged as bad / queued for trimming.
+                    bool beyondUserArea = (long)(i + (ulong)b) > lastSector;
+
                     Array.Copy(cmdBuf, (int)(0 + b * blockSize), sector, 0, sectorSize);
 
                     if(IsScrambledData(sector, (int)(i + (ulong)b), out _))
@@ -295,7 +300,7 @@ partial class Dump
                         if(fixStatus == SectorFixResult.Correct) _correctSectors++;
                         if(fixStatus == SectorFixResult.Fixed) _fixedSectors++;
 
-                        if(fixStatus == SectorFixResult.CouldNotFix)
+                        if(fixStatus == SectorFixResult.CouldNotFix && !beyondUserArea)
                         {
                             sectorStatus[b] = SectorStatus.Errored;
                             _resume.BadBlocks.Add(i + (ulong)b);
@@ -307,7 +312,10 @@ partial class Dump
                         // branch in the first place) despite being classified as audio - the track type
                         // metadata cannot be trusted for it, so it must not be exempted from this check.
                         if(fixStatus == SectorFixResult.NotApplicable &&
-                           (!HasValidSync(sector) || (sector[0x00F] & 0x03) != 0x02 || (sector[0x012] & 0x20) != 0x20))
+                           (!HasValidSync(sector)          ||
+                            (sector[0x00F] & 0x03) != 0x02 ||
+                            (sector[0x012] & 0x20) != 0x20) &&
+                           !beyondUserArea)
                         {
                             sectorStatus[b] = SectorStatus.Errored;
                             _resume.BadBlocks.Add(i + (ulong)b);
@@ -318,7 +326,7 @@ partial class Dump
                     }
 
                     // Should be data but it's not?
-                    else if(!audioExtents.Contains(i + (ulong)b))
+                    else if(!audioExtents.Contains(i + (ulong)b) && !beyondUserArea)
                     {
                         sectorStatus[b] = SectorStatus.Errored;
                         _resume.BadBlocks.Add(i + (ulong)b);
@@ -428,23 +436,35 @@ partial class Dump
 
                 if(i + _skip > blocks) _skip = (uint)(blocks - i);
 
+                // Do not mark Lead-Out sectors as bad, only user area sectors
+                uint sectorsToMark = _skip;
+
+                for(ulong b = i; b < i + _skip; b++)
+                {
+                    if(!leadOutExtents.Contains(b)) continue;
+
+                    sectorsToMark = (uint)(b - i);
+
+                    break;
+                }
+
                 // Write empty data
                 _writeStopwatch.Restart();
 
                 if(supportedSubchannel != MmcSubchannel.None)
                 {
-                    outputFormat.WriteSectorsLong(new byte[sectorSize * _skip],
+                    outputFormat.WriteSectorsLong(new byte[sectorSize * sectorsToMark],
                                                   i,
                                                   false,
-                                                  _skip,
-                                                  [.. Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip)]);
+                                                  sectorsToMark,
+                                                  [.. Enumerable.Repeat(SectorStatus.NotDumped, (int)sectorsToMark)]);
 
                     if(desiredSubchannel != MmcSubchannel.None)
                     {
-                        outputFormat.WriteSectorsTag(new byte[subSize * _skip],
+                        outputFormat.WriteSectorsTag(new byte[subSize * sectorsToMark],
                                                      i,
                                                      false,
-                                                     _skip,
+                                                     sectorsToMark,
                                                      SectorTagType.CdSectorSubchannel);
                     }
                 }
@@ -452,29 +472,35 @@ partial class Dump
                 {
                     if(supportsLongSectors)
                     {
-                        outputFormat.WriteSectorsLong(new byte[blockSize * _skip],
+                        outputFormat.WriteSectorsLong(new byte[blockSize * sectorsToMark],
                                                       i,
                                                       false,
-                                                      _skip,
-                                                      [.. Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip)]);
+                                                      sectorsToMark,
+                                                      [
+                                                          .. Enumerable.Repeat(SectorStatus.NotDumped,
+                                                                               (int)sectorsToMark)
+                                                      ]);
                     }
                     else
                     {
                         if(cmdBuf.Length % sectorSize == 0)
                         {
-                            outputFormat.WriteSectors(new byte[2048 * _skip],
+                            outputFormat.WriteSectors(new byte[2048 * sectorsToMark],
                                                       i,
                                                       false,
-                                                      _skip,
-                                                      [.. Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip)]);
+                                                      sectorsToMark,
+                                                      [
+                                                          .. Enumerable.Repeat(SectorStatus.NotDumped,
+                                                                               (int)sectorsToMark)
+                                                      ]);
                         }
                         else
                         {
-                            outputFormat.WriteSectorsLong(new byte[blockSize * _skip],
+                            outputFormat.WriteSectorsLong(new byte[blockSize * sectorsToMark],
                                                           i,
                                                           false,
-                                                          _skip,
-                                                          Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip)
+                                                          sectorsToMark,
+                                                          Enumerable.Repeat(SectorStatus.NotDumped, (int)sectorsToMark)
                                                                     .ToArray());
                         }
                     }
@@ -482,7 +508,7 @@ partial class Dump
 
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
-                for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);
+                for(ulong b = i; b < i + sectorsToMark; b++) _resume.BadBlocks.Add(b);
 
                 AaruLogging.Debug(MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
 
