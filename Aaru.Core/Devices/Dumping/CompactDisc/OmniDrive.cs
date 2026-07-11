@@ -307,6 +307,8 @@ partial class Dump
                             sectorStatus[b] = SectorStatus.Errored;
                             _resume.BadBlocks.Add(i + (ulong)b);
                             paintBad.Add(i          + (ulong)b);
+
+                            _errorLog?.WriteLine(i + (ulong)b, Localization.Core.Reason_ECC_EDC_could_not_be_fixed);
                         }
 
                         // A sector inside audioExtents reaching here means it unscrambled into
@@ -322,6 +324,8 @@ partial class Dump
                             sectorStatus[b] = SectorStatus.Errored;
                             _resume.BadBlocks.Add(i + (ulong)b);
                             paintBad.Add(i          + (ulong)b);
+
+                            _errorLog?.WriteLine(i + (ulong)b, Localization.Core.Reason_scrambled_but_not_data);
                         }
 
                         Array.Copy(sector, 0, cmdBuf, (int)(0 + b * blockSize), sectorSize);
@@ -333,6 +337,8 @@ partial class Dump
                         sectorStatus[b] = SectorStatus.Errored;
                         _resume.BadBlocks.Add(i + (ulong)b);
                         paintBad.Add(i          + (ulong)b);
+
+                        _errorLog?.WriteLine(i + (ulong)b, Localization.Core.Reason_expected_data_not_scrambled);
                     }
 
                     Array.Copy(cmdBuf, (int)(0 + b * blockSize), data, sectorSize * b, sectorSize);
@@ -398,7 +404,12 @@ partial class Dump
 
                         if(sectorTrack.Session != prevTrack.Session) continue;
 
-                        if(sectorTrack.Type != prevTrack.Type) _resume.BadBlocks.Add(newPregapSector);
+                        if(sectorTrack.Type != prevTrack.Type)
+                        {
+                            _resume.BadBlocks.Add(newPregapSector);
+
+                            _errorLog?.WriteLine(newPregapSector, Localization.Core.Reason_pregap_track_type_mismatch);
+                        }
                     }
 
                     if(i >= blocksToRead)
@@ -771,6 +782,8 @@ partial class Dump
                             sectorStatus[b] = SectorStatus.Errored;
                             _resume.BadBlocks.Add(i + (ulong)b);
                             paintBad.Add(i          + (ulong)b);
+
+                            _errorLog?.WriteLine(i + (ulong)b, Localization.Core.Reason_ECC_EDC_could_not_be_fixed);
                         }
 
                         Array.Copy(tmpData, 0, data, sectorSize * b, sectorSize);
@@ -807,6 +820,11 @@ partial class Dump
 
                         _resume.BadBlocks.AddRange(newPregapSectors);
 
+                        foreach(ulong newPregapSector in newPregapSectors)
+                        {
+                            _errorLog?.WriteLine(newPregapSector, Localization.Core.Reason_pregap_track_type_mismatch);
+                        }
+
                         if(i >= blocksToRead)
                             i -= blocksToRead;
                         else
@@ -837,6 +855,8 @@ partial class Dump
                             _resume.BadBlocks.Add(i + (ulong)b);
                             paintBad.Add(i          + (ulong)b);
                             status[b] = SectorStatus.Errored;
+
+                            _errorLog?.WriteLine(i + (ulong)b, Localization.Core.Reason_ECC_EDC_could_not_be_fixed);
                         }
 
                         Array.Copy(tmpData, 0, data, sectorSize * b, sectorSize);

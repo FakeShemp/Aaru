@@ -2578,6 +2578,30 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="SCSI_reading_LBA_0_error_1" xml:space="preserve">
     <value>SCSI reading LBA {0} error: {1}</value>
   </data>
+    <data name="Sector_0_marked_as_errored_1" xml:space="preserve">
+    <value>Sector {0} marked as errored: {1}.</value>
+  </data>
+    <data name="Reason_ECC_EDC_could_not_be_fixed" xml:space="preserve">
+    <value>sector could not be corrected (uncorrectable ECC/EDC)</value>
+  </data>
+    <data name="Reason_scrambled_but_not_data" xml:space="preserve">
+    <value>sector unscrambled to data-like content but failed sync/mode/form validation</value>
+  </data>
+    <data name="Reason_expected_data_not_scrambled" xml:space="preserve">
+    <value>sector was expected to contain data but does not appear scrambled/data-shaped</value>
+  </data>
+    <data name="Reason_pregap_track_type_mismatch" xml:space="preserve">
+    <value>pregap sector's track type differs from the previous track after subchannel reindexing</value>
+  </data>
+    <data name="Reason_EDC_mismatch" xml:space="preserve">
+    <value>EDC mismatch</value>
+  </data>
+    <data name="Reason_ECC_P_mismatch" xml:space="preserve">
+    <value>ECC P mismatch</value>
+  </data>
+    <data name="Reason_ECC_Q_mismatch" xml:space="preserve">
+    <value>ECC Q mismatch</value>
+  </data>
     <data name="SD_MMC_command_0_operating_system_error_1" xml:space="preserve">
     <value>SD/MMC command {0} operating system error: {1}.</value>
   </data>

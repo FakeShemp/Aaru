@@ -788,13 +788,22 @@ partial class Dump
                                     _resume.BadBlocks.Add(i + r);
 
                                     if(correctEdc != true)
+                                    {
                                         UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, i + r));
+                                        _errorLog?.WriteLine(i + r, Localization.Core.Reason_EDC_mismatch);
+                                    }
 
                                     if(correctEccP != true)
+                                    {
                                         UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, i + r));
+                                        _errorLog?.WriteLine(i + r, Localization.Core.Reason_ECC_P_mismatch);
+                                    }
 
                                     if(correctEccQ != true)
+                                    {
                                         UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, i + r));
+                                        _errorLog?.WriteLine(i + r, Localization.Core.Reason_ECC_Q_mismatch);
+                                    }
                                 }
                             }
 
@@ -859,7 +868,13 @@ partial class Dump
 
                                     if(sectorTrack.Session != prevTrack.Session) continue;
 
-                                    if(sectorTrack.Type != prevTrack.Type) _resume.BadBlocks.Add(newPregapSector);
+                                    if(sectorTrack.Type != prevTrack.Type)
+                                    {
+                                        _resume.BadBlocks.Add(newPregapSector);
+
+                                        _errorLog?.WriteLine(newPregapSector,
+                                                             Localization.Core.Reason_pregap_track_type_mismatch);
+                                    }
                                 }
 
                                 if(i >= blocksToRead)
@@ -891,13 +906,22 @@ partial class Dump
                                     _resume.BadBlocks.Add(i + r);
 
                                     if(correctEdc != true)
+                                    {
                                         UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, i + r));
+                                        _errorLog?.WriteLine(i + r, Localization.Core.Reason_EDC_mismatch);
+                                    }
 
                                     if(correctEccP != true)
+                                    {
                                         UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, i + r));
+                                        _errorLog?.WriteLine(i + r, Localization.Core.Reason_ECC_P_mismatch);
+                                    }
 
                                     if(correctEccQ != true)
+                                    {
                                         UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, i + r));
+                                        _errorLog?.WriteLine(i + r, Localization.Core.Reason_ECC_Q_mismatch);
+                                    }
                                 }
                             }
 
@@ -1072,13 +1096,22 @@ partial class Dump
                         _resume.BadBlocks.Add(i + (ulong)b);
 
                         if(correctEdc != true)
+                        {
                             UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, i + (ulong)b));
+                            _errorLog?.WriteLine(i + (ulong)b, Localization.Core.Reason_EDC_mismatch);
+                        }
 
                         if(correctEccP != true)
+                        {
                             UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, i + (ulong)b));
+                            _errorLog?.WriteLine(i + (ulong)b, Localization.Core.Reason_ECC_P_mismatch);
+                        }
 
                         if(correctEccQ != true)
+                        {
                             UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, i + (ulong)b));
+                            _errorLog?.WriteLine(i + (ulong)b, Localization.Core.Reason_ECC_Q_mismatch);
+                        }
                     }
 
                     if(supportsLongSectors)

@@ -5107,7 +5107,55 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("SCSI_reading_LBA_0_error_1", resourceCulture);
             }
         }
-        
+
+        public static string Sector_0_marked_as_errored_1 {
+            get {
+                return ResourceManager.GetString("Sector_0_marked_as_errored_1", resourceCulture);
+            }
+        }
+
+        public static string Reason_ECC_EDC_could_not_be_fixed {
+            get {
+                return ResourceManager.GetString("Reason_ECC_EDC_could_not_be_fixed", resourceCulture);
+            }
+        }
+
+        public static string Reason_scrambled_but_not_data {
+            get {
+                return ResourceManager.GetString("Reason_scrambled_but_not_data", resourceCulture);
+            }
+        }
+
+        public static string Reason_expected_data_not_scrambled {
+            get {
+                return ResourceManager.GetString("Reason_expected_data_not_scrambled", resourceCulture);
+            }
+        }
+
+        public static string Reason_pregap_track_type_mismatch {
+            get {
+                return ResourceManager.GetString("Reason_pregap_track_type_mismatch", resourceCulture);
+            }
+        }
+
+        public static string Reason_EDC_mismatch {
+            get {
+                return ResourceManager.GetString("Reason_EDC_mismatch", resourceCulture);
+            }
+        }
+
+        public static string Reason_ECC_P_mismatch {
+            get {
+                return ResourceManager.GetString("Reason_ECC_P_mismatch", resourceCulture);
+            }
+        }
+
+        public static string Reason_ECC_Q_mismatch {
+            get {
+                return ResourceManager.GetString("Reason_ECC_Q_mismatch", resourceCulture);
+            }
+        }
+
         public static string SD_MMC_command_0_operating_system_error_1 {
             get {
                 return ResourceManager.GetString("SD_MMC_command_0_operating_system_error_1", resourceCulture);
