@@ -286,10 +286,12 @@ partial class Dump
 
                 for(var b = 0; b < blocksToRead; b++)
                 {
-                    // A read can overrun into the Lead-Out past the last user area sector (e.g. near the
-                    // end of the disc, where blocksToRead is not clamped to lastSector). Those sectors are
-                    // not part of the user area and must never be flagged as bad / queued for trimming.
-                    bool beyondUserArea = (long)(i + (ulong)b) > lastSector;
+                    // A read can overrun into a Lead-Out - either past the last user area sector (e.g. near
+                    // the end of the disc, where blocksToRead is not clamped to lastSector) or into an
+                    // inter-session Lead-Out on a multi-session disc. Those sectors are not part of the
+                    // user area and must never be flagged as bad / queued for trimming.
+                    ulong sectorNumber   = i + (ulong)b;
+                    bool  beyondUserArea = (long)sectorNumber > lastSector || leadOutExtents.Contains(sectorNumber);
 
                     Array.Copy(cmdBuf, (int)(0 + b * blockSize), sector, 0, sectorSize);
 
