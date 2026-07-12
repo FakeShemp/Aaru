@@ -1206,9 +1206,16 @@ sealed partial class Dump
                         smallestPregapLbaPerTrack,
                         supportsLongSectors);
 
-        // With C2 available, re-check every audio sector for concealed (interpolated) samples the drive returned
-        // silently. Detection only: flags them in the C2 suspect set, kept separate from hard read errors.
-        ClassifyAudioC2(audioExtents, lastSector, leadOutExtents, supportedSubchannel);
+        if(_c2Supported && audioExtents.Count > 0)
+        {
+            int concealed = _c2SuspectAudio?.Count ?? 0;
+
+            UpdateStatus?.Invoke(concealed == 0
+                                     ? "C2 audio check: no concealed audio sectors detected."
+                                     : $"C2 audio check: {concealed} audio sector(s) contained concealed samples.");
+
+            AaruLogging.WriteLine($"C2 audio check: {concealed} audio sector(s) flagged as concealed (C2 pointers set).");
+        }
 
         foreach(Tuple<ulong, ulong> leadoutExtent in leadOutExtents.ToArray())
             for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++)

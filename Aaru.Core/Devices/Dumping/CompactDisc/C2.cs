@@ -32,7 +32,6 @@
 
 using System;
 using Aaru.Checksums;
-using Aaru.CommonTypes.Extents;
 using Aaru.Decoders.CD;
 using Aaru.Devices;
 using Aaru.Logging;
@@ -129,13 +128,13 @@ partial class Dump
             case true:
                 c2Offset  = specC2Offset;
                 subOffset = specSubOffset;
-                layout    = "[data][C2][subchannel] (MMC spec order)";
+                layout    = "data + C2 + subchannel (MMC spec order)";
 
                 break;
             case false when altValid:
                 c2Offset  = altC2Offset;
                 subOffset = altSubOffset;
-                layout    = "[data][subchannel][C2]";
+                layout    = "data + subchannel + C2";
 
                 break;
             default:
@@ -168,119 +167,47 @@ partial class Dump
     }
 
     /// <summary>
-    ///     Reads every audio sector once more requesting C2 error pointers and records which ones the drive concealed
-    ///     (i.e. returned at least one interpolated/guessed byte). These are added to the C2 suspect set, kept separate
+    ///     Repacks an audio block that was read with C2 error pointers (2742 bytes/sector) back into the normal block
+    ///     layout (data + subchannel) the rest of the read loop expects, and records which sectors the drive concealed
+    ///     (i.e. returned at least one interpolated/guessed byte) into the C2 suspect set. That set is kept separate
     ///     from hard read errors (<see cref="Resume.BadBlocks" />): a suspect sector already has data, it just is not
     ///     trustworthy byte-for-byte. Detection only; the audio is not rewritten here. Gated on a successful C2 probe.
     /// </summary>
-    /// <param name="audioExtents">Extents containing audio sectors.</param>
-    /// <param name="lastSector">Last sector of the disc.</param>
-    /// <param name="leadOutExtents">Lead-out extents to skip.</param>
-    /// <param name="supportedSubchannel">Subchannel mode the drive supports.</param>
-    void ClassifyAudioC2(ExtentsULong audioExtents, long lastSector, ExtentsULong leadOutExtents,
-                         MmcSubchannel supportedSubchannel)
+    /// <param name="cmdBuf">Buffer read in C2 layout; replaced in place with the normal block layout.</param>
+    /// <param name="blocksToRead">Number of sectors in the buffer.</param>
+    /// <param name="blockSize">Normal block size (data + subchannel) expected downstream.</param>
+    /// <param name="subSize">Subchannel size in bytes.</param>
+    /// <param name="firstSectorToRead">LBA of the first sector in the buffer.</param>
+    void RepackAudioC2(ref byte[] cmdBuf, uint blocksToRead, uint blockSize, uint subSize, uint firstSectorToRead)
     {
-        if(!_c2Supported || audioExtents.Count == 0 || _aborted) return;
+        if(!_c2Supported || cmdBuf is null || cmdBuf.Length < blocksToRead * _c2BlockSize) return;
 
         _c2SuspectAudio ??= [];
 
-        UpdateStatus?.Invoke("Checking audio sectors for C2 errors (concealed samples)");
+        var repacked = new byte[blockSize * blocksToRead];
+        int copySub  = (int)Math.Min(subSize, C2_SUB_SIZE);
 
-        InitProgress?.Invoke();
+        // Sectors read to fix a negative offset wrap around near uint.MaxValue; their LBAs are not meaningful, so the
+        // data is still repacked but C2 flags are not attributed to a (wrong) sector number.
+        bool offsetWrapped = firstSectorToRead >= 0xFFFF0000;
 
-        var    newlyFlagged = 0;
-        double duration     = 0;
-
-        foreach(Tuple<ulong, ulong> range in audioExtents.ToArray())
+        for(var b = 0; b < blocksToRead; b++)
         {
-            for(ulong i = range.Item1; i <= range.Item2 && !_aborted; i += _maximumReadable)
-            {
-                var count = (uint)Math.Min(_maximumReadable, range.Item2 - i + 1);
+            int src = b * (int)_c2BlockSize;
+            int dst = b * (int)blockSize;
 
-                // Never read past the user area or into a lead-out.
-                if((long)(i + count - 1) > lastSector) count = (uint)(lastSector - (long)i + 1);
+            Array.Copy(cmdBuf, src,                repacked, dst,                     (int)C2_DATA_SIZE);
+            Array.Copy(cmdBuf, src + _c2SubOffset, repacked, dst + (int)C2_DATA_SIZE, copySub);
 
-                if(count == 0) continue;
+            if(offsetWrapped || !SectorHasC2Error(cmdBuf, b)) continue;
 
-                UpdateProgress?.Invoke(string.Format(Localization.Core.Reading_sector_0_of_1_2, i, lastSector + 1, ""),
-                                       (long)i,
-                                       lastSector + 1);
+            ulong sector = firstSectorToRead + (ulong)b;
 
-                bool sense = _dev.ReadCd(out byte[] cmdBuf,
-                                         out _,
-                                         (uint)i,
-                                         _c2BlockSize,
-                                         count,
-                                         MmcSectorTypes.Cdda,
-                                         false,
-                                         false,
-                                         false,
-                                         MmcHeaderCodes.None,
-                                         true,
-                                         false,
-                                         MmcErrorField.C2Pointers,
-                                         supportedSubchannel,
-                                         _dev.Timeout,
-                                         out duration);
-
-                // A hard failure here belongs to the bad-block path, not to C2 classification: skip and let the
-                // per-sector granularity below try, so a single bad sector does not mask a whole readable block.
-                if(sense || cmdBuf is null || cmdBuf.Length < count * _c2BlockSize)
-                {
-                    for(ulong s = i; s < i + count && !_aborted; s++)
-                    {
-                        if(leadOutExtents.Contains(s)) continue;
-
-                        bool oneSense = _dev.ReadCd(out byte[] oneBuf,
-                                                    out _,
-                                                    (uint)s,
-                                                    _c2BlockSize,
-                                                    1,
-                                                    MmcSectorTypes.Cdda,
-                                                    false,
-                                                    false,
-                                                    false,
-                                                    MmcHeaderCodes.None,
-                                                    true,
-                                                    false,
-                                                    MmcErrorField.C2Pointers,
-                                                    supportedSubchannel,
-                                                    _dev.Timeout,
-                                                    out _);
-
-                        if(oneSense || oneBuf is null || oneBuf.Length < _c2BlockSize) continue;
-
-                        if(SectorHasC2Error(oneBuf, 0) && _c2SuspectAudio.Add(s))
-                        {
-                            newlyFlagged++;
-                            _errorLog?.WriteLine(s, "Audio sector concealed (C2 error pointers set)");
-                        }
-                    }
-
-                    continue;
-                }
-
-                for(var b = 0; b < count; b++)
-                {
-                    ulong sector = i + (ulong)b;
-
-                    if(leadOutExtents.Contains(sector)) continue;
-
-                    if(SectorHasC2Error(cmdBuf, b) && _c2SuspectAudio.Add(sector))
-                    {
-                        newlyFlagged++;
-                        _errorLog?.WriteLine(sector, "Audio sector concealed (C2 error pointers set)");
-                    }
-                }
-            }
+            if(_c2SuspectAudio.Add(sector))
+                _errorLog?.WriteLine(sector, "Audio sector concealed (C2 error pointers set)");
         }
 
-        EndProgress?.Invoke();
-
-        UpdateStatus?.Invoke($"C2 audio check: {_c2SuspectAudio.Count} audio sector(s) flagged as concealed.");
-
-        AaruLogging.WriteLine($"C2 audio check complete: {newlyFlagged} audio sector(s) contained C2 error pointers " +
-                              $"({_c2SuspectAudio.Count} total suspect). Last read took {duration:F3} ms.");
+        cmdBuf = repacked;
     }
 
     /// <summary>
