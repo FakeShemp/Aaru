@@ -248,12 +248,35 @@ partial class Dump
 
             _speedStopwatch.Start();
 
-            sense = _dev.OmniDriveReadCd(out cmdBuf,
-                                         out senseBuf,
-                                         firstSectorToRead,
-                                         blocksToRead,
-                                         _dev.Timeout,
-                                         out _);
+            // With C2 enabled, read the error pointers in the same pass so concealed audio samples are detected up
+            // front, then repack into the normal layout the rest of the loop expects. Fall back to a plain read if the
+            // C2 read fails.
+            if(_c2Supported)
+            {
+                sense = _dev.OmniDriveReadCdWithC2(out cmdBuf,
+                                                   out senseBuf,
+                                                   firstSectorToRead,
+                                                   blocksToRead,
+                                                   _dev.Timeout,
+                                                   out _);
+
+                if(!sense && !_dev.Error)
+                    RepackAudioC2(ref cmdBuf, blocksToRead, blockSize, subSize, firstSectorToRead, audioExtents);
+                else
+                    sense = _dev.OmniDriveReadCd(out cmdBuf,
+                                                 out senseBuf,
+                                                 firstSectorToRead,
+                                                 blocksToRead,
+                                                 _dev.Timeout,
+                                                 out _);
+            }
+            else
+                sense = _dev.OmniDriveReadCd(out cmdBuf,
+                                             out senseBuf,
+                                             firstSectorToRead,
+                                             blocksToRead,
+                                             _dev.Timeout,
+                                             out _);
 
             _speedStopwatch.Stop();
 

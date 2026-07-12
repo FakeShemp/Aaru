@@ -31,10 +31,15 @@
 // ****************************************************************************/
 
 using System;
+using System.Linq;
 using Aaru.Checksums;
+using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Extents;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.Decoders.CD;
 using Aaru.Devices;
 using Aaru.Logging;
+using Track = Aaru.CommonTypes.Structs.Track;
 
 namespace Aaru.Core.Devices.Dumping;
 
@@ -63,10 +68,27 @@ partial class Dump
         _c2Offset    = 0;
         _c2SubOffset = 0;
 
-        // C2 secure audio reading requires READ CD and raw (96 byte) subchannel to validate the layout via Q CRC.
-        if(!readcd || _omnidrive)
+        // OmniDrive returns C2 natively in a fixed layout (data + C2 + subchannel), so no probing is needed.
+        if(_omnidrive)
         {
-            AaruLogging.WriteLine("C2 secure audio: not probed (requires generic READ CD path).");
+            _c2Supported    = true;
+            _c2BlockSize    = C2_BLOCK_SIZE;
+            _c2Offset       = (int)C2_DATA_SIZE;                 // 2352
+            _c2SubOffset    = (int)(C2_DATA_SIZE + C2_POINTERS); // 2646
+            _c2SuspectAudio = [];
+
+            UpdateStatus?.Invoke("C2 secure audio enabled: OmniDrive native layout data + C2 + subchannel.");
+
+            AaruLogging.WriteLine("C2 secure audio enabled (OmniDrive). Block size 2742 bytes, layout data + C2 + " +
+                                  "subchannel.");
+
+            return;
+        }
+
+        // C2 secure audio reading requires READ CD and raw (96 byte) subchannel to validate the layout via Q CRC.
+        if(!readcd)
+        {
+            AaruLogging.WriteLine("C2 secure audio: not probed (requires READ CD).");
 
             return;
         }
@@ -178,7 +200,12 @@ partial class Dump
     /// <param name="blockSize">Normal block size (data + subchannel) expected downstream.</param>
     /// <param name="subSize">Subchannel size in bytes.</param>
     /// <param name="firstSectorToRead">LBA of the first sector in the buffer.</param>
-    void RepackAudioC2(ref byte[] cmdBuf, uint blocksToRead, uint blockSize, uint subSize, uint firstSectorToRead)
+    /// <param name="audioExtents">
+    ///     Audio extents; only sectors inside them are flagged, since C2 is meaningless for data sectors. Pass
+    ///     <c>null</c> when the whole buffer is known to be audio.
+    /// </param>
+    void RepackAudioC2(ref byte[] cmdBuf, uint blocksToRead, uint blockSize, uint subSize, uint firstSectorToRead,
+                       ExtentsULong audioExtents = null)
     {
         if(!_c2Supported || cmdBuf is null || cmdBuf.Length < blocksToRead * _c2BlockSize) return;
 
@@ -203,11 +230,220 @@ partial class Dump
 
             ulong sector = firstSectorToRead + (ulong)b;
 
+            // C2 error pointers only carry meaning for audio; a data sector is validated by its EDC/ECC instead.
+            if(audioExtents is not null && !audioExtents.Contains(sector)) continue;
+
             if(_c2SuspectAudio.Add(sector))
                 _errorLog?.WriteLine(sector, "Audio sector concealed (C2 error pointers set)");
         }
 
         cmdBuf = repacked;
+    }
+
+    /// <summary>
+    ///     Re-reads each audio sector the drive concealed (the C2 suspect set) until it converges on trustworthy data:
+    ///     a re-read is only trusted when its whole offset window comes back C2-clean, and a sector is accepted once two
+    ///     clean reads agree byte-for-byte. Converged sectors are rewritten into the image and dropped from the suspect
+    ///     set. Read-offset alignment mirrors the standard retry path. Gated on a successful C2 probe.
+    /// </summary>
+    void ConvergeAudioC2(int offsetBytes, int sectorsForOffset, uint blockSize, uint subSize,
+                         MmcSubchannel supportedSubchannel, ExtentsULong extents, IWritableOpticalImage outputOptical,
+                         bool readcd, Track[] tracks)
+    {
+        if(!_c2Supported || !readcd && !_omnidrive || _c2SuspectAudio is not { Count: > 0 } || _aborted) return;
+
+        ulong[] suspects    = _c2SuspectAudio.OrderBy(static s => s).ToArray();
+        int     maxAttempts = Math.Max((int)_retryPasses, 5);
+        var     converged   = 0;
+        var     improved    = 0;
+        var     failed      = 0;
+
+        InitProgress?.Invoke();
+
+        UpdateStatus?.Invoke($"Converging {suspects.Length} concealed audio sector(s) using C2 re-reads...");
+
+        foreach(ulong badSector in suspects)
+        {
+            if(_aborted) break;
+
+            byte[] bestClean       = null;
+            var    sectorConverged = false;
+
+            for(var attempt = 0; attempt < maxAttempts && !_aborted; attempt++)
+            {
+                PulseProgress?.Invoke($"Converging concealed audio sector {badSector} (attempt {attempt + 1})");
+
+                if(!TryReadAudioC2Aligned(badSector,
+                                          offsetBytes,
+                                          sectorsForOffset,
+                                          blockSize,
+                                          subSize,
+                                          supportedSubchannel,
+                                          out byte[] aligned,
+                                          out bool windowClean))
+                    continue;
+
+                // Only a fully C2-clean window is trustworthy; a dirty read tells us nothing new.
+                if(!windowClean) continue;
+
+                if(bestClean is null)
+                {
+                    bestClean = aligned;
+
+                    continue;
+                }
+
+                if(aligned.AsSpan().SequenceEqual(bestClean))
+                {
+                    sectorConverged = true;
+
+                    break;
+                }
+
+                // Two "clean" reads disagree: the drive's C2 is not reliable here. Keep the newest and keep trying.
+                bestClean = aligned;
+            }
+
+            if(bestClean is not null)
+            {
+                outputOptical.WriteSectorLong(bestClean, badSector, false, SectorStatus.Dumped);
+                extents.Add(badSector);
+
+                if(sectorConverged)
+                {
+                    converged++;
+                    _c2SuspectAudio.Remove(badSector);
+                    _mediaGraph?.PaintSectorGood(badSector);
+                    _errorLog?.WriteLine(badSector, "Audio sector converged clean via C2 re-reading");
+                }
+                else
+                {
+                    improved++;
+                    _errorLog?.WriteLine(badSector, "Audio sector got a clean C2 read but could not be confirmed");
+                }
+            }
+            else
+            {
+                failed++;
+                _errorLog?.WriteLine(badSector, "Audio sector still concealed after C2 convergence");
+            }
+        }
+
+        EndProgress?.Invoke();
+
+        UpdateStatus?.Invoke($"C2 convergence: {converged} converged, {improved} clean but unconfirmed, {failed} " +
+                             "still concealed.");
+
+        AaruLogging.WriteLine($"C2 audio convergence complete: {converged} sector(s) converged clean, {improved} " +
+                              $"got a single clean read, {failed} remained concealed.");
+    }
+
+    /// <summary>
+    ///     Reads a single audio sector requesting C2 error pointers, applying the same read-offset window handling as the
+    ///     retry path, and returns the offset-aligned 2352-byte audio plus whether the whole read window was C2-clean.
+    /// </summary>
+    /// <returns><c>true</c> if the read succeeded and produced aligned data.</returns>
+    bool TryReadAudioC2Aligned(ulong badSector, int offsetBytes, int sectorsForOffset, uint blockSize, uint subSize,
+                               MmcSubchannel supportedSubchannel, out byte[] aligned, out bool windowClean)
+    {
+        aligned     = null;
+        windowClean = false;
+
+        byte sectorsToReRead   = 1;
+        var  badSectorToReRead = (uint)badSector;
+
+        // OmniDrive always needs the offset window (like the retry path); the generic path only when fixing offset.
+        if((_fixOffset || _omnidrive) && offsetBytes != 0)
+        {
+            if(offsetBytes < 0)
+            {
+                if(badSectorToReRead == 0)
+                    badSectorToReRead = uint.MaxValue - (uint)(sectorsForOffset - 1);
+                else
+                    badSectorToReRead -= (uint)sectorsForOffset;
+            }
+
+            sectorsToReRead += (byte)sectorsForOffset;
+        }
+
+        bool sense;
+        byte[] c2Buf;
+
+        if(_omnidrive)
+        {
+            sense = _dev.OmniDriveReadCdWithC2(out c2Buf,
+                                               out _,
+                                               badSectorToReRead,
+                                               sectorsToReRead,
+                                               _dev.Timeout,
+                                               out _,
+                                               true);
+        }
+        else
+        {
+            sense = _dev.ReadCd(out c2Buf,
+                                out _,
+                                badSectorToReRead,
+                                _c2BlockSize,
+                                sectorsToReRead,
+                                MmcSectorTypes.Cdda,
+                                false,
+                                false,
+                                false,
+                                MmcHeaderCodes.None,
+                                true,
+                                false,
+                                MmcErrorField.C2Pointers,
+                                supportedSubchannel,
+                                _dev.Timeout,
+                                out _);
+        }
+
+        if(sense || c2Buf is null || c2Buf.Length < sectorsToReRead * _c2BlockSize) return false;
+
+        windowClean = true;
+
+        for(var s = 0; s < sectorsToReRead; s++)
+        {
+            if(!SectorHasC2Error(c2Buf, s)) continue;
+
+            windowClean = false;
+
+            break;
+        }
+
+        // Repack the C2 layout into the normal block layout so FixOffsetData sees what it expects.
+        var cmdBuf  = new byte[blockSize * sectorsToReRead];
+        int copySub = (int)Math.Min(subSize, C2_SUB_SIZE);
+
+        for(var s = 0; s < sectorsToReRead; s++)
+        {
+            int src = s * (int)_c2BlockSize;
+            int dst = s * (int)blockSize;
+
+            Array.Copy(c2Buf, src,                cmdBuf, dst,                     (int)C2_DATA_SIZE);
+            Array.Copy(c2Buf, src + _c2SubOffset, cmdBuf, dst + (int)C2_DATA_SIZE, copySub);
+        }
+
+        if((_fixOffset || _omnidrive) && offsetBytes != 0)
+        {
+            uint blocksToRead = sectorsToReRead;
+
+            FixOffsetData(offsetBytes,
+                          (int)C2_DATA_SIZE,
+                          sectorsForOffset,
+                          supportedSubchannel,
+                          ref blocksToRead,
+                          subSize,
+                          ref cmdBuf,
+                          blockSize,
+                          false);
+        }
+
+        aligned = new byte[C2_DATA_SIZE];
+        Array.Copy(cmdBuf, 0, aligned, 0, (int)C2_DATA_SIZE);
+
+        return true;
     }
 
     /// <summary>

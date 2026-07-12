@@ -1206,6 +1206,18 @@ sealed partial class Dump
                         smallestPregapLbaPerTrack,
                         supportsLongSectors);
 
+        // Re-read the audio sectors the drive concealed until they converge on stable, C2-clean data, rewriting the
+        // ones that do. Runs after the normal retries so hard errors are dealt with first.
+        ConvergeAudioC2(offsetBytes,
+                        sectorsForOffset,
+                        blockSize,
+                        subSize,
+                        supportedSubchannel,
+                        extents,
+                        outputOptical,
+                        readcd,
+                        tracks);
+
         if(_c2Supported && audioExtents.Count > 0)
         {
             int concealed = _c2SuspectAudio?.Count ?? 0;
