@@ -249,28 +249,30 @@ partial class Dump
     ///     clean reads agree byte-for-byte. Converged sectors are rewritten into the image and dropped from the suspect
     ///     set. Read-offset alignment mirrors the standard retry path. Gated on a successful C2 probe.
     /// </summary>
-    void ConvergeAudioC2(int offsetBytes, int sectorsForOffset, uint blockSize, uint subSize,
-                         MmcSubchannel supportedSubchannel, ExtentsULong extents, IWritableOpticalImage outputOptical,
-                         bool readcd, Track[] tracks)
+    void ConvergeAudioC2(int offsetBytes, int sectorsForOffset, MmcSubchannel supportedSubchannel, ExtentsULong extents,
+                         IWritableOpticalImage outputOptical, bool readcd)
     {
         if(!_c2Supported || !readcd && !_omnidrive || _c2SuspectAudio is not { Count: > 0 } || _aborted) return;
 
         ulong[] suspects    = _c2SuspectAudio.OrderBy(static s => s).ToArray();
-        int     maxAttempts = Math.Max((int)_retryPasses, 5);
+        int     maxAttempts = Math.Max((int)_retryPasses, 8);
         var     converged   = 0;
         var     improved    = 0;
         var     failed      = 0;
 
         InitProgress?.Invoke();
 
-        UpdateStatus?.Invoke($"Converging {suspects.Length} concealed audio sector(s) using C2 re-reads...");
+        UpdateStatus?.Invoke($"Converging {suspects.Length} concealed audio sector(s) using per-byte C2 merge...");
 
         foreach(ulong badSector in suspects)
         {
             if(_aborted) break;
 
-            byte[] bestClean       = null;
-            var    sectorConverged = false;
+            byte[] merged         = null;                     // full sector, improved as clean bytes arrive
+            var    cleanValue     = new byte[C2_DATA_SIZE];   // last C2-clean value seen for each byte
+            var    haveClean      = new bool[C2_DATA_SIZE];   // a clean value has been observed for this byte
+            var    confirmed      = new bool[C2_DATA_SIZE];   // two agreeing clean reads seen for this byte
+            var    confirmedCount = 0;
 
             for(var attempt = 0; attempt < maxAttempts && !_aborted; attempt++)
             {
@@ -279,81 +281,93 @@ partial class Dump
                 if(!TryReadAudioC2Aligned(badSector,
                                           offsetBytes,
                                           sectorsForOffset,
-                                          blockSize,
-                                          subSize,
                                           supportedSubchannel,
                                           out byte[] aligned,
-                                          out bool windowClean))
+                                          out bool[] cleanMask))
                     continue;
 
-                // Only a fully C2-clean window is trustworthy; a dirty read tells us nothing new.
-                if(!windowClean) continue;
+                // Baseline: keep a full plausible sector so bytes never seen clean are not left as zeros.
+                merged ??= (byte[])aligned.Clone();
 
-                if(bestClean is null)
+                for(var j = 0; j < (int)C2_DATA_SIZE; j++)
                 {
-                    bestClean = aligned;
+                    // A byte is accepted only when two C2-clean reads agree on it, merging good bytes across reads.
+                    if(confirmed[j] || !cleanMask[j]) continue;
 
-                    continue;
+                    if(!haveClean[j])
+                    {
+                        haveClean[j]  = true;
+                        cleanValue[j] = aligned[j];
+                        merged[j]     = aligned[j];
+                    }
+                    else if(cleanValue[j] == aligned[j])
+                    {
+                        confirmed[j] = true;
+                        merged[j]    = aligned[j];
+                        confirmedCount++;
+                    }
+                    else
+                    {
+                        // Two clean reads disagree on this byte: C2 is unreliable here. Adopt the newest and keep going.
+                        cleanValue[j] = aligned[j];
+                        merged[j]     = aligned[j];
+                    }
                 }
 
-                if(aligned.AsSpan().SequenceEqual(bestClean))
-                {
-                    sectorConverged = true;
-
-                    break;
-                }
-
-                // Two "clean" reads disagree: the drive's C2 is not reliable here. Keep the newest and keep trying.
-                bestClean = aligned;
+                if(confirmedCount == (int)C2_DATA_SIZE) break;
             }
 
-            if(bestClean is not null)
+            if(merged is null)
             {
-                outputOptical.WriteSectorLong(bestClean, badSector, false, SectorStatus.Dumped);
-                extents.Add(badSector);
+                failed++;
+                _errorLog?.WriteLine(badSector, "Audio sector could not be re-read for C2 convergence");
 
-                if(sectorConverged)
-                {
-                    converged++;
-                    _c2SuspectAudio.Remove(badSector);
-                    _mediaGraph?.PaintSectorGood(badSector);
-                    _errorLog?.WriteLine(badSector, "Audio sector converged clean via C2 re-reading");
-                }
-                else
-                {
-                    improved++;
-                    _errorLog?.WriteLine(badSector, "Audio sector got a clean C2 read but could not be confirmed");
-                }
+                continue;
+            }
+
+            outputOptical.WriteSectorLong(merged, badSector, false, SectorStatus.Dumped);
+            extents.Add(badSector);
+
+            if(confirmedCount == (int)C2_DATA_SIZE)
+            {
+                converged++;
+                _c2SuspectAudio.Remove(badSector);
+                _mediaGraph?.PaintSectorGood(badSector);
+                _errorLog?.WriteLine(badSector, "Audio sector converged clean via per-byte C2 merge");
             }
             else
             {
-                failed++;
-                _errorLog?.WriteLine(badSector, "Audio sector still concealed after C2 convergence");
+                improved++;
+
+                _errorLog?.WriteLine(badSector,
+                                     $"Audio sector merged, {confirmedCount}/{(int)C2_DATA_SIZE} bytes confirmed clean");
             }
         }
 
         EndProgress?.Invoke();
 
-        UpdateStatus?.Invoke($"C2 convergence: {converged} converged, {improved} clean but unconfirmed, {failed} " +
-                             "still concealed.");
+        UpdateStatus?.Invoke($"C2 convergence: {converged} fully converged, {improved} partially merged, {failed} " +
+                             "unreadable.");
 
-        AaruLogging.WriteLine($"C2 audio convergence complete: {converged} sector(s) converged clean, {improved} " +
-                              $"got a single clean read, {failed} remained concealed.");
+        AaruLogging.WriteLine($"C2 audio convergence complete: {converged} sector(s) fully converged, {improved} " +
+                              $"partially merged, {failed} could not be re-read.");
     }
 
     /// <summary>
     ///     Reads a single audio sector requesting C2 error pointers, applying the same read-offset window handling as the
-    ///     retry path, and returns the offset-aligned 2352-byte audio plus whether the whole read window was C2-clean.
+    ///     retry path, and returns the offset-aligned 2352-byte audio together with a per-byte mask of which of those
+    ///     aligned bytes the drive reported as C2-clean. The C2 mask is shifted through the same offset as the data.
     /// </summary>
     /// <returns><c>true</c> if the read succeeded and produced aligned data.</returns>
-    bool TryReadAudioC2Aligned(ulong badSector, int offsetBytes, int sectorsForOffset, uint blockSize, uint subSize,
-                               MmcSubchannel supportedSubchannel, out byte[] aligned, out bool windowClean)
+    bool TryReadAudioC2Aligned(ulong badSector, int offsetBytes, int sectorsForOffset, MmcSubchannel supportedSubchannel,
+                               out byte[] aligned, out bool[] cleanMask)
     {
-        aligned     = null;
-        windowClean = false;
+        aligned   = null;
+        cleanMask = null;
 
         byte sectorsToReRead   = 1;
         var  badSectorToReRead = (uint)badSector;
+        var  offsetFix         = 0;
 
         // OmniDrive always needs the offset window (like the retry path); the generic path only when fixing offset.
         if((_fixOffset || _omnidrive) && offsetBytes != 0)
@@ -367,9 +381,12 @@ partial class Dump
             }
 
             sectorsToReRead += (byte)sectorsForOffset;
+
+            // Same slice offset FixOffsetData applies to the data, so the C2 mask lines up with the aligned audio.
+            offsetFix = offsetBytes < 0 ? (int)C2_DATA_SIZE * sectorsForOffset + offsetBytes : offsetBytes;
         }
 
-        bool sense;
+        bool   sense;
         byte[] c2Buf;
 
         if(_omnidrive)
@@ -404,47 +421,27 @@ partial class Dump
 
         if(sense || c2Buf is null || c2Buf.Length < sectorsToReRead * _c2BlockSize) return false;
 
-        windowClean = true;
+        int windowBytes = (int)C2_DATA_SIZE * sectorsToReRead;
 
-        for(var s = 0; s < sectorsToReRead; s++)
+        if(offsetFix < 0 || offsetFix + (int)C2_DATA_SIZE > windowBytes) return false;
+
+        aligned   = new byte[C2_DATA_SIZE];
+        cleanMask = new bool[C2_DATA_SIZE];
+
+        for(var j = 0; j < (int)C2_DATA_SIZE; j++)
         {
-            if(!SectorHasC2Error(c2Buf, s)) continue;
+            int windowByte = offsetFix + j;                 // byte index within the concatenated window audio
+            int s          = windowByte / (int)C2_DATA_SIZE; // which read sector it falls in
+            int k          = windowByte % (int)C2_DATA_SIZE; // byte within that sector
 
-            windowClean = false;
+            aligned[j] = c2Buf[s * (int)_c2BlockSize + k];
 
-            break;
+            // One C2 bit per audio byte, MSB-first (the order Aaru's ECC fixer tries first). Wrong-order guesses are
+            // caught by the two-agreeing-reads rule: a mislabelled concealed byte will not agree across reads.
+            byte c2Byte = c2Buf[s * (int)_c2BlockSize + _c2Offset + (k >> 3)];
+
+            cleanMask[j] = (c2Byte & (0x80 >> (k & 7))) == 0;
         }
-
-        // Repack the C2 layout into the normal block layout so FixOffsetData sees what it expects.
-        var cmdBuf  = new byte[blockSize * sectorsToReRead];
-        int copySub = (int)Math.Min(subSize, C2_SUB_SIZE);
-
-        for(var s = 0; s < sectorsToReRead; s++)
-        {
-            int src = s * (int)_c2BlockSize;
-            int dst = s * (int)blockSize;
-
-            Array.Copy(c2Buf, src,                cmdBuf, dst,                     (int)C2_DATA_SIZE);
-            Array.Copy(c2Buf, src + _c2SubOffset, cmdBuf, dst + (int)C2_DATA_SIZE, copySub);
-        }
-
-        if((_fixOffset || _omnidrive) && offsetBytes != 0)
-        {
-            uint blocksToRead = sectorsToReRead;
-
-            FixOffsetData(offsetBytes,
-                          (int)C2_DATA_SIZE,
-                          sectorsForOffset,
-                          supportedSubchannel,
-                          ref blocksToRead,
-                          subSize,
-                          ref cmdBuf,
-                          blockSize,
-                          false);
-        }
-
-        aligned = new byte[C2_DATA_SIZE];
-        Array.Copy(cmdBuf, 0, aligned, 0, (int)C2_DATA_SIZE);
 
         return true;
     }
