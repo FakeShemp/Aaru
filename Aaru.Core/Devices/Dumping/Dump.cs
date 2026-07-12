@@ -118,6 +118,11 @@ public partial class Dump
     readonly        Stopwatch                  _writeStopwatch;
     bool                                       _aborted;
     int                                        _correctSectors;
+    bool                                       _c2Supported;    // Drive returns C2 pointers alongside subchannel
+    uint                                       _c2BlockSize;    // Block size when reading data + C2 + subchannel
+    int                                        _c2Offset;       // Byte offset of the 294-byte C2 region in a C2 block
+    int                                        _c2SubOffset;    // Byte offset of the subchannel region in a C2 block
+    HashSet<ulong>                             _c2SuspectAudio; // Audio sectors the drive flagged with C2 (concealed)
     AaruContext                                _ctx;   // Main database context
     Database.Models.Device                     _dbDev; // Device database entry
     bool                                       _dumpFirstTrackPregap;

@@ -171,6 +171,11 @@ sealed partial class Dump
 
         blockSize = sectorSize + subSize;
 
+        // Probe, once, whether the drive returns C2 error pointers alongside subchannel and in which byte order, so
+        // audio sectors can be checked for concealed (interpolated) samples. Diagnostic only: sets capability fields
+        // and logs the outcome; leaves the dump path unchanged when C2 is unavailable.
+        DetectC2Layout(firstLba, readcd, supportedSubchannel);
+
         foreach(Track trk in tracks) trk.SubchannelType = subType;
 
         UpdateStatus?.Invoke(Localization.Core.Calculating_pregaps__can_take_some_time);
@@ -1200,6 +1205,10 @@ sealed partial class Dump
                         subchannelExtents,
                         smallestPregapLbaPerTrack,
                         supportsLongSectors);
+
+        // With C2 available, re-check every audio sector for concealed (interpolated) samples the drive returned
+        // silently. Detection only: flags them in the C2 suspect set, kept separate from hard read errors.
+        ClassifyAudioC2(audioExtents, lastSector, leadOutExtents, supportedSubchannel);
 
         foreach(Tuple<ulong, ulong> leadoutExtent in leadOutExtents.ToArray())
             for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++)
