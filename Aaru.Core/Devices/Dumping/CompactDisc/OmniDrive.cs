@@ -32,6 +32,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Aaru.Checksums;
@@ -180,7 +181,7 @@ partial class Dump
 
             Track track = tracks.OrderBy(static t => t.StartSector).LastOrDefault(t => i >= t.StartSector);
 
-            blocksToRead = _maximumReadable;
+            blocksToRead = 24;
 
             if(blocksToRead == 1) blocksToRead += (uint)sectorsForOffset;
 
@@ -245,31 +246,19 @@ partial class Dump
                                    (long)i,
                                    (long)blocks);
 
-
             _speedStopwatch.Start();
+            // OmniDrive returns C2 at the same speed as a plain read, so gather it in the main pass to detect concealed
+            // audio up front. RepackAudioC2 collapses the C2 layout into the normal layout in place (no per-read
+            // allocation) and flags concealed audio sectors. Fall back to a plain read if the C2 read fails.
+            sense = _dev.OmniDriveReadCdWithC2(out cmdBuf,
+                                               out senseBuf,
+                                               firstSectorToRead,
+                                               blocksToRead,
+                                               _dev.Timeout,
+                                               out _);
 
-            // With C2 enabled, read the error pointers in the same pass so concealed audio samples are detected up
-            // front, then repack into the normal layout the rest of the loop expects. Fall back to a plain read if the
-            // C2 read fails.
-            if(_c2Supported)
-            {
-                sense = _dev.OmniDriveReadCdWithC2(out cmdBuf,
-                                                   out senseBuf,
-                                                   firstSectorToRead,
-                                                   blocksToRead,
-                                                   _dev.Timeout,
-                                                   out _);
-
-                if(!sense && !_dev.Error)
-                    RepackAudioC2(ref cmdBuf, blocksToRead, blockSize, subSize, firstSectorToRead, audioExtents);
-                else
-                    sense = _dev.OmniDriveReadCd(out cmdBuf,
-                                                 out senseBuf,
-                                                 firstSectorToRead,
-                                                 blocksToRead,
-                                                 _dev.Timeout,
-                                                 out _);
-            }
+            if(!sense && !_dev.Error)
+                RepackAudioC2(ref cmdBuf, blocksToRead, blockSize, subSize, firstSectorToRead, audioExtents);
             else
                 sense = _dev.OmniDriveReadCd(out cmdBuf,
                                              out senseBuf,

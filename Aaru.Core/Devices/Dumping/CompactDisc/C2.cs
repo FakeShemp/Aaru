@@ -211,33 +211,36 @@ partial class Dump
 
         _c2SuspectAudio ??= [];
 
-        var repacked = new byte[blockSize * blocksToRead];
-        int copySub  = (int)Math.Min(subSize, C2_SUB_SIZE);
+        int copySub = (int)Math.Min(subSize, C2_SUB_SIZE);
 
         // Sectors read to fix a negative offset wrap around near uint.MaxValue; their LBAs are not meaningful, so the
         // data is still repacked but C2 flags are not attributed to a (wrong) sector number.
         bool offsetWrapped = firstSectorToRead >= 0xFFFF0000;
 
+        // Compact in place: the C2 layout (2742/sector) collapses to the normal layout (blockSize/sector) within the
+        // same buffer, so no per-read allocation happens. dst is always <= src, and each sector's source bytes are
+        // still untouched when it is processed, so the overlapping Array.Copy (memmove semantics) is safe. The unused
+        // tail is ignored downstream, which addresses cmdBuf purely by blockSize stride.
         for(var b = 0; b < blocksToRead; b++)
         {
             int src = b * (int)_c2BlockSize;
             int dst = b * (int)blockSize;
 
-            Array.Copy(cmdBuf, src,                repacked, dst,                     (int)C2_DATA_SIZE);
-            Array.Copy(cmdBuf, src + _c2SubOffset, repacked, dst + (int)C2_DATA_SIZE, copySub);
+            // Check C2 before the data move overwrites nothing of the C2 region (C2 sits after the data we move).
+            if(!offsetWrapped && SectorHasC2Error(cmdBuf, b))
+            {
+                ulong sector = firstSectorToRead + (ulong)b;
 
-            if(offsetWrapped || !SectorHasC2Error(cmdBuf, b)) continue;
+                // C2 error pointers only carry meaning for audio; a data sector is validated by its EDC/ECC instead.
+                if((audioExtents is null || audioExtents.Contains(sector)) && _c2SuspectAudio.Add(sector))
+                    _errorLog?.WriteLine(sector, "Audio sector concealed (C2 error pointers set)");
+            }
 
-            ulong sector = firstSectorToRead + (ulong)b;
-
-            // C2 error pointers only carry meaning for audio; a data sector is validated by its EDC/ECC instead.
-            if(audioExtents is not null && !audioExtents.Contains(sector)) continue;
-
-            if(_c2SuspectAudio.Add(sector))
-                _errorLog?.WriteLine(sector, "Audio sector concealed (C2 error pointers set)");
+            // Move data first, then subchannel: the data destination ends before this sector's subchannel source, so
+            // the subchannel bytes are still intact when copied.
+            Array.Copy(cmdBuf, src,                cmdBuf, dst,                     (int)C2_DATA_SIZE);
+            Array.Copy(cmdBuf, src + _c2SubOffset, cmdBuf, dst + (int)C2_DATA_SIZE, copySub);
         }
-
-        cmdBuf = repacked;
     }
 
     /// <summary>
