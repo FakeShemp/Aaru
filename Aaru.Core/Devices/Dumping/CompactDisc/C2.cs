@@ -77,10 +77,10 @@ partial class Dump
             _c2SubOffset    = (int)(C2_DATA_SIZE + C2_POINTERS); // 2646
             _c2SuspectAudio = [];
 
-            UpdateStatus?.Invoke("C2 secure audio enabled: OmniDrive native layout data + C2 + subchannel.");
+            UpdateStatus?.Invoke(Localization.Core.C2_secure_audio_enabled_OmniDrive);
 
-            AaruLogging.WriteLine("C2 secure audio enabled (OmniDrive). Block size 2742 bytes, layout data + C2 + " +
-                                  "subchannel.");
+            AaruLogging.WriteLine(string.Format(Localization.Core.C2_secure_audio_enabled_OmniDrive_details_0,
+                                                C2_BLOCK_SIZE));
 
             return;
         }
@@ -88,15 +88,17 @@ partial class Dump
         // C2 secure audio reading requires READ CD and raw (96 byte) subchannel to validate the layout via Q CRC.
         if(!readcd)
         {
-            AaruLogging.WriteLine("C2 secure audio: not probed (requires READ CD).");
+            AaruLogging.WriteLine(Localization.Core.C2_secure_audio_not_probed_requires_READ_CD);
 
             return;
         }
 
         if(supportedSubchannel != MmcSubchannel.Raw)
         {
-            UpdateStatus?.Invoke("C2 secure audio disabled: requires raw subchannel reading.");
-            AaruLogging.WriteLine("C2 secure audio disabled: drive does not provide raw (96 byte) subchannel.");
+            UpdateStatus?.Invoke(Localization.Core.C2_secure_audio_disabled_requires_raw_subchannel);
+
+            AaruLogging.WriteLine(string.Format(Localization.Core.C2_secure_audio_disabled_no_raw_subchannel_0,
+                                                C2_SUB_SIZE));
 
             return;
         }
@@ -123,8 +125,8 @@ partial class Dump
 
         if(sense || _dev.Error || cmdBuf is null || cmdBuf.Length < C2_BLOCK_SIZE)
         {
-            UpdateStatus?.Invoke("C2 secure audio disabled: drive cannot return C2 and subchannel together.");
-            AaruLogging.WriteLine("C2 secure audio disabled: READ CD with C2 pointers + subchannel failed.");
+            UpdateStatus?.Invoke(Localization.Core.C2_secure_audio_disabled_no_C2_and_subchannel);
+            AaruLogging.WriteLine(Localization.Core.C2_secure_audio_disabled_READ_CD_C2_failed);
 
             return;
         }
@@ -150,20 +152,19 @@ partial class Dump
             case true:
                 c2Offset  = specC2Offset;
                 subOffset = specSubOffset;
-                layout    = "data + C2 + subchannel (MMC spec order)";
+                layout    = Localization.Core.C2_layout_data_C2_subchannel;
 
                 break;
             case false when altValid:
                 c2Offset  = altC2Offset;
                 subOffset = altSubOffset;
-                layout    = "data + subchannel + C2";
+                layout    = Localization.Core.C2_layout_data_subchannel_C2;
 
                 break;
             default:
-                UpdateStatus?.Invoke("C2 secure audio disabled: could not determine C2/subchannel byte order.");
+                UpdateStatus?.Invoke(Localization.Core.C2_secure_audio_disabled_unknown_byte_order);
 
-                AaruLogging.WriteLine("C2 secure audio disabled: neither candidate subchannel region produced a " +
-                                      "valid Q CRC on the test sector.");
+                AaruLogging.WriteLine(Localization.Core.C2_secure_audio_disabled_no_valid_Q_CRC);
 
                 return;
         }
@@ -181,11 +182,16 @@ partial class Dump
             if(cmdBuf[c2Offset + b] != 0)
                 dirtyC2Bytes++;
 
-        UpdateStatus?.Invoke($"C2 secure audio enabled: layout {layout}.");
+        UpdateStatus?.Invoke(string.Format(Localization.Core.C2_secure_audio_enabled_layout_0, layout));
 
-        AaruLogging.WriteLine($"C2 secure audio enabled. Block size {C2_BLOCK_SIZE} bytes, layout {layout}. " +
-                              $"Test sector {testLba}: Q CRC valid at offset {subOffset}, C2 region at offset " +
-                              $"{c2Offset} had {dirtyC2Bytes}/{C2_POINTERS} non-zero bytes.");
+        AaruLogging.WriteLine(string.Format(Localization.Core.C2_secure_audio_enabled_details,
+                                            C2_BLOCK_SIZE,
+                                            layout,
+                                            testLba,
+                                            subOffset,
+                                            c2Offset,
+                                            dirtyC2Bytes,
+                                            C2_POINTERS));
     }
 
     /// <summary>
@@ -233,7 +239,7 @@ partial class Dump
 
                 // C2 error pointers only carry meaning for audio; a data sector is validated by its EDC/ECC instead.
                 if((audioExtents is null || audioExtents.Contains(sector)) && _c2SuspectAudio.Add(sector))
-                    _errorLog?.WriteLine(sector, "Audio sector concealed (C2 error pointers set)");
+                    _errorLog?.WriteLine(sector, Localization.Core.Reason_audio_concealed_C2);
             }
 
             // Move data first, then subchannel: the data destination ends before this sector's subchannel source, so
@@ -262,7 +268,7 @@ partial class Dump
 
         InitProgress?.Invoke();
 
-        UpdateStatus?.Invoke($"Converging {suspects.Length} concealed audio sector(s) using per-byte C2 merge...");
+        UpdateStatus?.Invoke(string.Format(Localization.Core.Converging_0_concealed_audio_sectors, suspects.Length));
 
         foreach(ulong badSector in suspects)
         {
@@ -276,7 +282,9 @@ partial class Dump
 
             for(var attempt = 0; attempt < maxAttempts && !_aborted; attempt++)
             {
-                PulseProgress?.Invoke($"Converging concealed audio sector {badSector} (attempt {attempt + 1})");
+                PulseProgress?.Invoke(string.Format(Localization.Core.Converging_concealed_audio_sector_0_attempt_1,
+                                                    badSector,
+                                                    attempt + 1));
 
                 if(!TryReadAudioC2Aligned(badSector,
                                           offsetBytes,
@@ -320,7 +328,7 @@ partial class Dump
             if(merged is null)
             {
                 failed++;
-                _errorLog?.WriteLine(badSector, "Audio sector could not be re-read for C2 convergence");
+                _errorLog?.WriteLine(badSector, Localization.Core.Reason_audio_not_rereadable_C2);
 
                 continue;
             }
@@ -333,24 +341,27 @@ partial class Dump
                 converged++;
                 _c2SuspectAudio.Remove(badSector);
                 _mediaGraph?.PaintSectorGood(badSector);
-                _errorLog?.WriteLine(badSector, "Audio sector converged clean via per-byte C2 merge");
+                _errorLog?.WriteLine(badSector, Localization.Core.Reason_audio_converged_C2);
             }
             else
             {
                 improved++;
 
                 _errorLog?.WriteLine(badSector,
-                                     $"Audio sector merged, {confirmedCount}/{(int)C2_DATA_SIZE} bytes confirmed clean");
+                                     string.Format(Localization.Core.Reason_audio_merged_0_1,
+                                                   confirmedCount,
+                                                   (int)C2_DATA_SIZE));
             }
         }
 
         EndProgress?.Invoke();
 
-        UpdateStatus?.Invoke($"C2 convergence: {converged} fully converged, {improved} partially merged, {failed} " +
-                             "unreadable.");
+        UpdateStatus?.Invoke(string.Format(Localization.Core.C2_convergence_result_0_1_2, converged, improved, failed));
 
-        AaruLogging.WriteLine($"C2 audio convergence complete: {converged} sector(s) fully converged, {improved} " +
-                              $"partially merged, {failed} could not be re-read.");
+        AaruLogging.WriteLine(string.Format(Localization.Core.C2_audio_convergence_complete_0_1_2,
+                                            converged,
+                                            improved,
+                                            failed));
     }
 
     /// <summary>

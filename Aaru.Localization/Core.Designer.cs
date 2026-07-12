@@ -7108,5 +7108,149 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Aacs_bd_decrypt_requires_0_byte_sectors", resourceCulture);
             }
         }
+        public static string C2_secure_audio_enabled_OmniDrive {
+            get {
+                return ResourceManager.GetString("C2_secure_audio_enabled_OmniDrive", resourceCulture);
+            }
+        }
+        
+        public static string C2_secure_audio_enabled_OmniDrive_details_0 {
+            get {
+                return ResourceManager.GetString("C2_secure_audio_enabled_OmniDrive_details_0", resourceCulture);
+            }
+        }
+        
+        public static string C2_secure_audio_not_probed_requires_READ_CD {
+            get {
+                return ResourceManager.GetString("C2_secure_audio_not_probed_requires_READ_CD", resourceCulture);
+            }
+        }
+        
+        public static string C2_secure_audio_disabled_requires_raw_subchannel {
+            get {
+                return ResourceManager.GetString("C2_secure_audio_disabled_requires_raw_subchannel", resourceCulture);
+            }
+        }
+        
+        public static string C2_secure_audio_disabled_no_raw_subchannel_0 {
+            get {
+                return ResourceManager.GetString("C2_secure_audio_disabled_no_raw_subchannel_0", resourceCulture);
+            }
+        }
+        
+        public static string C2_secure_audio_disabled_no_C2_and_subchannel {
+            get {
+                return ResourceManager.GetString("C2_secure_audio_disabled_no_C2_and_subchannel", resourceCulture);
+            }
+        }
+        
+        public static string C2_secure_audio_disabled_READ_CD_C2_failed {
+            get {
+                return ResourceManager.GetString("C2_secure_audio_disabled_READ_CD_C2_failed", resourceCulture);
+            }
+        }
+        
+        public static string C2_secure_audio_disabled_unknown_byte_order {
+            get {
+                return ResourceManager.GetString("C2_secure_audio_disabled_unknown_byte_order", resourceCulture);
+            }
+        }
+        
+        public static string C2_secure_audio_disabled_no_valid_Q_CRC {
+            get {
+                return ResourceManager.GetString("C2_secure_audio_disabled_no_valid_Q_CRC", resourceCulture);
+            }
+        }
+        
+        public static string C2_secure_audio_enabled_layout_0 {
+            get {
+                return ResourceManager.GetString("C2_secure_audio_enabled_layout_0", resourceCulture);
+            }
+        }
+        
+        public static string C2_secure_audio_enabled_details {
+            get {
+                return ResourceManager.GetString("C2_secure_audio_enabled_details", resourceCulture);
+            }
+        }
+        
+        public static string Converging_0_concealed_audio_sectors {
+            get {
+                return ResourceManager.GetString("Converging_0_concealed_audio_sectors", resourceCulture);
+            }
+        }
+        
+        public static string Converging_concealed_audio_sector_0_attempt_1 {
+            get {
+                return ResourceManager.GetString("Converging_concealed_audio_sector_0_attempt_1", resourceCulture);
+            }
+        }
+        
+        public static string C2_convergence_result_0_1_2 {
+            get {
+                return ResourceManager.GetString("C2_convergence_result_0_1_2", resourceCulture);
+            }
+        }
+        
+        public static string C2_audio_convergence_complete_0_1_2 {
+            get {
+                return ResourceManager.GetString("C2_audio_convergence_complete_0_1_2", resourceCulture);
+            }
+        }
+        
+        public static string C2_audio_check_no_concealed {
+            get {
+                return ResourceManager.GetString("C2_audio_check_no_concealed", resourceCulture);
+            }
+        }
+        
+        public static string C2_audio_check_0_concealed_samples {
+            get {
+                return ResourceManager.GetString("C2_audio_check_0_concealed_samples", resourceCulture);
+            }
+        }
+        
+        public static string C2_audio_check_0_flagged {
+            get {
+                return ResourceManager.GetString("C2_audio_check_0_flagged", resourceCulture);
+            }
+        }
+        
+        public static string Reason_audio_concealed_C2 {
+            get {
+                return ResourceManager.GetString("Reason_audio_concealed_C2", resourceCulture);
+            }
+        }
+        
+        public static string Reason_audio_converged_C2 {
+            get {
+                return ResourceManager.GetString("Reason_audio_converged_C2", resourceCulture);
+            }
+        }
+        
+        public static string Reason_audio_merged_0_1 {
+            get {
+                return ResourceManager.GetString("Reason_audio_merged_0_1", resourceCulture);
+            }
+        }
+        
+        public static string Reason_audio_not_rereadable_C2 {
+            get {
+                return ResourceManager.GetString("Reason_audio_not_rereadable_C2", resourceCulture);
+            }
+        }
+        
+        public static string C2_layout_data_C2_subchannel {
+            get {
+                return ResourceManager.GetString("C2_layout_data_C2_subchannel", resourceCulture);
+            }
+        }
+        
+        public static string C2_layout_data_subchannel_C2 {
+            get {
+                return ResourceManager.GetString("C2_layout_data_subchannel_C2", resourceCulture);
+            }
+        }
+        
     }
 }

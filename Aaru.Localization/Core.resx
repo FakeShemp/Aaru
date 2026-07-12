@@ -3625,4 +3625,76 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="Aacs_bd_decrypt_requires_0_byte_sectors" xml:space="preserve">
         <value>Blu-ray AACS decryption requires {0}-byte user sectors; this image reports a different sector size.</value>
     </data>
+    <data name="C2_secure_audio_enabled_OmniDrive" xml:space="preserve">
+        <value>[slateblue1]C2 secure audio enabled: OmniDrive native layout data + C2 + subchannel.[/]</value>
+    </data>
+    <data name="C2_secure_audio_enabled_OmniDrive_details_0" xml:space="preserve">
+        <value>[slateblue1]C2 secure audio enabled (OmniDrive). Block size [teal]{0}[/] bytes, layout data + C2 + subchannel.[/]</value>
+    </data>
+    <data name="C2_secure_audio_not_probed_requires_READ_CD" xml:space="preserve">
+        <value>[olive]C2 secure audio: not probed (requires READ CD).[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_requires_raw_subchannel" xml:space="preserve">
+        <value>[olive]C2 secure audio disabled: requires raw subchannel reading.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_no_raw_subchannel_0" xml:space="preserve">
+        <value>[olive]C2 secure audio disabled: drive does not provide raw ([teal]{0}[/] byte) subchannel.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_no_C2_and_subchannel" xml:space="preserve">
+        <value>[olive]C2 secure audio disabled: drive cannot return C2 and subchannel together.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_READ_CD_C2_failed" xml:space="preserve">
+        <value>[olive]C2 secure audio disabled: READ CD with C2 pointers + subchannel failed.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_unknown_byte_order" xml:space="preserve">
+        <value>[olive]C2 secure audio disabled: could not determine C2/subchannel byte order.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_no_valid_Q_CRC" xml:space="preserve">
+        <value>[olive]C2 secure audio disabled: neither candidate subchannel region produced a valid Q CRC on the test sector.[/]</value>
+    </data>
+    <data name="C2_secure_audio_enabled_layout_0" xml:space="preserve">
+        <value>[slateblue1]C2 secure audio enabled: layout {0}.[/]</value>
+    </data>
+    <data name="C2_secure_audio_enabled_details" xml:space="preserve">
+        <value>[slateblue1]C2 secure audio enabled. Block size [teal]{0}[/] bytes, layout {1}. Test sector [lime]{2}[/]: Q CRC valid at offset [teal]{3}[/], C2 region at offset [teal]{4}[/] had [lime]{5}[/]/[lime]{6}[/] non-zero bytes.[/]</value>
+    </data>
+    <data name="Converging_0_concealed_audio_sectors" xml:space="preserve">
+        <value>[slateblue1]Converging [lime]{0}[/] concealed audio sector(s) using per-byte C2 merge...[/]</value>
+    </data>
+    <data name="Converging_concealed_audio_sector_0_attempt_1" xml:space="preserve">
+        <value>[slateblue1]Converging concealed audio sector [lime]{0}[/] (attempt [teal]{1}[/])[/]</value>
+    </data>
+    <data name="C2_convergence_result_0_1_2" xml:space="preserve">
+        <value>[slateblue1]C2 convergence: [lime]{0}[/] fully converged, [lime]{1}[/] partially merged, [lime]{2}[/] unreadable.[/]</value>
+    </data>
+    <data name="C2_audio_convergence_complete_0_1_2" xml:space="preserve">
+        <value>[slateblue1]C2 audio convergence complete: [lime]{0}[/] sector(s) fully converged, [lime]{1}[/] partially merged, [lime]{2}[/] could not be re-read.[/]</value>
+    </data>
+    <data name="C2_audio_check_no_concealed" xml:space="preserve">
+        <value>[slateblue1]C2 audio check: no concealed audio sectors detected.[/]</value>
+    </data>
+    <data name="C2_audio_check_0_concealed_samples" xml:space="preserve">
+        <value>[slateblue1]C2 audio check: [lime]{0}[/] audio sector(s) contained concealed samples.[/]</value>
+    </data>
+    <data name="C2_audio_check_0_flagged" xml:space="preserve">
+        <value>[slateblue1]C2 audio check: [lime]{0}[/] audio sector(s) flagged as concealed (C2 pointers set).[/]</value>
+    </data>
+    <data name="Reason_audio_concealed_C2" xml:space="preserve">
+        <value>Audio sector concealed (C2 error pointers set)</value>
+    </data>
+    <data name="Reason_audio_converged_C2" xml:space="preserve">
+        <value>Audio sector converged clean via per-byte C2 merge</value>
+    </data>
+    <data name="Reason_audio_merged_0_1" xml:space="preserve">
+        <value>Audio sector merged, {0}/{1} bytes confirmed clean</value>
+    </data>
+    <data name="Reason_audio_not_rereadable_C2" xml:space="preserve">
+        <value>Audio sector could not be re-read for C2 convergence</value>
+    </data>
+    <data name="C2_layout_data_C2_subchannel" xml:space="preserve">
+        <value>data + C2 + subchannel (MMC spec order)</value>
+    </data>
+    <data name="C2_layout_data_subchannel_C2" xml:space="preserve">
+        <value>data + subchannel + C2</value>
+    </data>
 </root>

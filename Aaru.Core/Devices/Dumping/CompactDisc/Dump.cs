@@ -1215,10 +1215,11 @@ sealed partial class Dump
             int concealed = _c2SuspectAudio?.Count ?? 0;
 
             UpdateStatus?.Invoke(concealed == 0
-                                     ? "C2 audio check: no concealed audio sectors detected."
-                                     : $"C2 audio check: {concealed} audio sector(s) contained concealed samples.");
+                                     ? Localization.Core.C2_audio_check_no_concealed
+                                     : string.Format(Localization.Core.C2_audio_check_0_concealed_samples,
+                                                     concealed));
 
-            AaruLogging.WriteLine($"C2 audio check: {concealed} audio sector(s) flagged as concealed (C2 pointers set).");
+            AaruLogging.WriteLine(string.Format(Localization.Core.C2_audio_check_0_flagged, concealed));
         }
 
         foreach(Tuple<ulong, ulong> leadoutExtent in leadOutExtents.ToArray())
