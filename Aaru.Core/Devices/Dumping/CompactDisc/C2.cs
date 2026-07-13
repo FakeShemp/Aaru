@@ -325,26 +325,24 @@ partial class Dump
                 if(confirmedCount == (int)C2_DATA_SIZE) break;
             }
 
-            if(merged is null)
+            // A sector is only clean when every byte was confirmed by two agreeing C2-clean reads.
+            if(merged is not null && confirmedCount == (int)C2_DATA_SIZE)
             {
-                failed++;
-                _errorLog?.WriteLine(badSector, Localization.Core.Reason_audio_not_rereadable_C2);
-
-                continue;
-            }
-
-            outputOptical.WriteSectorLong(merged, badSector, false, SectorStatus.Dumped);
-            extents.Add(badSector);
-
-            if(confirmedCount == (int)C2_DATA_SIZE)
-            {
+                outputOptical.WriteSectorLong(merged, badSector, false, SectorStatus.Dumped);
+                extents.Add(badSector);
                 converged++;
                 _c2SuspectAudio.Remove(badSector);
                 _mediaGraph?.PaintSectorGood(badSector);
                 _errorLog?.WriteLine(badSector, Localization.Core.Reason_audio_converged_C2);
+
+                continue;
             }
-            else
+
+            // Could not be made clean. Keep the best data we obtained (better than the concealed original) but mark
+            // the sector as bad so it is reported and tracked as not correctly dumped at the end of the dump.
+            if(merged is not null)
             {
+                outputOptical.WriteSectorLong(merged, badSector, false, SectorStatus.Dumped);
                 improved++;
 
                 _errorLog?.WriteLine(badSector,
@@ -352,7 +350,19 @@ partial class Dump
                                                    confirmedCount,
                                                    (int)C2_DATA_SIZE));
             }
+            else
+            {
+                failed++;
+                _errorLog?.WriteLine(badSector, Localization.Core.Reason_audio_not_rereadable_C2);
+            }
+
+            if(!_resume.BadBlocks.Contains(badSector)) _resume.BadBlocks.Add(badSector);
+
+            extents.Remove(badSector);
+            _mediaGraph?.PaintSectorBad(badSector);
         }
+
+        _resume.BadBlocks.Sort();
 
         EndProgress?.Invoke();
 
@@ -397,44 +407,14 @@ partial class Dump
             offsetFix = offsetBytes < 0 ? (int)C2_DATA_SIZE * sectorsForOffset + offsetBytes : offsetBytes;
         }
 
-        bool   sense;
-        byte[] c2Buf;
-
-        if(_omnidrive)
-        {
-            sense = _dev.OmniDriveReadCdWithC2(out c2Buf,
-                                               out _,
-                                               badSectorToReRead,
-                                               sectorsToReRead,
-                                               _dev.Timeout,
-                                               out _,
-                                               true);
-        }
-        else
-        {
-            sense = _dev.ReadCd(out c2Buf,
-                                out _,
-                                badSectorToReRead,
-                                _c2BlockSize,
-                                sectorsToReRead,
-                                MmcSectorTypes.Cdda,
-                                false,
-                                false,
-                                false,
-                                MmcHeaderCodes.None,
-                                true,
-                                false,
-                                MmcErrorField.C2Pointers,
-                                supportedSubchannel,
-                                _dev.Timeout,
-                                out _);
-        }
-
-        if(sense || c2Buf is null || c2Buf.Length < sectorsToReRead * _c2BlockSize) return false;
+        if(!TryReadWindow(badSectorToReRead, sectorsToReRead, supportedSubchannel, out byte[] buf, out int stride,
+                          out bool haveC2))
+            return false;
 
         int windowBytes = (int)C2_DATA_SIZE * sectorsToReRead;
 
-        if(offsetFix < 0 || offsetFix + (int)C2_DATA_SIZE > windowBytes) return false;
+        if(offsetFix < 0 || offsetFix + (int)C2_DATA_SIZE > windowBytes || buf.Length < sectorsToReRead * stride)
+            return false;
 
         aligned   = new byte[C2_DATA_SIZE];
         cleanMask = new bool[C2_DATA_SIZE];
@@ -445,14 +425,108 @@ partial class Dump
             int s          = windowByte / (int)C2_DATA_SIZE; // which read sector it falls in
             int k          = windowByte % (int)C2_DATA_SIZE; // byte within that sector
 
-            aligned[j] = c2Buf[s * (int)_c2BlockSize + k];
+            aligned[j] = buf[s * stride + k];
+
+            // Without C2 the byte cannot be confirmed clean, so it stays concealed (mask false).
+            if(!haveC2) continue;
 
             // One C2 bit per audio byte, MSB-first (the order Aaru's ECC fixer tries first). Wrong-order guesses are
             // caught by the two-agreeing-reads rule: a mislabelled concealed byte will not agree across reads.
-            byte c2Byte = c2Buf[s * (int)_c2BlockSize + _c2Offset + (k >> 3)];
+            byte c2Byte = buf[s * stride + _c2Offset + (k >> 3)];
 
             cleanMask[j] = (c2Byte & (0x80 >> (k & 7))) == 0;
         }
+
+        return true;
+    }
+
+    /// <summary>
+    ///     Reads an audio window with C2 error pointers, falling back through less capable reads so a readable sector
+    ///     always yields data. Order: cache-busting C2 read, plain C2 read, then a plain audio read (no C2) to at least
+    ///     recover the samples. Reports the per-sector stride and whether C2 information is present.
+    /// </summary>
+    bool TryReadWindow(uint lba, byte count, MmcSubchannel supportedSubchannel, out byte[] buf, out int stride,
+                       out bool haveC2)
+    {
+        buf    = null;
+        stride = 0;
+        haveC2 = false;
+
+        if(_omnidrive)
+        {
+            // Prefer a cache-busting (FUA) C2 read, then without FUA, so a drive that rejects FUA still gives C2.
+            foreach(bool fua in new[] { true, false })
+            {
+                bool s = _dev.OmniDriveReadCdWithC2(out byte[] b, out _, lba, count, _dev.Timeout, out _, fua);
+
+                if(s || _dev.Error || b is null || b.Length < count * _c2BlockSize) continue;
+
+                buf    = b;
+                stride = (int)_c2BlockSize;
+                haveC2 = true;
+
+                return true;
+            }
+
+            // Last resort: a plain read (data + subchannel, no C2) to at least recover the audio samples.
+            bool ps = _dev.OmniDriveReadCd(out byte[] pb, out _, lba, count, _dev.Timeout, out _);
+
+            if(ps || _dev.Error || pb is null || pb.Length < count * 2448) return false;
+
+            buf    = pb;
+            stride = 2448;
+
+            return true;
+        }
+
+        bool c2Sense = _dev.ReadCd(out byte[] cb,
+                                   out _,
+                                   lba,
+                                   _c2BlockSize,
+                                   count,
+                                   MmcSectorTypes.Cdda,
+                                   false,
+                                   false,
+                                   false,
+                                   MmcHeaderCodes.None,
+                                   true,
+                                   false,
+                                   MmcErrorField.C2Pointers,
+                                   supportedSubchannel,
+                                   _dev.Timeout,
+                                   out _);
+
+        if(!c2Sense && !_dev.Error && cb is not null && cb.Length >= count * _c2BlockSize)
+        {
+            buf    = cb;
+            stride = (int)_c2BlockSize;
+            haveC2 = true;
+
+            return true;
+        }
+
+        // Fall back to a plain audio read (no C2, no subchannel) to at least recover the samples.
+        bool pSense = _dev.ReadCd(out byte[] pgb,
+                                  out _,
+                                  lba,
+                                  C2_DATA_SIZE,
+                                  count,
+                                  MmcSectorTypes.Cdda,
+                                  false,
+                                  false,
+                                  false,
+                                  MmcHeaderCodes.None,
+                                  true,
+                                  false,
+                                  MmcErrorField.None,
+                                  MmcSubchannel.None,
+                                  _dev.Timeout,
+                                  out _);
+
+        if(pSense || _dev.Error || pgb is null || pgb.Length < count * (int)C2_DATA_SIZE) return false;
+
+        buf    = pgb;
+        stride = (int)C2_DATA_SIZE;
 
         return true;
     }
