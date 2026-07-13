@@ -568,8 +568,8 @@ public sealed partial class CdrWin
 
                                     if(currentFile.DataFilter == null)
                                     {
-                                        string path = imageFilter.ParentFolder +
-                                                      Path.PathSeparator       +
+                                        string path = imageFilter.ParentFolder    +
+                                                      Path.DirectorySeparatorChar +
                                                       unixPathMatch.Groups[1].Value;
 
                                         currentFile.DataFilter = PluginRegister.Singleton.GetFilter(path);
@@ -608,8 +608,8 @@ public sealed partial class CdrWin
 
                                     if(currentFile.DataFilter == null)
                                     {
-                                        string path = imageFilter.ParentFolder +
-                                                      Path.PathSeparator       +
+                                        string path = imageFilter.ParentFolder    +
+                                                      Path.DirectorySeparatorChar +
                                                       winPathMatch.Groups[1].Value;
 
                                         currentFile.DataFilter = PluginRegister.Singleton.GetFilter(path);
@@ -633,7 +633,7 @@ public sealed partial class CdrWin
                             }
                             else
                             {
-                                string path = imageFilter.ParentFolder + Path.PathSeparator + datafile;
+                                string path = imageFilter.ParentFolder + Path.DirectorySeparatorChar + datafile;
                                 currentFile.DataFilter = PluginRegister.Singleton.GetFilter(path);
 
                                 if(currentFile.DataFilter == null)
