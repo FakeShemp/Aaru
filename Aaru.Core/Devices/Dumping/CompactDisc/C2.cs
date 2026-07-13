@@ -277,6 +277,8 @@ partial class Dump
         var     converged   = 0;
         var     improved    = 0;
         var     failed      = 0;
+        long    totalSteps  = (long)suspects.Length * maxAttempts;
+        long    steps       = 0;
 
         InitProgress?.Invoke();
 
@@ -291,12 +293,17 @@ partial class Dump
             var    haveClean      = new bool[C2_DATA_SIZE];   // a clean value has been observed for this byte
             var    confirmed      = new bool[C2_DATA_SIZE];   // two agreeing clean reads seen for this byte
             var    confirmedCount = 0;
+            var    attemptsRun    = 0;
 
             for(var attempt = 0; attempt < maxAttempts && !_aborted; attempt++)
             {
-                PulseProgress?.Invoke(string.Format(Localization.Core.Converging_concealed_audio_sector_0_attempt_1,
-                                                    badSector,
-                                                    attempt + 1));
+                UpdateProgress?.Invoke(string.Format(Localization.Core.Converging_concealed_audio_sector_0_attempt_1,
+                                                     badSector,
+                                                     attempt + 1),
+                                       steps + attemptsRun,
+                                       totalSteps);
+
+                attemptsRun++;
 
                 if(!TryReadAudioC2Aligned(badSector,
                                           offsetBytes,
@@ -336,6 +343,9 @@ partial class Dump
 
                 if(confirmedCount == (int)C2_DATA_SIZE) break;
             }
+
+            // Account for this sector's whole retry budget so the bar advances even when it converges early.
+            steps += maxAttempts;
 
             // A sector is only clean when every byte was confirmed by two agreeing C2-clean reads.
             if(merged is not null && confirmedCount == (int)C2_DATA_SIZE)
