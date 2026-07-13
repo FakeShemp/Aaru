@@ -174,7 +174,7 @@ sealed partial class Dump
         // Probe, once, whether the drive returns C2 error pointers alongside subchannel and in which byte order, so
         // audio sectors can be checked for concealed (interpolated) samples. Diagnostic only: sets capability fields
         // and logs the outcome; leaves the dump path unchanged when C2 is unavailable.
-        DetectC2Layout(firstLba, readcd, supportedSubchannel);
+        DetectC2Layout(firstLba, readcd, supportedSubchannel, tracks.Any(static t => t.Type == TrackType.Audio));
 
         foreach(Track trk in tracks) trk.SubchannelType = subType;
 

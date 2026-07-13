@@ -61,12 +61,17 @@ partial class Dump
     /// <param name="firstLba">First readable LBA of the disc, used to derive a test sector.</param>
     /// <param name="readcd">Whether the drive supports the READ CD command.</param>
     /// <param name="supportedSubchannel">Subchannel mode the drive supports.</param>
-    void DetectC2Layout(uint firstLba, bool readcd, MmcSubchannel supportedSubchannel)
+    /// <param name="hasAudio">Whether the media contains any audio track; C2 is only enabled when it does.</param>
+    void DetectC2Layout(uint firstLba, bool readcd, MmcSubchannel supportedSubchannel, bool hasAudio)
     {
         _c2Supported = false;
         _c2BlockSize = 0;
         _c2Offset    = 0;
         _c2SubOffset = 0;
+
+        // C2 error pointers only matter for audio. On a disc with no audio tracks C2 is never enabled, so the media is
+        // never read with C2 and the convergence path is never taken. No message is logged, to avoid noise on data discs.
+        if(!hasAudio) return;
 
         // OmniDrive returns C2 natively in a fixed layout (data + C2 + subchannel), so no probing is needed.
         if(_omnidrive)
