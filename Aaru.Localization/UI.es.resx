@@ -5695,4 +5695,7 @@ Probadores:
     <data name="Setting_speed_to_8x_for_scrambled_reading" xml:space="preserve">
         <value>[slateblue1]Estableciendo velocidad a [teal]8x[/] para la lectura codificada.[/]</value>
     </data>
+    <data name="C2_repair_help" xml:space="preserve">
+        <value>Releer y reparar los sectores de audio que la unidad ocultó (punteros de error C2), reescribiendo las muestras recuperadas. Activado por defecto; válido sólo para CD con audio.</value>
+    </data>
 </root>

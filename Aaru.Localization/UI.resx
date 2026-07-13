@@ -5779,4 +5779,7 @@ Do you want to continue?</value>
     <data name="Setting_speed_to_8x_for_scrambled_reading" xml:space="preserve">
         <value>[slateblue1]Setting speed to [teal]8x[/] for scrambled reading.[/]</value>
     </data>
+    <data name="C2_repair_help" xml:space="preserve">
+        <value>Re-read and repair audio sectors the drive concealed (C2 error pointers), rewriting recovered samples. Enabled by default; valid only for CD with audio.</value>
+    </data>
 </root>

@@ -263,7 +263,8 @@ partial class Dump
     void ConvergeAudioC2(int offsetBytes, int sectorsForOffset, MmcSubchannel supportedSubchannel, ExtentsULong extents,
                          IWritableOpticalImage outputOptical, bool readcd)
     {
-        if(!_c2Supported || !readcd && !_omnidrive || _c2SuspectAudio is not { Count: > 0 } || _aborted) return;
+        if(!_c2Repair || !_c2Supported || !readcd && !_omnidrive || _c2SuspectAudio is not { Count: > 0 } || _aborted)
+            return;
 
         ulong[] suspects    = _c2SuspectAudio.OrderBy(static s => s).ToArray();
         int     maxAttempts = Math.Max((int)_retryPasses, 8);

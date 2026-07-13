@@ -107,6 +107,7 @@ public partial class Dump
     readonly        bool                       _retrySubchannel;
     readonly        Stopwatch                  _sidecarStopwatch;
     readonly        bool                       _skipSafedisc;
+    readonly        bool                       _c2Repair;
     readonly        Stopwatch                  _speedStopwatch;
     readonly        bool                       _startReverse;
     readonly        bool                       _stopOnError;
@@ -197,7 +198,7 @@ public partial class Dump
                 bool generateSubchannels, uint maximumReadable, bool useBufferedReads, bool storeEncrypted,
                 bool titleKeys, uint ignoreCdrRunOuts, bool createGraph, uint dimensions, bool paranoia,
                 bool cureParanoia, bool bypassWiiDecryption, bool startReverse, int errorRecovery, bool hyperSpeed,
-                bool ludicrousSpeed, bool leadout, bool skipSafedisc)
+                bool ludicrousSpeed, bool leadout, bool skipSafedisc, bool c2Repair = true)
     {
         _doResume              = doResume;
         _dev                   = dev;
@@ -248,6 +249,7 @@ public partial class Dump
         _ludicrousSpeed        = ludicrousSpeed;
         _leadout               = leadout;
         _skipSafedisc          = skipSafedisc;
+        _c2Repair              = c2Repair;
         _dumpStopwatch         = new Stopwatch();
         _sidecarStopwatch      = new Stopwatch();
         _speedStopwatch        = new Stopwatch();

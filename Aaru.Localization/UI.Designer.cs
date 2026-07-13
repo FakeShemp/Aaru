@@ -11399,5 +11399,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Setting_speed_to_8x_for_scrambled_reading", resourceCulture);
             }
         }
+        public static string C2_repair_help {
+            get {
+                return ResourceManager.GetString("C2_repair_help", resourceCulture);
+            }
+        }
+        
     }
 }

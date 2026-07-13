@@ -123,6 +123,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--create-graph={0}",            settings.CreateGraph);
         AaruLogging.Debug(MODULE_NAME, "--dimensions={0}",              settings.Dimensions);
         AaruLogging.Debug(MODULE_NAME, "--aaru-metadata={0}",           Markup.Escape(settings.AaruMetadata ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--c2-repair={0}",               settings.C2Repair);
         AaruLogging.Debug(MODULE_NAME, "--paranoia={0}",                settings.Paranoia);
         AaruLogging.Debug(MODULE_NAME, "--cure-paranoia={0}",           settings.CureParanoia);
         AaruLogging.Debug(MODULE_NAME, "--raw={0}",                     settings.Raw);
@@ -558,7 +559,8 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   settings.HyperSpeed,
                                   settings.LudicrousSpeed,
                                   settings.LeadOut,
-                                  settings.SkipSafeDisc);
+                                  settings.SkipSafeDisc,
+                                  settings.C2Repair);
 
             AnsiConsole.Progress()
                        .AutoClear(true)
@@ -817,6 +819,10 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [CommandOption("--paranoia")]
         [DefaultValue(false)]
         public bool Paranoia { get; init; }
+        [LocalizedDescription(nameof(UI.C2_repair_help))]
+        [CommandOption("--c2-repair")]
+        [DefaultValue(true)]
+        public bool C2Repair { get; init; }
         [LocalizedDescription(nameof(UI.Cure_paranoia_help))]
         [CommandOption("--cure-paranoia")]
         [DefaultValue(false)]
