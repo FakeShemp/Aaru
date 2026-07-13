@@ -32,7 +32,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Aaru.Checksums;
@@ -247,6 +246,7 @@ partial class Dump
                                    (long)blocks);
 
             _speedStopwatch.Start();
+
             // OmniDrive returns C2 at the same speed as a plain read, so gather it in the main pass to detect concealed
             // audio up front. RepackAudioC2 collapses the C2 layout into the normal layout in place (no per-read
             // allocation) and flags concealed audio sectors. Fall back to a plain read if the C2 read fails.
@@ -257,9 +257,14 @@ partial class Dump
                                                _dev.Timeout,
                                                out _);
 
+            _speedStopwatch.Stop();
+
             if(!sense && !_dev.Error)
                 RepackAudioC2(ref cmdBuf, blocksToRead, blockSize, subSize, firstSectorToRead, audioExtents);
             else
+            {
+                _speedStopwatch.Start();
+
                 sense = _dev.OmniDriveReadCd(out cmdBuf,
                                              out senseBuf,
                                              firstSectorToRead,
@@ -267,7 +272,9 @@ partial class Dump
                                              _dev.Timeout,
                                              out _);
 
-            _speedStopwatch.Stop();
+                _speedStopwatch.Stop();
+            }
+
 
             if(!sense && !_dev.Error)
             {
@@ -833,9 +840,7 @@ partial class Dump
                         _resume.BadBlocks.AddRange(newPregapSectors);
 
                         foreach(ulong newPregapSector in newPregapSectors)
-                        {
                             _errorLog?.WriteLine(newPregapSector, Localization.Core.Reason_pregap_track_type_mismatch);
-                        }
 
                         if(i >= blocksToRead)
                             i -= blocksToRead;
