@@ -262,6 +262,15 @@ sealed partial class Dump
             return;
         }
 
+        // The resume file is only available now (created by ResumeSupport.Process above). Seed the C2 suspect set from
+        // the concealed audio sectors it recorded, so a resumed dump retries their convergence.
+        if(_c2Supported)
+        {
+            _resume.ConcealedBlocks ??= [];
+
+            foreach(ulong concealed in _resume.ConcealedBlocks) _c2SuspectAudio.Add(concealed);
+        }
+
         // Read media tags
         ReadCdTags(ref dskType, mediaTags, out sessions, out firstTrackLastSession);
 

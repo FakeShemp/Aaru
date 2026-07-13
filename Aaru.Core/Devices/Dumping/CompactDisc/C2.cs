@@ -80,8 +80,7 @@ partial class Dump
             _c2BlockSize    = C2_BLOCK_SIZE;
             _c2Offset       = (int)C2_DATA_SIZE;                 // 2352
             _c2SubOffset    = (int)(C2_DATA_SIZE + C2_POINTERS); // 2646
-            _resume.ConcealedBlocks ??= [];
-            _c2SuspectAudio =   [.._resume.ConcealedBlocks];
+            _c2SuspectAudio = [];
 
             UpdateStatus?.Invoke(Localization.Core.C2_secure_audio_enabled_OmniDrive);
 
@@ -179,8 +178,7 @@ partial class Dump
         _c2BlockSize    = C2_BLOCK_SIZE;
         _c2Offset       = c2Offset;
         _c2SubOffset    = subOffset;
-        _resume.ConcealedBlocks ??= [];
-        _c2SuspectAudio =   [.._resume.ConcealedBlocks];
+        _c2SuspectAudio = [];
 
         // Corroborating evidence: on a clean pressed sector the C2 region should be (near) all zero.
         var dirtyC2Bytes = 0;
