@@ -84,6 +84,8 @@ partial class Dump
         }
 
         InitProgress?.Invoke();
+        _speedStopwatch.Reset();
+        double elapsed = 0;
 
         if(scsiReader.HldtstReadRaw && _resume.NextBlock > 0)
 
@@ -120,10 +122,13 @@ partial class Dump
                                        (long)(nominalNegativeSectors - sectorAddress + toRead),
                                        (long)nominalNegativeSectors);
 
+                _speedStopwatch.Restart();
                 sense =  scsiReader.ReadBlocks(out buffer, sectorAddress, toRead, out double cmdDuration, out _,
                                                        out _, true);
 
+                elapsed       += _speedStopwatch.Elapsed.TotalMilliseconds;
                 totalDuration += cmdDuration;
+                _speedStopwatch.Stop();
 
                 if(!sense && !_dev.Error)
                 {
@@ -163,13 +168,14 @@ partial class Dump
                 if(sectorAddress <= 1) break;
                 sectorAddress -= toRead;
                 sectorSpeedStart += toRead;
-                double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
-                if(elapsed > 0)
-                {
-                    currentSpeed     = (double)sectorSpeedStart * blockSize / (1048576d * elapsed);
-                    sectorSpeedStart = 0;
-                    _speedStopwatch.Restart();
-                }
+
+                if(elapsed < 100) continue;
+
+                currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed / 1000);
+                ibgLog.Write((ulong)-(long)(sectorAddress + toRead), currentSpeed * 1024);
+                sectorSpeedStart = 0;
+                elapsed          = 0;
+                _speedStopwatch.Reset();
             }
 
             UpdateStatus?.Invoke(Localization.Core.Reading_data_sectors);
@@ -199,8 +205,11 @@ partial class Dump
                                    (long)i,
                                    (long)blocks);
 
+            _speedStopwatch.Restart();
             sense         =  scsiReader.ReadBlocks(out buffer, i, blocksToRead, out double cmdDuration, out _, out _);
+            elapsed       += _speedStopwatch.Elapsed.TotalMilliseconds;
             totalDuration += cmdDuration;
+            _speedStopwatch.Stop();
 
             if(!sense && !_dev.Error)
             {
@@ -322,13 +331,13 @@ partial class Dump
             sectorSpeedStart  += blocksToRead;
             _resume.NextBlock =  i + blocksToRead;
 
-            double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
+            if(elapsed < 100) continue;
 
-            if(elapsed <= 0) continue;
-
-            currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed);
+            currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed / 1000);
+            ibgLog.Write(i, currentSpeed                                     * 1024);
             sectorSpeedStart = 0;
-            _speedStopwatch.Restart();
+            elapsed          = 0;
+            _speedStopwatch.Reset();
         }
 
         // Phase 3: Leadout (overflow sectors) — OmniDrive only
@@ -360,8 +369,11 @@ partial class Dump
                                        (long)lba,
                                        (long)(blocks + overflowSectors));
 
+                _speedStopwatch.Restart();
                 sense         =  scsiReader.ReadBlocks(out buffer, lba, toRead, out double cmdDuration, out _, out _);
+                elapsed       += _speedStopwatch.Elapsed.TotalMilliseconds;
                 totalDuration += cmdDuration;
+                _speedStopwatch.Stop();
 
                 if(!sense && !_dev.Error)
                 {
@@ -391,13 +403,14 @@ partial class Dump
 
                 _writeStopwatch.Stop();
                 sectorSpeedStart += toRead;
-                double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
-                if(elapsed > 0)
-                {
-                    currentSpeed     = (double)sectorSpeedStart * blockSize / (1048576d * elapsed);
-                    sectorSpeedStart = 0;
-                    _speedStopwatch.Restart();
-                }
+
+                if(elapsed < 100) continue;
+
+                currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed / 1000);
+                ibgLog.Write(lba, currentSpeed * 1024);
+                sectorSpeedStart = 0;
+                elapsed          = 0;
+                _speedStopwatch.Reset();
             }
         }
 
