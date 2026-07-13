@@ -488,29 +488,45 @@ partial class Dump
 
         // Convergence only needs audio + C2, not subchannel; requesting subchannel alongside C2 makes some drives
         // reject the command. Without subchannel the layout is simply data + C2, so C2 sits at offset C2_DATA_SIZE.
-        bool c2Sense = _dev.ReadCd(out byte[] cb,
-                                   out var senseBuf,
-                                   lba,
-                                   C2_DATA_SIZE + C2_POINTERS,
-                                   count,
-                                   MmcSectorTypes.Cdda,
-                                   false,
-                                   false,
-                                   false,
-                                   MmcHeaderCodes.None,
-                                   true,
-                                   false,
-                                   MmcErrorField.C2Pointers,
-                                   MmcSubchannel.None,
-                                   _dev.Timeout,
-                                   out _);
+        // Read one sector at a time and assemble the window: some drives abort a multi-sector READ CD with C2 even
+        // though single-sector C2 reads succeed.
+        var c2Stride    = (int)(C2_DATA_SIZE + C2_POINTERS);
+        var c2Assembled = new byte[c2Stride * count];
+        var c2Ok        = true;
 
-        var foo = Decoders.SCSI.Sense.Decode(senseBuf);
-
-        if(!c2Sense && !_dev.Error && cb is not null && cb.Length >= count * (C2_DATA_SIZE + C2_POINTERS))
+        for(var s = 0; s < count; s++)
         {
-            buf    = cb;
-            stride = (int)(C2_DATA_SIZE + C2_POINTERS);
+            bool oneSense = _dev.ReadCd(out byte[] one,
+                                        out _,
+                                        lba + (uint)s,
+                                        (uint)c2Stride,
+                                        1,
+                                        MmcSectorTypes.Cdda,
+                                        false,
+                                        false,
+                                        false,
+                                        MmcHeaderCodes.None,
+                                        true,
+                                        false,
+                                        MmcErrorField.C2Pointers,
+                                        MmcSubchannel.None,
+                                        _dev.Timeout,
+                                        out _);
+
+            if(oneSense || _dev.Error || one is null || one.Length < c2Stride)
+            {
+                c2Ok = false;
+
+                break;
+            }
+
+            Array.Copy(one, 0, c2Assembled, s * c2Stride, c2Stride);
+        }
+
+        if(c2Ok)
+        {
+            buf    = c2Assembled;
+            stride = c2Stride;
             haveC2 = true;
 
             return true;
