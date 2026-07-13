@@ -436,9 +436,10 @@ partial class Dump
             // Without C2 the byte cannot be confirmed clean, so it stays concealed (mask false).
             if(!haveC2) continue;
 
-            // One C2 bit per audio byte, MSB-first (the order Aaru's ECC fixer tries first). Wrong-order guesses are
-            // caught by the two-agreeing-reads rule: a mislabelled concealed byte will not agree across reads.
-            byte c2Byte = buf[s * stride + _c2Offset + (k >> 3)];
+            // C2 sits right after the audio in every convergence read (data + C2, or data + C2 + sub on OmniDrive), so
+            // its offset is C2_DATA_SIZE. One C2 bit per audio byte, MSB-first (the order Aaru's ECC fixer tries first).
+            // Wrong-order guesses are caught by the two-agreeing-reads rule: a mislabelled concealed byte won't agree.
+            byte c2Byte = buf[s * stride + (int)C2_DATA_SIZE + (k >> 3)];
 
             cleanMask[j] = (c2Byte & (0x80 >> (k & 7))) == 0;
         }
@@ -485,10 +486,12 @@ partial class Dump
             return true;
         }
 
+        // Convergence only needs audio + C2, not subchannel; requesting subchannel alongside C2 makes some drives
+        // reject the command. Without subchannel the layout is simply data + C2, so C2 sits at offset C2_DATA_SIZE.
         bool c2Sense = _dev.ReadCd(out byte[] cb,
-                                   out _,
+                                   out var senseBuf,
                                    lba,
-                                   _c2BlockSize,
+                                   C2_DATA_SIZE + C2_POINTERS,
                                    count,
                                    MmcSectorTypes.Cdda,
                                    false,
@@ -498,14 +501,16 @@ partial class Dump
                                    true,
                                    false,
                                    MmcErrorField.C2Pointers,
-                                   supportedSubchannel,
+                                   MmcSubchannel.None,
                                    _dev.Timeout,
                                    out _);
 
-        if(!c2Sense && !_dev.Error && cb is not null && cb.Length >= count * _c2BlockSize)
+        var foo = Decoders.SCSI.Sense.Decode(senseBuf);
+
+        if(!c2Sense && !_dev.Error && cb is not null && cb.Length >= count * (C2_DATA_SIZE + C2_POINTERS))
         {
             buf    = cb;
-            stride = (int)_c2BlockSize;
+            stride = (int)(C2_DATA_SIZE + C2_POINTERS);
             haveC2 = true;
 
             return true;
