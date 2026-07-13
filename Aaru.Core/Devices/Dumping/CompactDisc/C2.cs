@@ -80,7 +80,8 @@ partial class Dump
             _c2BlockSize    = C2_BLOCK_SIZE;
             _c2Offset       = (int)C2_DATA_SIZE;                 // 2352
             _c2SubOffset    = (int)(C2_DATA_SIZE + C2_POINTERS); // 2646
-            _c2SuspectAudio = [];
+            _resume.ConcealedBlocks ??= [];
+            _c2SuspectAudio =   [.._resume.ConcealedBlocks];
 
             UpdateStatus?.Invoke(Localization.Core.C2_secure_audio_enabled_OmniDrive);
 
@@ -178,7 +179,8 @@ partial class Dump
         _c2BlockSize    = C2_BLOCK_SIZE;
         _c2Offset       = c2Offset;
         _c2SubOffset    = subOffset;
-        _c2SuspectAudio = [];
+        _resume.ConcealedBlocks ??= [];
+        _c2SuspectAudio =   [.._resume.ConcealedBlocks];
 
         // Corroborating evidence: on a clean pressed sector the C2 region should be (near) all zero.
         var dirtyC2Bytes = 0;
@@ -220,7 +222,8 @@ partial class Dump
     {
         if(!_c2Supported || cmdBuf is null || cmdBuf.Length < blocksToRead * _c2BlockSize) return;
 
-        _c2SuspectAudio ??= [];
+        _c2SuspectAudio         ??= [];
+        _resume.ConcealedBlocks ??= [];
 
         int copySub = (int)Math.Min(subSize, C2_SUB_SIZE);
 
@@ -244,7 +247,10 @@ partial class Dump
 
                 // C2 error pointers only carry meaning for audio; a data sector is validated by its EDC/ECC instead.
                 if((audioExtents is null || audioExtents.Contains(sector)) && _c2SuspectAudio.Add(sector))
+                {
+                    _resume.ConcealedBlocks.Add(sector);
                     _errorLog?.WriteLine(sector, Localization.Core.Reason_audio_concealed_C2);
+                }
             }
 
             // Move data first, then subchannel: the data destination ends before this sector's subchannel source, so
@@ -338,6 +344,7 @@ partial class Dump
                 extents.Add(badSector);
                 converged++;
                 _c2SuspectAudio.Remove(badSector);
+                _resume.ConcealedBlocks.Remove(badSector);
                 _mediaGraph?.PaintSectorGood(badSector);
                 _errorLog?.WriteLine(badSector, Localization.Core.Reason_audio_converged_C2);
 

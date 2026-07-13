@@ -66,6 +66,9 @@ public class Resume
     /// <summary>List of blocks that returned an error on reading</summary>
     [XmlArrayItem("Block")]
     public List<ulong> BadBlocks;
+    /// <summary>List of audio blocks the drive concealed (C2 error pointers set)</summary>
+    [XmlArrayItem("Block")]
+    public List<ulong> ConcealedBlocks;
     /// <summary>List of CD subchannels that did not read correctly</summary>
     [XmlArrayItem("Block")]
     public List<int> BadSubchannels;
