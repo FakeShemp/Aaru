@@ -3657,6 +3657,7 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     </data>
     <data name="Aacs_hddvd_no_title_key_for_pack_at_lba_0_continuing" xml:space="preserve">
         <value>HD DVD AACS: no valid title key for pack at LBA {0} — writing encrypted sector.</value>
+    </data>
     <data name="C2_secure_audio_enabled_OmniDrive" xml:space="preserve">
         <value>[slateblue1]C2 secure audio enabled: OmniDrive native layout data + C2 + subchannel.[/]</value>
     </data>

@@ -5107,55 +5107,55 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("SCSI_reading_LBA_0_error_1", resourceCulture);
             }
         }
-
+        
         public static string Sector_0_marked_as_errored_1 {
             get {
                 return ResourceManager.GetString("Sector_0_marked_as_errored_1", resourceCulture);
             }
         }
-
+        
         public static string Reason_ECC_EDC_could_not_be_fixed {
             get {
                 return ResourceManager.GetString("Reason_ECC_EDC_could_not_be_fixed", resourceCulture);
             }
         }
-
+        
         public static string Reason_scrambled_but_not_data {
             get {
                 return ResourceManager.GetString("Reason_scrambled_but_not_data", resourceCulture);
             }
         }
-
+        
         public static string Reason_expected_data_not_scrambled {
             get {
                 return ResourceManager.GetString("Reason_expected_data_not_scrambled", resourceCulture);
             }
         }
-
+        
         public static string Reason_pregap_track_type_mismatch {
             get {
                 return ResourceManager.GetString("Reason_pregap_track_type_mismatch", resourceCulture);
             }
         }
-
+        
         public static string Reason_EDC_mismatch {
             get {
                 return ResourceManager.GetString("Reason_EDC_mismatch", resourceCulture);
             }
         }
-
+        
         public static string Reason_ECC_P_mismatch {
             get {
                 return ResourceManager.GetString("Reason_ECC_P_mismatch", resourceCulture);
             }
         }
-
+        
         public static string Reason_ECC_Q_mismatch {
             get {
                 return ResourceManager.GetString("Reason_ECC_Q_mismatch", resourceCulture);
             }
         }
-
+        
         public static string SD_MMC_command_0_operating_system_error_1 {
             get {
                 return ResourceManager.GetString("SD_MMC_command_0_operating_system_error_1", resourceCulture);
@@ -7114,66 +7114,67 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Aacs_bd_decrypt_requires_0_byte_sectors", resourceCulture);
             }
         }
-
+        
         public static string Aacs_hddvd_missing_unit_keys {
             get {
                 return ResourceManager.GetString("Aacs_hddvd_missing_unit_keys", resourceCulture);
             }
         }
-
+        
         public static string Aacs_hddvd_unit_keys_invalid {
             get {
                 return ResourceManager.GetString("Aacs_hddvd_unit_keys_invalid", resourceCulture);
             }
         }
-
+        
         public static string Aacs_hddvd_udf_mount_failed {
             get {
                 return ResourceManager.GetString("Aacs_hddvd_udf_mount_failed", resourceCulture);
             }
         }
-
+        
         public static string Aacs_hddvd_no_evo_extents {
             get {
                 return ResourceManager.GetString("Aacs_hddvd_no_evo_extents", resourceCulture);
             }
         }
-
+        
         public static string Aacs_hddvd_decrypt_requires_2048_byte_sectors {
             get {
                 return ResourceManager.GetString("Aacs_hddvd_decrypt_requires_2048_byte_sectors", resourceCulture);
             }
         }
-
+        
         public static string Aacs_hddvd_broad_decrypt_scope_continuing {
             get {
                 return ResourceManager.GetString("Aacs_hddvd_broad_decrypt_scope_continuing", resourceCulture);
             }
         }
-
+        
         public static string Aacs_hddvd_no_cpi_for_encrypted_pack_at_lba_0 {
             get {
                 return ResourceManager.GetString("Aacs_hddvd_no_cpi_for_encrypted_pack_at_lba_0", resourceCulture);
             }
         }
-
+        
         public static string Aacs_hddvd_no_cpi_for_encrypted_pack_at_lba_0_continuing {
             get {
                 return ResourceManager.GetString("Aacs_hddvd_no_cpi_for_encrypted_pack_at_lba_0_continuing", resourceCulture);
             }
         }
-
+        
         public static string Aacs_hddvd_no_title_key_for_pack_at_lba_0 {
             get {
                 return ResourceManager.GetString("Aacs_hddvd_no_title_key_for_pack_at_lba_0", resourceCulture);
             }
         }
-
+        
         public static string Aacs_hddvd_no_title_key_for_pack_at_lba_0_continuing {
             get {
                 return ResourceManager.GetString("Aacs_hddvd_no_title_key_for_pack_at_lba_0_continuing", resourceCulture);
             }
         }
+        
         public static string C2_secure_audio_enabled_OmniDrive {
             get {
                 return ResourceManager.GetString("C2_secure_audio_enabled_OmniDrive", resourceCulture);
@@ -7317,6 +7318,5 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("C2_layout_data_subchannel_C2", resourceCulture);
             }
         }
-        
     }
 }
