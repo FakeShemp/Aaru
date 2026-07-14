@@ -36,6 +36,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs.Devices.ATA;
 using Aaru.Core.Logging;
 using Aaru.Devices;
+using Aaru.CommonTypes;
 
 namespace Aaru.Core.Devices;
 
@@ -107,7 +108,7 @@ sealed partial class Reader
         }
     }
 
-    internal bool FindReadCommand()
+    internal bool FindReadCommand(MediaType mediaType = MediaType.Unknown)
     {
         switch(_dev.Type)
         {
@@ -115,7 +116,7 @@ sealed partial class Reader
                 return AtaFindReadCommand();
             case DeviceType.ATAPI:
             case DeviceType.SCSI:
-                return ScsiFindReadCommand();
+                return ScsiFindReadCommand(mediaType);
             default:
                 ErrorMessage = string.Format(Localization.Core.Unknown_device_type_0, _dev.Type);
 

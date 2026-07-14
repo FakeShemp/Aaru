@@ -3535,6 +3535,9 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="Using_OmniDrive_raw_DVD_reading" xml:space="preserve">
         <value>[slateblue1]Using [fuchsia]OmniDrive[/] raw DVD reading[/]</value>
     </data>
+    <data name="Using_OmniDrive_raw_BD_reading" xml:space="preserve">
+        <value>[slateblue1]Using [fuchsia]OmniDrive[/] raw Blu-ray reading[/]</value>
+    </data>
     <data name="Using_ReadBuffer_3C_raw_DVD_reading" xml:space="preserve">
         <value>[slateblue1]Using [fuchsia]ReadBuffer 3C raw DVD[/] reading[/]</value>
     </data>

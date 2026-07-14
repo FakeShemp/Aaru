@@ -31,9 +31,11 @@
 // ****************************************************************************/
 
 using System;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Decoders.SCSI;
 using Aaru.Logging;
+using Aaru.CommonTypes;
 
 namespace Aaru.Core.Devices;
 
@@ -56,12 +58,24 @@ sealed partial class Reader
     public bool HldtstReadRaw;
     public uint layerbreak;
     public bool OmniDriveReadRaw;
-    public bool otp;
+    public bool OmniDriveReadRawBluray;
     public bool ReadBuffer3CReadRaw;
+    public bool otp;
 
     ulong ScsiGetBlocks() => ScsiGetBlockSize() ? 0 : Blocks;
 
-    bool ScsiFindReadCommand()
+    static bool IsBlurayMedia(MediaType mediaType) =>
+        mediaType is MediaType.BDROM or
+            MediaType.BDR or
+            MediaType.BDRE or
+            MediaType.BDRXL or
+            MediaType.BDREXL or
+            MediaType.UHDBD or
+            MediaType.PS3BD or
+            MediaType.PS4BD or
+            MediaType.PS5BD;
+
+    bool ScsiFindReadCommand(MediaType mediaType = MediaType.Unknown)
     {
         if(Blocks == 0) GetDeviceBlocks();
 
@@ -591,6 +605,22 @@ sealed partial class Reader
                 // Try OmniDrive on drives with OmniDrive firmware (standard descramble=1 and Nintendo descramble=0)
                 if(_omnidrive)
                 {
+                    OmniDriveReadRawBluray = false;
+
+                    if(IsBlurayMedia(mediaType))
+                    {
+                        OmniDriveReadRawBluray = !_dev.OmniDriveReadRawBd(out _,
+                                                                           out senseBuf,
+                                                                           0,
+                                                                           1,
+                                                                           _timeout,
+                                                                           out _,
+                                                                           true,
+                                                                           true);
+                        OmniDriveReadRaw       = OmniDriveReadRawBluray;
+                    }
+                    else
+                    {
                     bool omniStandardOk = !_dev.OmniDriveReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _, true);
 
                     OmniDriveReadRaw = omniStandardOk
@@ -601,13 +631,18 @@ sealed partial class Reader
                                                                             1,
                                                                             _timeout,
                                                                             out _,
-                                                                            true);
+                                                                            true,
+                                                                            true,
+                                                                            null,
+                                                                            false,
+                                                                            0);
+                    }
                 }
 
                 if(HldtstReadRaw || _plextorReadRaw || ReadBuffer3CReadRaw || OmniDriveReadRaw)
                 {
                     CanReadRaw    = true;
-                    LongBlockSize = 2064;
+                    LongBlockSize = OmniDriveReadRawBluray ? 2052u : 2064u;
                 }
 
                 // READ LONG (10) for some DVD drives
@@ -640,7 +675,8 @@ sealed partial class Reader
             else if(_plextorReadRaw)
                 AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_Plextor_raw_DVD_reading}[/]");
             else if(OmniDriveReadRaw)
-                AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_OmniDrive_raw_DVD_reading}[/]");
+                AaruLogging.WriteLine(
+                    $"[slateblue1]{(OmniDriveReadRawBluray ? Localization.Core.Using_OmniDrive_raw_BD_reading : Localization.Core.Using_OmniDrive_raw_DVD_reading)}[/]");
             else if(ReadBuffer3CReadRaw)
                 AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_ReadBuffer_3C_raw_DVD_reading}[/]");
         }
@@ -708,8 +744,7 @@ sealed partial class Reader
                 BlocksToRead = 1;
             else if(OmniDriveReadRaw)
             {
-                BlocksToRead = Math.Min(31, startWithBlocks);
-
+                BlocksToRead = (uint)Math.Min(OmniDriveReadRawBluray ? 7 : 31, startWithBlocks);
                 return false;
             }
             else if(_read6)
@@ -862,7 +897,14 @@ sealed partial class Reader
             {
                 uint lba = negative ? (uint)-(long)block : (uint)block;
 
-                if(OmniDriveNintendoMode)
+                if(OmniDriveReadRawBluray)
+                    sense = _dev.OmniDriveReadRawBd(out buffer,
+                                                    out senseBuf,
+                                                    lba,
+                                                    count,
+                                                    _timeout,
+                                                    out duration);
+                else if(OmniDriveNintendoMode)
                 {
                     ulong regularDataEndExclusive = Blocks + 1;
 
