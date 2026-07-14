@@ -249,6 +249,7 @@ Fully supported file-systems (identify and extraction)
 * ECMA-67: 130mm Flexible Disk Cartridge Labelling and File Structure for Information Interchange
 * Extended Acer File System (EAFS)
 * Flash-Friendly File System (F2FS)
+* GDFX aka Xbox DVD File System (XDVDFS)
 * High Sierra Format
 * High Performance Optical File System (HPOFS)
 * HP Logical Interchange Format

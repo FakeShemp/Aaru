@@ -30,7 +30,8 @@ namespace Aaru.Filesystems;
 
 public sealed partial class LIF
 {
-    const uint LIF_MAGIC = 0x8000;
+    const uint LIF_RECORD_SIZE = 256;
+    const uint LIF_MAGIC       = 0x8000;
 
     const string FS_TYPE = "hplif";
 }

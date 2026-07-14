@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
@@ -48,6 +49,7 @@ public sealed partial class LisaFS : IReadOnlyFilesystem
     MDDF         _mddf;
     bool         _mounted;
     SRecord[]    _srecords;
+    Dictionary<ulong, ulong> _twiggyBadBlockMap;
     ulong        _volumePrefix;
 
     static Dictionary<string, string> GetDefaultOptions() => new()

@@ -232,20 +232,51 @@ partial class Dump
         {
             updateStatus?.Invoke(Localization.Core.No_tracks_found_adding_a_single_track_from_zero_to_Lead_Out);
 
+            // The TOC gave us no type information for this synthetic track. Rather than trusting the
+            // TrackType.Audio default (which would later cause the dump loop to skip all garbage
+            // detection for the whole disc), sample sector 0 and only call it Audio if it actually
+            // looks like audio. If the read fails or is inconclusive, prefer a data-like type: treating
+            // audio as data merely runs unnecessary validation, while the reverse silently disables it.
+            TrackType singleTrackType = leadoutTrackType;
+
+            if(singleTrackType == TrackType.Audio)
+            {
+                sense = dev.ReadCd(out cmdBuf,
+                                   out _,
+                                   0,
+                                   sectorSize,
+                                   1,
+                                   MmcSectorTypes.AllTypes,
+                                   false,
+                                   false,
+                                   true,
+                                   MmcHeaderCodes.AllHeaders,
+                                   true,
+                                   true,
+                                   MmcErrorField.None,
+                                   MmcSubchannel.None,
+                                   dev.Timeout,
+                                   out _);
+
+                singleTrackType = !sense && (IsData(cmdBuf) || IsScrambledData(cmdBuf, 0, out _))
+                                      ? TrackType.CdMode2Formless
+                                      : TrackType.Audio;
+            }
+
             trackList.Add(new Track
             {
                 Sequence          = 1,
                 Session           = 1,
-                Type              = leadoutTrackType,
+                Type              = singleTrackType,
                 StartSector       = 0,
                 BytesPerSector    = (int)sectorSize,
                 RawBytesPerSector = (int)sectorSize
             });
 
-            trackFlags?.Add(1, (byte)(leadoutTrackType == TrackType.Audio ? 0 : 4));
+            trackFlags?.Add(1, (byte)(singleTrackType == TrackType.Audio ? 0 : 4));
         }
 
-        if(lastSector != 0) return trackList.ToArray();
+        if(lastSector != 0) return [.. trackList];
 
         sense = dev.ReadCapacity16(out cmdBuf, out _, dev.Timeout, out _);
 
@@ -264,7 +295,7 @@ partial class Dump
             if(!sense) lastSector = (cmdBuf[0] << 24) + (cmdBuf[1] << 16) + (cmdBuf[2] << 8) + cmdBuf[3] & 0xFFFFFFFF;
         }
 
-        if(lastSector > 0) return trackList.ToArray();
+        if(lastSector > 0) return [.. trackList];
 
         if(!force)
         {
@@ -279,6 +310,113 @@ partial class Dump
 
         lastSector = 360000;
 
-        return trackList.ToArray();
+        return [.. trackList];
+    }
+
+    void CheckTracksMode(bool      readcd, IEnumerable<Track> tracks, uint blockSize, MmcSubchannel supportedSubchannel,
+                         MediaType dskType)
+    {
+        byte[] cmdBuf; // Data buffer
+        bool   sense;  // Sense indicator
+
+        // Check mode for tracks
+        foreach(Track trk in tracks.Where(static t => t.Type != TrackType.Audio))
+        {
+            if(!readcd)
+            {
+                trk.Type = TrackType.CdMode1;
+
+                continue;
+            }
+
+            UpdateStatus?.Invoke(string.Format(Localization.Core.Checking_mode_for_track_0, trk.Sequence));
+
+            sense = _dev.ReadCd(out cmdBuf,
+                                out _,
+                                (uint)(trk.StartSector + trk.Pregap),
+                                blockSize,
+                                1,
+                                MmcSectorTypes.AllTypes,
+                                false,
+                                false,
+                                true,
+                                MmcHeaderCodes.AllHeaders,
+                                true,
+                                true,
+                                MmcErrorField.None,
+                                supportedSubchannel,
+                                _dev.Timeout,
+                                out _);
+
+            if(sense)
+            {
+                UpdateStatus?.Invoke(string.Format(Localization.Core.Unable_to_guess_mode_for_track_0_continuing,
+                                                   trk.Sequence));
+
+                continue;
+            }
+
+            var bufOffset = 0;
+
+            while(cmdBuf[0  + bufOffset] != 0x00 ||
+                  cmdBuf[1  + bufOffset] != 0xFF ||
+                  cmdBuf[2  + bufOffset] != 0xFF ||
+                  cmdBuf[3  + bufOffset] != 0xFF ||
+                  cmdBuf[4  + bufOffset] != 0xFF ||
+                  cmdBuf[5  + bufOffset] != 0xFF ||
+                  cmdBuf[6  + bufOffset] != 0xFF ||
+                  cmdBuf[7  + bufOffset] != 0xFF ||
+                  cmdBuf[8  + bufOffset] != 0xFF ||
+                  cmdBuf[9  + bufOffset] != 0xFF ||
+                  cmdBuf[10 + bufOffset] != 0xFF ||
+                  cmdBuf[11 + bufOffset] != 0x00)
+            {
+                if(bufOffset + 12 >= cmdBuf.Length) break;
+
+                bufOffset++;
+            }
+
+            switch(cmdBuf[15 + bufOffset])
+            {
+                case 1:
+                case 0x61: // Scrambled
+                    UpdateStatus?.Invoke(string.Format(Localization.Core.Track_0_is_MODE1, trk.Sequence));
+                    trk.Type = TrackType.CdMode1;
+
+                    break;
+                case 2:
+                case 0x62: // Scrambled
+                    if(dskType is MediaType.CDI or MediaType.CDIREADY)
+                    {
+                        UpdateStatus?.Invoke(string.Format(Localization.Core.Track_0_is_MODE2, trk.Sequence));
+                        trk.Type = TrackType.CdMode2Formless;
+
+                        break;
+                    }
+
+                    if((cmdBuf[0x012] & 0x20) == 0x20) // mode 2 form 2
+                    {
+                        UpdateStatus?.Invoke(string.Format(Localization.Core.Track_0_is_MODE2_FORM_2, trk.Sequence));
+                        trk.Type = TrackType.CdMode2Form2;
+
+                        break;
+                    }
+
+                    UpdateStatus?.Invoke(string.Format(Localization.Core.Track_0_is_MODE2_FORM_1, trk.Sequence));
+                    trk.Type = TrackType.CdMode2Form1;
+
+                    // These media type specifications do not legally allow mode 2 tracks to be present
+                    if(dskType is MediaType.CDROM or MediaType.CDPLUS or MediaType.CDV) dskType = MediaType.CD;
+
+                    break;
+                default:
+                    UpdateStatus?.Invoke(string.Format(Localization.Core.Track_0_is_unknown_mode_1,
+                                                       trk.Sequence,
+                                                       cmdBuf[15]));
+
+
+                    break;
+            }
+        }
     }
 }

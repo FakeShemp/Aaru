@@ -123,11 +123,16 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--create-graph={0}",            settings.CreateGraph);
         AaruLogging.Debug(MODULE_NAME, "--dimensions={0}",              settings.Dimensions);
         AaruLogging.Debug(MODULE_NAME, "--aaru-metadata={0}",           Markup.Escape(settings.AaruMetadata ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--c2-repair={0}",               settings.C2Repair);
         AaruLogging.Debug(MODULE_NAME, "--paranoia={0}",                settings.Paranoia);
         AaruLogging.Debug(MODULE_NAME, "--cure-paranoia={0}",           settings.CureParanoia);
         AaruLogging.Debug(MODULE_NAME, "--raw={0}",                     settings.Raw);
         AaruLogging.Debug(MODULE_NAME, "--start-reverse={0}",           settings.StartReverse);
         AaruLogging.Debug(MODULE_NAME, "--error-recovery={0}",          settings.ErrorRecovery);
+        AaruLogging.Debug(MODULE_NAME, "--hyper-speed={0}",             settings.HyperSpeed);
+        AaruLogging.Debug(MODULE_NAME, "--ludicrous-speed={0}",         settings.LudicrousSpeed);
+        AaruLogging.Debug(MODULE_NAME, "--lead-out={0}",                settings.LeadOut);
+        AaruLogging.Debug(MODULE_NAME, "--skip-safedisc={0}",           settings.SkipSafeDisc);
 
         Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
         AaruLogging.Debug(MODULE_NAME, UI.Parsed_options);
@@ -550,7 +555,12 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   settings.CureParanoia,
                                   settings.BypassWiiDecryption,
                                   settings.StartReverse,
-                                  settings.ErrorRecovery);
+                                  settings.ErrorRecovery,
+                                  settings.HyperSpeed,
+                                  settings.LudicrousSpeed,
+                                  settings.LeadOut,
+                                  settings.SkipSafeDisc,
+                                  settings.C2Repair);
 
             AnsiConsole.Progress()
                        .AutoClear(true)
@@ -809,6 +819,10 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [CommandOption("--paranoia")]
         [DefaultValue(false)]
         public bool Paranoia { get; init; }
+        [LocalizedDescription(nameof(UI.C2_repair_help))]
+        [CommandOption("--c2-repair")]
+        [DefaultValue(true)]
+        public bool C2Repair { get; init; }
         [LocalizedDescription(nameof(UI.Cure_paranoia_help))]
         [CommandOption("--cure-paranoia")]
         [DefaultValue(false)]
@@ -830,6 +844,22 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [DefaultValue(0)]
         [CommandOption("--error-recovery")]
         public int ErrorRecovery { get; set; }
+        [LocalizedDescription(nameof(UI.Help_hyperspeed))]
+        [DefaultValue(false)]
+        [CommandOption("--hyper-speed")]
+        public bool HyperSpeed { get; set; }
+        [LocalizedDescription(nameof(UI.Help_ludicrousspeed))]
+        [DefaultValue(false)]
+        [CommandOption("--ludicrous-speed")]
+        public bool LudicrousSpeed { get; set; }
+        [LocalizedDescription(nameof(UI.Help_Leadout))]
+        [DefaultValue(false)]
+        [CommandOption("--lead-out")]
+        public bool LeadOut { get; set; }
+        [Description("Skip retrying sectors from 800 to 10000, that are typically used by SafeDisc protection")]
+        [DefaultValue(false)]
+        [CommandOption("--skip-safedisc")]
+        public bool SkipSafeDisc { get; set; }
     }
 
 #endregion

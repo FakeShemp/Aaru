@@ -547,6 +547,8 @@ public sealed partial class ISO9660
             if(entry.CdiSystemArea.Value.attributes.HasFlag(CdiAttributes.OwnerRead)) stat.Mode |= 256;
         }
 
+        if(entry.Extents.Count == 0) return ErrorNumber.NoError;
+
         ErrorNumber errno = ReadSingleExtent(entry.XattrLength * _blockSize, entry.Extents[0].extent, out byte[] ea);
 
         if(errno != ErrorNumber.NoError) return ErrorNumber.NoError;

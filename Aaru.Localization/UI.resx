@@ -5755,4 +5755,31 @@ Do you want to continue?</value>
     <data name="Filesystem_contents_cannot_be_extracted" xml:space="preserve">
         <value>[slateblue1]Filesystem contents cannot be extracted.[/]</value>
     </data>
+    <data name="_0_sectors_were_correct_when_read" xml:space="preserve">
+        <value>[maroon][teal]{0}[/] sectors were correct when read.[/]</value>
+    </data>
+    <data name="_0_sectors_had_to_be_fixed" xml:space="preserve">
+        <value>[maroon][teal]{0}[/] sectors had to be fixed.[/]</value>
+    </data>
+    <data name="Help_hyperspeed" xml:space="preserve">
+        <value>(OmniDrive only) Allows higher speed when we know the underlying track is data</value>
+    </data>
+    <data name="Help_ludicrousspeed" xml:space="preserve">
+        <value>(OmniDrive only) Use maximum speed always</value>
+    </data>
+    <data name="Help_Leadout" xml:space="preserve">
+        <value>Dump Lead-Out sectors if drive and image supports it.</value>
+    </data>
+    <data name="Detected_Omnidrive" xml:space="preserve">
+        <value>[slateblue1]Detected [/][#FFFFFF]O[/][#FFAFC8]m[/][#74D7EE]n[/][#E40303]i[/][#FF8C00]D[/][#FFED00]r[/][#008026]i[/][#004DFF]v[/][#750787]e[/][#613915]![/][000000]![/] [slateblue1]version[/] [purple]{0}.{1}.{2}[/]</value>
+    </data>
+    <data name="Yes__sir__Setting_ludicrous_speed_sir" xml:space="preserve">
+        <value>[slateblue1]Yes, sir! Setting ludicrous speed sir![/]</value>
+    </data>
+    <data name="Setting_speed_to_8x_for_scrambled_reading" xml:space="preserve">
+        <value>[slateblue1]Setting speed to [teal]8x[/] for scrambled reading.[/]</value>
+    </data>
+    <data name="C2_repair_help" xml:space="preserve">
+        <value>Re-read and repair audio sectors the drive concealed (C2 error pointers), rewriting recovered samples. Enabled by default; valid only for CD with audio.</value>
+    </data>
 </root>

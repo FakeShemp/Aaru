@@ -50,6 +50,7 @@ using Aaru.Database.Models;
 using Aaru.Decoders.CD;
 using Aaru.Devices;
 using Aaru.Images;
+using Aaru.Localization;
 using Aaru.Logging;
 using Humanizer;
 using Spectre.Console;
@@ -67,63 +68,61 @@ sealed partial class Dump
     /// <summary>Dumps a compact disc</summary>
     void CompactDisc()
     {
-        ExtentsULong             audioExtents;                        // Extents with audio sectors
-        ulong                    blocks;                              // Total number of positive sectors
-        uint                     blockSize;                           // Size of the read sector in bytes
-        CdOffset                 cdOffset;                            // Read offset from database
-        byte[]                   cmdBuf;                              // Data buffer
-        DumpHardware             currentTry   = null;                 // Current dump hardware try
-        double                   currentSpeed = 0;                    // Current read speed
-        int?                     discOffset   = null;                 // Disc write offset
-        ExtentsULong             extents      = null;                 // Extents
-        bool                     hiddenData;                          // Hidden track is data
-        IbgLog                   ibgLog;                              // IMGBurn log
-        double                   imageWriteDuration = 0;              // Duration of image write
-        long                     lastSector;                          // Last sector number
-        var                      leadOutExtents = new ExtentsULong(); // Lead-out extents
-        Dictionary<int, long>    leadOutStarts  = new();              // Lead-out starts
-        double                   maxSpeed       = double.MinValue;    // Maximum speed
-        MhddLog                  mhddLog;                             // MHDD log
-        double                   minSpeed = double.MaxValue;          // Minimum speed
-        bool                     newTrim;                             // Is trim a new one?
-        var                      offsetBytes = 0;                     // Read offset
-        var                      read6       = false;                 // Device supports READ(6)
-        var                      read10      = false;                 // Device supports READ(10)
-        var                      read12      = false;                 // Device supports READ(12)
-        var                      read16      = false;                 // Device supports READ(16)
-        var                      readcd      = true;                  // Device supports READ CD
-        bool                     ret;                                 // Image writing return status
-        const uint               sectorSize       = 2352;             // Full sector size
-        var                      sectorsForOffset = 0;                // Sectors needed to fix offset
-        var                      sense            = true;             // Sense indicator
-        int                      sessions;                            // Number of sessions in disc
-        SubchannelLog            subLog  = null;                      // Subchannel log
-        uint                     subSize = 0;                         // Subchannel size in bytes
-        TrackSubchannelType      subType;                             // Track subchannel type
-        var                      supportsLongSectors = true;          // Supports reading EDC and ECC
-        bool                     supportsPqSubchannel;                // Supports reading PQ subchannel
-        bool                     supportsRwSubchannel;                // Supports reading RW subchannel
-        byte[]                   tmpBuf;                              // Temporary buffer
-        FullTOC.CDFullTOC?       toc;                                 // Full CD TOC
-        double                   totalDuration = 0;                   // Total commands duration
-        Dictionary<byte, byte>   trackFlags    = new();               // Track flags
-        Track[]                  tracks;                              // Tracks in disc
-        int                      firstTrackLastSession;               // Number of first track in last session
-        bool                     hiddenTrack;                         // Disc has a hidden track before track 1
-        MmcSubchannel            supportedSubchannel;                 // Drive's maximum supported subchannel
-        MmcSubchannel            desiredSubchannel;                   // User requested subchannel
-        var                      bcdSubchannel       = false;         // Subchannel positioning is in BCD
-        Dictionary<byte, string> isrcs               = new();
-        string                   mcn                 = null;
-        HashSet<int>             subchannelExtents   = [];
-        var                      cdiReadyReadAsAudio = false;
-        uint                     firstLba;
-        var                      outputOptical = _outputPlugin as IWritableOpticalImage;
-
-        Dictionary<MediaTagType, byte[]> mediaTags                 = new(); // Media tags
-        Dictionary<byte, int>            smallestPregapLbaPerTrack = new();
-
-        MediaType dskType = MediaType.CD;
+        ExtentsULong                     audioExtents;                        // Extents with audio sectors
+        ulong                            blocks;                              // Total number of positive sectors
+        uint                             blockSize;                           // Size of the read sector in bytes
+        bool                             bcdSubchannel;                       // Subchannel positioning is in BCD
+        CdOffset                         cdOffset;                            // Read offset from database
+        byte[]                           cmdBuf;                              // Data buffer
+        DumpHardware                     currentTry   = null;                 // Current dump hardware try
+        double                           currentSpeed = 0;                    // Current read speed
+        int?                             discOffset   = null;                 // Disc write offset
+        MmcSubchannel                    desiredSubchannel;                   // User requested subchannel
+        ExtentsULong                     extents = null;                      // Extents
+        bool                             hiddenData;                          // Hidden track is data
+        IbgLog                           ibgLog;                              // IMGBurn log
+        double                           imageWriteDuration = 0;              // Duration of image write
+        long                             lastSector;                          // Last sector number
+        var                              leadOutExtents = new ExtentsULong(); // Lead-out extents
+        Dictionary<int, long>            leadOutStarts  = [];                 // Lead-out starts
+        double                           maxSpeed       = double.MinValue;    // Maximum speed
+        MhddLog                          mhddLog;                             // MHDD log
+        double                           minSpeed = double.MaxValue;          // Minimum speed
+        bool                             newTrim;                             // Is trim a new one?
+        var                              offsetBytes = 0;                     // Read offset
+        bool                             ret;                                 // Image writing return status
+        bool                             read6;                               // Device supports READ(6)
+        bool                             read10;                              // Device supports READ(10)
+        bool                             read12;                              // Device supports READ(12)
+        bool                             read16;                              // Device supports READ(16)
+        bool                             readcd;                              // Device supports READ CD
+        var                              sectorsForOffset = 0;                // Sectors needed to fix offset
+        const uint                       sectorSize       = 2352;             // Full sector size
+        uint                             subSize;                             // Subchannel size in bytes
+        int                              sessions;                            // Number of sessions in disc
+        SubchannelLog                    subLog              = null;          // Subchannel log
+        var                              supportsLongSectors = true;          // Supports reading EDC and ECC
+        FullTOC.CDFullTOC?               toc;                                 // Full CD TOC
+        double                           totalDuration = 0;                   // Total commands duration
+        Dictionary<byte, byte>           trackFlags    = [];                  // Track flags
+        Track[]                          tracks;                              // Tracks in disc
+        var                              sense = true;                        // Sense indicator
+        TrackSubchannelType              subType;                             // Track subchannel type
+        bool                             supportsPqSubchannel;                // Supports reading PQ subchannel
+        bool                             supportsRwSubchannel;                // Supports reading RW subchannel
+        MmcSubchannel                    supportedSubchannel;                 // Drive's maximum supported subchannel
+        int                              firstTrackLastSession;               // Number of first track in last session
+        bool                             hiddenTrack;                         // Disc has a hidden track before track 1
+        bool                             shallReturn;                         // Shall return due to errors
+        Dictionary<byte, string>         isrcs               = [];
+        string                           mcn                 = null;
+        HashSet<int>                     subchannelExtents   = [];
+        var                              cdiReadyReadAsAudio = false;
+        uint                             firstLba;
+        var                              outputOptical             = _outputPlugin as IWritableOpticalImage;
+        Dictionary<MediaTagType, byte[]> mediaTags                 = []; // Media tags
+        Dictionary<byte, int>            smallestPregapLbaPerTrack = [];
+        MediaType                        dskType                   = MediaType.CD;
 
         if(_dumpRaw)
         {
@@ -153,338 +152,29 @@ sealed partial class Dump
 
         firstLba = (uint)tracks.Min(static t => t.StartSector);
 
-        // Check subchannels support
-        supportsPqSubchannel = SupportsPqSubchannel(_dev, UpdateStatus, firstLba) ||
-                               SupportsPqSubchannel(_dev, UpdateStatus, firstLba + 5);
+        shallReturn = CheckSubchannelSupport(firstLba,
+                                             outputOptical,
+                                             out subSize,
+                                             out subType,
+                                             out supportsPqSubchannel,
+                                             out supportsRwSubchannel,
+                                             out desiredSubchannel,
+                                             out supportedSubchannel,
+                                             out read6,
+                                             out read10,
+                                             out read12,
+                                             out read16,
+                                             out readcd,
+                                             out bcdSubchannel);
 
-        supportsRwSubchannel = SupportsRwSubchannel(_dev, UpdateStatus, firstLba) ||
-                               SupportsRwSubchannel(_dev, UpdateStatus, firstLba + 5);
-
-        if(supportsRwSubchannel)
-            supportedSubchannel = MmcSubchannel.Raw;
-        else if(supportsPqSubchannel)
-            supportedSubchannel = MmcSubchannel.Q16;
-        else
-            supportedSubchannel = MmcSubchannel.None;
-
-        switch(_subchannel)
-        {
-            case DumpSubchannel.Any:
-                if(supportsRwSubchannel)
-                    desiredSubchannel = MmcSubchannel.Raw;
-                else if(supportsPqSubchannel)
-                    desiredSubchannel = MmcSubchannel.Q16;
-                else
-                    desiredSubchannel = MmcSubchannel.None;
-
-                break;
-            case DumpSubchannel.Rw:
-                if(supportsRwSubchannel)
-                    desiredSubchannel = MmcSubchannel.Raw;
-                else
-                {
-                    AaruLogging.WriteLine(Localization.Core
-                                                      .Drive_does_not_support_the_requested_subchannel_format_not_continuing);
-
-                    StoppingErrorMessage?.Invoke(Localization.Core
-                                                             .Drive_does_not_support_the_requested_subchannel_format_not_continuing);
-
-                    return;
-                }
-
-                break;
-            case DumpSubchannel.RwOrPq:
-                if(supportsRwSubchannel)
-                    desiredSubchannel = MmcSubchannel.Raw;
-                else if(supportsPqSubchannel)
-                    desiredSubchannel = MmcSubchannel.Q16;
-                else
-                {
-                    AaruLogging.WriteLine(Localization.Core
-                                                      .Drive_does_not_support_the_requested_subchannel_format_not_continuing);
-
-                    StoppingErrorMessage?.Invoke(Localization.Core
-                                                             .Drive_does_not_support_the_requested_subchannel_format_not_continuing);
-
-                    return;
-                }
-
-                break;
-            case DumpSubchannel.Pq:
-                if(supportsPqSubchannel)
-                    desiredSubchannel = MmcSubchannel.Q16;
-                else
-                {
-                    AaruLogging.WriteLine(Localization.Core
-                                                      .Drive_does_not_support_the_requested_subchannel_format_not_continuing);
-
-                    StoppingErrorMessage?.Invoke(Localization.Core
-                                                             .Drive_does_not_support_the_requested_subchannel_format_not_continuing);
-
-                    return;
-                }
-
-                break;
-            case DumpSubchannel.None:
-                desiredSubchannel = MmcSubchannel.None;
-
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-
-        if(desiredSubchannel == MmcSubchannel.Q16 && supportsPqSubchannel) supportedSubchannel = MmcSubchannel.Q16;
-
-        // Check if output format supports subchannels
-        if(!outputOptical.SupportedSectorTags.Contains(SectorTagType.CdSectorSubchannel) &&
-           desiredSubchannel != MmcSubchannel.None)
-        {
-            if(_force || _subchannel == DumpSubchannel.None)
-            {
-                AaruLogging.WriteLine(Localization.Core.Output_format_does_not_support_subchannels_continuing);
-                UpdateStatus?.Invoke(Localization.Core.Output_format_does_not_support_subchannels_continuing);
-            }
-            else
-            {
-                AaruLogging.WriteLine(Localization.Core.Output_format_does_not_support_subchannels_not_continuing);
-
-                StoppingErrorMessage?.Invoke(Localization.Core
-                                                         .Output_format_does_not_support_subchannels_not_continuing);
-
-                return;
-            }
-
-            desiredSubchannel = MmcSubchannel.None;
-        }
-
-        switch(supportedSubchannel)
-        {
-            case MmcSubchannel.None:
-                UpdateStatus?.Invoke(Localization.Core.Checking_if_drive_supports_reading_without_subchannel);
-
-                readcd = !_dev.ReadCd(out cmdBuf,
-                                      out _,
-                                      firstLba,
-                                      sectorSize,
-                                      1,
-                                      MmcSectorTypes.AllTypes,
-                                      false,
-                                      false,
-                                      true,
-                                      MmcHeaderCodes.AllHeaders,
-                                      true,
-                                      true,
-                                      MmcErrorField.None,
-                                      supportedSubchannel,
-                                      _dev.Timeout,
-                                      out _) ||
-                         !_dev.ReadCd(out cmdBuf,
-                                      out _,
-                                      firstLba + 5,
-                                      sectorSize,
-                                      1,
-                                      MmcSectorTypes.AllTypes,
-                                      false,
-                                      false,
-                                      true,
-                                      MmcHeaderCodes.AllHeaders,
-                                      true,
-                                      true,
-                                      MmcErrorField.None,
-                                      supportedSubchannel,
-                                      _dev.Timeout,
-                                      out _);
-
-                if(!readcd)
-                {
-                    AaruLogging.WriteLine(Localization.Core.Drive_does_not_support_READ_CD_trying_SCSI_READ_commands);
-                    ErrorMessage?.Invoke(Localization.Core.Drive_does_not_support_READ_CD_trying_SCSI_READ_commands);
-
-                    UpdateStatus?.Invoke(Localization.Core.Checking_if_drive_supports_READ_6);
-
-                    read6 = !_dev.Read6(out cmdBuf, out _, firstLba,     2048, 1, _dev.Timeout, out _) ||
-                            !_dev.Read6(out cmdBuf, out _, firstLba + 5, 2048, 1, _dev.Timeout, out _);
-
-                    UpdateStatus?.Invoke(Localization.Core.Checking_if_drive_supports_READ_10);
-
-                    read10 =
-                        !_dev.Read10(out cmdBuf,
-                                     out _,
-                                     0,
-                                     false,
-                                     true,
-                                     false,
-                                     false,
-                                     firstLba,
-                                     2048,
-                                     0,
-                                     1,
-                                     _dev.Timeout,
-                                     out _) ||
-                        !_dev.Read10(out cmdBuf,
-                                     out _,
-                                     0,
-                                     false,
-                                     true,
-                                     false,
-                                     false,
-                                     firstLba + 5,
-                                     2048,
-                                     0,
-                                     1,
-                                     _dev.Timeout,
-                                     out _);
-
-                    UpdateStatus?.Invoke(Localization.Core.Checking_if_drive_supports_READ_12);
-
-                    read12 =
-                        !_dev.Read12(out cmdBuf,
-                                     out _,
-                                     0,
-                                     false,
-                                     true,
-                                     false,
-                                     false,
-                                     firstLba,
-                                     2048,
-                                     0,
-                                     1,
-                                     false,
-                                     _dev.Timeout,
-                                     out _) ||
-                        !_dev.Read12(out cmdBuf,
-                                     out _,
-                                     0,
-                                     false,
-                                     true,
-                                     false,
-                                     false,
-                                     firstLba + 5,
-                                     2048,
-                                     0,
-                                     1,
-                                     false,
-                                     _dev.Timeout,
-                                     out _);
-
-                    UpdateStatus?.Invoke(Localization.Core.Checking_if_drive_supports_READ_16);
-
-                    read16 =
-                        !_dev.Read16(out cmdBuf,
-                                     out _,
-                                     0,
-                                     false,
-                                     true,
-                                     false,
-                                     firstLba,
-                                     2048,
-                                     0,
-                                     1,
-                                     false,
-                                     _dev.Timeout,
-                                     out _) ||
-                        !_dev.Read16(out cmdBuf,
-                                     out _,
-                                     0,
-                                     false,
-                                     true,
-                                     false,
-                                     firstLba + 5,
-                                     2048,
-                                     0,
-                                     1,
-                                     false,
-                                     _dev.Timeout,
-                                     out _);
-
-                    switch(read6)
-                    {
-                        case false when !read10 && !read12 && !read16:
-                            AaruLogging.WriteLine(Localization.Core.Cannot_read_from_disc_not_continuing);
-                            StoppingErrorMessage?.Invoke(Localization.Core.Cannot_read_from_disc_not_continuing);
-
-                            return;
-                        case true:
-                            UpdateStatus?.Invoke(Localization.Core.Drive_supports_READ_6);
-
-                            break;
-                    }
-
-                    if(read10) UpdateStatus?.Invoke(Localization.Core.Drive_supports_READ_10);
-
-                    if(read12) UpdateStatus?.Invoke(Localization.Core.Drive_supports_READ_12);
-
-                    if(read16) UpdateStatus?.Invoke(Localization.Core.Drive_supports_READ_16);
-                }
-
-                UpdateStatus?.Invoke(Localization.Core.Drive_can_read_without_subchannel);
-
-                subSize = 0;
-
-                break;
-            case MmcSubchannel.Raw:
-                UpdateStatus?.Invoke(Localization.Core.Full_raw_subchannel_reading_supported);
-                subSize = 96;
-
-                break;
-            case MmcSubchannel.Q16:
-                UpdateStatus?.Invoke(Localization.Core.PQ_subchannel_reading_supported);
-
-                UpdateStatus?.Invoke(Localization.Core.WARNING_If_disc_says_CDG_CDEG_CDMIDI_dump_will_be_incorrect);
-
-                subSize = 16;
-
-                break;
-        }
-
-        subType = desiredSubchannel switch
-                  {
-                      MmcSubchannel.None                     => TrackSubchannelType.None,
-                      MmcSubchannel.Raw or MmcSubchannel.Q16 => TrackSubchannelType.Raw,
-                      _                                      => throw new ArgumentOutOfRangeException()
-                  };
+        if(shallReturn) return;
 
         blockSize = sectorSize + subSize;
 
-        // Check if subchannel is BCD
-        if(supportedSubchannel != MmcSubchannel.None)
-        {
-            sense = _dev.ReadCd(out cmdBuf,
-                                out _,
-                                (firstLba / 75 + 1) * 75 + 35,
-                                blockSize,
-                                1,
-                                MmcSectorTypes.AllTypes,
-                                false,
-                                false,
-                                true,
-                                MmcHeaderCodes.AllHeaders,
-                                true,
-                                true,
-                                MmcErrorField.None,
-                                supportedSubchannel,
-                                _dev.Timeout,
-                                out _);
-
-            if(!sense)
-            {
-                tmpBuf = new byte[subSize];
-                Array.Copy(cmdBuf, sectorSize, tmpBuf, 0, subSize);
-
-                if(supportedSubchannel == MmcSubchannel.Q16) tmpBuf = Subchannel.ConvertQToRaw(tmpBuf);
-
-                tmpBuf = Subchannel.Deinterleave(tmpBuf);
-
-                // 9th Q subchannel is always FRAME when in user data area
-                // LBA 35 => MSF 00:02:35 => FRAME 35 (in hexadecimal 0x23)
-                // Sometimes drive returns a pregap here but MSF 00:02:3x => FRAME 3x (hexadecimal 0x20 to 0x27)
-                bcdSubchannel = (tmpBuf[21] & 0x30) > 0;
-
-                UpdateStatus?.Invoke(bcdSubchannel
-                                         ? Localization.Core.Drive_returns_subchannel_in_BCD
-                                         : Localization.Core.Drive_does_not_returns_subchannel_in_BCD);
-            }
-        }
+        // Probe, once, whether the drive returns C2 error pointers alongside subchannel and in which byte order, so
+        // audio sectors can be checked for concealed (interpolated) samples. Diagnostic only: sets capability fields
+        // and logs the outcome; leaves the dump path unchanged when C2 is unavailable.
+        DetectC2Layout(firstLba, readcd, supportedSubchannel, tracks.Any(static t => t.Type == TrackType.Audio));
 
         foreach(Track trk in tracks) trk.SubchannelType = subType;
 
@@ -613,8 +303,8 @@ sealed partial class Dump
 
             foreach(KeyValuePair<int, long> leadOuts in leadOutStarts)
             {
-                foreach(Track trk in tracks.Where(trk => trk.Session   == leadOuts.Key)
-                                           .Where(trk => trk.EndSector >= (ulong)leadOuts.Value))
+                foreach(Track trk in tracks.Where(trk => trk.Session   == leadOuts.Key &&
+                                                         trk.EndSector >= (ulong)leadOuts.Value))
                     trk.EndSector = (ulong)leadOuts.Value - 1;
             }
 
@@ -666,115 +356,17 @@ sealed partial class Dump
                     RawBytesPerSector = (int)sectorSize,
                     SubchannelType    = subType,
                     EndSector         = tracks.First(static t => t.Sequence >= 1).StartSector - 1
-                }
+                },
+                .. tracks
             ];
 
-            trkList.AddRange(tracks);
-            tracks = trkList.ToArray();
+            tracks = [.. trkList];
         }
 
         if(tracks.Any(static t => t.Type == TrackType.Audio) && desiredSubchannel != MmcSubchannel.Raw)
             UpdateStatus?.Invoke(Localization.Core.WARNING_If_disc_says_CDG_CDEG_CDMIDI_dump_will_be_incorrect);
 
-        // Check mode for tracks
-        foreach(Track trk in tracks.Where(static t => t.Type != TrackType.Audio))
-        {
-            if(!readcd)
-            {
-                trk.Type = TrackType.CdMode1;
-
-                continue;
-            }
-
-            UpdateStatus?.Invoke(string.Format(Localization.Core.Checking_mode_for_track_0, trk.Sequence));
-
-            sense = _dev.ReadCd(out cmdBuf,
-                                out _,
-                                (uint)(trk.StartSector + trk.Pregap),
-                                blockSize,
-                                1,
-                                MmcSectorTypes.AllTypes,
-                                false,
-                                false,
-                                true,
-                                MmcHeaderCodes.AllHeaders,
-                                true,
-                                true,
-                                MmcErrorField.None,
-                                supportedSubchannel,
-                                _dev.Timeout,
-                                out _);
-
-            if(sense)
-            {
-                UpdateStatus?.Invoke(string.Format(Localization.Core.Unable_to_guess_mode_for_track_0_continuing,
-                                                   trk.Sequence));
-
-                continue;
-            }
-
-            var bufOffset = 0;
-
-            while(cmdBuf[0  + bufOffset] != 0x00 ||
-                  cmdBuf[1  + bufOffset] != 0xFF ||
-                  cmdBuf[2  + bufOffset] != 0xFF ||
-                  cmdBuf[3  + bufOffset] != 0xFF ||
-                  cmdBuf[4  + bufOffset] != 0xFF ||
-                  cmdBuf[5  + bufOffset] != 0xFF ||
-                  cmdBuf[6  + bufOffset] != 0xFF ||
-                  cmdBuf[7  + bufOffset] != 0xFF ||
-                  cmdBuf[8  + bufOffset] != 0xFF ||
-                  cmdBuf[9  + bufOffset] != 0xFF ||
-                  cmdBuf[10 + bufOffset] != 0xFF ||
-                  cmdBuf[11 + bufOffset] != 0x00)
-            {
-                if(bufOffset + 12 >= cmdBuf.Length) break;
-
-                bufOffset++;
-            }
-
-            switch(cmdBuf[15 + bufOffset])
-            {
-                case 1:
-                case 0x61: // Scrambled
-                    UpdateStatus?.Invoke(string.Format(Localization.Core.Track_0_is_MODE1, trk.Sequence));
-                    trk.Type = TrackType.CdMode1;
-
-                    break;
-                case 2:
-                case 0x62: // Scrambled
-                    if(dskType is MediaType.CDI or MediaType.CDIREADY)
-                    {
-                        UpdateStatus?.Invoke(string.Format(Localization.Core.Track_0_is_MODE2, trk.Sequence));
-                        trk.Type = TrackType.CdMode2Formless;
-
-                        break;
-                    }
-
-                    if((cmdBuf[0x012] & 0x20) == 0x20) // mode 2 form 2
-                    {
-                        UpdateStatus?.Invoke(string.Format(Localization.Core.Track_0_is_MODE2_FORM_2, trk.Sequence));
-                        trk.Type = TrackType.CdMode2Form2;
-
-                        break;
-                    }
-
-                    UpdateStatus?.Invoke(string.Format(Localization.Core.Track_0_is_MODE2_FORM_1, trk.Sequence));
-                    trk.Type = TrackType.CdMode2Form1;
-
-                    // These media type specifications do not legally allow mode 2 tracks to be present
-                    if(dskType is MediaType.CDROM or MediaType.CDPLUS or MediaType.CDV) dskType = MediaType.CD;
-
-                    break;
-                default:
-                    UpdateStatus?.Invoke(string.Format(Localization.Core.Track_0_is_unknown_mode_1,
-                                                       trk.Sequence,
-                                                       cmdBuf[15]));
-
-
-                    break;
-            }
-        }
+        CheckTracksMode(readcd, tracks, blockSize, supportedSubchannel, dskType);
 
         if(outputOptical.Id == new Guid("12345678-AAAA-BBBB-CCCC-123456789000"))
         {
@@ -924,6 +516,8 @@ sealed partial class Dump
             StoppingErrorMessage?.Invoke(string.Format(Localization.Core
                                                                    .Device_error_0_trying_to_guess_ideal_transfer_length,
                                                        _dev.LastError));
+
+            return;
         }
 
         var cdiWithHiddenTrack1 = false;
@@ -978,6 +572,7 @@ sealed partial class Dump
 
         if(errno == ErrorNumber.NoError) mcn = Encoding.ASCII.GetString(mcnBytes);
 
+        // Resuming, read previous tracks
         if(outputOptical.Tracks != null)
         {
             foreach(Track imgTrack in outputOptical.Tracks)
@@ -1002,7 +597,7 @@ sealed partial class Dump
         }
 
         // Send track list to output plugin. This may fail if subchannel is set but unsupported.
-        ret = outputOptical.SetTracks(tracks.ToList());
+        ret = outputOptical.SetTracks([.. tracks]);
 
         if(!ret && desiredSubchannel == MmcSubchannel.None)
         {
@@ -1111,7 +706,7 @@ sealed partial class Dump
             if(tracks.All(static t => t.Type != TrackType.Audio))
             {
                 // No audio tracks so no need to fix offset
-                UpdateStatus.Invoke(Localization.Core.No_audio_tracks_disabling_offset_fix);
+                UpdateStatus?.Invoke(Localization.Core.No_audio_tracks_disabling_offset_fix);
 
                 _fixOffset = false;
             }
@@ -1238,14 +833,19 @@ sealed partial class Dump
         }
 
         // Try to read the first track pregap
-        if(_dumpFirstTrackPregap && readcd)
+        if(_dumpFirstTrackPregap && (readcd || _omnidrive))
         {
             ReadCdFirstTrackPregap(blockSize,
                                    ref currentSpeed,
                                    mediaTags,
                                    supportedSubchannel,
                                    ref totalDuration,
-                                   outputOptical);
+                                   outputOptical,
+                                   subLog,
+                                   offsetBytes,
+                                   sectorsForOffset,
+                                   desiredSubchannel,
+                                   subchannelExtents);
         }
 
         audioExtents = new ExtentsULong();
@@ -1363,6 +963,38 @@ sealed partial class Dump
 
             if(_skipCdireadyHole)
             {
+                // This codepath is disabled because it's doing strange things, let the OmniDrive behave like a normal drive here
+                /*
+                if(_omnidrive)
+                {
+                    OmniDriveReadCdiReady(blockSize,
+                                          ref currentSpeed,
+                                          currentTry,
+                                          extents,
+                                          ibgLog,
+                                          ref imageWriteDuration,
+                                          leadOutExtents,
+                                          ref maxSpeed,
+                                          mhddLog,
+                                          ref minSpeed,
+                                          subSize,
+                                          supportedSubchannel,
+                                          ref totalDuration,
+                                          tracks,
+                                          subLog,
+                                          desiredSubchannel,
+                                          isrcs,
+                                          ref mcn,
+                                          subchannelExtents,
+                                          blocks,
+                                          cdiReadyReadAsAudio,
+                                          offsetBytes,
+                                          sectorsForOffset,
+                                          smallestPregapLbaPerTrack);
+                }
+                else
+                {
+                */
                 ReadCdiReady(blockSize,
                              ref currentSpeed,
                              currentTry,
@@ -1387,50 +1019,112 @@ sealed partial class Dump
                              offsetBytes,
                              sectorsForOffset,
                              smallestPregapLbaPerTrack);
+
+                //}
             }
         }
 
-        ReadCdData(audioExtents,
-                   blocks,
-                   blockSize,
-                   ref currentSpeed,
-                   currentTry,
-                   extents,
-                   ibgLog,
-                   ref imageWriteDuration,
-                   lastSector,
-                   leadOutExtents,
-                   ref maxSpeed,
-                   mhddLog,
-                   ref minSpeed,
-                   out newTrim,
-                   tracks[0].Type != TrackType.Audio,
-                   offsetBytes,
-                   read6,
-                   read10,
-                   read12,
-                   read16,
-                   readcd,
-                   sectorsForOffset,
-                   subSize,
-                   supportedSubchannel,
-                   supportsLongSectors,
-                   ref totalDuration,
-                   tracks,
-                   subLog,
-                   desiredSubchannel,
-                   isrcs,
-                   ref mcn,
-                   subchannelExtents,
-                   smallestPregapLbaPerTrack);
-
-        // TODO: Enable when underlying images support lead-outs
-        /*
-        DumpCdLeadOuts(blocks, blockSize, ref currentSpeed, currentTry, extents, ibgLog, ref imageWriteDuration,
-                       leadOutExtents, ref maxSpeed, mhddLog, ref minSpeed, read6, read10, read12, read16, readcd,
-                       supportedSubchannel, subSize, ref totalDuration, subLog, desiredSubchannel, isrcs, ref mcn, tracks,
+        if(_omnidrive)
+        {
+            ReadCdDataOmniDrive(audioExtents,
+                                blocks,
+                                blockSize,
+                                ref currentSpeed,
+                                currentTry,
+                                extents,
+                                ibgLog,
+                                ref imageWriteDuration,
+                                lastSector,
+                                leadOutExtents,
+                                ref maxSpeed,
+                                mhddLog,
+                                ref minSpeed,
+                                out newTrim,
+                                offsetBytes,
+                                sectorsForOffset,
+                                subSize,
+                                supportedSubchannel,
+                                supportsLongSectors,
+                                ref totalDuration,
+                                tracks,
+                                subLog,
+                                desiredSubchannel,
+                                isrcs,
+                                ref mcn,
+                                subchannelExtents,
+                                smallestPregapLbaPerTrack);
+        }
+        else
+        {
+            ReadCdData(audioExtents,
+                       blocks,
+                       blockSize,
+                       ref currentSpeed,
+                       currentTry,
+                       extents,
+                       ibgLog,
+                       ref imageWriteDuration,
+                       lastSector,
+                       leadOutExtents,
+                       ref maxSpeed,
+                       mhddLog,
+                       ref minSpeed,
+                       out newTrim,
+                       tracks[0].Type != TrackType.Audio,
+                       offsetBytes,
+                       read6,
+                       read10,
+                       read12,
+                       read16,
+                       readcd,
+                       sectorsForOffset,
+                       subSize,
+                       supportedSubchannel,
+                       supportsLongSectors,
+                       ref totalDuration,
+                       tracks,
+                       subLog,
+                       desiredSubchannel,
+                       isrcs,
+                       ref mcn,
+                       subchannelExtents,
                        smallestPregapLbaPerTrack);
-        */
+        }
+
+        if(_omnidrive                                                                                  &&
+           outputOptical.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreOverflowSectors) &&
+           _leadout)
+        {
+            leadOutExtents.Add((ulong)(lastSector + 1), (ulong)(lastSector + 2749));
+
+            DumpCdLeadOuts(blockSize,
+                           ref currentSpeed,
+                           currentTry,
+                           extents,
+                           ibgLog,
+                           ref imageWriteDuration,
+                           leadOutExtents,
+                           ref maxSpeed,
+                           mhddLog,
+                           ref minSpeed,
+                           read6,
+                           read10,
+                           read12,
+                           read16,
+                           readcd,
+                           supportedSubchannel,
+                           subSize,
+                           ref totalDuration,
+                           subLog,
+                           desiredSubchannel,
+                           isrcs,
+                           ref mcn,
+                           tracks,
+                           subchannelExtents,
+                           smallestPregapLbaPerTrack,
+                           offsetBytes,
+                           sectorsForOffset);
+        }
 
         _dumpStopwatch.Stop();
         mhddLog.Close();
@@ -1511,6 +1205,22 @@ sealed partial class Dump
                         subchannelExtents,
                         smallestPregapLbaPerTrack,
                         supportsLongSectors);
+
+        // Re-read the audio sectors the drive concealed until they converge on stable, C2-clean data, rewriting the
+        // ones that do. Runs after the normal retries so hard errors are dealt with first.
+        ConvergeAudioC2(offsetBytes, sectorsForOffset, supportedSubchannel, extents, outputOptical, readcd);
+
+        if(_c2Supported && audioExtents.Count > 0)
+        {
+            int concealed = _c2SuspectAudio?.Count ?? 0;
+
+            UpdateStatus?.Invoke(concealed == 0
+                                     ? Localization.Core.C2_audio_check_no_concealed
+                                     : string.Format(Localization.Core.C2_audio_check_0_concealed_samples,
+                                                     concealed));
+
+            AaruLogging.WriteLine(string.Format(Localization.Core.C2_audio_check_0_flagged, concealed));
+        }
 
         foreach(Tuple<ulong, ulong> leadoutExtent in leadOutExtents.ToArray())
             for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++)
@@ -1689,6 +1399,12 @@ sealed partial class Dump
         {
             UpdateStatus?.Invoke(string.Format(Localization.Core.Slowest_speed_burst_0,
                                                ByteSize.FromMegabytes(minSpeed).Per(_oneSecond).Humanize()));
+        }
+
+        if(_omnidrive)
+        {
+            UpdateStatus?.Invoke(string.Format(UI._0_sectors_were_correct_when_read, _correctSectors));
+            UpdateStatus?.Invoke(string.Format(UI._0_sectors_had_to_be_fixed,        _fixedSectors));
         }
 
         UpdateStatus?.Invoke(string.Format(Localization.Core._0_sectors_could_not_be_read, _resume.BadBlocks.Count));

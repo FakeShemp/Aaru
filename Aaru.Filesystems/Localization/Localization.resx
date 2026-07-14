@@ -2676,6 +2676,33 @@
     <data name="Volume_was_last_updated_on_0_" xml:space="preserve">
     <value>Volume was last updated on {0}</value>
   </data>
+    <data name="GDFX_Name" xml:space="preserve">
+    <value>Xbox DVD File System</value>
+  </data>
+    <data name="Xbox_DVD_File_System" xml:space="preserve">
+    <value>Xbox DVD File System</value>
+  </data>
+    <data name="Disc_type_0" xml:space="preserve">
+    <value>Disc type: {0}</value>
+  </data>
+    <data name="Root_directory_sector_0" xml:space="preserve">
+    <value>Root directory sector: {0}</value>
+  </data>
+    <data name="Rebuilt_XISO" xml:space="preserve">
+    <value>Rebuilt XISO</value>
+  </data>
+    <data name="XGD1" xml:space="preserve">
+    <value>XGD1</value>
+  </data>
+    <data name="XGD2" xml:space="preserve">
+    <value>XGD2</value>
+  </data>
+    <data name="XGD3" xml:space="preserve">
+    <value>XGD3</value>
+  </data>
+    <data name="Standard_Xbox_image" xml:space="preserve">
+    <value>Standard Xbox image</value>
+  </data>
     <data name="LIF_Name" xml:space="preserve">
     <value>HP Logical Interchange Format Plugin</value>
   </data>

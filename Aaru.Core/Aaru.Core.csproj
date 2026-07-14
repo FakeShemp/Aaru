@@ -51,7 +51,6 @@
   <ItemGroup>
     <Folder Include="Devices\"/>
     <Folder Include="Devices\Scanning\"/>
-    <Folder Include="Devices\Dumping\"/>
     <Folder Include="Devices\Report\"/>
     <Folder Include="Sidecar\"/>
   </ItemGroup>

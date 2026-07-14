@@ -157,15 +157,15 @@ public sealed partial class LisaFS
             infoMddf.volid     = BigEndianBitConverter.ToUInt64(sector, 0x02);
             infoMddf.volnum    = BigEndianBitConverter.ToUInt16(sector, 0x0A);
             Array.Copy(sector, 0x0C, pString, 0, 33);
-            infoMddf.volname  = StringHandlers.PascalToString(pString, encoding);
-            infoMddf.unknown1 = sector[0x2D];
+            infoMddf.volname     = StringHandlers.PascalToString(pString, encoding);
+            infoMddf.volname_pad = sector[0x2D];
             Array.Copy(sector, 0x2E, pString, 0, 33);
 
             // Prevent garbage
-            infoMddf.password       = pString[0] <= 32 ? StringHandlers.PascalToString(pString, encoding) : "";
-            infoMddf.unknown2       = sector[0x4F];
-            infoMddf.machine_id     = BigEndianBitConverter.ToUInt32(sector, 0x50);
-            infoMddf.master_copy_id = BigEndianBitConverter.ToUInt32(sector, 0x54);
+            infoMddf.password          = pString[0] <= 32 ? StringHandlers.PascalToString(pString, encoding) : "";
+            infoMddf.password_pad      = sector[0x4F];
+            infoMddf.machine_id        = BigEndianBitConverter.ToUInt32(sector, 0x50);
+            infoMddf.master_machine_id = BigEndianBitConverter.ToUInt32(sector, 0x54);
             var lisaTime = BigEndianBitConverter.ToUInt32(sector, 0x58);
             infoMddf.dtvc                         = DateHandlers.LisaToDateTime(lisaTime);
             lisaTime                              = BigEndianBitConverter.ToUInt32(sector, 0x5C);
@@ -174,7 +174,7 @@ public sealed partial class LisaFS
             infoMddf.dtvb                         = DateHandlers.LisaToDateTime(lisaTime);
             lisaTime                              = BigEndianBitConverter.ToUInt32(sector, 0x64);
             infoMddf.dtvs                         = DateHandlers.LisaToDateTime(lisaTime);
-            infoMddf.unknown3                     = BigEndianBitConverter.ToUInt32(sector, 0x68);
+            infoMddf.copy_thread                  = BigEndianBitConverter.ToUInt32(sector, 0x68);
             infoMddf.mddf_block                   = BigEndianBitConverter.ToUInt32(sector, 0x6C);
             infoMddf.volsize_minus_one            = BigEndianBitConverter.ToUInt32(sector, 0x70);
             infoMddf.volsize_minus_mddf_minus_one = BigEndianBitConverter.ToUInt32(sector, 0x74);
@@ -188,93 +188,79 @@ public sealed partial class LisaFS
             infoMddf.fs_size                      = BigEndianBitConverter.ToUInt32(sector, 0x8C);
             infoMddf.unknown7                     = BigEndianBitConverter.ToUInt32(sector, 0x90);
             infoMddf.srec_ptr                     = BigEndianBitConverter.ToUInt32(sector, 0x94);
-            infoMddf.unknown9                     = BigEndianBitConverter.ToUInt16(sector, 0x98);
+            infoMddf.slist_packing                = BigEndianBitConverter.ToUInt16(sector, 0x98);
             infoMddf.srec_len                     = BigEndianBitConverter.ToUInt16(sector, 0x9A);
-            infoMddf.unknown10                    = BigEndianBitConverter.ToUInt32(sector, 0x9C);
-            infoMddf.unknown11                    = BigEndianBitConverter.ToUInt32(sector, 0xA0);
-            infoMddf.unknown12                    = BigEndianBitConverter.ToUInt32(sector, 0xA4);
-            infoMddf.unknown13                    = BigEndianBitConverter.ToUInt32(sector, 0xA8);
-            infoMddf.unknown14                    = BigEndianBitConverter.ToUInt32(sector, 0xAC);
+            infoMddf.first_file                   = BigEndianBitConverter.ToUInt16(sector, 0x9C);
+            infoMddf.empty_file                   = BigEndianBitConverter.ToUInt16(sector, 0x9E);
+            infoMddf.maxfiles                     = BigEndianBitConverter.ToUInt16(sector, 0xA0);
+            infoMddf.hintsize                     = BigEndianBitConverter.ToUInt16(sector, 0xA2);
+            infoMddf.leader_offset                = BigEndianBitConverter.ToUInt16(sector, 0xA4);
+            infoMddf.leader_pages                 = BigEndianBitConverter.ToUInt16(sector, 0xA6);
+            infoMddf.flabel_offset                = BigEndianBitConverter.ToUInt16(sector, 0xA8);
+            infoMddf.unusedi1                     = BigEndianBitConverter.ToUInt16(sector, 0xAA);
+            infoMddf.map_offset                   = BigEndianBitConverter.ToUInt16(sector, 0xAC);
+            infoMddf.map_size                     = BigEndianBitConverter.ToUInt16(sector, 0xAE);
             infoMddf.filecount                    = BigEndianBitConverter.ToUInt16(sector, 0xB0);
-            infoMddf.unknown15                    = BigEndianBitConverter.ToUInt32(sector, 0xB2);
-            infoMddf.unknown16                    = BigEndianBitConverter.ToUInt32(sector, 0xB6);
+            infoMddf.unusedl1                     = BigEndianBitConverter.ToUInt32(sector, 0xB2);
+            infoMddf.freestart                    = BigEndianBitConverter.ToUInt32(sector, 0xB6);
             infoMddf.freecount                    = BigEndianBitConverter.ToUInt32(sector, 0xBA);
-            infoMddf.unknown17                    = BigEndianBitConverter.ToUInt16(sector, 0xBE);
-            infoMddf.unknown18                    = BigEndianBitConverter.ToUInt32(sector, 0xC0);
+            infoMddf.rootmaxentries               = BigEndianBitConverter.ToUInt16(sector, 0xBE);
+            infoMddf.mountinfo                    = BigEndianBitConverter.ToUInt32(sector, 0xC0);
             infoMddf.overmount_stamp              = BigEndianBitConverter.ToUInt64(sector, 0xC4);
-            infoMddf.serialization                = BigEndianBitConverter.ToUInt32(sector, 0xCC);
-            infoMddf.unknown19                    = BigEndianBitConverter.ToUInt32(sector, 0xD0);
-            infoMddf.unknown_timestamp            = BigEndianBitConverter.ToUInt32(sector, 0xD4);
-            infoMddf.unknown20                    = BigEndianBitConverter.ToUInt32(sector, 0xD8);
-            infoMddf.unknown21                    = BigEndianBitConverter.ToUInt32(sector, 0xDC);
-            infoMddf.unknown22                    = BigEndianBitConverter.ToUInt32(sector, 0xE0);
-            infoMddf.unknown23                    = BigEndianBitConverter.ToUInt32(sector, 0xE4);
-            infoMddf.unknown24                    = BigEndianBitConverter.ToUInt32(sector, 0xE8);
-            infoMddf.unknown25                    = BigEndianBitConverter.ToUInt32(sector, 0xEC);
-            infoMddf.unknown26                    = BigEndianBitConverter.ToUInt32(sector, 0xF0);
-            infoMddf.unknown27                    = BigEndianBitConverter.ToUInt32(sector, 0xF4);
-            infoMddf.unknown28                    = BigEndianBitConverter.ToUInt32(sector, 0xF8);
-            infoMddf.unknown29                    = BigEndianBitConverter.ToUInt32(sector, 0xFC);
-            infoMddf.unknown30                    = BigEndianBitConverter.ToUInt32(sector, 0x100);
-            infoMddf.unknown31                    = BigEndianBitConverter.ToUInt32(sector, 0x104);
-            infoMddf.unknown32                    = BigEndianBitConverter.ToUInt32(sector, 0x108);
-            infoMddf.unknown33                    = BigEndianBitConverter.ToUInt32(sector, 0x10C);
-            infoMddf.unknown34                    = BigEndianBitConverter.ToUInt32(sector, 0x110);
-            infoMddf.unknown35                    = BigEndianBitConverter.ToUInt32(sector, 0x114);
-            infoMddf.backup_volid                 = BigEndianBitConverter.ToUInt64(sector, 0x118);
-            infoMddf.label_size                   = BigEndianBitConverter.ToUInt16(sector, 0x120);
-            infoMddf.fs_overhead                  = BigEndianBitConverter.ToUInt16(sector, 0x122);
-            infoMddf.result_scavenge              = BigEndianBitConverter.ToUInt16(sector, 0x124);
-            infoMddf.boot_code                    = BigEndianBitConverter.ToUInt16(sector, 0x126);
-            infoMddf.boot_environ                 = BigEndianBitConverter.ToUInt16(sector, 0x6C);
-            infoMddf.unknown36                    = BigEndianBitConverter.ToUInt32(sector, 0x12A);
-            infoMddf.unknown37                    = BigEndianBitConverter.ToUInt32(sector, 0x12E);
-            infoMddf.unknown38                    = BigEndianBitConverter.ToUInt32(sector, 0x132);
-            infoMddf.vol_sequence                 = BigEndianBitConverter.ToUInt16(sector, 0x136);
-            infoMddf.vol_left_mounted             = sector[0x138];
+            infoMddf.pmem_id                      = BigEndianBitConverter.ToUInt32(sector, 0xCC);
+            infoMddf.pmem_alarm_ref               = BigEndianBitConverter.ToUInt16(sector, 0xD0);
+            infoMddf.pmem_parm_mem                = new ushort[32];
 
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown1 = 0x{0:X2} ({0})",  infoMddf.unknown1);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown2 = 0x{0:X2} ({0})",  infoMddf.unknown2);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown3 = 0x{0:X8} ({0})",  infoMddf.unknown3);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown4 = 0x{0:X4} ({0})",  infoMddf.unknown4);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown5 = 0x{0:X8} ({0})",  infoMddf.unknown5);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown6 = 0x{0:X8} ({0})",  infoMddf.unknown6);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown7 = 0x{0:X8} ({0})",  infoMddf.unknown7);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown9 = 0x{0:X4} ({0})",  infoMddf.unknown9);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown10 = 0x{0:X8} ({0})", infoMddf.unknown10);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown11 = 0x{0:X8} ({0})", infoMddf.unknown11);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown12 = 0x{0:X8} ({0})", infoMddf.unknown12);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown13 = 0x{0:X8} ({0})", infoMddf.unknown13);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown14 = 0x{0:X8} ({0})", infoMddf.unknown14);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown15 = 0x{0:X8} ({0})", infoMddf.unknown15);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown16 = 0x{0:X8} ({0})", infoMddf.unknown16);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown17 = 0x{0:X4} ({0})", infoMddf.unknown17);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown18 = 0x{0:X8} ({0})", infoMddf.unknown18);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown19 = 0x{0:X8} ({0})", infoMddf.unknown19);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown20 = 0x{0:X8} ({0})", infoMddf.unknown20);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown21 = 0x{0:X8} ({0})", infoMddf.unknown21);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown22 = 0x{0:X8} ({0})", infoMddf.unknown22);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown23 = 0x{0:X8} ({0})", infoMddf.unknown23);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown24 = 0x{0:X8} ({0})", infoMddf.unknown24);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown25 = 0x{0:X8} ({0})", infoMddf.unknown25);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown26 = 0x{0:X8} ({0})", infoMddf.unknown26);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown27 = 0x{0:X8} ({0})", infoMddf.unknown27);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown28 = 0x{0:X8} ({0})", infoMddf.unknown28);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown29 = 0x{0:X8} ({0})", infoMddf.unknown29);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown30 = 0x{0:X8} ({0})", infoMddf.unknown30);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown31 = 0x{0:X8} ({0})", infoMddf.unknown31);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown32 = 0x{0:X8} ({0})", infoMddf.unknown32);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown33 = 0x{0:X8} ({0})", infoMddf.unknown33);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown34 = 0x{0:X8} ({0})", infoMddf.unknown34);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown35 = 0x{0:X8} ({0})", infoMddf.unknown35);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown36 = 0x{0:X8} ({0})", infoMddf.unknown36);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown37 = 0x{0:X8} ({0})", infoMddf.unknown37);
-            AaruLogging.Debug(MODULE_NAME, "mddf.unknown38 = 0x{0:X8} ({0})", infoMddf.unknown38);
+            for(var j = 0; j < infoMddf.pmem_parm_mem.Length; j++)
+                infoMddf.pmem_parm_mem[j] = BigEndianBitConverter.ToUInt16(sector, 0xD2 + j * 2);
 
-            AaruLogging.Debug(MODULE_NAME,
-                              "mddf.unknown_timestamp = 0x{0:X8} ({0}, {1})",
-                              infoMddf.unknown_timestamp,
-                              DateHandlers.LisaToDateTime(infoMddf.unknown_timestamp));
+            infoMddf.vol_scavenged   = sector[0x112];
+            infoMddf.tbt_copied      = sector[0x113];
+            infoMddf.backup_volid    = BigEndianBitConverter.ToUInt64(sector, 0x114);
+            infoMddf.result_scavenge = BigEndianBitConverter.ToUInt16(sector, 0x11C);
+            infoMddf.smallmap_offset = BigEndianBitConverter.ToUInt16(sector, 0x11E);
+            infoMddf.hentry_offset   = BigEndianBitConverter.ToUInt16(sector, 0x120);
+            infoMddf.boot_code       = BigEndianBitConverter.ToUInt16(sector, 0x122);
+            infoMddf.boot_environ    = BigEndianBitConverter.ToUInt16(sector, 0x124);
+            infoMddf.flabel_size     = BigEndianBitConverter.ToUInt16(sector, 0x126);
+            infoMddf.fs_overhead     = BigEndianBitConverter.ToUInt16(sector, 0x128);
+            infoMddf.oem_id          = BigEndianBitConverter.ToUInt32(sector, 0x12A);
+            infoMddf.root_page       = BigEndianBitConverter.ToUInt32(sector, 0x12E);
+            infoMddf.tree_depth      = BigEndianBitConverter.ToUInt16(sector, 0x132);
+            infoMddf.node_id         = BigEndianBitConverter.ToUInt16(sector, 0x134);
+            infoMddf.vol_seq_no      = BigEndianBitConverter.ToUInt16(sector, 0x136);
+            infoMddf.vol_mounted     = sector[0x138];
+
+            AaruLogging.Debug(MODULE_NAME, "mddf.volname_pad = 0x{0:X2} ({0})",    infoMddf.volname_pad);
+            AaruLogging.Debug(MODULE_NAME, "mddf.password_pad = 0x{0:X2} ({0})",   infoMddf.password_pad);
+            AaruLogging.Debug(MODULE_NAME, "mddf.copy_thread = 0x{0:X8} ({0})",    infoMddf.copy_thread);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown4 = 0x{0:X4} ({0})",       infoMddf.unknown4);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown5 = 0x{0:X8} ({0})",       infoMddf.unknown5);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown6 = 0x{0:X8} ({0})",       infoMddf.unknown6);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown7 = 0x{0:X8} ({0})",       infoMddf.unknown7);
+            AaruLogging.Debug(MODULE_NAME, "mddf.slist_packing = 0x{0:X4} ({0})",  infoMddf.slist_packing);
+            AaruLogging.Debug(MODULE_NAME, "mddf.first_file = 0x{0:X4} ({0})",     infoMddf.first_file);
+            AaruLogging.Debug(MODULE_NAME, "mddf.empty_file = 0x{0:X4} ({0})",     infoMddf.empty_file);
+            AaruLogging.Debug(MODULE_NAME, "mddf.maxfiles = 0x{0:X4} ({0})",       infoMddf.maxfiles);
+            AaruLogging.Debug(MODULE_NAME, "mddf.hintsize = 0x{0:X4} ({0})",       infoMddf.hintsize);
+            AaruLogging.Debug(MODULE_NAME, "mddf.leader_offset = 0x{0:X4} ({0})",  infoMddf.leader_offset);
+            AaruLogging.Debug(MODULE_NAME, "mddf.leader_pages = 0x{0:X4} ({0})",   infoMddf.leader_pages);
+            AaruLogging.Debug(MODULE_NAME, "mddf.flabel_offset = 0x{0:X4} ({0})",  infoMddf.flabel_offset);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unusedi1 = 0x{0:X4} ({0})",       infoMddf.unusedi1);
+            AaruLogging.Debug(MODULE_NAME, "mddf.map_offset = 0x{0:X4} ({0})",     infoMddf.map_offset);
+            AaruLogging.Debug(MODULE_NAME, "mddf.map_size = 0x{0:X4} ({0})",       infoMddf.map_size);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unusedl1 = 0x{0:X8} ({0})",       infoMddf.unusedl1);
+            AaruLogging.Debug(MODULE_NAME, "mddf.freestart = 0x{0:X8} ({0})",      infoMddf.freestart);
+            AaruLogging.Debug(MODULE_NAME, "mddf.rootmaxentries = 0x{0:X4} ({0})", infoMddf.rootmaxentries);
+            AaruLogging.Debug(MODULE_NAME, "mddf.mountinfo = 0x{0:X8} ({0})",      infoMddf.mountinfo);
+            AaruLogging.Debug(MODULE_NAME, "mddf.pmem_id = 0x{0:X8} ({0})",        infoMddf.pmem_id);
+            AaruLogging.Debug(MODULE_NAME, "mddf.pmem_alarm_ref = 0x{0:X4} ({0})", infoMddf.pmem_alarm_ref);
+            AaruLogging.Debug(MODULE_NAME, "mddf.vol_scavenged = 0x{0:X2} ({0})",  infoMddf.vol_scavenged);
+            AaruLogging.Debug(MODULE_NAME, "mddf.tbt_copied = 0x{0:X2} ({0})",     infoMddf.tbt_copied);
+            AaruLogging.Debug(MODULE_NAME, "mddf.oem_id = 0x{0:X8} ({0})",         infoMddf.oem_id);
+            AaruLogging.Debug(MODULE_NAME, "mddf.root_page = 0x{0:X8} ({0})",      infoMddf.root_page);
+            AaruLogging.Debug(MODULE_NAME, "mddf.tree_depth = 0x{0:X4} ({0})",     infoMddf.tree_depth);
+            AaruLogging.Debug(MODULE_NAME, "mddf.node_id = 0x{0:X4} ({0})",        infoMddf.node_id);
 
             if(infoMddf.mddf_block != i - beforeMddf) return;
 
@@ -315,15 +301,15 @@ public sealed partial class LisaFS
             sb.AppendFormat(Localization.Volume_ID_0_X16,    infoMddf.volid).AppendLine();
             sb.AppendFormat(Localization.Backup_volume_ID_0, infoMddf.backup_volid).AppendLine();
 
-            sb.AppendFormat(Localization.Master_copy_ID_0, infoMddf.master_copy_id).AppendLine();
+            sb.AppendFormat(Localization.Master_copy_ID_0, infoMddf.master_machine_id).AppendLine();
 
-            sb.AppendFormat(Localization.Volume_is_number_0_of_1, infoMddf.volnum, infoMddf.vol_sequence).AppendLine();
+            sb.AppendFormat(Localization.Volume_is_number_0_of_1, infoMddf.volnum, infoMddf.vol_seq_no).AppendLine();
 
             sb.AppendFormat(Localization.Serial_number_of_Lisa_computer_that_created_this_volume_0, infoMddf.machine_id)
               .AppendLine();
 
             sb.AppendFormat(Localization.Serial_number_of_Lisa_computer_that_can_use_this_volume_software_0,
-                            infoMddf.serialization)
+                            infoMddf.pmem_id)
               .AppendLine();
 
             sb.AppendFormat(Localization.Volume_created_on_0, infoMddf.dtvc).AppendLine();
@@ -344,7 +330,7 @@ public sealed partial class LisaFS
             sb.AppendFormat(Localization._0_blocks_in_filesystem,      infoMddf.fs_size).AppendLine();
             sb.AppendFormat(Localization._0_files_in_volume,           infoMddf.filecount).AppendLine();
             sb.AppendFormat(Localization._0_blocks_free,               infoMddf.freecount).AppendLine();
-            sb.AppendFormat(Localization._0_bytes_in_LisaInfo,         infoMddf.label_size).AppendLine();
+            sb.AppendFormat(Localization._0_bytes_in_LisaInfo,         infoMddf.flabel_size).AppendLine();
             sb.AppendFormat(Localization.Filesystem_overhead_0,        infoMddf.fs_overhead).AppendLine();
             sb.AppendFormat(Localization.Scavenger_result_code_0,      infoMddf.result_scavenge).AppendLine();
             sb.AppendFormat(Localization.Boot_code_0,                  infoMddf.boot_code).AppendLine();
@@ -356,7 +342,7 @@ public sealed partial class LisaFS
                             infoMddf.srec_len)
               .AppendLine();
 
-            sb.AppendLine(infoMddf.vol_left_mounted == 0 ? Localization.Volume_is_clean : Localization.Volume_is_dirty);
+            sb.AppendLine(infoMddf.vol_mounted == 0 ? Localization.Volume_is_clean : Localization.Volume_is_dirty);
 
             information = sb.ToString();
 
@@ -370,7 +356,7 @@ public sealed partial class LisaFS
             if(DateTime.Compare(infoMddf.dtvc, DateHandlers.LisaToDateTime(0)) > 0)
                 metadata.CreationDate = infoMddf.dtvc;
 
-            metadata.Dirty        = infoMddf.vol_left_mounted != 0;
+            metadata.Dirty        = infoMddf.vol_mounted != 0;
             metadata.Files        = infoMddf.filecount;
             metadata.FreeClusters = infoMddf.freecount;
             metadata.Type         = FS_TYPE;

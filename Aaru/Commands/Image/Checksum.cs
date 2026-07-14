@@ -69,6 +69,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--fletcher16={0}",       settings.Fletcher16);
         AaruLogging.Debug(MODULE_NAME, "--fletcher32={0}",       settings.Fletcher32);
         AaruLogging.Debug(MODULE_NAME, "--input={0}",            Markup.Escape(settings.ImagePath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--long-sectors={0}",     settings.LongSectors);
         AaruLogging.Debug(MODULE_NAME, "--md5={0}",              settings.Md5);
         AaruLogging.Debug(MODULE_NAME, "--separated-tracks={0}", settings.SeparatedTracks);
         AaruLogging.Debug(MODULE_NAME, "--sha1={0}",             settings.Sha1);
@@ -219,11 +220,17 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                             if(sectors - doneSectors >= SECTORS_TO_READ)
                                             {
-                                                errno = opticalInput.ReadSectors(doneSectors,
-                                                    SECTORS_TO_READ,
-                                                    currentTrack.Sequence,
-                                                    out sector,
-                                                    out _);
+                                                errno = settings.LongSectors
+                                                            ? opticalInput.ReadSectorsLong(doneSectors,
+                                                                SECTORS_TO_READ,
+                                                                currentTrack.Sequence,
+                                                                out sector,
+                                                                out _)
+                                                            : opticalInput.ReadSectors(doneSectors,
+                                                                SECTORS_TO_READ,
+                                                                currentTrack.Sequence,
+                                                                out sector,
+                                                                out _);
 
                                                 trackTask.Description =
                                                     string.Format(UI.Hashing_sectors_0_to_2_of_track_1,
@@ -248,11 +255,17 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                             }
                                             else
                                             {
-                                                errno = opticalInput.ReadSectors(doneSectors,
-                                                    (uint)(sectors - doneSectors),
-                                                    currentTrack.Sequence,
-                                                    out sector,
-                                                    out _);
+                                                errno = settings.LongSectors
+                                                            ? opticalInput.ReadSectorsLong(doneSectors,
+                                                                (uint)(sectors - doneSectors),
+                                                                currentTrack.Sequence,
+                                                                out sector,
+                                                                out _)
+                                                            : opticalInput.ReadSectors(doneSectors,
+                                                                (uint)(sectors - doneSectors),
+                                                                currentTrack.Sequence,
+                                                                out sector,
+                                                                out _);
 
                                                 trackTask.Description =
                                                     string.Format(UI.Hashing_sectors_0_to_2_of_track_1,
@@ -627,11 +640,17 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                     if(sectors - doneSectors >= SECTORS_TO_READ)
                                     {
-                                        errno = mediaImage.ReadSectors(doneSectors,
-                                                                       false,
-                                                                       SECTORS_TO_READ,
-                                                                       out sector,
-                                                                       out _);
+                                        errno = settings.LongSectors
+                                                    ? mediaImage.ReadSectorsLong(doneSectors,
+                                                        false,
+                                                        SECTORS_TO_READ,
+                                                        out sector,
+                                                        out _)
+                                                    : mediaImage.ReadSectors(doneSectors,
+                                                                             false,
+                                                                             SECTORS_TO_READ,
+                                                                             out sector,
+                                                                             out _);
 
                                         if(errno != ErrorNumber.NoError)
                                         {
@@ -653,11 +672,17 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                     }
                                     else
                                     {
-                                        errno = mediaImage.ReadSectors(doneSectors,
-                                                                       false,
-                                                                       (uint)(sectors - doneSectors),
-                                                                       out sector,
-                                                                       out _);
+                                        errno = settings.LongSectors
+                                                    ? mediaImage.ReadSectorsLong(doneSectors,
+                                                        false,
+                                                        (uint)(sectors - doneSectors),
+                                                        out sector,
+                                                        out _)
+                                                    : mediaImage.ReadSectors(doneSectors,
+                                                                             false,
+                                                                             (uint)(sectors - doneSectors),
+                                                                             out sector,
+                                                                             out _);
 
                                         if(errno != ErrorNumber.NoError)
                                         {
@@ -724,6 +749,10 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
         [CommandOption("--fletcher32")]
         [DefaultValue(false)]
         public bool Fletcher32 { get; init; }
+        [LocalizedDescription(nameof(UI.Use_long_sectors))]
+        [CommandOption("-r|--long-sectors")]
+        [DefaultValue(false)]
+        public bool LongSectors { get; init; }
         [LocalizedDescription(nameof(UI.Calculates_MD5))]
         [CommandOption("-m|--md5")]
         [DefaultValue(true)]

@@ -1524,7 +1524,7 @@
         <value>[fuchsiaLOCATE[/] [slateblue1]funciona.[/]</value>
     </data>
     <data name="Locking_drive" xml:space="preserve">
-    <value>Bloqueando la unidad.</value>
+    <value>[slateblue1]Bloqueando la unidad.[/]</value>
   </data>
     <data name="Log_section_separator" xml:space="preserve">
     <value>####################################################################</value>
@@ -2199,7 +2199,7 @@
     <value>Leyendo LBA 0...</value>
   </data>
     <data name="Reading_lead_outs" xml:space="preserve">
-    <value>Leyendo Lead-Outs</value>
+    <value>[slateblue1]Leyendo Lead-Outs[/]</value>
   </data>
     <data name="Reading_PCMCIA_CIS" xml:space="preserve">
         <value>[slateblue1]Leyendo CIS de PCMCIA.[/]</value>
@@ -2211,7 +2211,7 @@
         <value>[slateblue1]Leyendo directorio raíz en el sector [lime]{0}[/]...[/]</value>
     </data>
     <data name="Reading_sector_0_at_lead_out_1" xml:space="preserve">
-    <value>Leyendo sector {0} en el Lead-Out ({1})</value>
+    <value>[slateblue1]Leyendo sector [lime]{0}[/] en el Lead-Out ([aqua]{1}[/])[/]</value>
   </data>
     <data name="Reading_sector_0_of_1_2" xml:space="preserve">
         <value>[slateblue1]Leyendo sector [lime]{0}[/] de [violet]{1}[/] ([aqua]{2}[/])[/]</value>
@@ -3519,5 +3519,77 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     </data>
     <data name="Media_tag_0_present_in_primary_image_will_be_lost" xml:space="preserve">
         <value>[red]La etiqueta del medio {0} presente en la imagen primaria se perderá en el formato de salida. No se continuará...[/]</value>
+    </data>
+    <data name="C2_secure_audio_enabled_OmniDrive" xml:space="preserve">
+        <value>[slateblue1]Audio seguro C2 activado: disposición nativa de OmniDrive datos + C2 + subcanal.[/]</value>
+    </data>
+    <data name="C2_secure_audio_enabled_OmniDrive_details_0" xml:space="preserve">
+        <value>[slateblue1]Audio seguro C2 activado (OmniDrive). Tamaño de bloque [teal]{0}[/] bytes, disposición datos + C2 + subcanal.[/]</value>
+    </data>
+    <data name="C2_secure_audio_not_probed_requires_READ_CD" xml:space="preserve">
+        <value>[olive]Audio seguro C2: no comprobado (requiere READ CD).[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_requires_raw_subchannel" xml:space="preserve">
+        <value>[olive]Audio seguro C2 desactivado: requiere lectura de subcanal en bruto.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_no_raw_subchannel_0" xml:space="preserve">
+        <value>[olive]Audio seguro C2 desactivado: la unidad no proporciona subcanal en bruto (de [teal]{0}[/] bytes).[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_no_C2_and_subchannel" xml:space="preserve">
+        <value>[olive]Audio seguro C2 desactivado: la unidad no puede devolver C2 y subcanal a la vez.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_READ_CD_C2_failed" xml:space="preserve">
+        <value>[olive]Audio seguro C2 desactivado: falló READ CD con punteros C2 + subcanal.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_unknown_byte_order" xml:space="preserve">
+        <value>[olive]Audio seguro C2 desactivado: no se pudo determinar el orden de bytes de C2/subcanal.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_no_valid_Q_CRC" xml:space="preserve">
+        <value>[olive]Audio seguro C2 desactivado: ninguna región candidata de subcanal produjo un CRC de Q válido en el sector de prueba.[/]</value>
+    </data>
+    <data name="C2_secure_audio_enabled_layout_0" xml:space="preserve">
+        <value>[slateblue1]Audio seguro C2 activado: disposición {0}.[/]</value>
+    </data>
+    <data name="C2_secure_audio_enabled_details" xml:space="preserve">
+        <value>[slateblue1]Audio seguro C2 activado. Tamaño de bloque [teal]{0}[/] bytes, disposición {1}. Sector de prueba [lime]{2}[/]: CRC de Q válido en el desplazamiento [teal]{3}[/], la región C2 en el desplazamiento [teal]{4}[/] tenía [lime]{5}[/]/[lime]{6}[/] bytes distintos de cero.[/]</value>
+    </data>
+    <data name="Converging_0_concealed_audio_sectors" xml:space="preserve">
+        <value>[slateblue1]Convergiendo [lime]{0}[/] sector(es) de audio ocultado(s) mediante combinación C2 por byte...[/]</value>
+    </data>
+    <data name="Converging_concealed_audio_sector_0_attempt_1" xml:space="preserve">
+        <value>[slateblue1]Convergiendo sector de audio ocultado [lime]{0}[/] (intento [teal]{1}[/])[/]</value>
+    </data>
+    <data name="C2_convergence_result_0_1_2" xml:space="preserve">
+        <value>[slateblue1]Convergencia C2: [lime]{0}[/] convergido(s) por completo, [lime]{1}[/] combinado(s) parcialmente, [lime]{2}[/] ilegible(s).[/]</value>
+    </data>
+    <data name="C2_audio_convergence_complete_0_1_2" xml:space="preserve">
+        <value>[slateblue1]Convergencia de audio C2 completada: [lime]{0}[/] sector(es) convergido(s) por completo, [lime]{1}[/] combinado(s) parcialmente, [lime]{2}[/] no se pudieron releer.[/]</value>
+    </data>
+    <data name="C2_audio_check_no_concealed" xml:space="preserve">
+        <value>[slateblue1]Comprobación de audio C2: no se detectaron sectores de audio ocultados.[/]</value>
+    </data>
+    <data name="C2_audio_check_0_concealed_samples" xml:space="preserve">
+        <value>[slateblue1]Comprobación de audio C2: [lime]{0}[/] sector(es) de audio contenían muestras ocultadas.[/]</value>
+    </data>
+    <data name="C2_audio_check_0_flagged" xml:space="preserve">
+        <value>[slateblue1]Comprobación de audio C2: [lime]{0}[/] sector(es) de audio marcados como ocultados (punteros C2 activados).[/]</value>
+    </data>
+    <data name="Reason_audio_concealed_C2" xml:space="preserve">
+        <value>Sector de audio ocultado (punteros de error C2 activados)</value>
+    </data>
+    <data name="Reason_audio_converged_C2" xml:space="preserve">
+        <value>Sector de audio convergido limpio mediante combinación C2 por byte</value>
+    </data>
+    <data name="Reason_audio_merged_0_1" xml:space="preserve">
+        <value>Sector de audio combinado, {0}/{1} bytes confirmados limpios</value>
+    </data>
+    <data name="Reason_audio_not_rereadable_C2" xml:space="preserve">
+        <value>No se pudo releer el sector de audio para la convergencia C2</value>
+    </data>
+    <data name="C2_layout_data_C2_subchannel" xml:space="preserve">
+        <value>datos + C2 + subcanal (orden estándar MMC)</value>
+    </data>
+    <data name="C2_layout_data_subchannel_C2" xml:space="preserve">
+        <value>datos + subcanal + C2</value>
     </data>
 </root>

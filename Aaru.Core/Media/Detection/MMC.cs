@@ -64,7 +64,7 @@ public static class MMC
 
     /// <summary>SHA256 of PlayStation 2 boot sectors, seen in Japanese discs</summary>
     const string PS2_JAPANESE_HASH = "b82bffb809070d61fe050b7e1545df53d8f3cc648257cdff7502bc0ba6b38870";
-    const string MODULE_NAME = "Media detection";
+    const string MODULE_NAME       = "Media detection";
 
     static readonly byte[] _ps3Id = "PlayStation3\0\0\0\0"u8.ToArray();
 
@@ -78,7 +78,7 @@ public static class MMC
     static readonly byte[] _fmTownsBootId = [0x49, 0x50, 0x4C, 0x34, 0xEB, 0x55, 0x06];
 
     /// <summary>Present on first two seconds of second track, says "COPYRIGHT BANDAI"</summary>
-    static readonly byte[] _playdiaCopyright = "COPYRIGHT BANDAI"u8.ToArray();
+    static readonly byte[] _playdiaCopyright  = "COPYRIGHT BANDAI"u8.ToArray();
     static readonly byte[] _pcEngineSignature = "PC Engine CD-ROM SYSTEM"u8.ToArray();
     static readonly byte[] _pcFxSignature     = "PC-FX:Hu_CD-ROM"u8.ToArray();
     static readonly byte[] _atariSignature =
@@ -1499,10 +1499,11 @@ public static class MMC
                         if(DMI.IsXbox360(cmdBuf))
                         {
                             // All XGD3 all have the same number of blocks
-                            if(blocks is 25063 or 4229664 or 4246304) // Wxripper unlock
+                            if(blocks is 25063 or 4229664 or 4246304 or 4267015) // Wxripper unlock
                             {
                                 AaruLogging.Debug(MODULE_NAME,
-                                                  "Found Xbox 360 DMI with {0} blocks, setting disc type to Xbox 360 Game Disc 3 (XGD3).");
+                                                  "Found Xbox 360 DMI with {0} blocks, setting disc type to Xbox 360 Game Disc 3 (XGD3).",
+                                                  blocks);
 
                                 mediaType = MediaType.XGD3;
 
@@ -1510,7 +1511,8 @@ public static class MMC
                             }
 
                             AaruLogging.Debug(MODULE_NAME,
-                                              "Found Xbox 360 DMI with {0} blocks, setting disc type to Xbox 360 Game Disc 2 (XGD2).");
+                                              "Found Xbox 360 DMI with {0} blocks, setting disc type to Xbox 360 Game Disc 2 (XGD2).",
+                                              blocks);
 
                             mediaType = MediaType.XGD2;
 

@@ -44,6 +44,8 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Core.Graphics;
+using Aaru.Core.Logging;
+using Aaru.Decoders.CD;
 using Aaru.Devices;
 using Aaru.Logging;
 using Humanizer;
@@ -53,32 +55,56 @@ namespace Aaru.Core.Devices.Dumping;
 
 partial class Dump
 {
-    // TODO: Fix offset
     /// <summary>Reads the first track pregap from a CompactDisc</summary>
     /// <param name="blockSize">Block size in bytes</param>
     /// <param name="currentSpeed">Current speed</param>
     /// <param name="mediaTags">List of media tags</param>
     /// <param name="supportedSubchannel">Subchannel the drive can read</param>
     /// <param name="totalDuration">Total time spent sending commands to a drive</param>
-    /// <param name="outputOptical"></param>
+    /// <param name="outputOptical">Output optical image</param>
+    /// <param name="subLog">Subchannel log</param>
+    /// <param name="offsetBytes">Drive read offset in bytes</param>
+    /// <param name="sectorsForOffset">Number of sectors needed to cover the offset</param>
+    /// <param name="desiredSubchannel">Subchannel type the user wants written to the image</param>
+    /// <param name="subchannelExtents">Set of sector LBAs that still need subchannel data</param>
     void ReadCdFirstTrackPregap(uint blockSize, ref double currentSpeed, Dictionary<MediaTagType, byte[]> mediaTags,
                                 MmcSubchannel supportedSubchannel, ref double totalDuration,
-                                IWritableOpticalImage outputOptical)
+                                IWritableOpticalImage outputOptical, SubchannelLog subLog, int offsetBytes,
+                                int sectorsForOffset, MmcSubchannel desiredSubchannel, HashSet<int> subchannelExtents)
     {
         bool   sense;                           // Sense indicator
         byte[] cmdBuf;                          // Data buffer
         double cmdDuration;                     // Command execution time
         ulong  sectorSpeedStart            = 0; // Used to calculate correct speed
-        var    gotFirstTrackPregap         = false;
         var    firstTrackPregapSectorsGood = 0;
         var    firstTrackPregapMs          = new MemoryStream();
+
+        uint subSize = supportedSubchannel switch
+                       {
+                           MmcSubchannel.None => 0,
+                           MmcSubchannel.Raw  => 96,
+                           _                  => 16
+                       };
+
+        bool needsOffsetCorrection = _fixOffset && offsetBytes != 0;
+
+        // Expand read range to include extra sectors needed for offset correction.
+        // For positive offset: we must read a few sectors past LBA -1 (into LBA 0, 1, …).
+        // For negative offset: we must read a few sectors before LBA -150 (deeper lead-in).
+        int startLba           = needsOffsetCorrection && offsetBytes < 0 ? -150             - sectorsForOffset : -150;
+        int endLba             = needsOffsetCorrection && offsetBytes > 0 ? sectorsForOffset - 1 : -1;
+        int totalSectorsToRead = endLba                                                      - startLba + 1;
+
+        var allSectorsBuffer = new byte[totalSectorsToRead * blockSize];
+        var readSuccess      = new bool[totalSectorsToRead];
+        var sectorIsAudio    = new bool[totalSectorsToRead];
 
         UpdateStatus?.Invoke(Localization.Core.Reading_first_track_pregap);
         InitProgress?.Invoke();
         _speedStopwatch.Restart();
 
-        for(int firstTrackPregapBlock = -150;
-            firstTrackPregapBlock < 0 && _resume.NextBlock == 0;
+        for(int firstTrackPregapBlock = startLba;
+            firstTrackPregapBlock <= endLba && _resume.NextBlock == 0;
             firstTrackPregapBlock++)
         {
             if(_aborted)
@@ -88,79 +114,66 @@ partial class Dump
                 break;
             }
 
-            PulseProgress?.Invoke(string.Format(Localization.Core.Trying_to_read_first_track_pregap_sector_0_1,
-                                                firstTrackPregapBlock,
-                                                ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()));
+            int bufferIndex = firstTrackPregapBlock - startLba;
+
+            if(firstTrackPregapBlock >= -150)
+            {
+                PulseProgress?.Invoke(string.Format(Localization.Core.Trying_to_read_first_track_pregap_sector_0_1,
+                                                    firstTrackPregapBlock,
+                                                    ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()));
+            }
 
             // ReSharper disable IntVariableOverflowInUncheckedContext
-            sense = _dev.ReadCd(out cmdBuf,
-                                out _,
-                                (uint)firstTrackPregapBlock,
-                                blockSize,
-                                1,
-                                MmcSectorTypes.AllTypes,
-                                false,
-                                false,
-                                true,
-                                MmcHeaderCodes.AllHeaders,
-                                true,
-                                true,
-                                MmcErrorField.None,
-                                supportedSubchannel,
-                                _dev.Timeout,
-                                out cmdDuration);
+            sense = _omnidrive
+                        ? _dev.OmniDriveReadCd(out cmdBuf,
+                                               out _,
+                                               (uint)firstTrackPregapBlock,
+                                               1,
+                                               _dev.Timeout,
+                                               out cmdDuration)
+                        : _dev.ReadCd(out cmdBuf,
+                                      out _,
+                                      (uint)firstTrackPregapBlock,
+                                      blockSize,
+                                      1,
+                                      MmcSectorTypes.AllTypes,
+                                      false,
+                                      false,
+                                      true,
+                                      MmcHeaderCodes.AllHeaders,
+                                      true,
+                                      true,
+                                      MmcErrorField.None,
+                                      supportedSubchannel,
+                                      _dev.Timeout,
+                                      out cmdDuration);
 
             // ReSharper restore IntVariableOverflowInUncheckedContext
 
             if(!sense && !_dev.Error)
             {
-                if(outputOptical.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreNegativeSectors))
+                Array.Copy(cmdBuf, 0, allSectorsBuffer, bufferIndex * (int)blockSize, (int)blockSize);
+
+                // Determine if this sector is audio by checking for the CD sync mark
+                var sectorData = new byte[2352];
+                Array.Copy(cmdBuf, 0, sectorData, 0, 2352);
+                sectorIsAudio[bufferIndex] = !IsData(sectorData);
+                readSuccess[bufferIndex]   = true;
+
+                if(firstTrackPregapBlock is >= -150 and < 0)
                 {
-                    var data = new byte[2352];
-                    Array.Copy(cmdBuf, 0, data, 0, 2352);
-                    outputOptical.WriteSectorLong(data, (ulong)(firstTrackPregapBlock * -1), true, SectorStatus.Dumped);
-
-                    if(supportedSubchannel == MmcSubchannel.Raw)
-                    {
-                        var subchannel = new byte[96];
-                        Array.Copy(cmdBuf, 2352, subchannel, 0, 96);
-
-                        outputOptical.WriteSectorTag(subchannel,
-                                                     (ulong)(firstTrackPregapBlock * -1),
-                                                     true,
-                                                     SectorTagType.CdSectorSubchannel);
-                    }
+                    firstTrackPregapSectorsGood++;
+                    totalDuration += cmdDuration;
+                    (_mediaGraph as Spiral)?.PaintCdLeadInSector(firstTrackPregapBlock, SKColors.Green);
                 }
-                else
-                    firstTrackPregapMs.Write(cmdBuf, 0, (int)blockSize);
-
-                gotFirstTrackPregap = true;
-                firstTrackPregapSectorsGood++;
-                totalDuration += cmdDuration;
-                (_mediaGraph as Spiral)?.PaintCdLeadInSector(firstTrackPregapBlock, SKColors.Green);
             }
             else
             {
-                // Write empty data
-                if(outputOptical.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreNegativeSectors))
-                {
-                    outputOptical.WriteSectorLong(new byte[2352],
-                                                  (ulong)(firstTrackPregapBlock * -1),
-                                                  true,
-                                                  SectorStatus.Errored);
-
-                    if(supportedSubchannel == MmcSubchannel.Raw)
-                    {
-                        outputOptical.WriteSectorTag(new byte[96],
-                                                     (ulong)(firstTrackPregapBlock * -1),
-                                                     true,
-                                                     SectorTagType.CdSectorSubchannel);
-                    }
-                }
-                else if(gotFirstTrackPregap) firstTrackPregapMs.Write(new byte[blockSize], 0, (int)blockSize);
-
-                (_mediaGraph as Spiral)?.PaintCdLeadInSector(firstTrackPregapBlock, SKColors.Red);
+                if(firstTrackPregapBlock is >= -150 and < 0)
+                    (_mediaGraph as Spiral)?.PaintCdLeadInSector(firstTrackPregapBlock, SKColors.Red);
             }
+
+            if(firstTrackPregapBlock < -150) continue;
 
             sectorSpeedStart++;
 
@@ -174,6 +187,168 @@ partial class Dump
         }
 
         _speedStopwatch.Stop();
+
+        uint blocksToRead = 150;
+
+        // Apply offset correction if any audio sector is present in the pregap range
+        if(needsOffsetCorrection || _omnidrive && offsetBytes != 0)
+        {
+            var hasAudioSectors = false;
+
+            for(var i = 0; i < totalSectorsToRead && !hasAudioSectors; i++)
+            {
+                int lba = startLba + i;
+
+                if(lba is >= -150 and <= -1 && readSuccess[i] && sectorIsAudio[i]) hasAudioSectors = true;
+            }
+
+            if(hasAudioSectors || _omnidrive)
+            {
+                blocksToRead = (uint)totalSectorsToRead;
+
+                FixOffsetData(offsetBytes,
+                              2352,
+                              sectorsForOffset,
+                              supportedSubchannel,
+                              ref blocksToRead,
+                              subSize,
+                              ref allSectorsBuffer,
+                              blockSize,
+                              false);
+            }
+        }
+
+        // Write sectors LBA -150 to -1 from the (possibly offset-corrected) buffer.
+        // After FixOffsetData the buffer always contains the corrected 150 pregap sectors
+        // starting at index 0, regardless of whether the offset was positive or negative.
+        var firstSectorWritten = false;
+
+        for(var firstTrackPregapBlock = (int)-blocksToRead; firstTrackPregapBlock <= -1; firstTrackPregapBlock++)
+        {
+            var bufferIndex = (int)(firstTrackPregapBlock + blocksToRead); // 0 = LBA -150, 149 = LBA -1
+
+            // Map back to the pre-correction read index to check whether the read succeeded.
+            // For negative offset the extra sectors were prepended, so index shifts by sectorsForOffset.
+            int originalIndex = needsOffsetCorrection && offsetBytes < 0 ? bufferIndex + sectorsForOffset : bufferIndex;
+
+            bool success = originalIndex < readSuccess.Length && readSuccess[originalIndex];
+
+            if(outputOptical.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreNegativeSectors))
+            {
+                var data = new byte[2352];
+                Array.Copy(allSectorsBuffer, bufferIndex * (int)blockSize, data, 0, 2352);
+
+                if(_omnidrive)
+                {
+                    if(IsScrambledData(data, firstTrackPregapBlock, out _))
+                    {
+                        data = Sector.Scramble(data);
+                        SectorFixResult eccFixed = CdChecksums.FixSector(data);
+
+                        success = eccFixed switch
+                                  {
+                                      SectorFixResult.Correct => true,
+                                      SectorFixResult.Fixed => true,
+                                      SectorFixResult.CouldNotFix => false,
+                                      _ => (data[0x00F] & 0x03) == 2 && (data[0x012] & 0x20) == 0x20
+                                  };
+                    }
+                }
+
+                outputOptical.WriteSectorLong(data,
+                                              (ulong)-firstTrackPregapBlock,
+                                              true,
+                                              success ? SectorStatus.Dumped : SectorStatus.Errored);
+
+                if(supportedSubchannel != MmcSubchannel.None && desiredSubchannel != MmcSubchannel.None)
+                {
+                    var sub = new byte[subSize];
+                    Array.Copy(allSectorsBuffer, bufferIndex * (int)blockSize + 2352, sub, 0, (int)subSize);
+
+                    if(supportedSubchannel == MmcSubchannel.Q16) sub = Subchannel.ConvertQToRaw(sub);
+
+                    subLog?.WriteEntry(sub,
+                                       supportedSubchannel == MmcSubchannel.Raw,
+                                       firstTrackPregapBlock,
+                                       1,
+                                       false,
+                                       false);
+
+                    if(_fixSubchannelPosition)
+                    {
+                        // Write subchannel to the sector address its Q channel indicates,
+                        // which may differ from the read position (positive or negative LBA).
+                        byte[] deSub = Subchannel.Deinterleave(sub);
+                        var    q     = new byte[12];
+                        Array.Copy(deSub, 12, q, 0, 12);
+
+                        CRC16CcittContext.Data(q, 10, out byte[] crc);
+                        bool crcOk = crc[0] == q[10] && crc[1] == q[11];
+
+                        if(crcOk && (q[0] & 0x3) == 1)
+                        {
+                            var amin   = (byte)(q[7] / 16 * 10 + (q[7] & 0x0F));
+                            var asec   = (byte)(q[8] / 16 * 10 + (q[8] & 0x0F));
+                            var aframe = (byte)(q[9] / 16 * 10 + (q[9] & 0x0F));
+                            int aPos   = amin * 60 * 75 + asec * 75 + aframe - 150;
+
+                            if(aPos < 0)
+                            {
+                                outputOptical.WriteSectorTag(sub, (ulong)-aPos, true, SectorTagType.CdSectorSubchannel);
+
+                                subchannelExtents.Remove(aPos);
+                            }
+                            else
+                            {
+                                outputOptical.WriteSectorTag(sub, (ulong)aPos, false, SectorTagType.CdSectorSubchannel);
+
+                                subchannelExtents.Remove(aPos);
+                            }
+                        }
+                        else
+                        {
+                            // Q CRC bad or not a position packet: fall back to read address
+                            outputOptical.WriteSectorTag(sub,
+                                                         (ulong)-firstTrackPregapBlock,
+                                                         true,
+                                                         SectorTagType.CdSectorSubchannel);
+                        }
+                    }
+                    else
+                    {
+                        outputOptical.WriteSectorTag(sub,
+                                                     (ulong)-firstTrackPregapBlock,
+                                                     true,
+                                                     SectorTagType.CdSectorSubchannel);
+                    }
+                }
+            }
+            else
+            {
+                if(success)
+                {
+                    firstSectorWritten = true;
+                    firstTrackPregapMs.Write(allSectorsBuffer, bufferIndex * (int)blockSize, (int)blockSize);
+                }
+                else if(firstSectorWritten) firstTrackPregapMs.Write(new byte[blockSize], 0, (int)blockSize);
+
+                // Log subchannel even when we cannot store it individually in the image
+                if(supportedSubchannel != MmcSubchannel.None && success)
+                {
+                    var sub = new byte[subSize];
+                    Array.Copy(allSectorsBuffer, bufferIndex * (int)blockSize + 2352, sub, 0, (int)subSize);
+
+                    if(supportedSubchannel == MmcSubchannel.Q16) sub = Subchannel.ConvertQToRaw(sub);
+
+                    subLog?.WriteEntry(sub,
+                                       supportedSubchannel == MmcSubchannel.Raw,
+                                       firstTrackPregapBlock,
+                                       1,
+                                       false,
+                                       false);
+                }
+            }
+        }
 
         if(firstTrackPregapSectorsGood > 0 &&
            !outputOptical.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreNegativeSectors))

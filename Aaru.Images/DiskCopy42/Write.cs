@@ -82,7 +82,7 @@ public sealed partial class DiskCopy42
             case MediaType.AppleFileWare:
                 header.FmtByte = kSigmaFmtByteTwiggy;
                 header.Format  = kSigmaFormatTwiggy;
-                twiggy         = true;
+                twiggyMode     = TwiggyMode.LisaTwiggyLogical;
 
                 // TODO
                 ErrorMessage = Localization.Twiggy_write_support_not_yet_implemented;

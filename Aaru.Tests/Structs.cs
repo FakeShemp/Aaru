@@ -10,12 +10,12 @@ public class MediaInfoTest
 {
     /// <summary>Expected media type</summary>
     public MediaType MediaType;
-    /// <summary>Expected number of sectors in media</summary>
-    public ulong Sectors;
     /// <summary>Expected media sector size</summary>
-    public uint SectorSize;
+    public uint      SectorSize;
+    /// <summary>Expected number of sectors in media</summary>
+    public ulong     Sectors;
     /// <summary>File that contains the image to test</summary>
-    public string TestFile;
+    public string    TestFile;
 
     public override string ToString() => TestFile;
 }
@@ -25,31 +25,49 @@ public class MediaInfoTest
 public class FileSystemTest : MediaInfoTest
 {
     /// <summary>Application ID</summary>
-    public string ApplicationId;
+    public string                       ApplicationId;
     /// <summary>Can the volume boot?</summary>
-    public bool Bootable;
-    /// <summary>Clusters in volume</summary>
-    public long Clusters;
+    public bool                         Bootable;
     /// <summary>Bytes per cluster</summary>
-    public uint ClusterSize;
+    public uint                         ClusterSize;
+    /// <summary>Clusters in volume</summary>
+    public long                         Clusters;
     public Dictionary<string, FileData> Contents;
     public string                       ContentsJson;
     public Encoding                     Encoding;
     public string                       Namespace;
     /// <summary>System or OEM ID</summary>
-    public string SystemId;
+    public string                       SystemId;
     /// <summary>Filesystem type. null if always the same, as defined in test class</summary>
-    public string Type;
+    public string                       Type;
     /// <summary>Volume name</summary>
-    public string VolumeName;
+    public string                       VolumeName;
     /// <summary>Volume serial number or set identifier</summary>
-    public string VolumeSerial;
+    public string                       VolumeSerial;
 }
 
 public class BlockImageTestExpected : MediaInfoTest
 {
     public string                  Md5;
     public BlockPartitionVolumes[] Partitions;
+}
+
+public class ArchiveTestExpected
+{
+    public ArchiveEntryData[] Contents;
+    public string             ContentsJson;
+    public int                EntryCount;
+    public string             TestFile;
+
+    public override string ToString() => TestFile;
+}
+
+public class ArchiveEntryData
+{
+    public string Path       { get; set; }
+    public long   Size       { get; set; }
+    public string Type       { get; set; }
+    public string LinkTarget { get; set; }
 }
 
 public class TrackInfoTestExpected
@@ -78,24 +96,24 @@ public class TapeImageTestExpected : BlockImageTestExpected
 
 public class FluxCaptureTestExpected
 {
+    /// <summary>Capture index for this head/track/subTrack combination</summary>
+    public uint   CaptureIndex;
+    /// <summary>Expected data resolution in picoseconds</summary>
+    public ulong  DataResolution;
     /// <summary>Physical head (0-based)</summary>
-    public uint Head;
+    public uint   Head;
+    /// <summary>Expected index resolution in picoseconds</summary>
+    public ulong  IndexResolution;
+    /// <summary>Physical sub-track (0-based, e.g. half-track)</summary>
+    public byte   SubTrack;
     /// <summary>Physical track (0-based)</summary>
     public ushort Track;
-    /// <summary>Physical sub-track (0-based, e.g. half-track)</summary>
-    public byte SubTrack;
-    /// <summary>Capture index for this head/track/subTrack combination</summary>
-    public uint CaptureIndex;
-    /// <summary>Expected index resolution in picoseconds</summary>
-    public ulong IndexResolution;
-    /// <summary>Expected data resolution in picoseconds</summary>
-    public ulong DataResolution;
 }
 
 public class FluxImageTestExpected : BlockImageTestExpected
 {
     /// <summary>Expected number of flux captures in the image</summary>
-    public uint FluxCaptureCount;
+    public uint                      FluxCaptureCount;
     /// <summary>Expected flux captures to validate</summary>
     public FluxCaptureTestExpected[] FluxCaptures;
 }
@@ -104,7 +122,7 @@ public class PartitionTest
 {
     public Partition[] Partitions;
     /// <summary>File that contains the partition scheme to test</summary>
-    public string TestFile;
+    public string      TestFile;
 }
 
 public class FsExtractHashData

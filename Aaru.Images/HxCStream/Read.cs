@@ -51,49 +51,48 @@ public sealed partial class HxCStream
     /// <inheritdoc />
     public ErrorNumber Open(IFilter imageFilter)
     {
-        _trackCaptures = [];
-        _trackFilePaths = [];
-        _mediaTags = [];
+        _trackCaptures       = [];
+        _trackFilePaths      = [];
+        _mediaTags           = [];
         _imageInfo.Heads     = 0;
         _imageInfo.Cylinders = 0;
 
-        string filename = imageFilter.Filename;
+        string filename     = imageFilter.Filename;
         string parentFolder = imageFilter.ParentFolder;
 
         // We always open a single file - extract basename to find related track files
-        if(!filename.EndsWith(".hxcstream", StringComparison.OrdinalIgnoreCase))
-            return ErrorNumber.InvalidArgument;
+        if(!filename.EndsWith(".hxcstream", StringComparison.OrdinalIgnoreCase)) return ErrorNumber.InvalidArgument;
 
         // Extract basename - remove the track number pattern (e.g., "track00.0.hxcstream" -> "track")
         // The pattern is {basename}{cylinder:D2}.{head:D1}.hxcstream
-        string basename = filename[..^14]; // Remove ".XX.X.hxcstream" (14 chars)
+        string basename     = filename[..^14]; // Remove ".XX.X.hxcstream" (14 chars)
         string fullBasename = Path.Combine(parentFolder, basename);
 
         AaruLogging.Debug(MODULE_NAME, "Opening HxCStream image from file: {0}", filename);
-        AaruLogging.Debug(MODULE_NAME, "Basename: {0}", basename);
-        AaruLogging.Debug(MODULE_NAME, "Full basename path: {0}", fullBasename);
+        AaruLogging.Debug(MODULE_NAME, "Basename: {0}",                          basename);
+        AaruLogging.Debug(MODULE_NAME, "Full basename path: {0}",                fullBasename);
 
         // Discover track files by trying different cylinder/head combinations
-        var trackFiles = new Dictionary<(int cylinder, int head), string>();
+        var trackFiles  = new Dictionary<(int cylinder, int head), string>();
         int minCylinder = int.MaxValue;
         int maxCylinder = int.MinValue;
-        int minHead = int.MaxValue;
-        int maxHead = int.MinValue;
+        int minHead     = int.MaxValue;
+        int maxHead     = int.MinValue;
 
         // Search for related track files
-        for(int cylinder = 0; cylinder < 166; cylinder++)
+        for(var cylinder = 0; cylinder < 166; cylinder++)
         {
-            for(int head = 0; head < 2; head++)
+            for(var head = 0; head < 2; head++)
             {
-                string trackfile = $"{fullBasename}{cylinder:D2}.{head:D1}.hxcstream";
+                var trackfile = $"{fullBasename}{cylinder:D2}.{head:D1}.hxcstream";
 
                 if(File.Exists(trackfile))
                 {
                     trackFiles[(cylinder, head)] = trackfile;
-                    minCylinder = Math.Min(minCylinder, cylinder);
-                    maxCylinder = Math.Max(maxCylinder, cylinder);
-                    minHead = Math.Min(minHead, head);
-                    maxHead = Math.Max(maxHead, head);
+                    minCylinder                  = Math.Min(minCylinder, cylinder);
+                    maxCylinder                  = Math.Max(maxCylinder, cylinder);
+                    minHead                      = Math.Min(minHead, head);
+                    maxHead                      = Math.Max(maxHead, head);
                 }
             }
         }
@@ -101,14 +100,20 @@ public sealed partial class HxCStream
         if(trackFiles.Count == 0) return ErrorNumber.NoData;
 
         _imageInfo.Cylinders = (uint)(maxCylinder - minCylinder + 1);
-        _imageInfo.Heads     = (uint)(maxHead - minHead + 1);
+        _imageInfo.Heads     = (uint)(maxHead     - minHead     + 1);
 
         AaruLogging.Debug(MODULE_NAME, "Found {0} track files", trackFiles.Count);
-        AaruLogging.Debug(MODULE_NAME, "Cylinder range: {0} to {1} ({2} cylinders)", minCylinder, maxCylinder, _imageInfo.Cylinders);
+
+        AaruLogging.Debug(MODULE_NAME,
+                          "Cylinder range: {0} to {1} ({2} cylinders)",
+                          minCylinder,
+                          maxCylinder,
+                          _imageInfo.Cylinders);
+
         AaruLogging.Debug(MODULE_NAME, "Head range: {0} to {1} ({2} heads)", minHead, maxHead, _imageInfo.Heads);
 
         // Process each track file
-        int trackIndex = 0;
+        var trackIndex  = 0;
         int totalTracks = trackFiles.Count;
 
         AaruLogging.Debug(MODULE_NAME, "Processing {0} track files...", totalTracks);
@@ -119,8 +124,12 @@ public sealed partial class HxCStream
             string trackfile = trackFiles[key];
             _trackFilePaths.Add(trackfile);
 
-            AaruLogging.Debug(MODULE_NAME, "Processing track {0}/{1}: cylinder {2}, head {3}",
-                              trackIndex, totalTracks, key.cylinder, key.head);
+            AaruLogging.Debug(MODULE_NAME,
+                              "Processing track {0}/{1}: cylinder {2}, head {3}",
+                              trackIndex,
+                              totalTracks,
+                              key.cylinder,
+                              key.head);
 
             ErrorNumber error = ProcessTrackFile(trackfile, (uint)key.head, (ushort)key.cylinder);
 
@@ -141,15 +150,15 @@ public sealed partial class HxCStream
         AaruLogging.Debug(MODULE_NAME, "Processing track file: {0} (head {1}, track {2})", trackfile, head, track);
 
         using FileStream fileStream = File.OpenRead(trackfile);
-        byte[] fileData = new byte[fileStream.Length];
+        var              fileData   = new byte[fileStream.Length];
         fileStream.EnsureRead(fileData, 0, (int)fileStream.Length);
 
         AaruLogging.Debug(MODULE_NAME, "Track file size: {0} bytes", fileData.Length);
 
-        uint samplePeriod = DEFAULT_RESOLUTION; // Default 40,000 ns (25 MHz)
-        var fluxPulses = new List<uint>();
-        var ioStream = new List<ushort>();
-        string metadata = null;
+        uint   samplePeriod = DEFAULT_RESOLUTION; // Default 40,000 ns (25 MHz)
+        var    fluxPulses   = new List<uint>();
+        var    ioStream     = new List<ushort>();
+        string metadata     = null;
 
         long fileOffset = 0;
 
@@ -158,10 +167,13 @@ public sealed partial class HxCStream
             if(fileOffset + Marshal.SizeOf<HxCStreamChunkHeader>() > fileData.Length)
                 return ErrorNumber.InvalidArgument;
 
-            HxCStreamChunkHeader chunkHeader = Marshal.ByteArrayToStructureLittleEndian<HxCStreamChunkHeader>(
-                fileData, (int)fileOffset, Marshal.SizeOf<HxCStreamChunkHeader>());
+            HxCStreamChunkHeader chunkHeader =
+                Marshal.ByteArrayToStructureLittleEndian<HxCStreamChunkHeader>(fileData,
+                                                                               (int)fileOffset,
+                                                                               Marshal.SizeOf<HxCStreamChunkHeader>());
 
-            AaruLogging.Debug(MODULE_NAME, "Chunk at offset {0}: signature = \"{1}\", size = {2}, packetNumber = {3}",
+            AaruLogging.Debug(MODULE_NAME,
+                              "Chunk at offset {0}: signature = \"{1}\", size = {2}, packetNumber = {3}",
                               fileOffset,
                               StringHandlers.CToString(chunkHeader.signature),
                               chunkHeader.size,
@@ -172,27 +184,28 @@ public sealed partial class HxCStream
             if(chunkHeader.size > fileData.Length - fileOffset) return ErrorNumber.InvalidArgument;
 
             // Verify CRC32 - calculate CRC of chunk data (excluding the CRC itself)
-            byte[] chunkData = new byte[chunkHeader.size - 4];
+            var chunkData = new byte[chunkHeader.size - 4];
             Array.Copy(fileData, (int)fileOffset, chunkData, 0, (int)(chunkHeader.size - 4));
 
-            uint storedCrc = BitConverter.ToUInt32(fileData, (int)(fileOffset + chunkHeader.size - 4));
+            var storedCrc = BitConverter.ToUInt32(fileData, (int)(fileOffset + chunkHeader.size - 4));
 
             if(!VerifyChunkCrc32(chunkData, storedCrc))
             {
                 AaruLogging.Error(MODULE_NAME, "CRC32 mismatch in chunk at offset {0}", fileOffset);
+
                 return ErrorNumber.InvalidArgument;
             }
 
             AaruLogging.Debug(MODULE_NAME, "Chunk CRC32 verified successfully");
 
-            long packetOffset = fileOffset + Marshal.SizeOf<HxCStreamChunkHeader>();
-            long chunkEnd = fileOffset + chunkHeader.size - 4;
+            long packetOffset = fileOffset                    + Marshal.SizeOf<HxCStreamChunkHeader>();
+            long chunkEnd     = fileOffset + chunkHeader.size - 4;
 
             while(packetOffset < chunkEnd)
             {
                 if(packetOffset + 4 > fileData.Length) break;
 
-                uint type = BitConverter.ToUInt32(fileData, (int)packetOffset);
+                var type = BitConverter.ToUInt32(fileData, (int)packetOffset);
 
                 AaruLogging.Debug(MODULE_NAME, "Packet at offset {0}: type = 0x{1:X8}", packetOffset, type);
 
@@ -205,17 +218,20 @@ public sealed partial class HxCStream
 
                         HxCStreamMetadataHeader metadataHeader =
                             Marshal.ByteArrayToStructureLittleEndian<HxCStreamMetadataHeader>(fileData,
-                                                                                               (int)packetOffset,
-                                                                                               Marshal.SizeOf<HxCStreamMetadataHeader>());
+                                (int)packetOffset,
+                                Marshal.SizeOf<HxCStreamMetadataHeader>());
 
-                        AaruLogging.Debug(MODULE_NAME, "Metadata packet: type = 0x{0:X8}, payloadSize = {1}",
-                                          metadataHeader.type, metadataHeader.payloadSize);
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Metadata packet: type = 0x{0:X8}, payloadSize = {1}",
+                                          metadataHeader.type,
+                                          metadataHeader.payloadSize);
 
                         if(packetOffset + Marshal.SizeOf<HxCStreamMetadataHeader>() + metadataHeader.payloadSize >
                            fileData.Length)
                             return ErrorNumber.InvalidArgument;
 
-                        byte[] metadataBytes = new byte[metadataHeader.payloadSize];
+                        var metadataBytes = new byte[metadataHeader.payloadSize];
+
                         Array.Copy(fileData,
                                    (int)packetOffset + Marshal.SizeOf<HxCStreamMetadataHeader>(),
                                    metadataBytes,
@@ -227,8 +243,7 @@ public sealed partial class HxCStream
                         AaruLogging.Debug(MODULE_NAME, "Metadata content: {0}", metadata);
 
                         // Parse metadata and populate ImageInfo (only parse once, from first chunk)
-                        if(string.IsNullOrEmpty(_imageInfo.Application))
-                            ParseMetadata(metadata, _imageInfo);
+                        if(string.IsNullOrEmpty(_imageInfo.Application)) ParseMetadata(metadata, _imageInfo);
 
                         // Check for sample rate in metadata
                         if(metadata.Contains("sample_rate_hz 25000000"))
@@ -258,38 +273,43 @@ public sealed partial class HxCStream
 
                         HxCStreamPackedIoHeader ioHeader =
                             Marshal.ByteArrayToStructureLittleEndian<HxCStreamPackedIoHeader>(fileData,
-                                                                                               (int)packetOffset,
-                                                                                               Marshal.SizeOf<HxCStreamPackedIoHeader>());
+                                (int)packetOffset,
+                                Marshal.SizeOf<HxCStreamPackedIoHeader>());
 
                         AaruLogging.Debug(MODULE_NAME,
                                           "Packed IO stream packet: type = 0x{0:X8}, payloadSize = {1}, packedSize = {2}, unpackedSize = {3}",
-                                          ioHeader.type, ioHeader.payloadSize, ioHeader.packedSize, ioHeader.unpackedSize);
+                                          ioHeader.type,
+                                          ioHeader.payloadSize,
+                                          ioHeader.packedSize,
+                                          ioHeader.unpackedSize);
 
                         if(packetOffset + Marshal.SizeOf<HxCStreamPackedIoHeader>() + ioHeader.packedSize >
                            fileData.Length)
                             return ErrorNumber.InvalidArgument;
 
-                        byte[] packedData = new byte[ioHeader.packedSize];
+                        var packedData = new byte[ioHeader.packedSize];
+
                         Array.Copy(fileData,
                                    (int)packetOffset + Marshal.SizeOf<HxCStreamPackedIoHeader>(),
                                    packedData,
                                    0,
                                    (int)ioHeader.packedSize);
 
-                        byte[] unpackedData = new byte[ioHeader.unpackedSize];
-                        int decoded = LZ4.DecodeBuffer(packedData, unpackedData);
+                        var unpackedData = new byte[ioHeader.unpackedSize];
+                        int decoded      = LZ4.DecodeBuffer(packedData, unpackedData);
 
                         if(decoded != ioHeader.unpackedSize) return ErrorNumber.InvalidArgument;
 
-                        AaruLogging.Debug(MODULE_NAME, "Decompressed IO stream: {0} bytes -> {1} bytes ({2} 16-bit values)",
-                                          ioHeader.packedSize, decoded, decoded / 2);
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Decompressed IO stream: {0} bytes -> {1} bytes ({2} 16-bit values)",
+                                          ioHeader.packedSize,
+                                          decoded,
+                                          decoded / 2);
 
                         // Convert to ushort array
-                        for(int i = 0; i < unpackedData.Length; i += 2)
-                        {
+                        for(var i = 0; i < unpackedData.Length; i += 2)
                             if(i + 1 < unpackedData.Length)
                                 ioStream.Add(BitConverter.ToUInt16(unpackedData, i));
-                        }
 
                         packetOffset += Marshal.SizeOf<HxCStreamPackedIoHeader>() + ioHeader.packedSize;
 
@@ -305,40 +325,50 @@ public sealed partial class HxCStream
 
                         HxCStreamPackedStreamHeader streamHeader =
                             Marshal.ByteArrayToStructureLittleEndian<HxCStreamPackedStreamHeader>(fileData,
-                                                                                                   (int)packetOffset,
-                                                                                                   Marshal.SizeOf<HxCStreamPackedStreamHeader>());
+                                (int)packetOffset,
+                                Marshal.SizeOf<HxCStreamPackedStreamHeader>());
 
                         AaruLogging.Debug(MODULE_NAME,
                                           "Packed flux stream packet: type = 0x{0:X8}, payloadSize = {1}, packedSize = {2}, unpackedSize = {3}, numberOfPulses = {4}",
-                                          streamHeader.type, streamHeader.payloadSize, streamHeader.packedSize,
-                                          streamHeader.unpackedSize, streamHeader.numberOfPulses);
+                                          streamHeader.type,
+                                          streamHeader.payloadSize,
+                                          streamHeader.packedSize,
+                                          streamHeader.unpackedSize,
+                                          streamHeader.numberOfPulses);
 
                         if(packetOffset + Marshal.SizeOf<HxCStreamPackedStreamHeader>() + streamHeader.packedSize >
                            fileData.Length)
                             return ErrorNumber.InvalidArgument;
 
-                        byte[] packedData = new byte[streamHeader.packedSize];
+                        var packedData = new byte[streamHeader.packedSize];
+
                         Array.Copy(fileData,
                                    (int)packetOffset + Marshal.SizeOf<HxCStreamPackedStreamHeader>(),
                                    packedData,
                                    0,
                                    (int)streamHeader.packedSize);
 
-                        byte[] unpackedData = new byte[streamHeader.unpackedSize];
-                        int decoded = LZ4.DecodeBuffer(packedData, unpackedData);
+                        var unpackedData = new byte[streamHeader.unpackedSize];
+                        int decoded      = LZ4.DecodeBuffer(packedData, unpackedData);
 
                         if(decoded != streamHeader.unpackedSize) return ErrorNumber.InvalidArgument;
 
-                        AaruLogging.Debug(MODULE_NAME, "Decompressed flux stream: {0} bytes -> {1} bytes",
-                                          streamHeader.packedSize, decoded);
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Decompressed flux stream: {0} bytes -> {1} bytes",
+                                          streamHeader.packedSize,
+                                          decoded);
 
                         // Decode variable-length pulses
                         uint numberOfPulses = streamHeader.numberOfPulses;
+
                         uint[] pulses = DecodeVariableLengthPulses(unpackedData,
                                                                    streamHeader.unpackedSize,
                                                                    ref numberOfPulses);
 
-                        AaruLogging.Debug(MODULE_NAME, "Decoded {0} flux pulses (expected {1})", pulses.Length, numberOfPulses);
+                        AaruLogging.Debug(MODULE_NAME,
+                                          "Decoded {0} flux pulses (expected {1})",
+                                          pulses.Length,
+                                          numberOfPulses);
 
                         if(pulses.Length != numberOfPulses) return ErrorNumber.InvalidArgument;
 
@@ -353,6 +383,7 @@ public sealed partial class HxCStream
                     }
                     default:
                         AaruLogging.Error(MODULE_NAME, "Unknown packet type: 0x{0:X8}", type);
+
                         return ErrorNumber.InvalidArgument;
                 }
             }
@@ -360,20 +391,24 @@ public sealed partial class HxCStream
             fileOffset += chunkHeader.size;
         }
 
-        AaruLogging.Debug(MODULE_NAME, "Finished processing chunks. Total flux pulses: {0}, IO stream values: {1}",
-                          fluxPulses.Count, ioStream.Count);
+        AaruLogging.Debug(MODULE_NAME,
+                          "Finished processing chunks. Total flux pulses: {0}, IO stream values: {1}",
+                          fluxPulses.Count,
+                          ioStream.Count);
 
         // Extract write protect status from IO stream
         // The write protect flag should be constant for a capture, so we only need to check the first value
         if(ioStream.Count > 0 && !_mediaTags.ContainsKey(MediaTagType.Floppy_WriteProtection))
         {
-            IoStreamState firstState = DecodeIoStreamValue(ioStream[0]);
-            bool writeProtected = firstState.WriteProtect;
+            IoStreamState firstState     = DecodeIoStreamValue(ioStream[0]);
+            bool          writeProtected = firstState.WriteProtect;
 
             // Store as boolean: 1 byte where 0 = false (not write protected), 1 = true (write protected)
             _mediaTags[MediaTagType.Floppy_WriteProtection] = writeProtected ? [1] : [0];
 
-            AaruLogging.Debug(MODULE_NAME, "Write protect status from IO stream: {0}", writeProtected ? "write protected" : "not write protected");
+            AaruLogging.Debug(MODULE_NAME,
+                              "Write protect status from IO stream: {0}",
+                              writeProtected ? "write protected" : "not write protected");
         }
 
         // Extract index signals from IO stream
@@ -382,26 +417,23 @@ public sealed partial class HxCStream
         if(ioStream.Count > 0)
         {
             IoStreamState previousState = DecodeIoStreamValue(ioStream[0]);
-            bool oldIndex = previousState.IndexSignal;
-            bool startsAtIndex = previousState.IndexSignal;
-            if(startsAtIndex)
-            {
-                indexPositions.Add(0);
-            }
+            bool          oldIndex      = previousState.IndexSignal;
+            bool          startsAtIndex = previousState.IndexSignal;
+            if(startsAtIndex) indexPositions.Add(0);
 
             uint totalTicks = 0;
-            int pulseIndex = 0;
+            var  pulseIndex = 0;
 
-            for(int i = 0; i < ioStream.Count; i++)
+            for(var i = 0; i < ioStream.Count; i++)
             {
                 IoStreamState currentState = DecodeIoStreamValue(ioStream[i]);
-                bool currentIndex = currentState.IndexSignal;
+                bool          currentIndex = currentState.IndexSignal;
 
                 if(currentIndex != oldIndex && currentIndex)
                 {
                     // Index signal transition to high
                     // Map to flux stream position
-                    uint targetTicks = (uint)(i * 16);
+                    var targetTicks = (uint)(i * 16);
 
                     while(pulseIndex < fluxPulses.Count && totalTicks < targetTicks)
                     {
@@ -431,8 +463,13 @@ public sealed partial class HxCStream
             indexPositions = indexPositions.ToArray()
         };
 
-        AaruLogging.Debug(MODULE_NAME, "Created track capture: head = {0}, track = {1}, resolution = {2} ns, fluxPulses = {3}, indexPositions = {4}",
-                          capture.head, capture.track, capture.resolution, capture.fluxPulses.Length, capture.indexPositions.Length);
+        AaruLogging.Debug(MODULE_NAME,
+                          "Created track capture: head = {0}, track = {1}, resolution = {2} ns, fluxPulses = {3}, indexPositions = {4}",
+                          capture.head,
+                          capture.track,
+                          capture.resolution,
+                          capture.fluxPulses.Length,
+                          capture.indexPositions.Length);
 
         _trackCaptures.Add(capture);
 
@@ -526,7 +563,7 @@ public sealed partial class HxCStream
                                        out ulong  indexResolution, out ulong dataResolution, out byte[] indexBuffer,
                                        out byte[] dataBuffer)
     {
-        indexBuffer = dataBuffer = null;
+        indexBuffer     = dataBuffer     = null;
         indexResolution = dataResolution = 0;
 
         // HxCStream doesn't support subtracks - only subTrack 0 is valid
@@ -535,8 +572,8 @@ public sealed partial class HxCStream
         // HxCStream has one file per track/head, which results in exactly one capture (captureIndex 0)
         if(captureIndex != 0) return ErrorNumber.OutOfRange;
 
-        ErrorNumber error = ReadFluxResolution(head, track, subTrack, captureIndex, out indexResolution,
-                                               out dataResolution);
+        ErrorNumber error =
+            ReadFluxResolution(head, track, subTrack, captureIndex, out indexResolution, out dataResolution);
 
         if(error != ErrorNumber.NoError) return error;
 
@@ -565,15 +602,14 @@ public sealed partial class HxCStream
 
         if(capture == null) return ErrorNumber.OutOfRange;
 
-        var tmpBuffer = new List<byte>();
+        var  tmpBuffer     = new List<byte>();
         uint previousTicks = 0;
 
         foreach(uint indexPos in capture.indexPositions)
         {
             // Convert index position to ticks
-            uint ticks = 0;
-            for(uint i = 0; i < indexPos && i < capture.fluxPulses.Length; i++)
-                ticks += capture.fluxPulses[i];
+            uint ticks                                                                = 0;
+            for(uint i = 0; i < indexPos && i < capture.fluxPulses.Length; i++) ticks += capture.fluxPulses[i];
 
             uint deltaTicks = ticks - previousTicks;
             tmpBuffer.AddRange(UInt32ToFluxRepresentation(deltaTicks));
@@ -586,8 +622,7 @@ public sealed partial class HxCStream
     }
 
     /// <inheritdoc />
-    public ErrorNumber
-        ReadFluxDataCapture(uint head, ushort track, byte subTrack, uint captureIndex, out byte[] buffer)
+    public ErrorNumber ReadFluxDataCapture(uint head, ushort track, byte subTrack, uint captureIndex, out byte[] buffer)
     {
         buffer = null;
 
@@ -638,8 +673,12 @@ public sealed partial class HxCStream
         {
             // Group captures by head/track to assign capture indices
             // Note: HxCStream doesn't support subtracks, so subTrack is always 0
-            var grouped = _trackCaptures.GroupBy(c => new { c.head, c.track })
-                                      .ToList();
+            var grouped = _trackCaptures.GroupBy(c => new
+                                         {
+                                             c.head,
+                                             c.track
+                                         })
+                                        .ToList();
 
             foreach(var group in grouped)
             {
@@ -678,6 +717,7 @@ public sealed partial class HxCStream
         {
             buffer = new byte[tagData.Length];
             Array.Copy(tagData, buffer, tagData.Length);
+
             return ErrorNumber.NoError;
         }
 
@@ -687,8 +727,9 @@ public sealed partial class HxCStream
     /// <inheritdoc />
     public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
         sectorStatus = SectorStatus.NotDumped;
+
         return ErrorNumber.NotImplemented;
     }
 
@@ -696,8 +737,9 @@ public sealed partial class HxCStream
     public ErrorNumber ReadSectorLong(ulong            sectorAddress, bool negative, out byte[] buffer,
                                       out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
         sectorStatus = SectorStatus.NotDumped;
+
         return ErrorNumber.NotImplemented;
     }
 
@@ -705,8 +747,9 @@ public sealed partial class HxCStream
     public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                                    out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
         sectorStatus = null;
+
         return ErrorNumber.NotImplemented;
     }
 
@@ -714,8 +757,9 @@ public sealed partial class HxCStream
     public ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                                        out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
         sectorStatus = null;
+
         return ErrorNumber.NotImplemented;
     }
 
@@ -724,6 +768,7 @@ public sealed partial class HxCStream
                                       out byte[] buffer)
     {
         buffer = null;
+
         return ErrorNumber.NotImplemented;
     }
 
@@ -731,6 +776,7 @@ public sealed partial class HxCStream
     public ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer)
     {
         buffer = null;
+
         return ErrorNumber.NotImplemented;
     }
 

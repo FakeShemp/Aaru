@@ -49,14 +49,17 @@ sealed partial class Reader
     readonly Device   _dev;
     readonly ErrorLog _errorLog;
     readonly uint     _timeout;
+    readonly bool     _omnidrive;
 
-    internal Reader(Device dev, uint timeout, byte[] identification, ErrorLog errorLog, bool raw = false)
+    internal Reader(Device dev, uint timeout, byte[] identification, ErrorLog errorLog, bool raw = false,
+                    bool   omnidrive = false)
     {
         _dev         = dev;
         _timeout     = timeout;
         BlocksToRead = 64;
         CanReadRaw   = raw;
         _errorLog    = errorLog;
+        _omnidrive   = omnidrive;
 
         switch(dev.Type)
         {
@@ -86,8 +89,8 @@ sealed partial class Reader
     ///     OmniDrive Nintendo reads at LBAs ≥ 16; null until derived.
     /// </summary>
     internal byte? NintendoDerivedDiscKey { get; set; }
-    internal bool   CanSeek           => _ataSeek    || _seek6 || _seek10;
-    internal bool   CanSeekLba        => _ataSeekLba || _seek6 || _seek10;
+    internal bool CanSeek    => _ataSeek    || _seek6 || _seek10;
+    internal bool CanSeekLba => _ataSeekLba || _seek6 || _seek10;
 
     internal ulong GetDeviceBlocks()
     {
@@ -168,7 +171,12 @@ sealed partial class Reader
                 return AtaReadBlocks(out buffer, block, count, out duration, out recoveredError);
             case DeviceType.ATAPI:
             case DeviceType.SCSI:
-                return ScsiReadBlocks(out buffer, block, count, out duration, out recoveredError, out blankCheck,
+                return ScsiReadBlocks(out buffer,
+                                      block,
+                                      count,
+                                      out duration,
+                                      out recoveredError,
+                                      out blankCheck,
                                       negative);
             default:
                 buffer         = null;

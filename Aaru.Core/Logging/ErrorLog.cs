@@ -496,4 +496,13 @@ public sealed class ErrorLog
     {
         WriteLine(command, osError, errno, senseBuffer.ToArray());
     }
+
+    /// <summary>Register a non-device (software-detected) error for a sector</summary>
+    /// <param name="block">Starting block</param>
+    /// <param name="reason">Human-readable reason the sector was marked as errored</param>
+    public void WriteLine(ulong block, string reason)
+    {
+        _logSw.WriteLine(Localization.Core.Sector_0_marked_as_errored_1, block, reason);
+        _logSw.Flush();
+    }
 }
