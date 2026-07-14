@@ -11351,5 +11351,59 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Filesystem_contents_cannot_be_extracted", resourceCulture);
             }
         }
+        
+        public static string _0_sectors_were_correct_when_read {
+            get {
+                return ResourceManager.GetString("_0_sectors_were_correct_when_read", resourceCulture);
+            }
+        }
+        
+        public static string _0_sectors_had_to_be_fixed {
+            get {
+                return ResourceManager.GetString("_0_sectors_had_to_be_fixed", resourceCulture);
+            }
+        }
+        
+        public static string Help_hyperspeed {
+            get {
+                return ResourceManager.GetString("Help_hyperspeed", resourceCulture);
+            }
+        }
+        
+        public static string Help_ludicrousspeed {
+            get {
+                return ResourceManager.GetString("Help_ludicrousspeed", resourceCulture);
+            }
+        }
+        
+        public static string Help_Leadout {
+            get {
+                return ResourceManager.GetString("Help_Leadout", resourceCulture);
+            }
+        }
+        
+        public static string Detected_Omnidrive {
+            get {
+                return ResourceManager.GetString("Detected_Omnidrive", resourceCulture);
+            }
+        }
+        
+        public static string Yes__sir__Setting_ludicrous_speed_sir {
+            get {
+                return ResourceManager.GetString("Yes__sir__Setting_ludicrous_speed_sir", resourceCulture);
+            }
+        }
+        
+        public static string Setting_speed_to_8x_for_scrambled_reading {
+            get {
+                return ResourceManager.GetString("Setting_speed_to_8x_for_scrambled_reading", resourceCulture);
+            }
+        }
+        public static string C2_repair_help {
+            get {
+                return ResourceManager.GetString("C2_repair_help", resourceCulture);
+            }
+        }
+        
     }
 }

@@ -972,10 +972,10 @@
         <value>[slateblue1]Correctly retried sector [lime]{0}[/] subchannel in pass [teal]{1}[/].[/]</value>
     </data>
     <data name="Reading_lead_outs" xml:space="preserve">
-    <value>Reading lead-outs</value>
+    <value>[slateblue1]Reading lead-outs[/]</value>
   </data>
     <data name="Reading_sector_0_at_lead_out_1" xml:space="preserve">
-    <value>Reading sector {0} at lead-out ({1})</value>
+    <value>[slateblue1]Reading sector [lime]{0}[/] at lead-out ([aqua]{1}[/])[/]</value>
   </data>
     <data name="Reading_first_track_pregap" xml:space="preserve">
         <value>[slateblue1]Reading first track pregap[/]</value>
@@ -1734,7 +1734,7 @@
         <value>[slateblue1]Getting video partition size[/]</value>
     </data>
     <data name="Locking_drive" xml:space="preserve">
-    <value>Locking drive.</value>
+    <value>[slateblue1]Locking drive.[/]</value>
   </data>
     <data name="Cannot_lock_drive_not_continuing" xml:space="preserve">
         <value>[red]Cannot lock drive, not continuing.[/]</value>
@@ -1779,7 +1779,7 @@
         <value>[red]Cannot decode PFI.[/]</value>
     </data>
     <data name="WxRipper_PFI_Data_Area_Start_PSN_0_sectors" xml:space="preserve">
-        <value>[slateblue1][italic]WxRipper[/] PFI's Data Area Start PSN: [lime]{0}[/lime] sectors[/]</value>
+        <value>[slateblue1][italic]WxRipper[/] PFI's Data Area Start PSN: [lime]{0}[/] sectors[/]</value>
     </data>
     <data name="WxRipper_PFI_Layer_0_End_PSN_0_sectors" xml:space="preserve">
         <value>[slateblue1][italic]WxRipper[/] PFI's Layer [teal]0[/] End PSN: [lime]{0}[/] sectors[/]</value>
@@ -2577,6 +2577,30 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
   </data>
     <data name="SCSI_reading_LBA_0_error_1" xml:space="preserve">
     <value>SCSI reading LBA {0} error: {1}</value>
+  </data>
+    <data name="Sector_0_marked_as_errored_1" xml:space="preserve">
+    <value>Sector {0} marked as errored: {1}.</value>
+  </data>
+    <data name="Reason_ECC_EDC_could_not_be_fixed" xml:space="preserve">
+    <value>sector could not be corrected (uncorrectable ECC/EDC)</value>
+  </data>
+    <data name="Reason_scrambled_but_not_data" xml:space="preserve">
+    <value>sector unscrambled to data-like content but failed sync/mode/form validation</value>
+  </data>
+    <data name="Reason_expected_data_not_scrambled" xml:space="preserve">
+    <value>sector was expected to contain data but does not appear scrambled/data-shaped</value>
+  </data>
+    <data name="Reason_pregap_track_type_mismatch" xml:space="preserve">
+    <value>pregap sector's track type differs from the previous track after subchannel reindexing</value>
+  </data>
+    <data name="Reason_EDC_mismatch" xml:space="preserve">
+    <value>EDC mismatch</value>
+  </data>
+    <data name="Reason_ECC_P_mismatch" xml:space="preserve">
+    <value>ECC P mismatch</value>
+  </data>
+    <data name="Reason_ECC_Q_mismatch" xml:space="preserve">
+    <value>ECC Q mismatch</value>
   </data>
     <data name="SD_MMC_command_0_operating_system_error_1" xml:space="preserve">
     <value>SD/MMC command {0} operating system error: {1}.</value>
@@ -3630,5 +3654,76 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     </data>
     <data name="Aacs_hddvd_no_title_key_for_pack_at_lba_0_continuing" xml:space="preserve">
         <value>HD DVD AACS: no valid title key for pack at LBA {0} — writing encrypted sector.</value>
+    <data name="C2_secure_audio_enabled_OmniDrive" xml:space="preserve">
+        <value>[slateblue1]C2 secure audio enabled: OmniDrive native layout data + C2 + subchannel.[/]</value>
+    </data>
+    <data name="C2_secure_audio_enabled_OmniDrive_details_0" xml:space="preserve">
+        <value>[slateblue1]C2 secure audio enabled (OmniDrive). Block size [teal]{0}[/] bytes, layout data + C2 + subchannel.[/]</value>
+    </data>
+    <data name="C2_secure_audio_not_probed_requires_READ_CD" xml:space="preserve">
+        <value>[olive]C2 secure audio: not probed (requires READ CD).[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_requires_raw_subchannel" xml:space="preserve">
+        <value>[olive]C2 secure audio disabled: requires raw subchannel reading.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_no_raw_subchannel_0" xml:space="preserve">
+        <value>[olive]C2 secure audio disabled: drive does not provide raw ([teal]{0}[/] byte) subchannel.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_no_C2_and_subchannel" xml:space="preserve">
+        <value>[olive]C2 secure audio disabled: drive cannot return C2 and subchannel together.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_READ_CD_C2_failed" xml:space="preserve">
+        <value>[olive]C2 secure audio disabled: READ CD with C2 pointers + subchannel failed.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_unknown_byte_order" xml:space="preserve">
+        <value>[olive]C2 secure audio disabled: could not determine C2/subchannel byte order.[/]</value>
+    </data>
+    <data name="C2_secure_audio_disabled_no_valid_Q_CRC" xml:space="preserve">
+        <value>[olive]C2 secure audio disabled: neither candidate subchannel region produced a valid Q CRC on the test sector.[/]</value>
+    </data>
+    <data name="C2_secure_audio_enabled_layout_0" xml:space="preserve">
+        <value>[slateblue1]C2 secure audio enabled: layout {0}.[/]</value>
+    </data>
+    <data name="C2_secure_audio_enabled_details" xml:space="preserve">
+        <value>[slateblue1]C2 secure audio enabled. Block size [teal]{0}[/] bytes, layout {1}. Test sector [lime]{2}[/]: Q CRC valid at offset [teal]{3}[/], C2 region at offset [teal]{4}[/] had [lime]{5}[/]/[lime]{6}[/] non-zero bytes.[/]</value>
+    </data>
+    <data name="Converging_0_concealed_audio_sectors" xml:space="preserve">
+        <value>[slateblue1]Converging [lime]{0}[/] concealed audio sector(s) using per-byte C2 merge...[/]</value>
+    </data>
+    <data name="Converging_concealed_audio_sector_0_attempt_1" xml:space="preserve">
+        <value>[slateblue1]Converging concealed audio sector [lime]{0}[/] (attempt [teal]{1}[/])[/]</value>
+    </data>
+    <data name="C2_convergence_result_0_1_2" xml:space="preserve">
+        <value>[slateblue1]C2 convergence: [lime]{0}[/] fully converged, [lime]{1}[/] partially merged, [lime]{2}[/] unreadable.[/]</value>
+    </data>
+    <data name="C2_audio_convergence_complete_0_1_2" xml:space="preserve">
+        <value>[slateblue1]C2 audio convergence complete: [lime]{0}[/] sector(s) fully converged, [lime]{1}[/] partially merged, [lime]{2}[/] could not be re-read.[/]</value>
+    </data>
+    <data name="C2_audio_check_no_concealed" xml:space="preserve">
+        <value>[slateblue1]C2 audio check: no concealed audio sectors detected.[/]</value>
+    </data>
+    <data name="C2_audio_check_0_concealed_samples" xml:space="preserve">
+        <value>[slateblue1]C2 audio check: [lime]{0}[/] audio sector(s) contained concealed samples.[/]</value>
+    </data>
+    <data name="C2_audio_check_0_flagged" xml:space="preserve">
+        <value>[slateblue1]C2 audio check: [lime]{0}[/] audio sector(s) flagged as concealed (C2 pointers set).[/]</value>
+    </data>
+    <data name="Reason_audio_concealed_C2" xml:space="preserve">
+        <value>Audio sector concealed (C2 error pointers set)</value>
+    </data>
+    <data name="Reason_audio_converged_C2" xml:space="preserve">
+        <value>Audio sector converged clean via per-byte C2 merge</value>
+    </data>
+    <data name="Reason_audio_merged_0_1" xml:space="preserve">
+        <value>Audio sector merged, {0}/{1} bytes confirmed clean</value>
+    </data>
+    <data name="Reason_audio_not_rereadable_C2" xml:space="preserve">
+        <value>Audio sector could not be re-read for C2 convergence</value>
+    </data>
+    <data name="C2_layout_data_C2_subchannel" xml:space="preserve">
+        <value>data + C2 + subchannel (MMC spec order)</value>
+    </data>
+    <data name="C2_layout_data_subchannel_C2" xml:space="preserve">
+        <value>data + subchannel + C2</value>
     </data>
 </root>

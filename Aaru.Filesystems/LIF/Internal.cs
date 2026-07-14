@@ -26,13 +26,69 @@
 // Copyright © 2011-2026 Natalia Portillo
 // ****************************************************************************/
 
+using System;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
 
 /// <inheritdoc />
 public sealed partial class LIF
 {
+    static ErrorNumber ReadLogicalBytes(IMediaImage imagePlugin, Partition partition, ulong byteOffset, uint length,
+                                        out byte[]  data)
+    {
+        data = null;
+
+        if(imagePlugin is null || length == 0) return ErrorNumber.InvalidArgument;
+
+        uint imageSectorSize = imagePlugin.Info.SectorSize;
+
+        if(imageSectorSize == 0) return ErrorNumber.InvalidArgument;
+
+        ulong sectorOffset   = byteOffset / imageSectorSize;
+        ulong offsetInSector = byteOffset % imageSectorSize;
+        ulong bytesToRead    = offsetInSector + length;
+        ulong sectorsNeeded  = bytesToRead / imageSectorSize;
+
+        if(bytesToRead % imageSectorSize > 0) sectorsNeeded++;
+
+        if(sectorsNeeded == 0 || sectorsNeeded > uint.MaxValue) return ErrorNumber.InvalidArgument;
+
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + sectorOffset,
+                                                    false,
+                                                    (uint)sectorsNeeded,
+                                                    out byte[] sectorData,
+                                                    out _);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        if(sectorData.LongLength < (long)(offsetInSector + length)) return ErrorNumber.InvalidArgument;
+
+        data = new byte[length];
+        Array.Copy(sectorData, (long)offsetInSector, data, 0L, length);
+
+        return ErrorNumber.NoError;
+    }
+
+    static ErrorNumber ReadLogicalRecords(IMediaImage imagePlugin, Partition partition, uint record, uint recordCount,
+                                          out byte[]  data)
+    {
+        if(recordCount > uint.MaxValue / LIF_RECORD_SIZE)
+        {
+            data = null;
+
+            return ErrorNumber.InvalidArgument;
+        }
+
+        return ReadLogicalBytes(imagePlugin,
+                                partition,
+                                (ulong)record * LIF_RECORD_SIZE,
+                                recordCount   * LIF_RECORD_SIZE,
+                                out data);
+    }
+
     sealed class LifDirNode : IDirNode
     {
         internal string[] Contents;
@@ -44,14 +100,14 @@ public sealed partial class LIF
 
     sealed class LifFileNode : IFileNode
     {
-        /// <summary>Starting sector of the file data on the medium.</summary>
-        internal uint StartSector;
+        /// <summary>Starting logical record of the file data on the medium.</summary>
+        internal uint StartRecord;
 
         /// <inheritdoc />
-        public string Path { get; init; }
+        public string Path   { get; init; }
         /// <inheritdoc />
-        public long Length { get; init; }
+        public long   Length { get; init; }
         /// <inheritdoc />
-        public long Offset { get; set; }
+        public long   Offset { get; set; }
     }
 }

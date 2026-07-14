@@ -43,6 +43,13 @@ namespace Aaru.Images;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public sealed partial class DiskCopy42 : IWritableImage, IVerifiableImage
 {
+    enum TwiggyMode
+    {
+        None,
+        MacTwiggyReordered,
+        LisaTwiggyLogical
+    }
+
     const string MODULE_NAME = "DiskCopy 4.2 plugin";
     /// <summary>Bytes per tag, should be 12</summary>
     uint bptag;
@@ -55,7 +62,7 @@ public sealed partial class DiskCopy42 : IWritableImage, IVerifiableImage
     ImageInfo imageInfo;
     /// <summary>Start of tags in disk image, after data sectors</summary>
     uint tagOffset;
-    bool       twiggy;
+    TwiggyMode twiggyMode;
     byte[]     twiggyCache;
     byte[]     twiggyCacheTags;
     FileStream writingStream;

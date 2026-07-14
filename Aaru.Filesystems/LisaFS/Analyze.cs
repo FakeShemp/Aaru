@@ -103,7 +103,7 @@ public sealed partial class LisaFS
 
             updateProgress?.Invoke(entryPath, i + 1, maximum);
 
-            if(orderedEntries[i].fileType == 0x01)
+            if(orderedEntries[i].entry_type == 0x01)
             {
                 ErrorNumber errno = TraverseDirectoryForAffectedSectors(entryPath,
                                                                         orderedEntries[i].fileID,

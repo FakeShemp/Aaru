@@ -41,9 +41,9 @@ public partial class Convert
             {
                 errno = _inputImage.ReadSectorLong(i, true, out sector, out sectorStatus);
 
-                if(errno == ErrorNumber.NoError)
+                if(errno is ErrorNumber.NoError or ErrorNumber.NoData)
                 {
-                    if(sectorStatus == SectorStatus.NotDumped)
+                    if(sectorStatus == SectorStatus.NotDumped || errno == ErrorNumber.NoData)
                     {
                         notDumped.Add(i);
 
@@ -72,9 +72,9 @@ public partial class Convert
             {
                 errno = _inputImage.ReadSector(i, true, out sector, out sectorStatus);
 
-                if(errno == ErrorNumber.NoError)
+                if(errno is ErrorNumber.NoError or ErrorNumber.NoData)
                 {
-                    if(sectorStatus == SectorStatus.NotDumped)
+                    if(sectorStatus == SectorStatus.NotDumped || errno == ErrorNumber.NoData)
                     {
                         notDumped.Add(i);
 
@@ -241,9 +241,9 @@ public partial class Convert
             {
                 errno = _inputImage.ReadSectorLong(_inputImage.Info.Sectors + i, false, out sector, out sectorStatus);
 
-                if(errno == ErrorNumber.NoError)
+                if(errno is ErrorNumber.NoError or ErrorNumber.NoData)
                 {
-                    if(sectorStatus == SectorStatus.NotDumped)
+                    if(sectorStatus == SectorStatus.NotDumped || errno == ErrorNumber.NoData)
                     {
                         notDumped.Add(i);
 
@@ -272,9 +272,9 @@ public partial class Convert
             {
                 errno = _inputImage.ReadSector(_inputImage.Info.Sectors + i, false, out sector, out sectorStatus);
 
-                if(errno == ErrorNumber.NoError)
+                if(errno is ErrorNumber.NoError or ErrorNumber.NoData)
                 {
-                    if(sectorStatus == SectorStatus.NotDumped)
+                    if(sectorStatus == SectorStatus.NotDumped || errno == ErrorNumber.NoData)
                     {
                         notDumped.Add(i);
 

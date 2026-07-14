@@ -90,8 +90,11 @@ public partial class Dump
     readonly        bool                       _force;
     readonly        Dictionary<string, string> _formatOptions;
     readonly        bool                       _generateSubchannels;
+    readonly        bool                       _hyperSpeed;
     readonly        uint                       _ignoreCdrRunOuts;
     readonly        Stopwatch                  _imageCloseStopwatch;
+    readonly        bool                       _leadout;
+    readonly        bool                       _ludicrousSpeed;
     readonly        bool                       _metadata;
     readonly        string                     _outputPath;
     readonly        IBaseWritableImage         _outputPlugin;
@@ -103,6 +106,8 @@ public partial class Dump
     readonly        ushort                     _retryPasses;
     readonly        bool                       _retrySubchannel;
     readonly        Stopwatch                  _sidecarStopwatch;
+    readonly        bool                       _skipSafedisc;
+    readonly        bool                       _c2Repair;
     readonly        Stopwatch                  _speedStopwatch;
     readonly        bool                       _startReverse;
     readonly        bool                       _stopOnError;
@@ -113,14 +118,22 @@ public partial class Dump
     readonly        Stopwatch                  _trimStopwatch;
     readonly        Stopwatch                  _writeStopwatch;
     bool                                       _aborted;
+    int                                        _correctSectors;
+    bool                                       _c2Supported;    // Drive returns C2 pointers alongside subchannel
+    uint                                       _c2BlockSize;    // Block size when reading data + C2 + subchannel
+    int                                        _c2Offset;       // Byte offset of the 294-byte C2 region in a C2 block
+    int                                        _c2SubOffset;    // Byte offset of the subchannel region in a C2 block
+    HashSet<ulong>                             _c2SuspectAudio; // Audio sectors the drive flagged with C2 (concealed)
     AaruContext                                _ctx;   // Main database context
     Database.Models.Device                     _dbDev; // Device database entry
     bool                                       _dumpFirstTrackPregap;
     bool                                       _fixOffset;
+    int                                        _fixedSectors;
     uint                                       _maximumReadable; // Maximum number of sectors drive can read at once
     IMediaGraph                                _mediaGraph;
     bool                                       _missingTitleKeysDirty;
     HashSet<ulong>                             _missingTitleKeysLookup;
+    bool                                       _omnidrive;
     Resume                                     _resume;
     Sidecar                                    _sidecarClass;
     uint                                       _skip;
@@ -184,7 +197,8 @@ public partial class Dump
                 bool fixSubchannel, bool fixSubchannelCrc, bool skipCdireadyHole, ErrorLog errorLog,
                 bool generateSubchannels, uint maximumReadable, bool useBufferedReads, bool storeEncrypted,
                 bool titleKeys, uint ignoreCdrRunOuts, bool createGraph, uint dimensions, bool paranoia,
-                bool cureParanoia, bool bypassWiiDecryption, bool startReverse, int errorRecovery)
+                bool cureParanoia, bool bypassWiiDecryption, bool startReverse, int errorRecovery, bool hyperSpeed,
+                bool ludicrousSpeed, bool leadout, bool skipSafedisc, bool c2Repair = true)
     {
         _doResume              = doResume;
         _dev                   = dev;
@@ -231,6 +245,11 @@ public partial class Dump
         _bypassWiiDecryption   = bypassWiiDecryption;
         _startReverse          = startReverse;
         _errorRecovery         = errorRecovery;
+        _hyperSpeed            = hyperSpeed;
+        _ludicrousSpeed        = ludicrousSpeed;
+        _leadout               = leadout;
+        _skipSafedisc          = skipSafedisc;
+        _c2Repair              = c2Repair;
         _dumpStopwatch         = new Stopwatch();
         _sidecarStopwatch      = new Stopwatch();
         _speedStopwatch        = new Stopwatch();

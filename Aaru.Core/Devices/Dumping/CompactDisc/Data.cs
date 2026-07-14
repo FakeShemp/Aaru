@@ -435,12 +435,16 @@ partial class Dump
                 }
                 else
                 {
+                    // With C2 available, request the C2 error pointers in the same read so concealed (interpolated)
+                    // audio samples are detected from the first pass instead of re-reading the disc afterwards.
+                    bool readWithC2 = _c2Supported;
+
                     _speedStopwatch.Start();
 
                     sense = _dev.ReadCd(out cmdBuf,
                                         out senseBuf,
                                         firstSectorToRead,
-                                        blockSize,
+                                        readWithC2 ? _c2BlockSize : blockSize,
                                         blocksToRead,
                                         MmcSectorTypes.Cdda,
                                         false,
@@ -449,7 +453,7 @@ partial class Dump
                                         MmcHeaderCodes.None,
                                         true,
                                         false,
-                                        MmcErrorField.None,
+                                        readWithC2 ? MmcErrorField.C2Pointers : MmcErrorField.None,
                                         supportedSubchannel,
                                         _dev.Timeout,
                                         out _);
@@ -463,6 +467,9 @@ partial class Dump
                         // Try to workaround firmware
                         if(decSense is { ASC: 0x11, ASCQ: 0x05 } || decSense?.ASC == 0x64)
                         {
+                            // Firmware workaround path does not carry C2; fall back to the normal block layout.
+                            readWithC2 = false;
+
                             _speedStopwatch.Start();
 
                             sense = _dev.ReadCd(out cmdBuf,
@@ -485,6 +492,10 @@ partial class Dump
                             _speedStopwatch.Stop();
                         }
                     }
+
+                    // Repack the C2 read into the normal block layout so downstream handling is unchanged, flagging
+                    // any audio sector whose C2 pointers report concealed samples.
+                    if(readWithC2 && !sense) RepackAudioC2(ref cmdBuf, blocksToRead, blockSize, subSize, firstSectorToRead);
                 }
 
                 totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
@@ -788,13 +799,22 @@ partial class Dump
                                     _resume.BadBlocks.Add(i + r);
 
                                     if(correctEdc != true)
+                                    {
                                         UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, i + r));
+                                        _errorLog?.WriteLine(i + r, Localization.Core.Reason_EDC_mismatch);
+                                    }
 
                                     if(correctEccP != true)
+                                    {
                                         UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, i + r));
+                                        _errorLog?.WriteLine(i + r, Localization.Core.Reason_ECC_P_mismatch);
+                                    }
 
                                     if(correctEccQ != true)
+                                    {
                                         UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, i + r));
+                                        _errorLog?.WriteLine(i + r, Localization.Core.Reason_ECC_Q_mismatch);
+                                    }
                                 }
                             }
 
@@ -859,7 +879,13 @@ partial class Dump
 
                                     if(sectorTrack.Session != prevTrack.Session) continue;
 
-                                    if(sectorTrack.Type != prevTrack.Type) _resume.BadBlocks.Add(newPregapSector);
+                                    if(sectorTrack.Type != prevTrack.Type)
+                                    {
+                                        _resume.BadBlocks.Add(newPregapSector);
+
+                                        _errorLog?.WriteLine(newPregapSector,
+                                                             Localization.Core.Reason_pregap_track_type_mismatch);
+                                    }
                                 }
 
                                 if(i >= blocksToRead)
@@ -891,13 +917,22 @@ partial class Dump
                                     _resume.BadBlocks.Add(i + r);
 
                                     if(correctEdc != true)
+                                    {
                                         UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, i + r));
+                                        _errorLog?.WriteLine(i + r, Localization.Core.Reason_EDC_mismatch);
+                                    }
 
                                     if(correctEccP != true)
+                                    {
                                         UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, i + r));
+                                        _errorLog?.WriteLine(i + r, Localization.Core.Reason_ECC_P_mismatch);
+                                    }
 
                                     if(correctEccQ != true)
+                                    {
                                         UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, i + r));
+                                        _errorLog?.WriteLine(i + r, Localization.Core.Reason_ECC_Q_mismatch);
+                                    }
                                 }
                             }
 
@@ -1072,13 +1107,22 @@ partial class Dump
                         _resume.BadBlocks.Add(i + (ulong)b);
 
                         if(correctEdc != true)
+                        {
                             UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, i + (ulong)b));
+                            _errorLog?.WriteLine(i + (ulong)b, Localization.Core.Reason_EDC_mismatch);
+                        }
 
                         if(correctEccP != true)
+                        {
                             UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, i + (ulong)b));
+                            _errorLog?.WriteLine(i + (ulong)b, Localization.Core.Reason_ECC_P_mismatch);
+                        }
 
                         if(correctEccQ != true)
+                        {
                             UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, i + (ulong)b));
+                            _errorLog?.WriteLine(i + (ulong)b, Localization.Core.Reason_ECC_Q_mismatch);
+                        }
                     }
 
                     if(supportsLongSectors)

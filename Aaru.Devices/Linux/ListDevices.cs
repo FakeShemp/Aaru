@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Versioning;
 using System.Text;
@@ -149,6 +150,84 @@ public static class ListDevices
                                            true,
                                        _ => devices[i].Supported
                                    };
+        }
+
+        // Add /dev/sg* devices that have no block-device counterpart (sd*, sr*, st*).
+        // Devices that do have a counterpart will be opened via their sg node transparently
+        // by Device.Create(), so they should not appear twice in the list.
+        const string PATH_SYS_SG = "/sys/class/scsi_generic/";
+
+        if(Directory.Exists(PATH_SYS_SG))
+        {
+            string[] sgDevs = Directory.GetFileSystemEntries(PATH_SYS_SG, "*", SearchOption.TopDirectoryOnly);
+
+            var sgList = new List<DeviceInfo>(devices);
+
+            foreach(string sgSysPath in sgDevs)
+            {
+                string sgName    = Path.GetFileName(sgSysPath);
+                string blockPath = Path.Combine(PATH_SYS_SG, sgName, "device", "block");
+
+                // Skip if this sg device has a block-device counterpart
+                if(Directory.Exists(blockPath) &&
+                   Directory.GetFileSystemEntries(blockPath, "*", SearchOption.TopDirectoryOnly).Length > 0)
+                    continue;
+
+                string sgDevPath = "/dev/" + sgName;
+
+                var sgInfo = new DeviceInfo
+                {
+                    Path = sgDevPath
+                };
+
+                if(hasUdev)
+                {
+                    IntPtr udevDev = Extern.udev_device_new_from_subsystem_sysname(udev, "scsi_generic", sgName);
+                    sgInfo.Vendor = Extern.udev_device_get_property_value(udevDev, "ID_VENDOR");
+                    sgInfo.Model  = Extern.udev_device_get_property_value(udevDev, "ID_MODEL");
+
+                    if(!string.IsNullOrEmpty(sgInfo.Model)) sgInfo.Model = sgInfo.Model.Replace('_', ' ');
+
+                    sgInfo.Serial = Extern.udev_device_get_property_value(udevDev, "ID_SCSI_SERIAL");
+
+                    if(string.IsNullOrEmpty(sgInfo.Serial))
+                        sgInfo.Serial = Extern.udev_device_get_property_value(udevDev, "ID_SERIAL_SHORT");
+
+                    sgInfo.Bus = Extern.udev_device_get_property_value(udevDev, "ID_BUS");
+                }
+
+                string sgDevicePath = Path.Combine(PATH_SYS_SG, sgName, "device");
+
+                if(File.Exists(Path.Combine(sgDevicePath, "vendor")) && string.IsNullOrEmpty(sgInfo.Vendor))
+                {
+                    var sr = new StreamReader(Path.Combine(sgDevicePath, "vendor"), Encoding.ASCII);
+                    sgInfo.Vendor = sr.ReadLine()?.Trim();
+                }
+
+                if(File.Exists(Path.Combine(sgDevicePath, "model")) && string.IsNullOrEmpty(sgInfo.Model))
+                {
+                    var sr = new StreamReader(Path.Combine(sgDevicePath, "model"), Encoding.ASCII);
+                    sgInfo.Model = sr.ReadLine()?.Trim();
+                }
+
+                if(File.Exists(Path.Combine(sgDevicePath, "serial")) && string.IsNullOrEmpty(sgInfo.Serial))
+                {
+                    var sr = new StreamReader(Path.Combine(sgDevicePath, "serial"), Encoding.ASCII);
+                    sgInfo.Serial = sr.ReadLine()?.Trim();
+                }
+
+                if(!string.IsNullOrEmpty(sgInfo.Bus)) sgInfo.Bus = sgInfo.Bus.ToUpper();
+
+                sgInfo.Supported = sgInfo.Bus switch
+                                   {
+                                       "ATA" or "ATAPI" or "SCSI" or "USB" or "PCMCIA" or "FireWire" => true,
+                                       _                                                             => sgInfo.Supported
+                                   };
+
+                sgList.Add(sgInfo);
+            }
+
+            devices = [.. sgList];
         }
 
         return devices;

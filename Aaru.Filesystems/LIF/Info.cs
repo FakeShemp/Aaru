@@ -45,7 +45,7 @@ public sealed partial class LIF
     {
         if(imagePlugin.Info.SectorSize < 256) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, false, out byte[] sector, out _);
+        ErrorNumber errno = ReadLogicalRecords(imagePlugin, partition, 0, 1, out byte[] sector);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -65,7 +65,7 @@ public sealed partial class LIF
 
         if(imagePlugin.Info.SectorSize < 256) return;
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, false, out byte[] sector, out _);
+        ErrorNumber errno = ReadLogicalRecords(imagePlugin, partition, 0, 1, out byte[] sector);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -93,8 +93,8 @@ public sealed partial class LIF
         metadata = new FileSystem
         {
             Type         = FS_TYPE,
-            ClusterSize  = 256,
-            Clusters     = partition.Size / 256,
+            ClusterSize  = LIF_RECORD_SIZE,
+            Clusters     = partition.Size / LIF_RECORD_SIZE,
             CreationDate = DateHandlers.LifToDateTime(lifSb.creationDate),
             VolumeName   = StringHandlers.CToString(lifSb.volumeLabel, encoding)
         };

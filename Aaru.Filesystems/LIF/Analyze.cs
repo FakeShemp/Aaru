@@ -124,8 +124,10 @@ public sealed partial class LIF
 
         if(lengthInSectors == 0) return overlaps;
 
-        ulong absoluteStartSector = _partition.Start                      + startSector;
-        ulong absoluteEndSector   = absoluteStartSector + lengthInSectors - 1;
+        ulong startByteOffset     = (ulong)startSector * LIF_RECORD_SIZE;
+        ulong endByteOffset       = startByteOffset + (ulong)lengthInSectors * LIF_RECORD_SIZE - 1;
+        ulong absoluteStartSector = _partition.Start + startByteOffset / _imagePlugin.Info.SectorSize;
+        ulong absoluteEndSector   = _partition.Start + endByteOffset / _imagePlugin.Info.SectorSize;
 
         AddExtentOverlaps(absoluteStartSector, absoluteEndSector, sectorExtents, overlaps);
 

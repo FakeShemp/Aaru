@@ -108,7 +108,7 @@ partial class Dump
         byte[]          md6;
         byte[]          md10;
 
-        if(_persistent)
+        if(_persistent && !_omnidrive)
         {
             Modes.ModePage_01_MMC pgMmc;
 
@@ -206,7 +206,7 @@ partial class Dump
                 UpdateStatus?.Invoke(Localization.Core
                                                  .Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading);
 
-                AaruLogging.Debug(Localization.Core.Error_0, Sense.PrettifySense(senseBuf));
+                AaruLogging.Debug(MODULE_NAME, Localization.Core.Error_0, Sense.PrettifySense(senseBuf));
             }
             else
                 runningPersistent = true;
@@ -260,6 +260,8 @@ partial class Dump
                 break;
             }
 
+            if(_skipSafedisc && badSector is >= 800 and <= 10000) continue;
+
             if(forward)
             {
                 PulseProgress?.Invoke(runningPersistent
@@ -288,7 +290,7 @@ partial class Dump
             byte sectorsToReRead   = 1;
             var  badSectorToReRead = (uint)badSector;
 
-            if(_fixOffset && audioExtents.Contains(badSector) && offsetBytes != 0)
+            if((_fixOffset && audioExtents.Contains(badSector) || _omnidrive) && offsetBytes != 0)
             {
                 if(offsetBytes < 0)
                 {
@@ -301,7 +303,53 @@ partial class Dump
                 sectorsToReRead += (byte)sectorsForOffset;
             }
 
-            if(_supportsPlextorD8 && audioExtents.Contains(badSector))
+            byte[] c2Pointers = null;
+
+            if(_omnidrive)
+            {
+                bool c2Sense = _dev.OmniDriveReadCdWithC2(out byte[] c2Buf,
+                                                          out senseBuf,
+                                                          badSectorToReRead,
+                                                          sectorsToReRead,
+                                                          _dev.Timeout,
+                                                          out cmdDuration,
+                                                          true);
+
+                if(!c2Sense)
+                {
+                    sense = false;
+
+                    // badSectorToReRead may be < badSector when offsetBytes < 0.
+                    var sectorIndex = (int)((uint)badSector - badSectorToReRead);
+
+                    // Extract C2 for the target sector from the coherent c2Buf.
+                    c2Pointers = new byte[294];
+                    Array.Copy(c2Buf, sectorIndex * 2742 + 2352, c2Pointers, 0, 294);
+
+                    // Rebuild cmdBuf in OmniDriveReadCd format (2448 per sector = data+sub)
+                    // so FixOffsetData and downstream code see the expected layout.
+                    cmdBuf = new byte[2448 * sectorsToReRead];
+
+                    for(var s = 0; s < sectorsToReRead; s++)
+                    {
+                        int src = s * 2742;
+                        int dst = s * 2448;
+                        Array.Copy(c2Buf, src,        cmdBuf, dst,        2352); // data
+                        Array.Copy(c2Buf, src + 2646, cmdBuf, dst + 2352, 96);   // sub
+                    }
+                }
+                else
+                {
+                    sense = _dev.OmniDriveReadCd(out cmdBuf,
+                                                 out senseBuf,
+                                                 badSectorToReRead,
+                                                 sectorsToReRead,
+                                                 _dev.Timeout,
+                                                 out cmdDuration,
+                                                 true);
+                }
+            }
+            else if(_supportsPlextorD8 && audioExtents.Contains(badSector))
             {
                 sense = ReadPlextorWithSubchannel(out cmdBuf,
                                                   out senseBuf,
@@ -496,12 +544,13 @@ partial class Dump
 
                 // MEDIUM ERROR, retry with ignore error below
                 if(decSense is { ASC: 0x11 })
-                    if(!sectorsNotEvenPartial.Contains(badSector))
-                        sectorsNotEvenPartial.Add(badSector);
+                {
+                    if(!sectorsNotEvenPartial.Contains(badSector)) sectorsNotEvenPartial.Add(badSector);
+                }
             }
 
             // Because one block has been partially used to fix the offset
-            if(_fixOffset && audioExtents.Contains(badSector) && offsetBytes != 0)
+            if((_fixOffset && audioExtents.Contains(badSector) || _omnidrive) && offsetBytes != 0)
             {
                 uint blocksToRead = sectorsToReRead;
 
@@ -518,10 +567,93 @@ partial class Dump
 
             SectorStatus sectorStatus = SectorStatus.Dumped;
 
-
             if(!sense && !_dev.Error)
             {
-                if(!audioExtents.Contains(badSector) && _paranoia)
+                if(_omnidrive)
+                {
+                    var sector = new byte[sectorSize];
+                    Array.Copy(cmdBuf, 0, sector, 0, sectorSize);
+
+                    if(IsScrambledData(sector, (int)badSector, out _) || !audioExtents.Contains(badSector))
+                    {
+                        sector = Sector.Scramble(sector);
+
+                        SectorFixResult fixStatus = c2Pointers == null
+                                                        ? CdChecksums.FixSector(sector)
+                                                        : CdChecksums.FixSector(sector, c2Pointers);
+
+                        if(fixStatus == SectorFixResult.Correct) _correctSectors++;
+                        if(fixStatus == SectorFixResult.Fixed) _fixedSectors++;
+
+                        // A NotApplicable result is only trustworthy as "nothing to fix" if the sync mark is
+                        // actually present (e.g. a genuine Mode 0 or Mode 2 Form 2 sector). Otherwise it means
+                        // the sector is corrupted/misaligned and must still be treated as a failure.
+                        bool legitNotApplicable = fixStatus == SectorFixResult.NotApplicable &&
+                                                  HasValidSync(sector)                       &&
+                                                  (sector[0x00F] & 0x03) == 0x02             &&
+                                                  (sector[0x012] & 0x20) == 0x20;
+
+                        if(fixStatus == SectorFixResult.Correct ||
+                           fixStatus == SectorFixResult.Fixed   ||
+                           legitNotApplicable)
+                        {
+                            _resume.BadBlocks.Remove(badSector);
+                            extents.Add(badSector);
+                            _mediaGraph?.PaintSectorGood(badSector);
+                            sectorsNotEvenPartial.Remove(badSector);
+
+                            UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_sector_0_in_pass_1,
+                                                               badSector,
+                                                               pass));
+                        }
+                        else if(!audioExtents.Contains(badSector))
+                        {
+                            // ECC correction failed — try READ CD (drive's CIRC) as last resort.
+                            bool readCdSense = _dev.ReadCd(out byte[] readCdBuf,
+                                                           out _,
+                                                           (uint)badSector,
+                                                           sectorSize,
+                                                           1,
+                                                           MmcSectorTypes.AllTypes,
+                                                           false,
+                                                           false,
+                                                           true,
+                                                           MmcHeaderCodes.AllHeaders,
+                                                           true,
+                                                           true,
+                                                           MmcErrorField.None,
+                                                           MmcSubchannel.None,
+                                                           _dev.Timeout,
+                                                           out double readCdDuration);
+
+                            totalDuration += readCdDuration;
+
+                            if(!readCdSense && !_dev.Error && CdChecksums.CheckCdSector(readCdBuf) == true)
+                            {
+                                Array.Copy(readCdBuf, 0, sector, 0, sectorSize);
+                                _resume.BadBlocks.Remove(badSector);
+                                extents.Add(badSector);
+                                _mediaGraph?.PaintSectorGood(badSector);
+                                sectorsNotEvenPartial.Remove(badSector);
+
+                                UpdateStatus?.Invoke(string.Format(Localization.Core
+                                                                      .Correctly_retried_sector_0_in_pass_1,
+                                                                   badSector,
+                                                                   pass));
+                            }
+                        }
+
+                        Array.Copy(sector, 0, cmdBuf, 0, sectorSize);
+                    }
+                    else
+                    {
+                        _resume.BadBlocks.Remove(badSector);
+                        extents.Add(badSector);
+                        _mediaGraph?.PaintSectorGood(badSector);
+                        sectorsNotEvenPartial.Remove(badSector);
+                    }
+                }
+                else if(!audioExtents.Contains(badSector) && _paranoia)
                 {
                     var sector = new byte[sectorSize];
                     Array.Copy(cmdBuf, 0, sector, 0, sectorSize);
@@ -590,6 +722,41 @@ partial class Dump
                                                        pass));
 
                     sectorsNotEvenPartial.Remove(badSector);
+                }
+            }
+            else if(_omnidrive && !audioExtents.Contains(badSector))
+            {
+                // Read scrambled failed, for some reason... — try READ CD as a last resort.
+                bool readCdSense = _dev.ReadCd(out byte[] readCdBuf,
+                                               out _,
+                                               (uint)badSector,
+                                               sectorSize,
+                                               1,
+                                               MmcSectorTypes.AllTypes,
+                                               false,
+                                               false,
+                                               true,
+                                               MmcHeaderCodes.AllHeaders,
+                                               true,
+                                               true,
+                                               MmcErrorField.None,
+                                               MmcSubchannel.None,
+                                               _dev.Timeout,
+                                               out double readCdDuration);
+
+                totalDuration += readCdDuration;
+
+                if(!readCdSense && !_dev.Error && CdChecksums.CheckCdSector(readCdBuf) == true)
+                {
+                    Array.Copy(readCdBuf, 0, cmdBuf, 0, sectorSize);
+                    _resume.BadBlocks.Remove(badSector);
+                    extents.Add(badSector);
+                    _mediaGraph?.PaintSectorGood(badSector);
+                    sectorsNotEvenPartial.Remove(badSector);
+
+                    UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_sector_0_in_pass_1,
+                                                       badSector,
+                                                       pass));
                 }
             }
             else
@@ -663,7 +830,7 @@ partial class Dump
             */
 
         // Try to ignore read errors, on some drives this allows to recover partial even if damaged data
-        if(_persistent && sectorsNotEvenPartial.Count > 0)
+        if(_persistent && !_omnidrive && sectorsNotEvenPartial.Count > 0)
         {
             var pgMmc = new Modes.ModePage_01_MMC
             {

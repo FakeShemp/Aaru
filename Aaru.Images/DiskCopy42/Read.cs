@@ -54,6 +54,7 @@ public sealed partial class DiskCopy42
     public ErrorNumber Open(IFilter imageFilter)
     {
         Stream stream = imageFilter.GetDataForkStream();
+        twiggyMode = TwiggyMode.None;
         stream.Seek(0, SeekOrigin.Begin);
         var buffer  = new byte[0x58];
         var pString = new byte[64];
@@ -191,7 +192,6 @@ public sealed partial class DiskCopy42
 
             twiggyCache     = new byte[header.DataSize];
             twiggyCacheTags = new byte[header.TagSize];
-            twiggy          = true;
 
             Stream dataStream = imageFilter.GetDataForkStream();
             dataStream.Seek(dataOffset, SeekOrigin.Begin);
@@ -208,6 +208,7 @@ public sealed partial class DiskCopy42
             if(mfsMagic == 0xD2D7 && mfsAllBlocks == 422)
             {
                 AaruLogging.Debug(MODULE_NAME, Localization.Macintosh_Twiggy_detected_reversing_disk_sides);
+                twiggyMode = TwiggyMode.MacTwiggyReordered;
                 Array.Copy(data, header.DataSize / 2, twiggyCache,     0, header.DataSize / 2);
                 Array.Copy(tags, header.TagSize  / 2, twiggyCacheTags, 0, header.TagSize  / 2);
                 Array.Copy(data, 0,                   twiggyCache,     header.DataSize    / 2, header.DataSize / 2);
@@ -215,42 +216,69 @@ public sealed partial class DiskCopy42
             }
             else
             {
-                AaruLogging.Debug(MODULE_NAME, Localization.Lisa_Twiggy_detected_reversing_second_half_of_disk);
+                int[] sectorsPerTrack =
+                [
+                    22, 22, 22, 22, 21, 21, 21, 21, 21, 21, 21, 20, 20, 20, 20, 20, 20, 19, 19, 19, 19, 19, 19,
+                    18, 18, 18, 18, 18, 18, 17, 17, 17, 17, 17, 17, 16, 16, 16, 16, 16, 16, 16, 15, 15, 15, 15
+                ];
+                int[] trackOffsets = new int[sectorsPerTrack.Length];
+
+                for(int i = 1; i < trackOffsets.Length; i++)
+                    trackOffsets[i] = trackOffsets[i - 1] + sectorsPerTrack[i - 1];
+
+                AaruLogging.Debug(MODULE_NAME, "Lisa Twiggy detected exposing logical sector order");
+                twiggyMode = TwiggyMode.LisaTwiggyLogical;
 
                 Array.Copy(data, 0, twiggyCache,     0, header.DataSize / 2);
                 Array.Copy(tags, 0, twiggyCacheTags, 0, header.TagSize  / 2);
 
-                var copiedSectors = 0;
-                var sectorsToCopy = 0;
+                int destinationSector = (int)(header.DataSize / 2 / 512);
 
-                for(var i = 0; i < 46; i++)
+                for(int i = sectorsPerTrack.Length - 1; i >= 24; i--)
                 {
-                    sectorsToCopy = i switch
-                                    {
-                                        >= 0 and <= 3 => 22,
-                                        <= 10         => 21,
-                                        <= 16         => 20,
-                                        <= 22         => 19,
-                                        <= 28         => 18,
-                                        <= 34         => 17,
-                                        <= 41         => 16,
-                                        <= 45         => 15
-                                    };
-
                     Array.Copy(data,
-                               header.DataSize / 2 + copiedSectors * 512,
+                               header.DataSize / 2 + trackOffsets[i] * 512,
                                twiggyCache,
-                               twiggyCache.Length - copiedSectors * 512 - sectorsToCopy * 512,
-                               sectorsToCopy * 512);
+                               destinationSector * 512,
+                               sectorsPerTrack[i] * 512);
 
                     Array.Copy(tags,
-                               header.TagSize / 2 + copiedSectors * bptag,
+                               header.TagSize / 2 + trackOffsets[i] * bptag,
                                twiggyCacheTags,
-                               twiggyCacheTags.Length - copiedSectors * bptag - sectorsToCopy * bptag,
-                               sectorsToCopy * bptag);
+                               destinationSector * bptag,
+                               sectorsPerTrack[i] * bptag);
 
-                    copiedSectors += sectorsToCopy;
+                    destinationSector += sectorsPerTrack[i];
                 }
+
+                for(int i = 22; i >= 0; i--)
+                {
+                    Array.Copy(data,
+                               header.DataSize / 2 + trackOffsets[i] * 512,
+                               twiggyCache,
+                               destinationSector * 512,
+                               sectorsPerTrack[i] * 512);
+
+                    Array.Copy(tags,
+                               header.TagSize / 2 + trackOffsets[i] * bptag,
+                               twiggyCacheTags,
+                               destinationSector * bptag,
+                               sectorsPerTrack[i] * bptag);
+
+                    destinationSector += sectorsPerTrack[i];
+                }
+
+                Array.Copy(data,
+                           header.DataSize / 2 + trackOffsets[23] * 512,
+                           twiggyCache,
+                           destinationSector * 512,
+                           sectorsPerTrack[23] * 512);
+
+                Array.Copy(tags,
+                           header.TagSize / 2 + trackOffsets[23] * bptag,
+                           twiggyCacheTags,
+                           destinationSector * bptag,
+                           sectorsPerTrack[23] * bptag);
             }
         }
 
@@ -425,7 +453,7 @@ public sealed partial class DiskCopy42
         buffer       = new byte[length * imageInfo.SectorSize];
         sectorStatus = Enumerable.Repeat(SectorStatus.Dumped, (int)length).ToArray();
 
-        if(twiggy)
+        if(twiggyMode != TwiggyMode.None)
         {
             Array.Copy(twiggyCache,
                        (int)sectorAddress * imageInfo.SectorSize,
@@ -461,7 +489,7 @@ public sealed partial class DiskCopy42
 
         buffer = new byte[length * bptag];
 
-        if(twiggy)
+        if(twiggyMode != TwiggyMode.None)
             Array.Copy(twiggyCacheTags, (int)sectorAddress * bptag, buffer, 0, length * bptag);
         else
         {

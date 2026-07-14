@@ -57,11 +57,17 @@ public sealed partial class LisaFS
 
         ulong ptr = _srecords[fileId].extent_ptr;
 
-        // An invalid pointer denotes file does not exist
-        if(ptr is 0xFFFFFFFF or 0x00000000) return ErrorNumber.NoSuchFile;
+        var searchExtentByTag = false;
 
         // Pointers are relative to MDDF
-        ptr += _mddf.mddf_block + _volumePrefix;
+        if(ptr is not 0xFFFFFFFF and not 0x00000000)
+            ptr += _mddf.mddf_block + _volumePrefix;
+        else
+        {
+            if(_srecords[fileId].filesize == 0) return ErrorNumber.NoSuchFile;
+
+            searchExtentByTag = true;
+        }
 
         LisaTag.PriamTag extTag;
         byte[]           tag;
@@ -69,19 +75,19 @@ public sealed partial class LisaFS
         // This happens on some disks.
         // This is a filesystem corruption that makes LisaOS crash on scavenge.
         // This code just allow to ignore that corruption by searching the Extents File using sector tags
-        if(ptr >= _device.Info.Sectors)
+        if(searchExtentByTag || ptr >= _device.Info.Sectors)
         {
             var found = false;
 
             for(ulong i = 0; i < _device.Info.Sectors; i++)
             {
-                errno = _device.ReadSectorTag(i, false, SectorTagType.AppleSonyTag, out tag);
+                errno = ReadLisaSectorTag(i, out tag);
 
                 if(errno != ErrorNumber.NoError) continue;
 
                 DecodeTag(tag, out extTag);
 
-                if(extTag.FileId != fileId * -1) continue;
+                if(extTag.FileId != fileId * -1 || extTag.RelPage != 0) continue;
 
                 ptr   = i;
                 found = true;
@@ -93,17 +99,38 @@ public sealed partial class LisaFS
         }
 
         // Checks that the sector tag indicates its the Extents File we are searching for
-        errno = _device.ReadSectorTag(ptr, false, SectorTagType.AppleSonyTag, out tag);
+        errno = ReadLisaSectorTag(ptr, out tag);
 
         if(errno != ErrorNumber.NoError) return errno;
 
         DecodeTag(tag, out extTag);
 
-        if(extTag.FileId != (short)(-1 * fileId)) return ErrorNumber.NoSuchFile;
+        if(extTag.FileId != (short)(-1 * fileId) || extTag.RelPage != 0)
+        {
+            var found = false;
+
+            for(ulong i = 0; i < _device.Info.Sectors; i++)
+            {
+                errno = ReadLisaSectorTag(i, out tag);
+
+                if(errno != ErrorNumber.NoError) continue;
+
+                DecodeTag(tag, out extTag);
+
+                if(extTag.FileId != fileId * -1 || extTag.RelPage != 0) continue;
+
+                ptr   = i;
+                found = true;
+
+                break;
+            }
+
+            if(!found) return ErrorNumber.NoSuchFile;
+        }
 
         errno = _mddf.fsversion == LISA_V1
-                    ? _device.ReadSectors(ptr, false, 2, out byte[] sector, out _)
-                    : _device.ReadSector(ptr, false, out sector, out _);
+                    ? ReadLisaSectors(ptr, 2, out byte[] sector)
+                    : ReadLisaSector(ptr, out sector);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -112,42 +139,46 @@ public sealed partial class LisaFS
         file.filenameLen = sector[0];
         file.filename    = new byte[file.filenameLen];
         Array.Copy(sector, 0x01, file.filename, 0, file.filenameLen);
-        file.unknown1  = BigEndianBitConverter.ToUInt16(sector, 0x20);
-        file.file_uid  = BigEndianBitConverter.ToUInt64(sector, 0x22);
-        file.unknown2  = sector[0x2A];
-        file.etype     = sector[0x2B];
-        file.ftype     = (FileType)sector[0x2C];
-        file.unknown3  = sector[0x2D];
-        file.dtc       = BigEndianBitConverter.ToUInt32(sector, 0x2E);
-        file.dta       = BigEndianBitConverter.ToUInt32(sector, 0x32);
-        file.dtm       = BigEndianBitConverter.ToUInt32(sector, 0x36);
-        file.dtb       = BigEndianBitConverter.ToUInt32(sector, 0x3A);
-        file.dts       = BigEndianBitConverter.ToUInt32(sector, 0x3E);
-        file.serial    = BigEndianBitConverter.ToUInt32(sector, 0x42);
-        file.unknown4  = sector[0x46];
-        file.locked    = sector[0x47];
-        file.protect   = sector[0x48];
-        file.master    = sector[0x49];
-        file.scavenged = sector[0x4A];
-        file.closed    = sector[0x4B];
-        file.open      = sector[0x4C];
-        file.unknown5  = new byte[11];
-        Array.Copy(sector, 0x4D, file.unknown5, 0, 11);
-        file.release        = BigEndianBitConverter.ToUInt16(sector, 0x58);
-        file.build          = BigEndianBitConverter.ToUInt16(sector, 0x5A);
-        file.compatibility  = BigEndianBitConverter.ToUInt16(sector, 0x5C);
-        file.revision       = BigEndianBitConverter.ToUInt16(sector, 0x5E);
-        file.unknown6       = BigEndianBitConverter.ToUInt16(sector, 0x60);
-        file.password_valid = sector[0x62];
-        file.password       = new byte[8];
+        file.version             = BigEndianBitConverter.ToUInt16(sector, 0x20);
+        file.unique_id           = BigEndianBitConverter.ToUInt64(sector, 0x22);
+        file.unknown2            = sector[0x2A];
+        file.etype               = sector[0x2B];
+        file.ftype               = (FileType)sector[0x2C];
+        file.unknown3            = sector[0x2D];
+        file.dtc                 = BigEndianBitConverter.ToUInt32(sector, 0x2E);
+        file.dta                 = BigEndianBitConverter.ToUInt32(sector, 0x32);
+        file.dtm                 = BigEndianBitConverter.ToUInt32(sector, 0x36);
+        file.dtb                 = BigEndianBitConverter.ToUInt32(sector, 0x3A);
+        file.dts                 = BigEndianBitConverter.ToUInt32(sector, 0x3E);
+        file.serial              = BigEndianBitConverter.ToUInt32(sector, 0x42);
+        file.killed              = sector[0x46];
+        file.safety_on           = sector[0x47];
+        file.protected_file      = sector[0x48];
+        file.master              = sector[0x49];
+        file.scavenged           = sector[0x4A];
+        file.closed_by_os        = sector[0x4B];
+        file.file_open           = sector[0x4C];
+        file.result_scavenge_pad = sector[0x4D];
+        file.result_scavenge     = BigEndianBitConverter.ToUInt16(sector, 0x4E);
+        file.unusedi1            = BigEndianBitConverter.ToUInt16(sector, 0x50);
+        file.system_type         = BigEndianBitConverter.ToUInt16(sector, 0x52);
+        file.user_type           = BigEndianBitConverter.ToUInt16(sector, 0x54);
+        file.user_subtype        = BigEndianBitConverter.ToUInt16(sector, 0x56);
+        file.release_number      = BigEndianBitConverter.ToUInt16(sector, 0x58);
+        file.build_number        = BigEndianBitConverter.ToUInt16(sector, 0x5A);
+        file.compatibility_level = BigEndianBitConverter.ToUInt16(sector, 0x5C);
+        file.revision_level      = BigEndianBitConverter.ToUInt16(sector, 0x5E);
+        file.file_portion        = BigEndianBitConverter.ToUInt16(sector, 0x60);
+        file.password_length     = sector[0x62];
+        file.password            = new byte[8];
         Array.Copy(sector, 0x63, file.password, 0, 8);
-        file.unknown7 = new byte[3];
-        Array.Copy(sector, 0x6B, file.unknown7, 0, 3);
-        file.overhead = BigEndianBitConverter.ToUInt16(sector, 0x6E);
-        file.unknown8 = new byte[16];
-        Array.Copy(sector, 0x70, file.unknown8, 0, 16);
-        file.unknown10 = BigEndianBitConverter.ToInt16(sector, 0x17E);
-        file.LisaInfo  = new byte[128];
+        file.parent_id     = BigEndianBitConverter.ToUInt16(sector, 0x6B);
+        file.parent_id_pad = sector[0x6D];
+        file.fs_overhead   = BigEndianBitConverter.ToUInt16(sector, 0x6E);
+        file.hint_padding  = new byte[16];
+        Array.Copy(sector, 0x70, file.hint_padding, 0, 16);
+        file.label_padding = BigEndianBitConverter.ToInt16(sector, 0x17E);
+        file.LisaInfo      = new byte[128];
         Array.Copy(sector, 0x180, file.LisaInfo, 0, 128);
 
         var extentsCount = 0;
@@ -155,15 +186,15 @@ public sealed partial class LisaFS
 
         if(_mddf.fsversion == LISA_V1)
         {
-            file.length   = BigEndianBitConverter.ToInt32(sector, 0x200);
-            file.unknown9 = BigEndianBitConverter.ToInt32(sector, 0x204);
-            extentsOffset = 0x208;
+            file.length      = BigEndianBitConverter.ToInt32(sector, 0x200);
+            file.phys_length = BigEndianBitConverter.ToInt32(sector, 0x204);
+            extentsOffset    = 0x208;
         }
         else
         {
-            file.length   = BigEndianBitConverter.ToInt32(sector, 0x80);
-            file.unknown9 = BigEndianBitConverter.ToInt32(sector, 0x84);
-            extentsOffset = 0x88;
+            file.length      = BigEndianBitConverter.ToInt32(sector, 0x80);
+            file.phys_length = BigEndianBitConverter.ToInt32(sector, 0x84);
+            extentsOffset    = 0x88;
         }
 
         for(var j = 0; j < 41; j++)
@@ -197,86 +228,72 @@ public sealed partial class LisaFS
                           fileId,
                           StringHandlers.CToString(file.filename, _encoding));
 
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown1 = 0x{1:X4}",  fileId, file.unknown1);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].file_uid = 0x{1:X16}", fileId, file.file_uid);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown2 = 0x{1:X2}",  fileId, file.unknown2);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].etype = 0x{1:X2}",     fileId, file.etype);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].ftype = {1}",          fileId, file.ftype);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown3 = 0x{1:X2}",  fileId, file.unknown3);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dtc = {1}",            fileId, file.dtc);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dta = {1}",            fileId, file.dta);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dtm = {1}",            fileId, file.dtm);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dtb = {1}",            fileId, file.dtb);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dts = {1}",            fileId, file.dts);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].serial = {1}",         fileId, file.serial);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown4 = 0x{1:X2}",  fileId, file.unknown4);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].locked = {1}",         fileId, file.locked    > 0);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].protect = {1}",        fileId, file.protect   > 0);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].master = {1}",         fileId, file.master    > 0);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].scavenged = {1}",      fileId, file.scavenged > 0);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].closed = {1}",         fileId, file.closed    > 0);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].open = {1}",           fileId, file.open      > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].version = 0x{1:X4}",    fileId, file.version);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unique_id = 0x{1:X16}", fileId, file.unique_id);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown2 = 0x{1:X2}",   fileId, file.unknown2);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].etype = 0x{1:X2}",      fileId, file.etype);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].ftype = {1}",           fileId, file.ftype);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown3 = 0x{1:X2}",   fileId, file.unknown3);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dtc = {1}",             fileId, file.dtc);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dta = {1}",             fileId, file.dta);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dtm = {1}",             fileId, file.dtm);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dtb = {1}",             fileId, file.dtb);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dts = {1}",             fileId, file.dts);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].serial = {1}",          fileId, file.serial);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].killed = 0x{1:X2}",     fileId, file.killed);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].safety_on = {1}",       fileId, file.safety_on      > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].protected_file = {1}",  fileId, file.protected_file > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].master = {1}",          fileId, file.master         > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].scavenged = {1}",       fileId, file.scavenged      > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].closed_by_os = {1}",    fileId, file.closed_by_os   > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].file_open = {1}",       fileId, file.file_open      > 0);
 
         AaruLogging.Debug(MODULE_NAME,
-                          "ExtentFile[{0}].unknown5 = 0x{1:X2}{2:X2}{3:X2}{4:X2}{5:X2}{6:X2}{7:X2}{8:X2}{9:X2}" +
-                          "{10:X2}{11:X2}",
+                          "ExtentFile[{0}].result_scavenge_pad = 0x{1:X2}",
                           fileId,
-                          file.unknown5[0],
-                          file.unknown5[1],
-                          file.unknown5[2],
-                          file.unknown5[3],
-                          file.unknown5[4],
-                          file.unknown5[5],
-                          file.unknown5[6],
-                          file.unknown5[7],
-                          file.unknown5[8],
-                          file.unknown5[9],
-                          file.unknown5[10]);
+                          file.result_scavenge_pad);
 
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].release = {1}", fileId, file.release);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].build = {1}",   fileId, file.build);
-
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].compatibility = {1}", fileId, file.compatibility);
-
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].revision = {1}",      fileId, file.revision);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown6 = 0x{1:X4}", fileId, file.unknown6);
-
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].password_valid = {1}", fileId, file.password_valid > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].result_scavenge = {1}",     fileId, file.result_scavenge);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unusedi1 = {1}",            fileId, file.unusedi1);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].system_type = {1}",         fileId, file.system_type);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].user_type = {1}",           fileId, file.user_type);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].user_subtype = {1}",        fileId, file.user_subtype);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].release_number = {1}",      fileId, file.release_number);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].build_number = {1}",        fileId, file.build_number);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].compatibility_level = {1}", fileId, file.compatibility_level);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].revision_level = {1}",      fileId, file.revision_level);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].file_portion = 0x{1:X4}",   fileId, file.file_portion);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].password_length = {1}",     fileId, file.password_length);
 
         AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].password = {1}", fileId, _encoding.GetString(file.password));
 
-        AaruLogging.Debug(MODULE_NAME,
-                          "ExtentFile[{0}].unknown7 = 0x{1:X2}{2:X2}{3:X2}",
-                          fileId,
-                          file.unknown7[0],
-                          file.unknown7[1],
-                          file.unknown7[2]);
-
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].overhead = {1}", fileId, file.overhead);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].parent_id = {1}",          fileId, file.parent_id);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].parent_id_pad = 0x{1:X2}", fileId, file.parent_id_pad);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].fs_overhead = {1}",        fileId, file.fs_overhead);
 
         AaruLogging.Debug(MODULE_NAME,
-                          "ExtentFile[{0}].unknown8 = 0x{1:X2}{2:X2}{3:X2}{4:X2}{5:X2}{6:X2}{7:X2}{8:X2}{9:X2}" +
+                          "ExtentFile[{0}].hint_padding = 0x{1:X2}{2:X2}{3:X2}{4:X2}{5:X2}{6:X2}{7:X2}{8:X2}{9:X2}" +
                           "{10:X2}{11:X2}{12:X2}{13:X2}{14:X2}{15:X2}{16:X2}",
                           fileId,
-                          file.unknown8[0],
-                          file.unknown8[1],
-                          file.unknown8[2],
-                          file.unknown8[3],
-                          file.unknown8[4],
-                          file.unknown8[5],
-                          file.unknown8[6],
-                          file.unknown8[7],
-                          file.unknown8[8],
-                          file.unknown8[9],
-                          file.unknown8[10],
-                          file.unknown8[11],
-                          file.unknown8[12],
-                          file.unknown8[13],
-                          file.unknown8[14],
-                          file.unknown8[15]);
+                          file.hint_padding[0],
+                          file.hint_padding[1],
+                          file.hint_padding[2],
+                          file.hint_padding[3],
+                          file.hint_padding[4],
+                          file.hint_padding[5],
+                          file.hint_padding[6],
+                          file.hint_padding[7],
+                          file.hint_padding[8],
+                          file.hint_padding[9],
+                          file.hint_padding[10],
+                          file.hint_padding[11],
+                          file.hint_padding[12],
+                          file.hint_padding[13],
+                          file.hint_padding[14],
+                          file.hint_padding[15]);
 
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].length = {1}",        fileId, file.length);
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown9 = 0x{1:X8}", fileId, file.unknown9);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].length = {1}",      fileId, file.length);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].phys_length = {1}", fileId, file.phys_length);
 
         for(var ext = 0; ext < file.extents.Length; ext++)
         {
@@ -293,7 +310,7 @@ public sealed partial class LisaFS
                               file.extents[ext].length);
         }
 
-        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown10 = 0x{1:X4}", fileId, file.unknown10);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].label_padding = 0x{1:X4}", fileId, file.label_padding);
 
         _printedExtents.Add(fileId);
 
@@ -306,11 +323,9 @@ public sealed partial class LisaFS
         if(!_mounted) return ErrorNumber.AccessDenied;
 
         // Searches the S-Records place using MDDF pointers
-        ErrorNumber errno = _device.ReadSectors(_mddf.srec_ptr + _mddf.mddf_block + _volumePrefix,
-                                                false,
-                                                _mddf.srec_len,
-                                                out byte[] sectors,
-                                                out _);
+        ErrorNumber errno = ReadLisaSectors(_mddf.srec_ptr + _mddf.mddf_block + _volumePrefix,
+                                            _mddf.srec_len,
+                                            out byte[] sectors);
 
         if(errno != ErrorNumber.NoError) return errno;
 

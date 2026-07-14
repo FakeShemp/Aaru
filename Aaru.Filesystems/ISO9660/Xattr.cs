@@ -103,11 +103,16 @@ public sealed partial class ISO9660
         switch(xattr)
         {
             case Xattrs.XATTR_ISO9660_EA:
-                return entry.XattrLength == 0
-                           ? ErrorNumber.NoSuchExtendedAttribute
-                           : entry.Extents is null
-                               ? ErrorNumber.InvalidArgument
-                               : ReadSingleExtent(entry.XattrLength * _blockSize, entry.Extents[0].extent, out buf);
+                if(entry.XattrLength == 0) return ErrorNumber.NoSuchExtendedAttribute;
+
+                if(entry.Extents is null) return ErrorNumber.InvalidArgument;
+
+                if(entry.Extents.Count > 1)
+                    return ReadSingleExtent(entry.XattrLength * _blockSize, entry.Extents[0].extent, out buf);
+
+                buf = [];
+
+                return ErrorNumber.NoError;
 
             case Xattrs.XATTR_ISO9660_ASSOCIATED_FILE:
                 if(entry.AssociatedFile is null) return ErrorNumber.NoSuchExtendedAttribute;

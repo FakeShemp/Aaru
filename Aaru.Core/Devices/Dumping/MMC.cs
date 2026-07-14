@@ -45,6 +45,7 @@ using Aaru.Decoders.SCSI.MMC;
 using Aaru.Decryption;
 using Aaru.Decryption.DVD;
 using Aaru.Devices;
+using Aaru.Localization;
 using Aaru.Logging;
 using DDS = Aaru.Decoders.DVD.DDS;
 using DMI = Aaru.Decoders.Xbox.DMI;
@@ -298,6 +299,10 @@ partial class Dump
             return;
         }
 
+        _omnidrive = _dev.IsOmniDriveFirmware(out byte odMajor, out byte odMinor, out byte odRevision);
+
+        if(_omnidrive) AaruLogging.WriteLine(string.Format(UI.Detected_Omnidrive, odMajor, odMinor, odRevision));
+
         if(compactDisc)
         {
             _speedMultiplier *= 177;
@@ -347,9 +352,7 @@ partial class Dump
                     PFI.PhysicalFormatInformation? nintendoPfi = PFI.Decode(cmdBuf, dskType);
 
                     if(nintendoPfi is { DiskCategory: DiskCategory.Nintendo, PartVersion: 15 })
-                    {
                         dskType = nintendoPfi.Value.DiscSize == DVDSize.Eighty ? MediaType.GOD : MediaType.WOD;
-                    }
                 }
 
                 break;
@@ -481,7 +484,7 @@ partial class Dump
 
                         sense = _dev.ScsiInquiry(out byte[] inqBuf, out _);
 
-                        if(sense || Inquiry.Decode(inqBuf)?.KreonPresent != true)
+                        if((sense || Inquiry.Decode(inqBuf)?.KreonPresent != true) && !_omnidrive)
                         {
                             StoppingErrorMessage?.Invoke(Localization.Core
                                                                      .Dumping_Xbox_Game_Discs_requires_a_drive_with_Kreon_firmware);

@@ -76,40 +76,43 @@ public sealed partial class LisaFS
             {
                 var entV2 = new CatalogEntryV2
                 {
-                    filenameLen = buf[offset],
-                    filename    = new byte[E_NAME],
-                    unknown1    = buf[offset                                + 0x21],
-                    fileType    = buf[offset                                + 0x22],
-                    unknown2    = buf[offset                                + 0x23],
-                    fileID      = BigEndianBitConverter.ToInt16(buf, offset + 0x24),
-                    unknown3    = new byte[16]
+                    filenameLen    = buf[offset],
+                    filename       = new byte[E_NAME],
+                    filename_pad   = buf[offset                                 + 0x21],
+                    entry_type     = buf[offset                                 + 0x22],
+                    entry_type_pad = buf[offset                                 + 0x23],
+                    sfile          = BigEndianBitConverter.ToInt16(buf, offset  + 0x24),
+                    attributes     = BigEndianBitConverter.ToUInt32(buf, offset + 0x26),
+                    read_page      = BigEndianBitConverter.ToUInt32(buf, offset + 0x2A),
+                    read_offset    = BigEndianBitConverter.ToUInt16(buf, offset + 0x2E),
+                    write_page     = BigEndianBitConverter.ToUInt32(buf, offset + 0x30),
+                    write_offset   = BigEndianBitConverter.ToUInt16(buf, offset + 0x34)
                 };
 
                 Array.Copy(buf, offset + 0x01, entV2.filename, 0, E_NAME);
-                Array.Copy(buf, offset + 0x26, entV2.unknown3, 0, 16);
 
                 offset += 54;
 
                 // Check that the entry is correct, not empty or garbage
-                if(entV2.filenameLen != 0 && entV2.filenameLen <= E_NAME && entV2.fileType != 0 && entV2.fileID > 0)
+                if(entV2.filenameLen != 0 && entV2.filenameLen <= E_NAME && entV2.entry_type != 0 && entV2.sfile > 0)
                     catalogV2.Add(entV2);
             }
 
             // Convert entries to V3 format
             foreach(CatalogEntryV2 entV2 in catalogV2)
             {
-                error = ReadExtentsFile(entV2.fileID, out ExtentFile ext);
+                error = ReadExtentsFile(entV2.sfile, out ExtentFile ext);
 
                 if(error != ErrorNumber.NoError) continue;
 
                 var entV3 = new CatalogEntry
                 {
-                    fileID   = entV2.fileID,
-                    filename = new byte[32],
-                    fileType = entV2.fileType,
-                    length   = (int)_srecords[entV2.fileID].filesize,
-                    dtc      = ext.dtc,
-                    dtm      = ext.dtm
+                    fileID     = entV2.sfile,
+                    filename   = new byte[32],
+                    entry_type = entV2.entry_type,
+                    length     = (int)_srecords[entV2.sfile].filesize,
+                    dtc        = ext.dtc,
+                    dtm        = ext.dtm
                 };
 
                 Array.Copy(entV2.filename, 0, entV3.filename, 0, entV2.filenameLen);
@@ -127,7 +130,7 @@ public sealed partial class LisaFS
         // If root catalog is not pointed in MDDF (unchecked) maybe it's always following S-Records File?
         for(ulong i = 0; i < _device.Info.Sectors; i++)
         {
-            errno = _device.ReadSectorTag(i, false, SectorTagType.AppleSonyTag, out byte[] tag);
+            errno = ReadLisaSectorTag(i, out byte[] tag);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -135,7 +138,7 @@ public sealed partial class LisaFS
 
             if(catTag.FileId != FILEID_CATALOG || catTag.RelPage != 0) continue;
 
-            errno = _device.ReadSectors(i, false, 4, out firstCatalogBlock, out _);
+            errno = ReadLisaSectors(i, 4, out firstCatalogBlock);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -150,10 +153,7 @@ public sealed partial class LisaFS
         // Traverse double-linked list until first catalog block
         while(prevCatalogPointer != 0xFFFFFFFF)
         {
-            errno = _device.ReadSectorTag(prevCatalogPointer + _mddf.mddf_block + _volumePrefix,
-                                          false,
-                                          SectorTagType.AppleSonyTag,
-                                          out byte[] tag);
+            errno = ReadLisaSectorTag(prevCatalogPointer + _mddf.mddf_block + _volumePrefix, out byte[] tag);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -161,11 +161,7 @@ public sealed partial class LisaFS
 
             if(prevTag.FileId != FILEID_CATALOG) return ErrorNumber.InvalidArgument;
 
-            errno = _device.ReadSectors(prevCatalogPointer + _mddf.mddf_block + _volumePrefix,
-                                        false,
-                                        4,
-                                        out firstCatalogBlock,
-                                        out _);
+            errno = ReadLisaSectors(prevCatalogPointer + _mddf.mddf_block + _volumePrefix, 4, out firstCatalogBlock);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -179,10 +175,7 @@ public sealed partial class LisaFS
         // Traverse double-linked list to read full catalog
         while(nextCatalogPointer != 0xFFFFFFFF)
         {
-            errno = _device.ReadSectorTag(nextCatalogPointer + _mddf.mddf_block + _volumePrefix,
-                                          false,
-                                          SectorTagType.AppleSonyTag,
-                                          out byte[] tag);
+            errno = ReadLisaSectorTag(nextCatalogPointer + _mddf.mddf_block + _volumePrefix, out byte[] tag);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -190,11 +183,9 @@ public sealed partial class LisaFS
 
             if(nextTag.FileId != FILEID_CATALOG) return ErrorNumber.InvalidArgument;
 
-            errno = _device.ReadSectors(nextCatalogPointer + _mddf.mddf_block + _volumePrefix,
-                                        false,
-                                        4,
-                                        out byte[] nextCatalogBlock,
-                                        out _);
+            errno = ReadLisaSectors(nextCatalogPointer + _mddf.mddf_block + _volumePrefix,
+                                    4,
+                                    out byte[] nextCatalogBlock);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -228,22 +219,23 @@ public sealed partial class LisaFS
                 {
                     var entry = new CatalogEntry
                     {
-                        marker     = buf[offset],
-                        parentID   = BigEndianBitConverter.ToUInt16(buf, offset + 0x01),
-                        filename   = new byte[E_NAME],
-                        terminator = buf[offset                                 + 0x23],
-                        fileType   = buf[offset                                 + 0x24],
-                        unknown    = buf[offset                                 + 0x25],
-                        fileID     = BigEndianBitConverter.ToInt16(buf, offset  + 0x26),
-                        dtc        = BigEndianBitConverter.ToUInt32(buf, offset + 0x28),
-                        dtm        = BigEndianBitConverter.ToUInt32(buf, offset + 0x2C),
-                        length     = BigEndianBitConverter.ToInt32(buf, offset  + 0x30),
-                        wasted     = BigEndianBitConverter.ToInt32(buf, offset  + 0x34),
-                        tail       = new byte[8]
+                        key_length     = buf[offset],
+                        parentID       = BigEndianBitConverter.ToUInt16(buf, offset + 0x01),
+                        filename       = new byte[E_NAME],
+                        terminator     = buf[offset                                 + 0x23],
+                        entry_type     = buf[offset                                 + 0x24],
+                        entry_type_pad = buf[offset                                 + 0x25],
+                        fileID         = BigEndianBitConverter.ToInt16(buf, offset  + 0x26),
+                        dtc            = BigEndianBitConverter.ToUInt32(buf, offset + 0x28),
+                        dtm            = BigEndianBitConverter.ToUInt32(buf, offset + 0x2C),
+                        length         = BigEndianBitConverter.ToInt32(buf, offset  + 0x30),
+                        physSize       = BigEndianBitConverter.ToInt32(buf, offset  + 0x34),
+                        fsOvrhd        = BigEndianBitConverter.ToUInt16(buf, offset + 0x38),
+                        flags          = BigEndianBitConverter.ToUInt16(buf, offset + 0x3A),
+                        unused         = BigEndianBitConverter.ToUInt32(buf, offset + 0x3C)
                     };
 
                     Array.Copy(buf, offset + 0x03, entry.filename, 0, E_NAME);
-                    Array.Copy(buf, offset + 0x38, entry.tail,     0, 8);
 
                     if(ReadExtentsFile(entry.fileID, out _) == ErrorNumber.NoError)
                     {
@@ -262,18 +254,20 @@ public sealed partial class LisaFS
                 {
                     var entry = new CatalogEntry
                     {
-                        marker     = buf[offset],
-                        parentID   = BigEndianBitConverter.ToUInt16(buf, offset + 0x01),
-                        filename   = new byte[E_NAME],
-                        terminator = buf[offset                                 + 0x23],
-                        fileType   = buf[offset                                 + 0x24],
-                        unknown    = buf[offset                                 + 0x25],
-                        fileID     = BigEndianBitConverter.ToInt16(buf, offset  + 0x26),
-                        dtc        = BigEndianBitConverter.ToUInt32(buf, offset + 0x28),
-                        dtm        = BigEndianBitConverter.ToUInt32(buf, offset + 0x2C),
-                        length     = 0,
-                        wasted     = 0,
-                        tail       = null
+                        key_length     = buf[offset],
+                        parentID       = BigEndianBitConverter.ToUInt16(buf, offset + 0x01),
+                        filename       = new byte[E_NAME],
+                        terminator     = buf[offset                                 + 0x23],
+                        entry_type     = buf[offset                                 + 0x24],
+                        entry_type_pad = buf[offset                                 + 0x25],
+                        fileID         = BigEndianBitConverter.ToInt16(buf, offset  + 0x26),
+                        dtc            = BigEndianBitConverter.ToUInt32(buf, offset + 0x28),
+                        dtm            = BigEndianBitConverter.ToUInt32(buf, offset + 0x2C),
+                        length         = 0,
+                        physSize       = 0,
+                        fsOvrhd        = 0,
+                        flags          = 0,
+                        unused         = 0
                     };
 
                     Array.Copy(buf, offset + 0x03, entry.filename, 0, E_NAME);

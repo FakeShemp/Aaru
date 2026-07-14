@@ -50,8 +50,8 @@ public sealed partial class Tar
 
         TarFormat format = DetectFormat(header);
 
-        // Only identify by magic, not by filename or checksum-only heuristics
-        return format is TarFormat.Ustar or TarFormat.Gnu or TarFormat.Star;
+        // Accept checksum-validated V7 headers, but still reject unrecognized no-magic headers.
+        return format is TarFormat.Ustar or TarFormat.Gnu or TarFormat.Star or TarFormat.V7Recognized;
     }
 
     /// <inheritdoc />

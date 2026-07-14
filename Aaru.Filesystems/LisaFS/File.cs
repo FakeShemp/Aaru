@@ -86,11 +86,11 @@ public sealed partial class LisaFS
                 break;
         }
 
-        if(extFile.protect > 0) attributes |= FileAttributes.Immutable;
+        if(extFile.protected_file > 0) attributes |= FileAttributes.Immutable;
 
-        if(extFile.locked > 0) attributes |= FileAttributes.ReadOnly;
+        if(extFile.safety_on > 0) attributes |= FileAttributes.ReadOnly;
 
-        if(extFile.password_valid > 0) attributes |= FileAttributes.Password;
+        if(extFile.password_length > 0) attributes |= FileAttributes.Password;
 
         return ErrorNumber.NoError;
     }
@@ -105,9 +105,8 @@ public sealed partial class LisaFS
         if(!_mounted || !_debug) return ErrorNumber.AccessDenied;
 
         if(fileId is > 4 or <= 0)
-        {
-            if(fileId != FILEID_BOOT_SIGNED && fileId != FILEID_LOADER_SIGNED) return ErrorNumber.InvalidArgument;
-        }
+            if(fileId != FILEID_BOOT_SIGNED && fileId != FILEID_LOADER_SIGNED)
+                return ErrorNumber.InvalidArgument;
 
         if(_systemFileCache.TryGetValue(fileId, out buf) && !tags) return ErrorNumber.NoError;
 
@@ -117,11 +116,7 @@ public sealed partial class LisaFS
         {
             if(!tags)
             {
-                errno = _device.ReadSectors(_mddf.mddf_block + _volumePrefix + _mddf.srec_ptr,
-                                            false,
-                                            _mddf.srec_len,
-                                            out buf,
-                                            out _);
+                errno = ReadLisaSectors(_mddf.mddf_block + _volumePrefix + _mddf.srec_ptr, _mddf.srec_len, out buf);
 
                 if(errno != ErrorNumber.NoError) return errno;
 
@@ -130,11 +125,7 @@ public sealed partial class LisaFS
                 return ErrorNumber.NoError;
             }
 
-            errno = _device.ReadSectorsTag(_mddf.mddf_block + _volumePrefix + _mddf.srec_ptr,
-                                           false,
-                                           _mddf.srec_len,
-                                           SectorTagType.AppleSonyTag,
-                                           out buf);
+            errno = ReadLisaSectorsTag(_mddf.mddf_block + _volumePrefix + _mddf.srec_ptr, _mddf.srec_len, out buf);
 
             return errno != ErrorNumber.NoError ? errno : ErrorNumber.NoError;
         }
@@ -144,7 +135,7 @@ public sealed partial class LisaFS
         // Should be enough to check 100 sectors?
         for(ulong i = 0; i < 100; i++)
         {
-            errno = _device.ReadSectorTag(i, false, SectorTagType.AppleSonyTag, out byte[] tag);
+            errno = ReadLisaSectorTag(i, out byte[] tag);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -160,7 +151,7 @@ public sealed partial class LisaFS
         // Should be enough to check 100 sectors?
         for(ulong i = 0; i < 100; i++)
         {
-            errno = _device.ReadSectorTag(i, false, SectorTagType.AppleSonyTag, out byte[] tag);
+            errno = ReadLisaSectorTag(i, out byte[] tag);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -168,9 +159,7 @@ public sealed partial class LisaFS
 
             if(sysTag.FileId != fileId) continue;
 
-            errno = !tags
-                        ? _device.ReadSector(i, false, out byte[] sector, out _)
-                        : _device.ReadSectorTag(i, false, SectorTagType.AppleSonyTag, out sector);
+            errno = !tags ? ReadLisaSector(i, out byte[] sector) : ReadLisaSectorTag(i, out sector);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -306,20 +295,14 @@ public sealed partial class LisaFS
         for(var i = 0; i < file.extents.Length; i++)
         {
             ErrorNumber errno = !tags
-                                    ? _device.ReadSectors((ulong)file.extents[i].start +
-                                                          _mddf.mddf_block             +
-                                                          _volumePrefix,
-                                                          false,
-                                                          (uint)file.extents[i].length,
-                                                          out byte[] sector,
-                                                          out _)
-                                    : _device.ReadSectorsTag((ulong)file.extents[i].start +
-                                                             _mddf.mddf_block             +
-                                                             _volumePrefix,
-                                                             false,
-                                                             (uint)file.extents[i].length,
-                                                             SectorTagType.AppleSonyTag,
-                                                             out sector);
+                                    ? ReadLisaSectors((ulong)file.extents[i].start + _mddf.mddf_block + _volumePrefix,
+                                                      (uint)file.extents[i].length,
+                                                      out byte[] sector)
+                                    : ReadLisaSectorsTag((ulong)file.extents[i].start +
+                                                         _mddf.mddf_block             +
+                                                         _volumePrefix,
+                                                         (uint)file.extents[i].length,
+                                                         out sector);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -330,9 +313,8 @@ public sealed partial class LisaFS
         if(!tags)
         {
             if(_fileSizeCache.TryGetValue(fileId, out int realSize))
-            {
-                if(realSize > temp.Length) AaruLogging.Error(Localization.File_0_gets_truncated, fileId);
-            }
+                if(realSize > temp.Length)
+                    AaruLogging.Error(Localization.File_0_gets_truncated, fileId);
 
             buf = temp;
 
@@ -426,7 +408,7 @@ public sealed partial class LisaFS
                     continue;
 
                 fileId = entry.fileID;
-                isDir  = entry.fileType == 0x01;
+                isDir  = entry.entry_type == 0x01;
 
                 // Not last path element, and it's not a directory
                 if(lvl != pathElements.Length - 1 && !isDir) return ErrorNumber.NotDirectory;

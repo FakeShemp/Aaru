@@ -37,6 +37,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aaru.Checksums;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
@@ -64,6 +65,27 @@ partial class Dump
         Array.Copy(sector, 0, testMark, 0, 12);
 
         return syncMark.SequenceEqual(testMark) && (sector[0xF] == 0 || sector[0xF] == 1 || sector[0xF] == 2);
+    }
+
+    /// <summary>Checks if a descrambled sector starts with a valid Yellow Book sync mark</summary>
+    /// <param name="sector">Sector contents</param>
+    /// <returns><c>true</c> if the 12-byte sync mark is present at offset 0, <c>false</c> otherwise</returns>
+    static bool HasValidSync(byte[] sector)
+    {
+        if(sector?.Length != 2352) return false;
+
+        return sector[0x000] == 0x00 &&
+               sector[0x001] == 0xFF &&
+               sector[0x002] == 0xFF &&
+               sector[0x003] == 0xFF &&
+               sector[0x004] == 0xFF &&
+               sector[0x005] == 0xFF &&
+               sector[0x006] == 0xFF &&
+               sector[0x007] == 0xFF &&
+               sector[0x008] == 0xFF &&
+               sector[0x009] == 0xFF &&
+               sector[0x00A] == 0xFF &&
+               sector[0x00B] == 0x00;
     }
 
     /// <summary>Detects if a sector contains scrambled data</summary>
@@ -114,7 +136,6 @@ partial class Dump
     }
 
     // TODO: Set pregap for Track 1
-    // TODO: Detect errors in sectors
     /// <summary>Reads all the hidden track in CD-i Ready discs</summary>
     /// <param name="blocks">Total number of positive sectors</param>
     /// <param name="blockSize">Size of the read sector in bytes</param>
@@ -297,6 +318,9 @@ partial class Dump
 
                             if(cdiReadyReadAsAudio) data = Sector.Scramble(data);
 
+                            // Fix or leave as is because we're overcoming track mode change
+                            CdChecksums.FixSector(data);
+
                             outputOptical.WriteSectorsLong(data,
                                                            i + r,
                                                            false,
@@ -388,6 +412,8 @@ partial class Dump
                 extents.Add(i, blocksToRead, true);
                 _writeStopwatch.Restart();
 
+                List<ulong> paintBad = [];
+
                 if(supportedSubchannel != MmcSubchannel.None)
                 {
                     var data    = new byte[sectorSize * blocksToRead];
@@ -400,10 +426,29 @@ partial class Dump
                         {
                             Array.Copy(cmdBuf, (int)(0 + b * blockSize), tmpData, 0, sectorSize);
                             tmpData = Sector.Scramble(tmpData);
+                            SectorFixResult fixedStatus = CdChecksums.FixSector(tmpData);
+
+                            if(fixedStatus == SectorFixResult.CouldNotFix) // Damaged
+                            {
+                                _resume.BadBlocks.Add(i + (ulong)b);
+                                paintBad.Add(i          + (ulong)b);
+                            }
+
                             Array.Copy(tmpData, 0, data, sectorSize * b, sectorSize);
                         }
                         else
-                            Array.Copy(cmdBuf, (int)(0 + b * blockSize), data, sectorSize * b, sectorSize);
+                        {
+                            Array.Copy(cmdBuf, (int)(0 + b * blockSize), tmpData, 0, sectorSize);
+                            SectorFixResult fixedStatus = CdChecksums.FixSector(tmpData);
+
+                            if(fixedStatus == SectorFixResult.CouldNotFix) // Damaged
+                            {
+                                _resume.BadBlocks.Add(i + (ulong)b);
+                                paintBad.Add(i          + (ulong)b);
+                            }
+
+                            Array.Copy(tmpData, 0, data, sectorSize * b, sectorSize);
+                        }
 
                         Array.Copy(cmdBuf, (int)(sectorSize + b * blockSize), sub, subSize * b, subSize);
                     }
@@ -453,33 +498,50 @@ partial class Dump
                 }
                 else
                 {
+                    var tmpData = new byte[sectorSize];
+                    var data    = new byte[sectorSize * blocksToRead];
+                    var status  = new SectorStatus[blocksToRead];
+
                     if(cdiReadyReadAsAudio)
                     {
-                        var tmpData = new byte[sectorSize];
-                        var data    = new byte[sectorSize * blocksToRead];
-
                         for(var b = 0; b < blocksToRead; b++)
                         {
+                            status[b] = SectorStatus.Dumped;
                             Array.Copy(cmdBuf, (int)(b * sectorSize), tmpData, 0, sectorSize);
                             tmpData = Sector.Scramble(tmpData);
+                            SectorFixResult fixedStatus = CdChecksums.FixSector(tmpData);
+
+                            if(fixedStatus == SectorFixResult.CouldNotFix) // Damaged
+                            {
+                                _resume.BadBlocks.Add(i + (ulong)b);
+                                paintBad.Add(i          + (ulong)b);
+                                status[b] = SectorStatus.Errored;
+                            }
+
                             Array.Copy(tmpData, 0, data, sectorSize * b, sectorSize);
                         }
 
-                        outputOptical.WriteSectorsLong(data,
-                                                       i,
-                                                       false,
-                                                       blocksToRead,
-                                                       Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
-                                                                 .ToArray());
+                        outputOptical.WriteSectorsLong(data, i, false, blocksToRead, status);
                     }
                     else
                     {
-                        outputOptical.WriteSectorsLong(cmdBuf,
-                                                       i,
-                                                       false,
-                                                       blocksToRead,
-                                                       Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
-                                                                 .ToArray());
+                        for(var b = 0; b < blocksToRead; b++)
+                        {
+                            status[b] = SectorStatus.Dumped;
+                            Array.Copy(cmdBuf, (int)(b * sectorSize), tmpData, 0, sectorSize);
+                            SectorFixResult fixedStatus = CdChecksums.FixSector(tmpData);
+
+                            if(fixedStatus == SectorFixResult.CouldNotFix) // Damaged
+                            {
+                                _resume.BadBlocks.Add(i + (ulong)b);
+                                paintBad.Add(i          + (ulong)b);
+                                status[b] = SectorStatus.Errored;
+                            }
+
+                            Array.Copy(tmpData, 0, data, sectorSize * b, sectorSize);
+                        }
+
+                        outputOptical.WriteSectorsLong(cmdBuf, i, false, blocksToRead, status);
                     }
                 }
 
