@@ -180,9 +180,19 @@ public sealed partial class Merger
         {
             if(IsHdDvdAacsMedia(inputOptical.Info.MediaType))
             {
-                StoppingErrorMessage?.Invoke(Aaru.Localization.Core.Aacs_hddvd_not_supported);
+                _aacsDecryptedCpsUnitKeys = AacsKeyResolver.TryGetDecryptedCpsUnitKeysHddvd(inputOptical,
+                    _plugins,
+                    Encoding.UTF8,
+                    out string hddvdErr);
 
-                return ErrorNumber.UnsupportedMedia;
+                if(_aacsDecryptedCpsUnitKeys == null)
+                {
+                    StoppingErrorMessage?.Invoke(hddvdErr ?? Aaru.Localization.Core.Aacs_hddvd_missing_unit_keys);
+
+                    return ErrorNumber.NoData;
+                }
+
+                return CopyAacsHddvdOpticalSectorsPrimary(inputOptical, outputOptical);
             }
 
             if(IsBluRayAacsMedia(inputOptical.Info.MediaType))

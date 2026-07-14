@@ -36,10 +36,11 @@
 
 using System;
 using System.Buffers.Binary;
+using System.Collections.Generic;
 
 namespace Aaru.Decryption.Aacs;
 
-/// <summary>Parsed CPS encrypted unit keys from <c>Unit_Key_RO.inf</c>.</summary>
+/// <summary>Parsed CPS encrypted unit keys from <c>Unit_Key_RO.inf</c> or <c>VTKF*.AACS</c> / <c>ATKF*.AACS</c>.</summary>
 public sealed class UnitKeyRoParseResult
 {
     UnitKeyRoParseResult(byte[][] encryptedCpsUnitKeys, bool isAacs2Layout)
@@ -66,6 +67,59 @@ public sealed class UnitKeyRoParseResult
         UnitKeyRoParseResult? r = TryParseInternal(data, false);
 
         return r ?? TryParseInternal(data, true);
+    }
+
+    /// <summary>Number of title key entries in an HD DVD TKF.</summary>
+    public const int TKF_MAX_ENTRIES = 64;
+
+    /// <summary>
+    ///     Parses an HD DVD Title Key File (<c>VTKF*.AACS</c> / <c>ATKF*.AACS</c>) per Table 3-8 of the AACS
+    ///     HD DVD and DVD Pre-recorded specification.  The TKF is a fixed 2480-byte structure with a 128-byte
+    ///     header, 64 title-key entries of 36 bytes each, and a 48-byte trailer.
+    /// </summary>
+    /// <param name="data">File contents (must be at least 2480 bytes).</param>
+    /// <returns>Parsed encrypted title keys (non-empty entries only), or <see langword="null"/>.</returns>
+    public static UnitKeyRoParseResult? TryParseHddvdTkf(ReadOnlySpan<byte> data)
+    {
+        const int TKF_FILE_SIZE       = 2480;
+        const int HEADER_LEN          = 128;
+        const int ENTRY_LEN           = 36;
+        const int KEY_OFFSET_IN_ENTRY = 4;
+        const int KEY_LEN             = 16;
+
+        if(data.Length < TKF_FILE_SIZE)
+            return null;
+
+        ReadOnlySpan<byte> expectedId = "DVD_HD_V_TKF"u8;
+
+        if(!data[..12].SequenceEqual(expectedId))
+            return null;
+
+        uint vtkfSize = BinaryPrimitives.ReadUInt32BigEndian(data.Slice(12, 4));
+
+        if(vtkfSize != TKF_FILE_SIZE)
+            return null;
+
+        ReadOnlySpan<byte> emptyKey  = stackalloc byte[KEY_LEN];
+        byte[][]           keys      = new byte[TKF_MAX_ENTRIES][];
+        bool               anyNonEmpty = false;
+
+        for(int i = 0; i < TKF_MAX_ENTRIES; i++)
+        {
+            int                keyOffset = HEADER_LEN + i * ENTRY_LEN + KEY_OFFSET_IN_ENTRY;
+            ReadOnlySpan<byte> keySlice  = data.Slice(keyOffset, KEY_LEN);
+
+            keys[i] = new byte[KEY_LEN];
+            keySlice.CopyTo(keys[i]);
+
+            if(!keySlice.SequenceEqual(emptyKey))
+                anyNonEmpty = true;
+        }
+
+        if(!anyNonEmpty)
+            return null;
+
+        return new UnitKeyRoParseResult(keys, false);
     }
 
     /// <summary>Parses Blu-ray <c>Unit_Key_RO.inf</c> (AACS1 layout by default).</summary>

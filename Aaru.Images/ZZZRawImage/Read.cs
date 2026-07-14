@@ -625,7 +625,7 @@ public sealed partial class ZZZRawImage
            _imageInfo.SectorSize == 2048 &&
            _imageInfo.ImageSize % 2048 == 0 &&
            _imageInfo.Sectors > 0 &&
-           (_imageInfo.MediaType == MediaType.BDR || _imageInfo.MediaType == MediaType.BDRXL) &&
+           (_imageInfo.MediaType == MediaType.BDR || _imageInfo.MediaType == MediaType.BDRXL || _imageInfo.MediaType == MediaType.DVDPR) &&
            TryDetectHdDvdVideoIso())
             _imageInfo.MediaType = MediaType.HDDVDROM;
 

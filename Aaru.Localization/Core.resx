@@ -3602,7 +3602,7 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
         <value>AACS2 (Ultra HD Blu-ray) unit keys are not supported in this version.</value>
     </data>
     <data name="Aacs_hddvd_not_supported" xml:space="preserve">
-        <value>HD DVD AACS decryption is not implemented.</value>
+        <value>HD DVD AACS operation failed.</value>
     </data>
     <data name="Aacs_incomplete_cps_unit_at_track_end" xml:space="preserve">
         <value>Incomplete AACS CPS unit at end of track ({0} sector(s) pending, starting at LBA {1}).</value>
@@ -3625,6 +3625,35 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="Aacs_bd_decrypt_requires_0_byte_sectors" xml:space="preserve">
         <value>Blu-ray AACS decryption requires {0}-byte user sectors; this image reports a different sector size.</value>
     </data>
+    <data name="Aacs_hddvd_missing_unit_keys" xml:space="preserve">
+        <value>HD DVD AACS decryption requires title keys: AACS/VTKF*.AACS or AACS/ATKF*.AACS (or AACS_DataKeys media tag).</value>
+    </data>
+    <data name="Aacs_hddvd_unit_keys_invalid" xml:space="preserve">
+        <value>HD DVD AACS Title Key File could not be parsed.</value>
+    </data>
+    <data name="Aacs_hddvd_udf_mount_failed" xml:space="preserve">
+        <value>Could not mount UDF for HD DVD EVO extent discovery.</value>
+    </data>
+    <data name="Aacs_hddvd_no_evo_extents" xml:space="preserve">
+        <value>No .EVO stream files found under /HVDVD_TS for HD DVD AACS extent discovery.</value>
+    </data>
+    <data name="Aacs_hddvd_decrypt_requires_2048_byte_sectors" xml:space="preserve">
+        <value>HD DVD AACS decryption requires 2048-byte user sectors; this image reports {0}-byte sectors.</value>
+    </data>
+    <data name="Aacs_hddvd_broad_decrypt_scope_continuing" xml:space="preserve">
+        <value>Continuing with broad HD DVD AACS decrypt scope (all LBAs).</value>
+    </data>
+    <data name="Aacs_hddvd_no_cpi_for_encrypted_pack_at_lba_0" xml:space="preserve">
+        <value>HD DVD AACS: encrypted pack at LBA {0} but no navigation pack CPI has been seen yet.</value>
+    </data>
+    <data name="Aacs_hddvd_no_cpi_for_encrypted_pack_at_lba_0_continuing" xml:space="preserve">
+        <value>HD DVD AACS: encrypted pack at LBA {0} but no CPI available — writing encrypted sector.</value>
+    </data>
+    <data name="Aacs_hddvd_no_title_key_for_pack_at_lba_0" xml:space="preserve">
+        <value>HD DVD AACS: no valid title key available for encrypted pack at LBA {0}.</value>
+    </data>
+    <data name="Aacs_hddvd_no_title_key_for_pack_at_lba_0_continuing" xml:space="preserve">
+        <value>HD DVD AACS: no valid title key for pack at LBA {0} — writing encrypted sector.</value>
     <data name="C2_secure_audio_enabled_OmniDrive" xml:space="preserve">
         <value>[slateblue1]C2 secure audio enabled: OmniDrive native layout data + C2 + subchannel.[/]</value>
     </data>

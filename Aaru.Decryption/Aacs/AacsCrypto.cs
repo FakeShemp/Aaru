@@ -132,6 +132,83 @@ public static class AacsCrypto
     }
 
     /// <summary>
+    ///     Blu-ray CPS unit content key derivation: <c>K = AES-128E(K, X) XOR X</c>.
+    ///     This is the encrypt-based one-way function used by the BD AACS Pre-recorded Video Book
+    ///     for deriving the per-aligned-unit content key. It is <b>not</b> the same as the spec's
+    ///     <c>AES-G</c> primitive (which is decrypt-based; see <see cref="AesH"/>).
+    /// </summary>
+    /// <param name="key">AES-128 key (16 bytes).</param>
+    /// <param name="data">Input block (16 bytes).</param>
+    /// <param name="result">Output block (16 bytes).</param>
+    public static void AesG(ReadOnlySpan<byte> key, ReadOnlySpan<byte> data, Span<byte> result)
+    {
+        if(key.Length != 16 || data.Length != 16 || result.Length != 16)
+            throw new ArgumentException("AES-G requires 16-byte key, data, and result.");
+
+        Aes128EcbEncrypt(key, data, result);
+
+        for(int i = 0; i < 16; i++)
+            result[i] ^= data[i];
+    }
+
+    /// <summary>
+    ///     AACS one-way function as defined in the AACS Introduction and Common Cryptographic
+    ///     Elements: <c>AES-G(K, X) = AES-128D(K, X) XOR X</c>. Used for HD DVD pack content key
+    ///     derivation (<c>Kc = AES-G(Kt, Dtk || CPIlsb_96)</c>, see HD DVD/DVD Pre-recorded Book
+    ///     section 4.3.2). Despite the misleading name <see cref="AesG"/>, that function actually
+    ///     uses AES-128 ENCRYPT and is only correct for BD content; HD DVD uses this DECRYPT
+    ///     based variant.
+    /// </summary>
+    /// <param name="key">AES-128 key (16 bytes).</param>
+    /// <param name="data">Input block (16 bytes).</param>
+    /// <param name="result">Output block (16 bytes).</param>
+    public static void AesH(ReadOnlySpan<byte> key, ReadOnlySpan<byte> data, Span<byte> result)
+    {
+        if(key.Length != 16 || data.Length != 16 || result.Length != 16)
+            throw new ArgumentException("AES-H requires 16-byte key, data, and result.");
+
+        Aes128EcbDecrypt(key, data, result);
+
+        for(int i = 0; i < 16; i++)
+            result[i] ^= data[i];
+    }
+
+    /// <summary>AES-128 CBC decrypt with IV = all zeros.</summary>
+    /// <param name="key">AES-128 key (16 bytes).</param>
+    /// <param name="ciphertext">Ciphertext (multiple of 16 bytes).</param>
+    /// <param name="plaintext">Decrypted output (same length as ciphertext).</param>
+    public static void AesCbcDecryptZeroIv(ReadOnlySpan<byte> key, ReadOnlySpan<byte> ciphertext, Span<byte> plaintext)
+    {
+        if(key.Length != 16)
+            throw new ArgumentException("AES-128 key must be 16 bytes.");
+
+        if(ciphertext.Length != plaintext.Length || ciphertext.Length == 0)
+            throw new ArgumentException("Ciphertext and plaintext spans must have the same non-zero length.");
+
+        if((ciphertext.Length & 15) != 0)
+            throw new ArgumentException("Ciphertext length must be a multiple of 16.");
+
+        byte[] keyArr = key.ToArray();
+        byte[] ctArr  = ciphertext.ToArray();
+        byte[] ivArr  = new byte[16];
+
+        using Aes aes = Aes.Create();
+        aes.KeySize = 128;
+        aes.Mode    = CipherMode.CBC;
+        aes.Padding = PaddingMode.None;
+        aes.Key     = keyArr;
+        aes.IV      = ivArr;
+
+        using ICryptoTransform dec = aes.CreateDecryptor();
+        byte[] ptArr = dec.TransformFinalBlock(ctArr, 0, ctArr.Length);
+
+        if(ptArr.Length != plaintext.Length)
+            throw new InvalidOperationException("CBC decrypt length mismatch.");
+
+        ptArr.AsSpan().CopyTo(plaintext);
+    }
+
+    /// <summary>
     ///     Volume unique key from media key and volume ID.
     /// </summary>
     /// <param name="mediaKey">Media key (16 bytes).</param>
