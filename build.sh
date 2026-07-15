@@ -41,7 +41,7 @@ if [[ ${OS_NAME} == Linux ]]; then
    --exclude="pkg/pacman/*/src" --exclude="pkg/pacman/*/pkg"  --exclude="pkg/pacman/*/*.tar" \
    --exclude="pkg/pacman/*/*.asc" --exclude="*.user" --exclude=".idea" --exclude=".vs" --exclude=".vscode" \
    --exclude="build.iso" --exclude=".DS_Store" -cvf pkg/pacman/stable/aaru-src-${AARU_VERSION}.tar .
-  mv .glogalconfig .globalconfig.bak
+  mv .globalconfig .globalconfig.bak
   cd pkg/pacman/stable
   xz -v9e aaru-src-${AARU_VERSION}.tar
   gpg --armor --detach-sign aaru-src-${AARU_VERSION}.tar.xz
