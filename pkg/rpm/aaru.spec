@@ -13,7 +13,7 @@
 #
 
 Name:           aaru
-Version:        6.0.0~alpha.19
+Version:        6.0.0~beta.1
 Release:        1%{?dist}
 Summary:        Disc image management and creation tool
 
