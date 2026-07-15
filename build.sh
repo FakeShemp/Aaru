@@ -48,7 +48,19 @@ if [[ ${OS_NAME} == Linux ]]; then
   cp PKGBUILD PKGBUILD.bak
   echo -e \\n >> PKGBUILD
   makepkg -g >> PKGBUILD
-  makepkg
+  # Build for all architectures: dotnet cross-compiles, so override CARCH per arch
+  for pkgarch in x86_64 armv7h aarch64; do
+   echo ""
+   echo "========================================"
+   echo "Building Arch Linux package for ${pkgarch}..."
+   echo "========================================"
+   MAKEPKG_CONF_ARCH=$(mktemp)
+   cat /etc/makepkg.conf > "${MAKEPKG_CONF_ARCH}"
+   echo "CARCH=${pkgarch}" >> "${MAKEPKG_CONF_ARCH}"
+   makepkg --config "${MAKEPKG_CONF_ARCH}" 2>&1 | tee ../../../build/pacman-build-${pkgarch}.log || \
+    echo "WARNING: Arch Linux package build for ${pkgarch} failed, but continuing..."
+   rm -f "${MAKEPKG_CONF_ARCH}"
+  done
   mv PKGBUILD.bak PKGBUILD
   mv aaru-src-${AARU_VERSION}.tar.xz aaru-src-${AARU_VERSION}.tar.xz.asc ../../../build
   cd ../../..

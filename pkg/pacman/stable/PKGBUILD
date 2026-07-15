@@ -19,9 +19,9 @@ provides=('aaru')
 conflicts=('aaru')
 depends=('icu' 'krb5' 'libunwind' 'openssl' 'zlib')
 
-if [ $arch == 'aarch64' ]; then
+if [ "$CARCH" == 'aarch64' ]; then
     dotnet_rid=linux-arm64
-elif [ $arch == 'armv7h' ]; then
+elif [ "$CARCH" == 'armv7h' ]; then
     dotnet_rid=linux-arm
 else
     dotnet_rid=linux-x64
