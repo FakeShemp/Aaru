@@ -1,3 +1,192 @@
+# [6.0.0-beta.1] - 2026-07-15
+
+## Added
+
+### - AaruFormat
+
+- Erasure coding support.
+
+### - Archives
+
+- ACE archive support.
+- AR archive support.
+- ARJ and ARJZ archive support.
+- Compact Pro archive support.
+- CPIO archive support.
+- DiskDoubler archive support.
+- Expert Witness Compression Format (EWF) archive support.
+- LHA/LARC/PMARC archive support with extended header handling.
+- RAR archive support.
+- StuffIt archive support.
+- StuffIt 5 archive support.
+- StuffIt X archive support.
+- TAR archive support, enhancing detection to accept checksum-validated V7 headers.
+- ZIP archive support, including extended attributes and metadata handling.
+
+### - Commands
+
+- Image analyze command, with support for more than 50 filesystems, colorized output and deduplication of errored and undumped sectors.
+- Option to use long sectors for image checksum command.
+- Option to select volume for file extraction and listing.
+- `write-metadata` command to handle metadata writing for AaruFormat images.
+
+### - Compression
+
+- Apple KenCode compression algorithm. Fixes #122
+- Apple LZH compression algorithm. Fixes #121
+- PKWARE Data Compression Library (Blast) decompression.
+- StuffIt compression algorithm (ShrinkWrap). Fixes #123
+- StuffIt compression streams (Arsenic, Compress, Huffman, Lzah, Method13, Method14, MW, Rle90).
+- StuffIt X compression streams (Blend, Brimstone, Cyanide, Darkhorse, Deflate, English, Iron, X86).
+- DiskDoubler compression streams (ADn, CompactPro, DDn, LZW, Method2, Stac LZS).
+- ZIP compression streams (Deflate64, Implode, Reduce, Shrink, PPMd, WavPack, JPEG).
+
+### - Conversion
+
+- AACS decryption pipeline.
+- CSS decryption moved to its own pipeline.
+- GameCube/Wii conversion pipeline with partition parsing, junk detection, media tag injection and metadata enrichment.
+- Nintendo DVD descrambler and conversion of negative sectors on Nintendo discs.
+- Option to bypass PS3, Wii and Wii U decryption during conversion.
+- PS3 conversion pipeline with IRD file parsing, disc key derivation, encryption map, SFO title extraction and media tag injection.
+- Support for `.bca` sidecar detection for GameCube/Wii discs.
+- Wii U conversion pipeline with TOC parsing, title key extraction, decryption and media tag injection.
+
+### - Dumping
+
+- C2 error pointer detection and concealed audio convergence repair for secure audio CD reading, with `--c2-repair` option to toggle it.
+- Error recovery support and related logging.
+- HD DVD AACS support.
+- Option to dump the Lead-Out (now optional).
+- Option to skip retrying sectors usually used by SafeDisc copy protection.
+- Option to start retrying errors in reverse.
+- Remaining time estimation while dumping.
+- Support for dumping audio, data tracks, first track pregaps and lead-outs with OmniDrive units, including HyperSpeed.
+- Support for dumping NGCW (Nintendo GameCube/Wii) discs.
+- Support for dumping XGD1/2/3 with OmniDrive units.
+- Support for raw Blu-ray reading with OmniDrive units.
+
+### - Filesystems
+
+- GDFX/XDVDFS is now a fully readable filesystem.
+- PlayStation File System is now a fully readable filesystem.
+
+### - Filters
+
+- BinHex 4.0 filter for decoding Macintosh files.
+- Zstandard compressed files filter.
+
+### - Formats
+
+- CrunchDisk disk image support.
+- Disk eXPress (DXP) disk image support.
+- Expert Witness Compression Format (EWF) disk image support.
+- MagicISO UIF disc image support. Fixes #258
+- Nintendo Wii U compressed disc image (WUX) support.
+- Preliminary KryoFlux support.
+- Quick Release Sector Transfer (QRST) disk image support, including PKWARE-compressed V5 images.
+- Redumper DVD and Blu-ray image support.
+- Software Pirates SNATCH-IT disk image support.
+- Sydex CopyQM+ Self-eXtracting Disk (SXD) image support.
+- The Duplicator disk image support.
+- partclone v0002 image format support. Fixes #260
+
+### - Media tags
+
+- PS3 related media tags synchronization with libaaruformat.
+- Wii U media tags.
+
+### - Partitions
+
+- Sony APA partitioning scheme.
+
+### - Testing
+
+- Unit tests for Reed Solomon ECC encoding and correction.
+- Unit tests for reading of some LisaFS disks.
+- Test fixtures for LIF filesystem and V7 TAR archives.
+
+## Changed
+
+### - Dumping
+
+- Enable C2 only when media contains audio tracks.
+- On Linux prefer SCSI generic device if available.
+- Reworked all CD ECC code, should correct more errors now.
+- Show dumping speed when reading raw DVD.
+- Spin up drive before starting to retry errors, otherwise first retried sector usually always fails.
+
+### - Flux
+
+- Ability to merge flux images.
+- A2R images are now aligned with index, handling index signal at different resolution than data.
+- Handle HxC images which don't start at index.
+- KryoFlux data does not have to be index aligned.
+- Refactored SuperCardPro support.
+
+### - Formats
+
+- DiskCopy 4.2 Twiggy sector ordering refactored for a more precise approximation of real media, with support for the spare bad block sector track allowing to read disks with remapped sectors.
+- NDIF, UDIF and DART now support LZH, KenCode and StuffIt compressed images.
+- NDIF now verifies CRC. Fixes #88
+- Partimage and Partclone now implement media image verification with CRC32 checks, including support for the legacy x64 bug. Fixes #89, #90
+- SaveDskF now supports LZMW decompression. Fixes #108
+
+### - GUI
+
+- Add bypass Wii decryption dump option.
+- Add specific error message for insufficient permissions on device opening in Windows.
+- Highlight long Blu-ray sector.
+
+### - Removed dependencies
+
+- Removed DotNetZip dependency.
+- Removed SharpCompress usage for BZip2 and LZMA, now using Aaru.Compression library.
+
+## Fixed
+
+- Fix loading of CDRWin BIN/CUE images if those aren't in the current working directory.
+- Fix use of volume parameter in extract and list files commands.
+- Handle null filesystem gracefully with localized error message. Fixes #561
+- [LZip] Fix crashing.
+- [NTFS] Guard against too big non-resident data sizes.
+- [Sidecar] Filter out null values from files and directories before sorting.
+- [sysvfs] Try COHERENT filesystems with volume name. Fixes #771
+
+### - ADFS
+
+- Fix big directory parsing.
+- Fix superblock layout and alignment.
+- Replace '/' for '.' in file names.
+
+### - GUI
+
+- Do not fill subdirectories repeatedly. Fixes #879
+- Fix device list in Linux.
+- Fix scrolling issue on filesystem info panel.
+
+### - HFS
+
+- Completely rewrite Catalog and Extents trees. Fixes #912
+- Fix reading file offset.
+
+### - HFS+
+
+- Exclude Private Data directory from directory listing. Fixes #917
+- Refactor HFSPlusAttrRecord structure to not use explicit layout, it was breaking. Fixes #915
+
+### - ISO9660
+
+- Fix multiple extent reading. Fixes #881
+- Fix when 0-length file indicates it has an extended attribute yet it doesn't.
+- Guard against directory records too small to have system areas.
+- Handle Blu-ray long sectors and raw DVD sectors.
+
+### - UDF
+
+- Fix continuation extents.
+- Fix reading UDF 2.50.
+
 # [6.0.0-alpha.19] - 2026-03-11
 
 ## Added
@@ -2962,6 +3151,8 @@
 - Apple Partition Map (aka APM).
 - Master Boot Record (aka MBR).
 - NeXT disklabels.
+
+[6.0.0-beta.1]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-beta.1
 
 [6.0.0-alpha.19]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.19
 

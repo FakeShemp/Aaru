@@ -177,6 +177,59 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/icons/hicolor/512x512/apps/aaru.png
 
 %changelog
+* Wed Jul 15 2026 Natalia Portillo <claunia@claunia.com> - 6.0.0~beta.1-1
+- New upstream beta release 6.0.0-beta.1
+- Added full OmniDrive support for dumping CD, DVD, Blu-ray, XGD1/2/3,
+  GameCube, Wii and PlayStation media, including HyperSpeed and raw
+  Blu-ray reading
+- Added C2 secure audio reading with concealed sector convergence repair
+  and --c2-repair option
+- Added HD DVD AACS and Blu-ray decryption support
+- Added transparent decryption pipelines for PS3, Wii/GameCube and Wii U
+  conversion, with IRD parsing, junk detection and media tag injection
+- Added image analyze command with support for more than 50 filesystems
+- Added write-metadata command for AaruFormat images
+- Added erasure coding support to AaruFormat
+- Added readable filesystems: GDFX/XDVDFS, PlayStation File System
+- Added Sony APA partitioning scheme
+- Added archive formats: ACE, AR, ARJ, ARJZ, Compact Pro, CPIO,
+  DiskDoubler, EWF, LHA/LARC/PMARC, RAR, StuffIt, StuffIt 5, StuffIt X,
+  TAR, ZIP
+- Added Apple compression algorithms: KenCode, LZH, StuffIt (ShrinkWrap)
+- Added compression streams for ZIP, StuffIt, StuffIt X and DiskDoubler
+- Added disk image formats: CrunchDisk, Disk eXPress, EWF, MagicISO UIF,
+  Nintendo Wii U WUX, QRST, Redumper DVD/BD, SNATCH-IT, Sydex CopyQM+
+  SXD, The Duplicator, partclone v0002
+- Added preliminary KryoFlux support and flux image merging
+- Added BinHex 4.0 and Zstandard filters
+- Added remaining time estimation, reverse error retry, SafeDisc sector
+  skip and optional lead-out dumping options
+- Added volume selection for file listing and extraction
+- Added long sectors option to image checksum command
+- Changed CD ECC code, reworked to correct more errors
+- Changed Linux device access to prefer SCSI generic device if available
+- Changed DiskCopy 4.2 Twiggy sector ordering with spare bad block track
+  support
+- Changed NDIF, UDIF and DART to support LZH, KenCode and StuffIt
+  compressed images
+- Changed NDIF to verify CRC
+- Changed Partclone and Partimage to verify images with CRC32 checksums
+- Changed SaveDskF to support LZMW decompression
+- Removed DotNetZip dependency
+- Fixed loading CDRWin BIN/CUE images outside current working directory
+- Fixed HFS by completely rewriting Catalog and Extents trees
+- Fixed HFS+ extended attributes and Private Data directory listing
+- Fixed ISO9660 multiple extent reading and malformed directory records
+- Fixed UDF 2.50 reading and continuation extents
+- Fixed ADFS superblock layout and big directory parsing
+- Fixed volume parameter in extract and list files commands
+- Fixed GUI device list on Linux, filesystem info panel scrolling and
+  repeated subdirectory filling
+- Fixed NTFS guard against too big non-resident data sizes
+- Fixed LZip crash
+- Built for RHEL 9+, Fedora 38+, openSUSE Leap 15.5+
+- Multi-architecture support (x86_64, aarch64, armv7hl)
+
 * Wed Mar 11 2026 Natalia Portillo <claunia@claunia.com> - 6.0.0~alpha.19-1
 - New upstream alpha release 6.0.0-alpha.19
 - Added command to generate JSON schema for Aaru metadata files
