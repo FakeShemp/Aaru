@@ -155,7 +155,7 @@ if [[ ${OS_NAME} == Linux ]]; then
   # Create source tarball
   echo "Creating source tarball for RPM..."
   # RPM uses tilde for pre-release versions, transform dash to tilde
-  RPM_VERSION="${AARU_VERSION//-alpha/~alpha}"
+  RPM_VERSION="${AARU_VERSION/-/\~}"
   tar --exclude-vcs --exclude="*/bin" --exclude="*/obj" --exclude="build" \
       --exclude="pkg/pacman/*/*.tar*" --exclude="pkg/pacman/*/src" --exclude="pkg/pacman/*/pkg" \
       --exclude="pkg/pacman/*/*.asc" --exclude="*.user" --exclude=".idea" --exclude=".vs" \
