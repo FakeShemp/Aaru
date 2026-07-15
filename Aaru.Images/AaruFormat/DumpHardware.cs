@@ -29,6 +29,8 @@ public sealed partial class AaruFormat
     /// <inheritdoc />
     public bool SetDumpHardware(List<DumpHardware> dumpHardware)
     {
+        if(dumpHardware == null || dumpHardware.Count == 0) return true;
+
         var    blockMs = new MemoryStream();
         var    dumpMs  = new MemoryStream();
         byte[] structureBytes;
@@ -74,7 +76,7 @@ public sealed partial class AaruFormat
                 SoftwareNameLength            = (uint)(dumpSoftwareName?.Length            + 1 ?? 0),
                 SoftwareVersionLength         = (uint)(dumpSoftwareVersion?.Length         + 1 ?? 0),
                 SoftwareOperatingSystemLength = (uint)(dumpSoftwareOperatingSystem?.Length + 1 ?? 0),
-                Extents                       = (uint)dump.Extents.Count
+                Extents                       = (uint)(dump.Extents?.Count ?? 0)
             };
 
             structureBytes = new byte[Marshal.SizeOf<DumpHardwareEntry>()];
@@ -129,7 +131,7 @@ public sealed partial class AaruFormat
                 dumpMs.WriteByte(0);
             }
 
-            foreach(Extent extent in dump.Extents)
+            foreach(Extent extent in dump.Extents ?? [])
             {
                 dumpMs.Write(BitConverter.GetBytes(extent.Start), 0, sizeof(ulong));
                 dumpMs.Write(BitConverter.GetBytes(extent.End),   0, sizeof(ulong));
