@@ -553,6 +553,8 @@ partial class Dump
             else
                 _mediaGraph = new BlockMap((int)_dimensions, (int)_dimensions, blocks);
 
+            _mediaGraph?.TryLoadExisting($"{_outputPrefix}.graph.png");
+
             if(_mediaGraph is not null)
             {
                 foreach(Tuple<ulong, ulong> e in extents.ToArray())
@@ -1105,8 +1107,9 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-                for(ulong i = ur; i < ur + blocksToRead; i++)
-                    tmpList.Add(i);
+            {
+                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
+            }
 
             tmpList.Sort();
 

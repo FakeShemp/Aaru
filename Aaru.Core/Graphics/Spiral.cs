@@ -125,8 +125,8 @@ public sealed class Spiral : IMediaGraph
         // GD-ROM is physically single-layer; reject dual-layer combo
         if(_gdrom) layerBreak = null;
 
-        _numLayers         = layerBreak is not null ? 2 : 1;
-        _layerBreak        = layerBreak is not null ? (long)(ulong)layerBreak : -1;
+        _numLayers  = layerBreak is not null ? 2 : 1;
+        _layerBreak = layerBreak is not null ? (long)(ulong)layerBreak : -1;
 
         int bitmapWidth = _numLayers == 2 ? width * 2 : width;
         Bitmap  = new SKBitmap(bitmapWidth, height);
@@ -847,6 +847,20 @@ public sealed class Spiral : IMediaGraph
                              Color       = SKColors.Green,
                              StrokeWidth = 1
                          });
+    }
+
+    /// <inheritdoc />
+    public bool TryLoadExisting(string path)
+    {
+        if(!File.Exists(path)) return false;
+
+        using var existing = SKBitmap.Decode(path);
+
+        if(existing is null || existing.Width != Bitmap.Width || existing.Height != Bitmap.Height) return false;
+
+        _canvas.DrawBitmap(existing, 0, 0);
+
+        return true;
     }
 
     /// <inheritdoc />

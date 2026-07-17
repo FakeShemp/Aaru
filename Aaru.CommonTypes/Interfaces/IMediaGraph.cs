@@ -123,6 +123,14 @@ public interface IMediaGraph
     /// <summary>Paints the information specific to recordable discs in green</summary>
     public void PaintRecordableInformationGood();
 
+    /// <summary>
+    ///     Loads a previously written graph PNG and paints it over the current bitmap, so a resumed dump keeps the
+    ///     visual state of the earlier run instead of starting from a blank graph.
+    /// </summary>
+    /// <param name="path">Path to the previously written graph PNG</param>
+    /// <returns><see langword="true" /> if the existing image was loaded and painted over, <see langword="false" /> otherwise</returns>
+    public bool TryLoadExisting(string path);
+
     /// <summary>Writes the graph bitmap as a PNG into the specified stream</summary>
     /// <param name="stream">Stream that will receive the spiral bitmap</param>
     public void WriteTo(Stream stream);

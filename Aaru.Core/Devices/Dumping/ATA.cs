@@ -286,6 +286,8 @@ public partial class Dump
                         else
                             _mediaGraph = new BlockMap((int)_dimensions, (int)_dimensions, blocks);
 
+                        _mediaGraph?.TryLoadExisting($"{_outputPrefix}.graph.png");
+
                         if(_mediaGraph is not null)
                         {
                             foreach(Tuple<ulong, ulong> e in extents.ToArray())
@@ -583,6 +585,8 @@ public partial class Dump
                         else
                             _mediaGraph = new BlockMap((int)_dimensions, (int)_dimensions, blocks);
 
+                        _mediaGraph?.TryLoadExisting($"{_outputPrefix}.graph.png");
+
                         if(_mediaGraph is not null)
                         {
                             foreach(Tuple<ulong, ulong> e in extents.ToArray())
@@ -860,7 +864,7 @@ public partial class Dump
 
                                                 sidecar.BlockMedias[0].Pcmcia.AdditionalInformation =
                                                 [
-                                                    ..version.AdditionalInformation
+                                                    .. version.AdditionalInformation
                                                 ];
                                             }
 

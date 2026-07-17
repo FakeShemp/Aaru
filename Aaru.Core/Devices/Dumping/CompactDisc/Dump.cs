@@ -690,8 +690,9 @@ sealed partial class Dump
             foreach(int sub in _resume.BadSubchannels) subchannelExtents.Add(sub);
 
             if(_resume.NextBlock < blocks)
-                for(ulong i = _resume.NextBlock; i < blocks; i++)
-                    subchannelExtents.Add((int)i);
+            {
+                for(ulong i = _resume.NextBlock; i < blocks; i++) subchannelExtents.Add((int)i);
+            }
         }
 
         if(_resume.NextBlock > 0)
@@ -832,6 +833,8 @@ sealed partial class Dump
                 _mediaGraph = new Spiral((int)_dimensions, (int)_dimensions, discSpiralParameters, blocks);
             else
                 _mediaGraph = new BlockMap((int)_dimensions, (int)_dimensions, blocks);
+
+            _mediaGraph?.TryLoadExisting($"{_outputPrefix}.graph.png");
 
             if(_mediaGraph is not null)
             {
@@ -1226,15 +1229,15 @@ sealed partial class Dump
 
             UpdateStatus?.Invoke(concealed == 0
                                      ? Localization.Core.C2_audio_check_no_concealed
-                                     : string.Format(Localization.Core.C2_audio_check_0_concealed_samples,
-                                                     concealed));
+                                     : string.Format(Localization.Core.C2_audio_check_0_concealed_samples, concealed));
 
             AaruLogging.WriteLine(string.Format(Localization.Core.C2_audio_check_0_flagged, concealed));
         }
 
         foreach(Tuple<ulong, ulong> leadoutExtent in leadOutExtents.ToArray())
-            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++)
-                subchannelExtents.Remove((int)e);
+        {
+            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++) subchannelExtents.Remove((int)e);
+        }
 
         if(subchannelExtents.Count > 0 && _retryPasses > 0 && _retrySubchannel)
         {

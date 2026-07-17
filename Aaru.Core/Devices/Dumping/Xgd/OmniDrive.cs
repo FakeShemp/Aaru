@@ -233,6 +233,8 @@ partial class Dump
             else
                 _mediaGraph = new BlockMap((int)_dimensions, (int)_dimensions, blocks);
 
+            _mediaGraph?.TryLoadExisting($"{_outputPrefix}.graph.png");
+
             if(_mediaGraph is not null)
             {
                 foreach(Tuple<ulong, ulong> e in extents.ToArray())
@@ -607,9 +609,8 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-            {
-                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
-            }
+                for(ulong i = ur; i < ur + blocksToRead; i++)
+                    tmpList.Add(i);
 
             tmpList.Sort();
 
@@ -840,9 +841,8 @@ partial class Dump
             foreach((int start, int end) range in zeroRanges)
             {
                 for(int i = range.start; i < range.end; i++)
-                {
-                    if(rawSectorBuffer[i] != 0) return null;
-                }
+                    if(rawSectorBuffer[i] != 0)
+                        return null;
             }
         }
         else if(xgd == 3)
@@ -856,9 +856,8 @@ partial class Dump
             foreach((int start, int end) range in zeroRanges)
             {
                 for(int i = range.start; i < range.end; i++)
-                {
-                    if(rawSectorBuffer[i] != 0) return null;
-                }
+                    if(rawSectorBuffer[i] != 0)
+                        return null;
             }
         }
 
@@ -903,9 +902,8 @@ partial class Dump
 
         // Both copies of the SS range must match
         for(var i = 0; i < 0xCF; i++)
-        {
-            if(data[0x661 + i] != data[0x730 + i]) return null;
-        }
+            if(data[0x661 + i] != data[0x730 + i])
+                return null;
 
         return RepairCcrt2(data, xgd, cprMai);
     }
@@ -1208,9 +1206,8 @@ partial class Dump
         if(a.Length != b.Length) return false;
 
         for(var i = 0; i < a.Length; i++)
-        {
-            if(a[i] != b[i]) return false;
-        }
+            if(a[i] != b[i])
+                return false;
 
         return true;
     }
@@ -1219,9 +1216,8 @@ partial class Dump
     static bool BytesEqual4(byte[] a, byte[] b)
     {
         for(var i = 0; i < 4; i++)
-        {
-            if(a[i] != b[i]) return false;
-        }
+            if(a[i] != b[i])
+                return false;
 
         return true;
     }

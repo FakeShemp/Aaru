@@ -302,6 +302,20 @@ public class BlockMap : IMediaGraph
     }
 
     /// <inheritdoc />
+    public bool TryLoadExisting(string path)
+    {
+        if(!File.Exists(path)) return false;
+
+        using var existing = SKBitmap.Decode(path);
+
+        if(existing is null || existing.Width != _bitmap.Width || existing.Height != _bitmap.Height) return false;
+
+        _canvas.DrawBitmap(existing, 0, 0);
+
+        return true;
+    }
+
+    /// <inheritdoc />
     public void WriteTo(Stream stream)
     {
         var    image = SKImage.FromBitmap(_bitmap);

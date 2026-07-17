@@ -443,8 +443,7 @@ partial class Dump
                 mediaTags.TryGetValue(MediaTagType.BD_DI, out byte[] di);
                 DI.DiscInformation? decodedDi = DI.Decode(di);
 
-                if(scsiReader.OmniDriveReadRawBluray)
-                    nominalNegativeSectors = BdFallbackNegativeSectors;
+                if(scsiReader.OmniDriveReadRawBluray) nominalNegativeSectors = BdFallbackNegativeSectors;
 
                 sense = _dev.ReadDiscInformation(out byte[] readBuffer,
                                                  out _,
@@ -799,6 +798,8 @@ partial class Dump
             else
                 _mediaGraph = new BlockMap((int)_dimensions, (int)_dimensions, blocks);
 
+            _mediaGraph?.TryLoadExisting($"{_outputPrefix}.graph.png");
+
             if(_mediaGraph is not null)
             {
                 foreach(Tuple<ulong, ulong> e in extents.ToArray())
@@ -845,7 +846,7 @@ partial class Dump
            (CopyrightType)cmi[0] == CopyrightType.CSS)
         {
             UpdateStatus?.Invoke(Localization.Core.Title_keys_dumping_is_enabled_This_will_be_very_slow);
-            _resume.MissingTitleKeys ??= [..Enumerable.Range(0, (int)blocks).Select(static n => (ulong)n)];
+            _resume.MissingTitleKeys ??= [.. Enumerable.Range(0, (int)blocks).Select(static n => (ulong)n)];
             InitializeMissingTitleKeysCache();
         }
 
@@ -886,6 +887,7 @@ partial class Dump
                 }
 
                 if(scsiReader.OmniDriveReadRawBluray)
+                {
                     ReadRawBdData(blocks,
                                   blocksToRead,
                                   blockSize,
@@ -902,7 +904,9 @@ partial class Dump
                                   ref newTrim,
                                   nominalForRaw,
                                   overflowForRaw);
+                }
                 else
+                {
                     ReadRawDvdData(blocks,
                                    blocksToRead,
                                    blockSize,
@@ -920,6 +924,7 @@ partial class Dump
                                    discKey ?? null,
                                    nominalForRaw,
                                    overflowForRaw);
+                }
             }
             else
             {
