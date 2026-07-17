@@ -23,15 +23,19 @@ public class LoggingInterceptor : ICommandInterceptor
         if(settings is not BaseSettings global) return;
 
         // Set log level
-        if(global.Debug)
-            _levelSwitch.MinimumLevel = LogEventLevel.Debug;
-        else if(global.Verbose)
-            _levelSwitch.MinimumLevel = LogEventLevel.Verbose;
-        else
-            _levelSwitch.MinimumLevel = LogEventLevel.Information;
+        _levelSwitch.MinimumLevel = global.Debug || global.Verbose
+                                        ? LogEventLevel.Verbose
+                                        : LogEventLevel.Information;
+
+        // Serilog orders Verbose below Debug, so a Verbose minimum also passes Debug events;
+        // filter them out unless --debug was given
+        bool debugEnabled = global.Debug;
 
         // Configure Serilog
         LoggerConfiguration loggerConfig = new LoggerConfiguration().MinimumLevel.ControlledBy(_levelSwitch)
+                                                                    .Filter.ByExcluding(e =>
+                                                                         e.Level == LogEventLevel.Debug &&
+                                                                         !debugEnabled)
                                                                     .Enrich.FromLogContext()
                                                                     .WriteTo.Logger(static lc => lc
                                                                         .Filter.ByExcluding(static e =>

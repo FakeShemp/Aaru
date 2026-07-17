@@ -10,7 +10,11 @@ public class BaseSettings : CommandSettings
     [CommandOption("-v|--verbose")]
     [LocalizedDescription(nameof(UI.Shows_verbose_output))]
     [DefaultValue(false)]
-    public bool Verbose { get; init; }
+    public bool Verbose
+    {
+        get => field || Debug;
+        init;
+    }
 
     [CommandOption("-d|--debug")]
     [LocalizedDescription(nameof(UI.Shows_debug_output_from_plugins))]
