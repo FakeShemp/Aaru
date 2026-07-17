@@ -769,7 +769,8 @@ sealed partial class Dump
                                                    driveOffset,
                                                    driveOffset / 4));
 
-                UpdateStatus?.Invoke(Localization.Core.Disc_write_offset_is_unknown_dump_may_not_be_correct);
+                if(tracks.Any(static t => t.Type == TrackType.Audio))
+                    UpdateStatus?.Invoke(Localization.Core.Disc_write_offset_is_unknown_dump_may_not_be_correct);
 
                 offsetBytes = driveOffset.Value;
 
